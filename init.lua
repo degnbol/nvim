@@ -22,8 +22,8 @@ require 'indent-blankline'
 require 'shebang-nvim'
 require 'cheat' -- :Cheat as alternative to StackOverflow
 
--- require 'iron-nvim'
-require 'repl'
+require 'iron-nvim'
+-- require 'repl'
 -- require 'ripple'
 
 require 'telescope-nvim'
