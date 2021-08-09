@@ -1,0 +1,3 @@
+check out packages etc at https://github.com/ttys3/nvim-config/blob/main/lua/plugins.lua we are at vim-visual-multi
+maybe consider moving away from context and showing current func in status bar with https://github.com/nvim-lua/lsp-status.nvim
+
