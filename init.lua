@@ -1,7 +1,7 @@
 -- setup heavily inspired by NvChad (https://github.com/siduck76/NvChad)
 
-require 'packages'
 require 'settings'
+require 'packages'
 require 'keymappings'
 require 'colors'
 require 'TrueZen'
@@ -32,5 +32,6 @@ require 'tree'
 
 require 'highlights'
 require 'file-icons'
+
 
 

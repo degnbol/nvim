@@ -9,6 +9,7 @@ require "paq-nvim" {
     "svermeulen/vim-subversive"; -- add substitution functions to e.g. replace a word with clipboard content by writing siw
     "svermeulen/vim-cutlass"; -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
     "svermeulen/vim-yoink"; -- yank history that you can cycle with c-n and c-p
+    "mg979/vim-visual-multi"; -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
 
 	-- color
 	"norcalli/nvim-colorizer.lua"; -- when a hex or other color is defined, highlight the text with its color
@@ -41,10 +42,11 @@ require "paq-nvim" {
 	"lewis6991/gitsigns.nvim"; -- git decoration to the left
     "JuliaEditorSupport/julia-vim"; -- julia support, colors and unicode substitution.
     -- "urbainvaes/vim-ripple"; -- REPL with some indent and tab problems
-    -- "hkupty/iron.nvim"; -- REPL that doesn't support bpython
+    "hkupty/iron.nvim"; -- REPL that doesn't support bpython
     "pappasam/nvim-repl"; -- REPL that has to be started
     "jeetsukumaran/vim-pythonsense"; -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
     "samirettali/shebang.nvim"; -- insert shebang on new file edit
+    -- 'metakirby5/codi.vim'; -- scratchpad coding, see output of all lines to the right https://github.com/metakirby5/codi.vim
 
     "RishabhRD/popfix"; -- required by nvim-cheat
     "RishabhRD/nvim-cheat.sh"; -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
