@@ -9,9 +9,9 @@ local function on_attach(client, bufnr)
     local opts = {noremap = true, silent = true}
     buf_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts)
     buf_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)
-    buf_set_keymap("n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
+    buf_set_keymap("n", "<space>p", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
     buf_set_keymap("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
-    buf_set_keymap("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
+    buf_set_keymap("n", "<space>p", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
     buf_set_keymap("n", "<space>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>", opts)
     buf_set_keymap("n", "<space>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>", opts)
     buf_set_keymap("n", "<space>wl", "<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>", opts)
@@ -29,13 +29,16 @@ require "lspinstall".setup()
 
 local lspconf = require("lspconfig")
 
-lspconf.r_language_server.setup{on_attach=on_attach}
 -- LSP options: https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md
--- lspconf.python.setup{} -- the :LspInstall python LSP which is pyright by Microsoft
--- lspconf.pyright.setup{} -- the nodejs installation of pyright by Microsoft
--- lspconf.pylsp.setup{} -- the community fork of the controversial pyls which seemed better than pyright out of the box
-lspconf.jedi_language_server.setup{} -- jedi wrapper. It is more minimal so it doesn't annoy with wrong errors
+lspconf.r_language_server.setup{on_attach=on_attach}
+-- lspconf.python.setup{on_attach=on_attach} -- the :LspInstall python LSP which is pyright by Microsoft
+-- lspconf.pyright.setup{on_attach=on_attach} -- the nodejs installation of pyright by Microsoft
+-- the community fork of the controversial pyls which seemed better than pyright out of the box. Install: pip install python-lsp-server
+lspconf.pylsp.setup{on_attach=on_attach}
+-- lspconf.jedi_language_server.setup{on_attach=on_attach} -- jedi wrapper. It is more minimal so it doesn't annoy with wrong errors
+lspconf.julials.setup{on_attach=on_attach}
 lspconf.lua.setup {
+    on_attach=on_attach,
     settings = {
         Lua = {
             diagnostics = {
