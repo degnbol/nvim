@@ -32,3 +32,22 @@ nmap <c-=> <plug>(YoinkPostPasteToggleFormat)
 nmap y <plug>(YoinkYankPreserveCursorPosition)
 xmap y <plug>(YoinkYankPreserveCursorPosition)
 
+" one scroll signal is one line change instead of 3
+nmap <ScrollWheelUp>   <c-y>
+nmap <2-ScrollWheelUp> <c-y>
+nmap <3-ScrollWheelUp> <c-y>
+nmap <4-ScrollWheelUp> <c-y>
+nmap <ScrollWheelDown>   <c-e>
+nmap <2-ScrollWheelDown> <c-e>
+nmap <3-ScrollWheelDown> <c-e>
+nmap <4-ScrollWheelDown> <c-e>
+
+" shift scroll scrolls horizontally
+nnoremap <S-ScrollWheelUp>   zl
+nnoremap <S-2-ScrollWheelUp> zl
+nnoremap <S-3-ScrollWheelUp> zl
+nnoremap <S-4-ScrollWheelUp> zl
+nnoremap <S-ScrollWheelDown>   zh
+nnoremap <S-2-ScrollWheelDown> zh
+nnoremap <S-3-ScrollWheelDown> zh
+nnoremap <S-4-ScrollWheelDown> zh
