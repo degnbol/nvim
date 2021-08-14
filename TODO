@@ -1,4 +1,2 @@
-check out packages etc at https://github.com/ttys3/nvim-config/blob/main/lua/plugins.lua we are at vim-visual-multi
-move away from context and show current func in status bar with https://github.com/nvim-lua/lsp-status.nvim
 Make julia LSP faster with https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#julials
 

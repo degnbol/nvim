@@ -28,7 +28,6 @@ require "paq-nvim" {
 	"nvim-treesitter/nvim-treesitter"; -- language coloring and ensuring of installation
     "nvim-treesitter/nvim-treesitter-refactor"; -- refactor
     "nvim-treesitter/nvim-treesitter-textobjects"; -- selecting, moving functions etc.
-    "mfussenegger/nvim-ts-hint-textobject"; -- show match highlights I think TODO find out how to use this
     -- "romgrk/nvim-treesitter-context"; -- show the "context" at the top line, i.e. function name when in a function
 	"neovim/nvim-lspconfig"; -- lsp
 	"kabouzeid/nvim-lspinstall"; -- adds :LspInstall <language> for conveniently installing language support

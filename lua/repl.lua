@@ -8,8 +8,7 @@ g.repl_filetype_commands = {
 
 
 -- keymaps
--- TODO make a function where if the python line starts with def then send V]M:ReplSend<CR>`>. 
--- In Julia it should instead look for function anywhere in the line and call V][:ReplSend`>
+-- TODO make a function where if the line starts with def or function then send Vaf:ReplSend<CR>`>. 
 vim.api.nvim_set_keymap('n', '<localleader><CR>', ':ReplSend<CR><CR>', {expr = false, noremap = false})
 -- After sending to visual the cursor jumps to the start of the selection. 
 -- `> means go to mark named > which will be at the end of the previous selection.

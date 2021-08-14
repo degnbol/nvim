@@ -8,15 +8,19 @@ iron.core.set_config {
   repl_open_cmd = "rightbelow vertical split",
 }
 
+function ReplOperator(type, ...)
+    iron.core.send_motion(type)
+    vim.cmd("normal `]w") -- go to end of the motion and one more word
+end
 
 -- keymaps
--- TODO make a function where if the python line starts with def then send
--- V]M<Plug>(iron-visual-send)`>. Julia it should instead look for function
--- anywhere in the line and call V][<Plug>(iron-visual-send)`>
-vim.api.nvim_set_keymap('n', '<localleader><CR>', '<Plug>(iron-send-line)j', {expr = false, noremap = false})
+-- vim.api.nvim_set_keymap('n', '<CR>af', 'vaf<Plug>(iron-visual-send)`>j', {expr = false, noremap = false})
+vim.api.nvim_set_keymap('n', '<CR>', 'Operator("v:lua.ReplOperator")', {expr = true, noremap = false})
+vim.api.nvim_set_keymap('n', '<CR><CR>', '<Plug>(iron-send-line)j', {expr = false, noremap = false})
+vim.api.nvim_set_keymap('n', '<S-CR>', 'v$<Plug>(iron-visual-send)j', {expr = false, noremap = false})
 -- After sending to visual the cursor jumps to the start of the selection. 
 -- `> means go to mark named > which will be at the end of the previous selection.
-vim.api.nvim_set_keymap('v', '<localleader><CR>', '<Plug>(iron-visual-send)`>', {expr = false, noremap = false})
+vim.api.nvim_set_keymap('v', '<CR>', '<Plug>(iron-visual-send)`>', {expr = false, noremap = false})
 vim.api.nvim_set_keymap('n', '<localleader>r', '<Plug>(iron-repeat-cmd)', {expr = false, noremap = false})
 vim.api.nvim_set_keymap('n', '<localleader>i', '<Plug>(iron-interrupt)', {expr = false, noremap = false})
 -- Exit -> focus -> terminal mode -> newline to close window pane.
