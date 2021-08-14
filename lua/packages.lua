@@ -20,7 +20,7 @@ require "paq-nvim" {
 
 	"ryanoasis/vim-devicons"; -- adds icons to files
 
-    "sakshamgupta05/vim-todo-highlight"; -- highlight TODO
+    "sakshamgupta05/vim-todo-highlight"; -- highlight todos
     "p00f/nvim-ts-rainbow"; -- tree sitter based rainbow color parenthesis to easily see the matching
     "folke/twilight.nvim"; -- dim code that isn't currently being edited with :Twilight.
 
@@ -37,7 +37,7 @@ require "paq-nvim" {
 	"onsails/lspkind-nvim"; -- VS code like pictograms for completion
 	"terrortylor/nvim-comment"; -- Toggle commenting out code
 	-- "windwp/nvim-autopairs"; -- auto add second parenthesis etc.
-	"lukas-reineke/indent-blankline.nvim"; -- show "|" on indented lines
+	-- "lukas-reineke/indent-blankline.nvim"; -- show "|" on indented lines
 	"tpope/vim-fugitive"; -- git
 	"lewis6991/gitsigns.nvim"; -- git decoration to the left
     "JuliaEditorSupport/julia-vim"; -- julia support, colors and unicode substitution.
@@ -61,7 +61,7 @@ require "paq-nvim" {
 	"nvim-lua/plenary.nvim";
 	"nvim-telescope/telescope.nvim"; -- Fuzzy finder
 	"glepnir/dashboard-nvim"; -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
-    "kyazdani42/nvim-tree.lua"; -- stalls opening and closing the ~/.config/nvim files for some reason even though StartupTime and such says opening time is fine. Press <C-c> to make it get to the point. It doesn't hurt
+    "kyazdani42/nvim-tree.lua"; -- tree file explorer to the left
     "ojroques/nvim-bufdel"; -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
 
     -- "khzaw/vim-conceal"; -- add some language specific conceal features

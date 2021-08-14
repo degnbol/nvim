@@ -18,7 +18,7 @@ require'twilight'.setup{dimming={alpha=0.5}, context=30}
 require('lspkind').init()
 require 'gitsigns-nvim' -- git decoration
 require('nvim_comment').setup()
-require 'indent-blankline'
+-- require 'indent-blankline'
 require 'shebang-nvim'
 require 'cheat' -- :Cheat as alternative to StackOverflow
 
