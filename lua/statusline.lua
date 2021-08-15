@@ -2,24 +2,17 @@ local gl = require("galaxyline")
 local gls = gl.section
 local vim = vim
 local colors = require "themes/onedark"
+local buffer = require 'galaxyline.provider_buffer'
+local fileinfo = require 'galaxyline.provider_fileinfo'
 
 
-gl.short_line_list = {" "}
 
+-- empty string is for terminal
+gl.short_line_list = {"NvimTree", ""}
 
-local is_file = function()
-    local file = vim.fn.expand('%:t')
-    if vim.fn.empty(file) == 1 then return false end
-    local size = vim.fn.getfsize(file)
-    if size == 0 or size == -1 or size == -2 then
-        return false
-    end
-    return true
-end
 
 local checkwidth = function()
     -- also make sure it is a file
-    if not is_file() then return false end
     local squeeze_width = vim.fn.winwidth(0) / 2
     if squeeze_width > 30 then
         return true
@@ -40,7 +33,6 @@ gls.left[2] = {
             local dir_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
             return "  " .. dir_name .. " "
         end,
-        condition = is_file,
         highlight = {colors.grey_fg2, colors.lightbg2},
         separator = " ",
         separator_highlight = {colors.lightbg2, colors.darker_black}
@@ -77,7 +69,6 @@ gls.left[5] = {
 gls.left[6] = {
     DiagnosticError = {
         provider = "DiagnosticError",
-        condition = is_file,
         icon = "  ",
         highlight = {colors.red, colors.darker_black}
     }
@@ -86,7 +77,6 @@ gls.left[6] = {
 gls.left[7] = {
     DiagnosticWarn = {
         provider = "DiagnosticWarn",
-        condition = is_file,
         icon = "  ",
         highlight = {colors.yellow, colors.darker_black}
     }
@@ -102,7 +92,6 @@ gls.right[1] = {
                 return ""
             end
         end,
-        condition = is_file,
         highlight = {colors.grey_fg2, colors.darker_black}
     }
 }
@@ -127,7 +116,6 @@ gls.right[2] = {
                 return "  " .. current_Mode .. " "
             end
         end,
-        condition = is_file,
         highlight = {colors.red, colors.darker_black}
     }
 }
@@ -146,7 +134,6 @@ gls.right[3] = {
             local percent, _ = math.modf((current_line / total_line) * 100)
             return string.format("  %2d", percent) .. "% "
         end,
-        condition = is_file,
         highlight = {colors.green, colors.darker_black}
     }
 }

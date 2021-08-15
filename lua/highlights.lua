@@ -34,49 +34,47 @@ local function fg_bg(group, fgcol, bgcol)
     cmd("hi " .. group .. " guifg=" .. fgcol .. " guibg=" .. bgcol)
 end
 
+
+
+
 -- blankline
 
-fg("IndentBlanklineChar", line)
+-- fg("IndentBlanklineChar", line)
 
 -- misc --
 fg("LineNr", grey)
 fg("NvimInternalError", red)
 fg("VertSplit", line)
-fg("EndOfBuffer", black)
-
--- Pmenu
-bg("Pmenu", one_bg)
-bg("PmenuSbar", one_bg2)
-bg("PmenuSel", green)
-bg("PmenuThumb", nord_blue)
+cmd "hi! EndOfBuffer ctermbg=bg ctermfg=bg guibg=bg guifg=bg"
 
 -- inactive statuslines as thin splitlines
-cmd("hi! StatusLineNC gui=underline guifg=" .. line)
+cmd "hi! StatusLineNC gui=underline guifg=bg"
+cmd "hi StatusLine guibg=bg"
 
--- line n.o
+-- if cursorline is on, only highlight the number not the whole line
 cmd "hi clear CursorLine"
 fg("cursorlinenr", white)
 
 -- git signs ---
-fg_bg("DiffAdd", nord_blue, "none")
+fg_bg("DiffAdd", green, "none")
 fg_bg("DiffChange", one_bg2, "none")
 fg_bg("DiffModified", nord_blue, "none")
+fg_bg("DiffDelete", red, "none")
 
 -- NvimTree
 fg("NvimTreeFolderIcon", blue)
 fg("NvimTreeFolderName", blue)
 fg("NvimTreeIndentMarker", one_bg2)
-fg("NvimTreeVertSplit", darker_black)
-bg("NvimTreeVertSplit", darker_black)
-
-fg("NvimTreeRootFolder", darker_black)
-bg("NvimTreeNormal", darker_black)
-fg_bg("NvimTreeStatuslineNc", darker_black, darker_black)
+fg("NvimTreeVertSplit", "bg")
+-- bg("NvimTreeVertSplit", darker_black)
+fg("NvimTreeRootFolder", "bg")
+bg("NvimTreeNormal", "bg")
+fg_bg("NvimTreeStatuslineNc", "bg", "bg")
 
 -- telescope
-fg("TelescopeBorder", line)
-fg("TelescopePromptBorder", line)
-fg("TelescopeResultsBorder", line)
+fg("TelescopeBorder", grey)
+fg("TelescopePromptBorder", grey)
+fg("TelescopeResultsBorder", grey)
 fg("TelescopePreviewBorder", grey)
 
 -- LspDiagnostics ---
@@ -97,31 +95,29 @@ fg("LspDiagnosticsVirtualTextHint", purple)
 
 -- bufferline
 
-fg_bg("BufferLineFill", grey_fg, black2)
-fg_bg("BufferLineBackground", light_grey, black2)
-
-fg_bg("BufferLineBufferVisible", light_grey, black2)
-fg_bg("BufferLineBufferSelected", white, black)
-
+fg_bg("BufferLineFill", "bg", "bg")
+fg_bg("BufferLineBackground", "bg", "bg")
+fg_bg("BufferLineBufferVisible", "bg", "bg")
+fg_bg("BufferLineBufferSelected", "bg", "bg")
 -- bold instead of italic bold selected file
 cmd "hi BufferLineBufferSelected gui=bold"
 
 -- tabs
-fg_bg("BufferLineTab", light_grey, one_bg3)
-fg_bg("BufferLineTabSelected", black2, nord_blue)
-fg_bg("BufferLineTabClose", red, black)
+fg_bg("BufferLineTab", "bg", "bg")
+fg_bg("BufferLineTabSelected", "bg", nord_blue)
 
-fg_bg("BufferLineIndicator", black2, black2)
-fg_bg("BufferLineIndicatorSelected", black, black)
+fg_bg("BufferLineIndicator", "bg", "bg")
+fg_bg("BufferLineIndicatorSelected", "bg", "bg")
 
 -- -- separators
-fg_bg("BufferLineSeparator", line, black2)
-fg_bg("BufferLineSeparatorVisible", line, black2)
-fg_bg("BufferLineSeparatorSelected", black, black2)
+fg_bg("BufferLineSeparator", "bg", "bg")
+fg_bg("BufferLineSeparatorVisible", "bg", "bg")
+fg_bg("BufferLineSeparatorSelected", "bg", "bg")
 
 -- dashboard
 
 fg("DashboardHeader", grey_fg)
 fg("DashboardCenter", grey_fg)
 fg("DashboardShortcut", grey_fg)
-fg("DashboardFooter", black)
+fg("DashboardFooter", "bg")
+
