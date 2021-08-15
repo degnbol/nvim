@@ -24,7 +24,6 @@ require 'cheat' -- :Cheat as alternative to StackOverflow
 
 require 'iron-nvim'
 -- require 'repl'
--- require 'ripple'
 
 require 'telescope-nvim'
 require 'dashboard'
