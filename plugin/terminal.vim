@@ -5,5 +5,5 @@ au TermClose * call feedkeys("\<cr>")
 
 " keymaps
 " in ther terminal map escape to changing from terminal mode (insert mode) to
-" normal terminal mode <C-\><C-n> then change window, hopefully back to where we were editing.
-tnoremap <Esc> <C-\><C-n><C-w>w
+" normal terminal mode <C-\><C-n> then change window to the left assuming that term is on the right
+tnoremap <Esc> <C-\><C-n><C-w>h

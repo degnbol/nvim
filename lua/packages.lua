@@ -25,14 +25,15 @@ require "paq-nvim" {
     "folke/twilight.nvim"; -- dim code that isn't currently being edited with :Twilight.
 
 	-- language
+	"ms-jpq/coq_nvim"; -- completion
 	"nvim-treesitter/nvim-treesitter"; -- language coloring and ensuring of installation
     "nvim-treesitter/nvim-treesitter-refactor"; -- refactor
     "nvim-treesitter/nvim-treesitter-textobjects"; -- selecting, moving functions etc.
     -- "romgrk/nvim-treesitter-context"; -- show the "context" at the top line, i.e. function name when in a function
 	"neovim/nvim-lspconfig"; -- lsp
 	"kabouzeid/nvim-lspinstall"; -- adds :LspInstall <language> for conveniently installing language support
-	"hrsh7th/nvim-compe";  -- adds autocompletion. It is an alternative to nvim-lua/completion-nvim which online discussions say is slower.
-    "ray-x/lsp_signature.nvim"; -- hover signatures for function arguments. TODO make it work
+	-- "hrsh7th/nvim-compe";  -- adds autocompletion. It is an alternative to nvim-lua/completion-nvim which online discussions say is slower.
+    -- "ray-x/lsp_signature.nvim"; -- hover signatures for function arguments.
 	"onsails/lspkind-nvim"; -- VS code like pictograms for completion
 	"terrortylor/nvim-comment"; -- Toggle commenting out code
 	-- "windwp/nvim-autopairs"; -- auto add second parenthesis etc.
@@ -45,7 +46,7 @@ require "paq-nvim" {
     "pappasam/nvim-repl"; -- REPL that has to be started
     "jeetsukumaran/vim-pythonsense"; -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
     "samirettali/shebang.nvim"; -- insert shebang on new file edit
-    -- 'metakirby5/codi.vim'; -- scratchpad coding, see output of all lines to the right https://github.com/metakirby5/codi.vim
+    -- "metakirby5/codi.vim"; -- scratchpad coding, see output of all lines to the right https://github.com/metakirby5/codi.vim
 
     "RishabhRD/popfix"; -- required by nvim-cheat
     "RishabhRD/nvim-cheat.sh"; -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers

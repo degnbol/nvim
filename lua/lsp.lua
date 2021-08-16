@@ -27,17 +27,19 @@ end
 
 require "lspinstall".setup()
 
-local lspconf = require("lspconfig")
+
+vim.schedule(function()
+local lsp = require"lspconfig"
 
 -- LSP options: https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md
-lspconf.r_language_server.setup{on_attach=on_attach}
+lsp.r_language_server.setup{on_attach=on_attach}
 -- lspconf.python.setup{on_attach=on_attach} -- the :LspInstall python LSP which is pyright by Microsoft
 -- lspconf.pyright.setup{on_attach=on_attach} -- the nodejs installation of pyright by Microsoft
 -- the community fork of the controversial pyls which seemed better than pyright out of the box. Install: pip install python-lsp-server
-lspconf.pylsp.setup{on_attach=on_attach}
+lsp.pylsp.setup(coq.lsp_ensure_capabilities{on_attach=on_attach})
 -- lspconf.jedi_language_server.setup{on_attach=on_attach} -- jedi wrapper. It is more minimal so it doesn't annoy with wrong errors
-lspconf.julials.setup{on_attach=on_attach}
-lspconf.lua.setup {
+lsp.julials.setup{on_attach=on_attach}
+lsp.lua.setup {
     on_attach=on_attach,
     settings = {
         Lua = {
@@ -57,6 +59,11 @@ lspconf.lua.setup {
     }
 }
 
+vim.cmd('COQnow --shut-up')
+vim.cmd('LspStart')
+
+end)
+
 
 -- replace the default lsp diagnostic letters with prettier symbols
 vim.fn.sign_define("LspDiagnosticsSignError", {text = "", numhl = "LspDiagnosticsDefaultError"})
@@ -74,7 +81,7 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     update_in_insert = false,
     virtual_text = {
       spacing = 4,
-      severity_limit = 'Warning',
+      severity_limit = 'Error',
     },
   }
 )

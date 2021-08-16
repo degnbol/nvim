@@ -3,7 +3,7 @@ local cmd = vim.cmd
 local opt = vim.opt
 local g = vim.g
 
-opt.syntax = "enable"
+-- opt.syntax = "enable"
 opt.expandtab = true
 cmd 'autocmd BufRead,BufNewFile *.tsv,*.tab,*.txt setlocal noexpandtab'  -- Only for text files insert real tab by default.
 opt.shiftwidth = 4

@@ -1,48 +1,72 @@
 -- packer as package manager as opposed to packages.lua
+-- Run PackerSync after making changes to this file to recompile the file in plugin
 return require("packer").startup(
     function()
         use "wbthomason/packer.nvim"
 
+        -- typing behaviour
+        use "folke/which-key.nvim" -- pop-up to help with keybindings that have been started
+        use "tpope/vim-repeat" -- change . to repeat last native command to last "full" command, which feels more natural.
+        use "tpope/vim-surround" -- press cs'" to change surrounding ' with ", ds' to delete surrounding ', ysiw) to surround word with ) and yss[ to surround line with [ ... ] (incl. spaces)
+        use "svermeulen/vim-subversive" -- add substitution functions to e.g. replace a word with clipboard content by writing siw
+        use "svermeulen/vim-cutlass" -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
+        use "svermeulen/vim-yoink" -- yank history that you can cycle with c-n and c-p
+        use "mg979/vim-visual-multi" -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
+
         -- color
-        use "norcalli/nvim-colorizer.lua" -- when a hex or other color is defined, highlight the text with its color 
+        use "norcalli/nvim-colorizer.lua" -- when a hex or other color is defined, highlight the text with its color
         use "siduck76/nvim-base16.lua"
         use "maxwells-daemons/base16-gigavolt-scheme"
-        
-        use "Pocco81/TrueZen.nvim" -- reduce visuals with TZ... commands to e.g. remove left and bottom element on the screen.
+
+        use "Pocco81/TrueZen.nvim" -- reduce visuals with :TZ... commands to e.g. remove left and bottom element on the screen.
+
+        use "ryanoasis/vim-devicons" -- adds icons to files
+
+        use "sakshamgupta05/vim-todo-highlight" -- highlight todos
+        use "p00f/nvim-ts-rainbow" -- tree sitter based rainbow color parenthesis to easily see the matching
+        use "folke/twilight.nvim" -- dim code that isn't currently being edited with :Twilight.
 
         -- language
-        use "nvim-treesitter/nvim-treesitter" -- language coloring and ensuring of installation
-        use "neovim/nvim-lspconfig" -- lsp
-        use "kabouzeid/nvim-lspinstall" -- adds :LspInstall <language> for conveniently installing language support
-        use "hrsh7th/nvim-compe"  -- adds autocompletion
+        use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate'} -- language coloring and ensuring of installation
+        use "nvim-treesitter/nvim-treesitter-refactor" -- refactor
+        use "nvim-treesitter/nvim-treesitter-textobjects" -- selecting, moving functions etc.
+        -- use "romgrk/nvim-treesitter-context" -- show the "context" at the top line, i.e. function name when in a function
+        use {"neovim/nvim-lspconfig", -- lsp
+            requires = {
+                {'ms-jpq/coq_nvim', branch='coq'}, -- completion
+                {'ms-jpq/coq.artifacts', branch='artifacts'}
+            }
+        }
+        use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig"} -- adds :LspInstall <language> for conveniently installing language support
+        -- use "hrsh7th/nvim-compe"  -- adds autocompletion. It is an alternative to nvim-lua/completion-nvim which online discussions say is slower.
+        -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
         use "onsails/lspkind-nvim" -- VS code like pictograms for completion
         use "terrortylor/nvim-comment" -- Toggle commenting out code
-        use "windwp/nvim-autopairs" -- auto add second parenthesis etc.
-        use "lukas-reineke/indent-blankline.nvim" -- show | on indented lines
-        use 'tpope/vim-fugitive' -- git
-        use "lewis6991/gitsigns.nvim"  -- git decoration
-        
-        use "folke/which-key.nvim"  -- pop-up to help with keybindings that have been started
+        -- use "windwp/nvim-autopairs" -- auto add second parenthesis etc.
+        -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines
+        use "tpope/vim-fugitive" -- git
+        use "lewis6991/gitsigns.nvim" -- git decoration to the left
+        use "JuliaEditorSupport/julia-vim" -- julia support, colors and unicode substitution.
+        -- use "urbainvaes/vim-ripple" -- REPL with some indent and tab problems
+        -- use {"hkupty/iron.nvim", config=function () require'iron-nvim' end} -- REPL that doesn't support bpython or radian
+        use {"pappasam/nvim-repl", config=function () require'pappasam_repl' end} -- REPL that has to be started and can only send whole lines
+        -- use {"HiPhish/repl.nvim", config=function () require'HiPhish_repl' end}
+        use "jeetsukumaran/vim-pythonsense" -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
+        use "samirettali/shebang.nvim" -- insert shebang on new file edit
+        -- use "metakirby5/codi.vim" -- scratchpad coding, see output of all lines to the right https://github.com/metakirby5/codi.vim
+        -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
+        use {"RishabhRD/nvim-cheat.sh", config=function() require'cheat' end, requires="RishabhRD/popfix"}
+
+        -- use "elzr/vim-json" -- json
 
         -- UI
-        use {'akinsho/nvim-bufferline.lua', requires = 'kyazdani42/nvim-web-devicons'} -- add a line at the top with all the files open in the buffer
+        use {"akinsho/nvim-bufferline.lua", requires="kyazdani42/nvim-web-devicons"} -- add a line at the top with all the files open in the buffer
         use "glepnir/galaxyline.nvim"
-        -- Fuzzy finder
-        use {
-            'nvim-telescope/telescope.nvim',
-            requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}}
-        }
+        use "nvim-lua/popup.nvim"
+        use "nvim-lua/plenary.nvim"
+        use "nvim-telescope/telescope.nvim" -- Fuzzy finder
         use "glepnir/dashboard-nvim" -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
-
-        -- file managing, picker etc
-        use "ryanoasis/vim-devicons" -- adds icons to files
-        use "kyazdani42/nvim-tree.lua" -- tree view window for file exploring with bug in .config files
-
-        use "tweekmonster/startuptime.vim"  -- use :StartupTime to measure what things are affecting startup time
-    end,
-    {
-        display = {
-            border = {"┌", "─", "┐", "│", "┘", "─", "└", "│"}
-        }
-    }
+        use "kyazdani42/nvim-tree.lua" -- tree file explorer to the left
+        use "ojroques/nvim-bufdel" -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
+    end
 )

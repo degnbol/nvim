@@ -2,7 +2,7 @@ vim.o.completeopt = "menuone,noselect"
 
 require "compe".setup {
     enabled = true,
-    autocomplete = false, -- only make suggestions when prompted
+    autocomplete = true, -- false = only make suggestions when prompted
     debug = false,
     min_length = 1,
     preselect = "enable",

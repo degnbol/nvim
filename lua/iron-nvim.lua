@@ -2,7 +2,7 @@ local iron = require("iron")
 
 iron.core.set_config {
   preferred = {
-    python = "ipython"
+    python = "ipython",
   },
   -- open to the right rather than the default left
   repl_open_cmd = "rightbelow vertical split",
@@ -14,7 +14,6 @@ function ReplOperator(type, ...)
 end
 
 -- keymaps
--- vim.api.nvim_set_keymap('n', '<CR>af', 'vaf<Plug>(iron-visual-send)`>j', {expr = false, noremap = false})
 vim.api.nvim_set_keymap('n', '<CR>', 'Operator("v:lua.ReplOperator")', {expr = true, noremap = false})
 vim.api.nvim_set_keymap('n', '<CR><CR>', '<Plug>(iron-send-line)j', {expr = false, noremap = false})
 vim.api.nvim_set_keymap('n', '<S-CR>', 'v$<Plug>(iron-visual-send)j', {expr = false, noremap = false})

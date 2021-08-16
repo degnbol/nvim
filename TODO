@@ -1,2 +1,5 @@
 Make julia LSP faster with https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#julials
+suggestions pop up wrongfully in lua with 'require'
+Background in suggestions is black some places and dark gray others.
+If you get LSP diagnostics to become good then you can add toggling with WhoIsSethDaniel/toggle-lsp-diagnostics.nvim
 

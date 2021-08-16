@@ -45,11 +45,11 @@ end
 fg("LineNr", grey)
 fg("NvimInternalError", red)
 fg("VertSplit", line)
-cmd "hi! EndOfBuffer ctermbg=bg ctermfg=bg guibg=bg guifg=bg"
+cmd "hi! EndOfBuffer ctermbg=black ctermfg=black guibg=black guifg=black"
 
 -- inactive statuslines as thin splitlines
-cmd "hi! StatusLineNC gui=underline guifg=bg"
-cmd "hi StatusLine guibg=bg"
+cmd "hi! StatusLineNC gui=underline guifg=black"
+cmd "hi StatusLine guibg=black"
 
 -- if cursorline is on, only highlight the number not the whole line
 cmd "hi clear CursorLine"
@@ -65,11 +65,11 @@ fg_bg("DiffDelete", red, "none")
 fg("NvimTreeFolderIcon", blue)
 fg("NvimTreeFolderName", blue)
 fg("NvimTreeIndentMarker", one_bg2)
-fg("NvimTreeVertSplit", "bg")
+fg("NvimTreeVertSplit", "black")
 -- bg("NvimTreeVertSplit", darker_black)
-fg("NvimTreeRootFolder", "bg")
-bg("NvimTreeNormal", "bg")
-fg_bg("NvimTreeStatuslineNc", "bg", "bg")
+fg("NvimTreeRootFolder", "black")
+bg("NvimTreeNormal", "black")
+fg_bg("NvimTreeStatuslineNc", "black", "black")
 
 -- telescope
 fg("TelescopeBorder", grey)
@@ -95,29 +95,29 @@ fg("LspDiagnosticsVirtualTextHint", purple)
 
 -- bufferline
 
-fg_bg("BufferLineFill", "bg", "bg")
-fg_bg("BufferLineBackground", "bg", "bg")
-fg_bg("BufferLineBufferVisible", "bg", "bg")
-fg_bg("BufferLineBufferSelected", "bg", "bg")
+fg_bg("BufferLineFill", "black", "black")
+fg_bg("BufferLineBackground", "black", "black")
+fg_bg("BufferLineBufferVisible", "black", "black")
+fg_bg("BufferLineBufferSelected", "black", "black")
 -- bold instead of italic bold selected file
 cmd "hi BufferLineBufferSelected gui=bold"
 
 -- tabs
-fg_bg("BufferLineTab", "bg", "bg")
-fg_bg("BufferLineTabSelected", "bg", nord_blue)
+fg_bg("BufferLineTab", "black", "black")
+fg_bg("BufferLineTabSelected", "black", nord_blue)
 
-fg_bg("BufferLineIndicator", "bg", "bg")
-fg_bg("BufferLineIndicatorSelected", "bg", "bg")
+fg_bg("BufferLineIndicator", "black", "black")
+fg_bg("BufferLineIndicatorSelected", "black", "black")
 
 -- -- separators
-fg_bg("BufferLineSeparator", "bg", "bg")
-fg_bg("BufferLineSeparatorVisible", "bg", "bg")
-fg_bg("BufferLineSeparatorSelected", "bg", "bg")
+fg_bg("BufferLineSeparator", "black", "black")
+fg_bg("BufferLineSeparatorVisible", "black", "black")
+fg_bg("BufferLineSeparatorSelected", "black", "black")
 
 -- dashboard
 
 fg("DashboardHeader", grey_fg)
 fg("DashboardCenter", grey_fg)
 fg("DashboardShortcut", grey_fg)
-fg("DashboardFooter", "bg")
+fg("DashboardFooter", "black")
 
