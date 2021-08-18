@@ -30,6 +30,7 @@ opt.signcolumn = "yes" -- show a column left of the numbering that can be used t
 -- http://stackoverflow.com/questions/2490227/how-does-vims-autoread-work#20418591
 -- when regaining focus, reload file if it was changed somewhere else
 cmd 'autocmd FocusGained,BufEnter * :silent! !'
+opt.completeopt = 'menuone,noinsert'
 opt.showmode = false
 opt.showcmd = false
 

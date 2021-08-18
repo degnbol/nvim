@@ -52,3 +52,12 @@ nnoremap <S-2-ScrollWheelDown> zh
 nnoremap <S-3-ScrollWheelDown> zh
 nnoremap <S-4-ScrollWheelDown> zh
 
+" completion popup keys
+ino <silent><expr> <Esc>   pumvisible() ? "\<C-e><Esc>" : "\<Esc>"
+ino <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
+ino <silent><expr> <BS>    pumvisible() ? "\<C-e><BS>"  : "\<BS>"
+ino <silent><expr> <CR>    pumvisible() ? "\<C-e><CR>" : "\<CR>"
+ino <silent><expr> <Tab>   pumvisible() ? "\<C-y>" : "\<Tab>"
+
+
+

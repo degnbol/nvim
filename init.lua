@@ -27,4 +27,3 @@ require 'tree'
 require 'highlights'
 require 'file-icons'
 
-

@@ -33,7 +33,7 @@ return require("packer").startup(
         -- use "romgrk/nvim-treesitter-context" -- show the "context" at the top line, i.e. function name when in a function
         use {"neovim/nvim-lspconfig", -- lsp
             requires = {
-                {'ms-jpq/coq_nvim', branch='coq'}, -- completion
+                {'ms-jpq/coq_nvim', branch='coq', config=function() require'coq-nvim' end}, -- completion
                 {'ms-jpq/coq.artifacts', branch='artifacts'}
             }
         }
