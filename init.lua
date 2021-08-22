@@ -8,7 +8,6 @@ require 'keymappings'
 require 'colors'
 require 'TrueZen'
 require 'whichkey'
-require 'top-bufferline'
 require 'statusline'
 
 -- Languages

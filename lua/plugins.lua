@@ -60,7 +60,7 @@ return require("packer").startup(
         -- use "elzr/vim-json" -- json
 
         -- UI
-        use {"akinsho/nvim-bufferline.lua", requires="kyazdani42/nvim-web-devicons"} -- add a line at the top with all the files open in the buffer
+        use {"akinsho/nvim-bufferline.lua", requires="kyazdani42/nvim-web-devicons", config=function() require'top-bufferline' end} -- add a line at the top with all the files open in the buffer
         use "glepnir/galaxyline.nvim"
         use "nvim-lua/popup.nvim"
         use "nvim-lua/plenary.nvim"
