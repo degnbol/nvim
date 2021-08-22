@@ -32,6 +32,7 @@ vim.schedule(function()
 local lsp = require"lspconfig"
 
 -- LSP options: https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md
+lsp.latex.setup{on_attach=on_attach}
 lsp.r_language_server.setup{on_attach=on_attach}
 -- lspconf.python.setup{on_attach=on_attach} -- the :LspInstall python LSP which is pyright by Microsoft
 -- lspconf.pyright.setup{on_attach=on_attach} -- the nodejs installation of pyright by Microsoft
