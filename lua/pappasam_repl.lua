@@ -18,10 +18,10 @@ function ReplOperator(type, ...)
     else
         vim.cmd('normal `["ryv`]')
     end
-    vim.cmd('wincmd l')
+    vim.cmd('wincmd w') -- goto next window
     vim.cmd('let @r .= "\r"')
     vim.cmd([[normal "rpG]])
-    vim.cmd('wincmd h')
+    vim.cmd('wincmd W') -- goto previous window
     vim.cmd("normal `]w") -- goto end of previous selection and then right
 end
 

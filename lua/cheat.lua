@@ -1,2 +1,2 @@
 -- default is float i.e. a floating window
-vim.g.cheat_default_window_layout = 'tab'
+-- vim.g.cheat_default_window_layout = 'tab'
