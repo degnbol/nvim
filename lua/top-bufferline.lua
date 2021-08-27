@@ -18,13 +18,7 @@ require "bufferline".setup {
     }
 }
 
-local opt = {silent = true}
-local map = vim.api.nvim_set_keymap
-vim.g.mapleader = " "
-
--- MAPPINGS
-map("n", "<leader>x", [[<Cmd>BufDel<CR>]], opt) -- close tab. :BufDel from https://github.com/ojroques/nvim-bufdel instead of built-in bwipeout.
 
 -- move between tabs
-map("n", "<TAB>", [[<Cmd>BufferLineCycleNext<CR>]], opt)
-map("n", "<S-TAB>", [[<Cmd>BufferLineCyclePrev<CR>]], opt)
+vim.api.nvim_set_keymap("n", "<TAB>", [[<Cmd>BufferLineCycleNext<CR>]], {silent=true})
+vim.api.nvim_set_keymap("n", "<S-TAB>", [[<Cmd>BufferLineCyclePrev<CR>]], {silent=true})

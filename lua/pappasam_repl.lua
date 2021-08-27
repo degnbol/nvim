@@ -5,7 +5,8 @@ local g = vim.g
 g.repl_filetype_commands = {
     python = 'bpython -q',
     r = 'radian',
-    lua = 'lua'
+    lua = 'lua',
+    julia = 'julia'
 }
 
 function ReplOperator(type, ...)

@@ -11,7 +11,8 @@ opt.smartindent = true
 opt.copyindent = true
 opt.smartindent = true -- round off indents to multiple of indent size (4)
 opt.tabstop = 4 -- how many spaces does a tab correspond to?
-opt.hidden = true
+-- Has to be set for bufferline to work by hiding an open buffer when switching to another
+opt.hidden = true 
 opt.ignorecase = true -- search ignoring case. use \c \C anywhere in search pattern to force case-sensitivity.
 opt.smartcase = true -- only match case-insensitively is query is all lowercase
 opt.scrolloff = 4 -- number of lines of context to always keep above and below the cursorline
