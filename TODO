@@ -1,6 +1,5 @@
 Make julia LSP faster with https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#julials
 If you get LSP diagnostics to become good then you can add toggling with WhoIsSethDaniel/toggle-lsp-diagnostics.nvim
-Cheat doesn't play well with pappasam repl
 If you want to be able to open nvim within nvim terminal it can be done without nesting: https://github.com/mhinz/neovim-remote see bottom of https://github.com/caenrique/nvim-toggle-terminal
 Consider https://github.com/jalvesaq/Nvim-R and https://github.com/jalvesaq/vimcmdline
 Consider https://github.com/seblj/nvim-tabline and https://github.com/alvarosevilla95/luatab.nvim . NvimTree can have keymaps customized to use tabs rather than buffers https://github.com/kyazdani42/nvim-tree.lua
