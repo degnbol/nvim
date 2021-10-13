@@ -3,3 +3,5 @@ If you get LSP diagnostics to become good then you can add toggling with WhoIsSe
 If you want to be able to open nvim within nvim terminal it can be done without nesting: https://github.com/mhinz/neovim-remote see bottom of https://github.com/caenrique/nvim-toggle-terminal
 Consider https://github.com/jalvesaq/Nvim-R and https://github.com/jalvesaq/vimcmdline
 Consider https://github.com/seblj/nvim-tabline and https://github.com/alvarosevilla95/luatab.nvim . NvimTree can have keymaps customized to use tabs rather than buffers https://github.com/kyazdani42/nvim-tree.lua
+backspace and delete button copies
+inspiration: https://www.reddit.com/r/neovim/comments/pmurow/why_i_prefer_neovim_over_vscode/
