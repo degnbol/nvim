@@ -3,7 +3,7 @@
 local g = vim.g
 
 g.repl_filetype_commands = {
-    python = 'bpython -q',
+    python = 'ipython',
     r = 'radian',
     lua = 'lua',
     julia = 'julia'

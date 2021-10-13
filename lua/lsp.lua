@@ -60,7 +60,7 @@ lsp.lua.setup {
     }
 }
 
-vim.cmd('COQnow --shut-up')
+-- vim.cmd('COQnow --shut-up')
 vim.cmd('LspStart')
 
 end)
