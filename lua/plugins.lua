@@ -30,16 +30,17 @@ return require("packer").startup(
         use {"nvim-treesitter/nvim-treesitter-refactor", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-refactor' end} -- refactor
         use {"nvim-treesitter/nvim-treesitter-textobjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textobjects' end} -- selecting, moving functions etc.
         -- use "romgrk/nvim-treesitter-context" -- show the "context" at the top line, i.e. function name when in a function
+        use {"neovim/nvim-lspconfig"} -- lsp
         -- use {"neovim/nvim-lspconfig", -- lsp
         --     requires = {
         --         {'ms-jpq/coq_nvim', branch='coq', config=function() require'coq-nvim' end}, -- completion
         --         {'ms-jpq/coq.artifacts', branch='artifacts'}
         --     }
         -- }
-        -- use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig", config=function() require "lspinstall".setup() end} -- adds :LspInstall <language> for conveniently installing language support
-        -- -- use "hrsh7th/nvim-compe"  -- adds autocompletion. It is an alternative to nvim-lua/completion-nvim which online discussions say is slower.
+        use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig", config=function() require "lspinstall".setup() end} -- adds :LspInstall <language> for conveniently installing language support
+        -- -- use "hrsh7th/nvim-cmp"  -- autocompletion
         -- -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
-        -- use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
+        use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
         use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- Toggle commenting out code
         -- use "windwp/nvim-autopairs" -- auto add second parenthesis etc.
         -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines
@@ -64,7 +65,7 @@ return require("packer").startup(
         use {"glepnir/galaxyline.nvim", config=function() require'statusline' end}
         use {"nvim-telescope/telescope.nvim", requires="nvim-lua/plenary.nvim", config=function() require'telescope-nvim' end} -- Fuzzy finder
         use {"glepnir/dashboard-nvim", config=function() require'dashboard' end} -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
-        use {"kyazdani42/nvim-tree.lua", requires='kyazdani42/nvim-web-devicons', config=function() require'tree' end} -- tree file explorer to the left
+        use {"kyazdani42/nvim-tree.lua", requires='kyazdani42/nvim-web-devicons', config=function() require'tree' end} -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
         use {"ojroques/nvim-bufdel", config=function() require'ojroques_bufdel' end} -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
         -- use {"moll/vim-bbye", config=function() require'bbye' end}
         -- use {"famiu/bufdelete.nvim", config=function() require'famiu_bufdelete' end}
