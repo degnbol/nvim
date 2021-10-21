@@ -15,9 +15,8 @@ require"nvim-treesitter.configs".setup {
     },
 }
 
-
+vim.wo.foldlevel = 99 -- so we don't fold from the start
+-- Fallback if treesitter folding doesn't work:
 -- vim.wo.foldmethod = 'indent'
--- vim.wo.foldlevel = 99 -- so we don't fold from the start
--- I would like to use treesitter folding but treesitter doesn't work if I write the two lines as instructed on their readme
--- vim.wo.foldmethod = 'expr'
--- vim.wo.foldexpr = 'nvim_treesitter#foldexpr()'
+vim.wo.foldmethod = 'expr'
+vim.wo.foldexpr = 'nvim_treesitter#foldexpr()'
