@@ -21,25 +21,25 @@ return require("packer").startup(
         use "ryanoasis/vim-devicons" -- adds icons to files
 
         use "sakshamgupta05/vim-todo-highlight" -- highlight todos
-        use "p00f/nvim-ts-rainbow" -- tree sitter based rainbow color parenthesis to easily see the matching
         -- use {"Pocco81/TrueZen.nvim", config=function() require'truezen-nvim' end} -- reduce visuals with :TZ... commands to e.g. remove left and bottom element on the screen.
         -- use {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end} -- dim code that isn't currently being edited with :Twilight.
+        use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
 
         -- language
-        use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate'} -- language coloring and ensuring of installation
-        use "nvim-treesitter/nvim-treesitter-refactor" -- refactor
-        use "nvim-treesitter/nvim-treesitter-textobjects" -- selecting, moving functions etc.
+        use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate', config=function() require'treesitter' end} -- language coloring and ensuring of installation
+        -- use {"nvim-treesitter/nvim-treesitter-refactor", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-refactor' end} -- refactor
+        -- use {"nvim-treesitter/nvim-treesitter-textobjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textobjects' end} -- selecting, moving functions etc.
         -- use "romgrk/nvim-treesitter-context" -- show the "context" at the top line, i.e. function name when in a function
-        use {"neovim/nvim-lspconfig", -- lsp
-            requires = {
-                {'ms-jpq/coq_nvim', branch='coq', config=function() require'coq-nvim' end}, -- completion
-                {'ms-jpq/coq.artifacts', branch='artifacts'}
-            }
-        }
-        use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig"} -- adds :LspInstall <language> for conveniently installing language support
-        -- use "hrsh7th/nvim-compe"  -- adds autocompletion. It is an alternative to nvim-lua/completion-nvim which online discussions say is slower.
-        -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
-        use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
+        -- use {"neovim/nvim-lspconfig", -- lsp
+        --     requires = {
+        --         {'ms-jpq/coq_nvim', branch='coq', config=function() require'coq-nvim' end}, -- completion
+        --         {'ms-jpq/coq.artifacts', branch='artifacts'}
+        --     }
+        -- }
+        -- use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig"} -- adds :LspInstall <language> for conveniently installing language support
+        -- -- use "hrsh7th/nvim-compe"  -- adds autocompletion. It is an alternative to nvim-lua/completion-nvim which online discussions say is slower.
+        -- -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
+        -- use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
         use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- Toggle commenting out code
         -- use "windwp/nvim-autopairs" -- auto add second parenthesis etc.
         -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines

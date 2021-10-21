@@ -1,24 +1,4 @@
 require"nvim-treesitter.configs".setup {
-    ensure_installed = {
-        "bash",
-        "lua",
-        "json",
-        "python",
-        "julia",
-        "latex",
-        "java",
-        "r"
-    },
-    highlight = {
-        enable = true,
-        use_languagetree = true
-    },
-    -- for the p00f/nvim-ts-rainbow plugin
-    rainbow = {
-        enable = true,
-        extended_mode = true, -- Highlight also non-parentheses delimiters, boolean or table: lang -> boolean
-        max_file_lines = 1000, -- Do not enable for files with more than 1000 lines, int
-    },
     -- for https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     textobjects = {
         select = {
@@ -72,32 +52,4 @@ require"nvim-treesitter.configs".setup {
             }
         },
     },
-    -- for https://github.com/nvim-treesitter/nvim-treesitter-refactor
-    refactor = {
-        highlight_definitions = { enable = true },
-        highlight_current_scope = { enable = true },
-        smart_rename = {
-            enable = true,
-            keymaps = {
-                smart_rename = "grr",
-            },
-        },
-        navigation = {
-            enable = true,
-            keymaps = {
-                goto_definition = "gnd",
-                list_definitions = "gnD",
-                list_definitions_toc = "gO",
-                goto_next_usage = "<a-*>",
-                goto_previous_usage = "<a-#>",
-            },
-        },
-    },
 }
-
-
-vim.wo.foldmethod = 'indent'
-vim.wo.foldlevel = 99 -- so we don't fold from the start
--- I would like to use treesitter folding but treesitter doesn't work if I write the two lines as instructed on their readme
--- vim.wo.foldmethod = 'expr'
--- vim.wo.foldexpr = 'nvim_treesitter#foldexpr()'

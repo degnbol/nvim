@@ -7,9 +7,7 @@ require'plugins'
 require'keymappings'
 require'colors'
 
--- Languages
-require'lsp'
-require'treesitter-nvim'
+-- require'lsp'
 
 require'highlights'
 require'file-icons'
