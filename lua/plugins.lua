@@ -36,7 +36,7 @@ return require("packer").startup(
         --         {'ms-jpq/coq.artifacts', branch='artifacts'}
         --     }
         -- }
-        -- use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig"} -- adds :LspInstall <language> for conveniently installing language support
+        -- use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig", config=function() require "lspinstall".setup() end} -- adds :LspInstall <language> for conveniently installing language support
         -- -- use "hrsh7th/nvim-compe"  -- adds autocompletion. It is an alternative to nvim-lua/completion-nvim which online discussions say is slower.
         -- -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
         -- use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion

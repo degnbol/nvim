@@ -6,7 +6,7 @@ local function on_attach(client, bufnr)
     buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
 
     -- Mappings
-    local opts = {noremap = true, silent = true}
+    local opts = {noremap=true, silent=true}
     buf_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts)
     buf_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)
     buf_set_keymap("n", "<space>p", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
@@ -23,10 +23,6 @@ local function on_attach(client, bufnr)
     buf_set_keymap("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts)
     -- buf_set_keymap("n", "<space>q", "<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>", opts) -- binding already in use for closing term
 end
-
-
-require "lspinstall".setup()
-
 
 vim.schedule(function()
 local lsp = require"lspconfig"
