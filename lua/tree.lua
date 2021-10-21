@@ -1,22 +1,14 @@
 local g = vim.g
 
-vim.o.termguicolors = true
-
-g.nvim_tree_side = "left"
-g.nvim_tree_width = 25
-g.nvim_tree_ignore = {".git", ".cache"}
-g.nvim_tree_auto_open = 0
-g.nvim_tree_auto_close = 1
+g.nvim_tree_ignore = {".git", ".cache", "Icon\r"}
 g.nvim_tree_quit_on_open = 1
-g.nvim_tree_follow = 1
 g.nvim_tree_indent_markers = 1
 g.nvim_tree_hide_dotfiles = 1
 g.nvim_tree_git_hl = 1
 g.nvim_tree_highlight_opened_files = 1
-g.nvim_tree_tab_open = 1
 g.nvim_tree_allow_resize = 0
 
-g.nvim_tree_show_icons = {git = 1, folders = 1, files = 1}
+g.nvim_tree_show_icons = {git=1, folders=1, files=1}
 
 g.nvim_tree_icons = {
     default = " ",
@@ -49,17 +41,22 @@ g.nvim_tree_window_picker_exclude = {buftype={'terminal'}}
 vim.api.nvim_set_keymap("n", "<leader>t", ":NvimTreeToggle<CR>", {noremap = true, silent = true})
 
 
-function NvimTreeOSOpen()
-  local lib = require "nvim-tree.lib"
-  local node = lib.get_node_at_cursor()
-  if node then
-    vim.fn.jobstart("open '" .. node.absolute_path .. "' &", {detach = true})
-  end
-end
+local tree_cb = require"nvim-tree.config".nvim_tree_callback
 
-
-local tree_cb = require "nvim-tree.config".nvim_tree_callback
- 
-g.nvim_tree_bindings = {
-    { key = "o", cb = ":lua require'tree'NvimTreeOSOpen()<CR>" },
+require'nvim-tree'.setup {
+    -- closes neovim automatically when the tree is the last **WINDOW** in the view
+    auto_close = true,
+    -- opens the tree when changing/opening a new tab if the tree wasn't previously opened
+    open_on_tab = true,
+    -- update the focused file on `BufEnter`, un-collapses the folders recursively until it finds the file
+    update_focused_file = {
+        -- enables the feature
+        enable = true,
+    },
+    view = { mappings = { list = {
+        { key = {"<CR>", "<2-LeftMouse>"}, cb = tree_cb("edit") },  
+        { key = "o", cb = tree_cb("system_open") },
+    }}}
 }
+
+

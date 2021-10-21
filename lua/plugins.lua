@@ -18,7 +18,7 @@ return require("packer").startup(
         use "siduck76/nvim-base16.lua"
         use "maxwells-daemons/base16-gigavolt-scheme"
 
-        use "Pocco81/TrueZen.nvim" -- reduce visuals with :TZ... commands to e.g. remove left and bottom element on the screen.
+        use {"Pocco81/TrueZen.nvim", config=function() require'truezen-nvim' end} -- reduce visuals with :TZ... commands to e.g. remove left and bottom element on the screen.
 
         use "ryanoasis/vim-devicons" -- adds icons to files
 
@@ -67,7 +67,7 @@ return require("packer").startup(
         use "nvim-lua/plenary.nvim"
         use "nvim-telescope/telescope.nvim" -- Fuzzy finder
         use "glepnir/dashboard-nvim" -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
-        use "kyazdani42/nvim-tree.lua" -- tree file explorer to the left
+        use {"kyazdani42/nvim-tree.lua", requires = 'kyazdani42/nvim-web-devicons', config = function() require'tree' end} -- tree file explorer to the left
         use {"ojroques/nvim-bufdel", config=function() require'ojroques_bufdel' end} -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
         -- use {"moll/vim-bbye", config=function() require'bbye' end}
         -- use {"famiu/bufdelete.nvim", config=function() require'famiu_bufdelete' end}

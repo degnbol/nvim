@@ -6,7 +6,6 @@ require 'settings'
 require 'plugins'
 require 'keymappings'
 require 'colors'
-require 'TrueZen'
 require 'whichkey'
 require 'statusline'
 
@@ -21,7 +20,6 @@ require 'shebang-nvim'
 
 require 'telescope-nvim'
 require 'dashboard'
-require 'tree'
 
 require 'highlights'
 require 'file-icons'
