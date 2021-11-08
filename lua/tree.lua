@@ -1,9 +1,7 @@
 local g = vim.g
 
-g.nvim_tree_ignore = {".git", ".cache", "Icon\r"}
 g.nvim_tree_quit_on_open = 1
 g.nvim_tree_indent_markers = 1
-g.nvim_tree_hide_dotfiles = 1
 g.nvim_tree_git_hl = 1
 g.nvim_tree_highlight_opened_files = 1
 g.nvim_tree_allow_resize = 0
@@ -56,7 +54,11 @@ require'nvim-tree'.setup {
     view = { mappings = { list = {
         { key = {"<CR>", "<2-LeftMouse>"}, cb = tree_cb("edit") },  
         { key = "o", cb = tree_cb("system_open") },
-    }}}
+    }}},
+    filters = {
+        dotfiles = true,
+        custom = {".git", ".cache", "Icon\r", ".DS_Store"}
+    }
 }
 
 
