@@ -12,8 +12,11 @@ nmap S <plug>(SubversiveSubstituteToEndOfLine)
 
 
 " yank, cut, delete behavior
-" back space and delete buttons delete should delete also in normal mode
-nnoremap <BS> X
+" a logical choice that was supposed to be default? https://github.com/neovim/neovim/issues/416
+map Y y$
+" back space and delete buttons delete should delete also in normal mode.
+" Delete to black hole register.
+nnoremap <BS> "_X
 " cutlass map so x is cut
 nnoremap x d
 xnoremap x d
