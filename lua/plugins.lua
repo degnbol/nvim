@@ -70,5 +70,6 @@ return require("packer").startup(
         use {"ojroques/nvim-bufdel", config=function() require'ojroques_bufdel' end} -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
         -- use {"moll/vim-bbye", config=function() require'bbye' end}
         -- use {"famiu/bufdelete.nvim", config=function() require'famiu_bufdelete' end}
+        use "farmergreg/vim-lastplace" -- open file in last edited location
     end
 )
