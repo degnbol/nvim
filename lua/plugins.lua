@@ -8,6 +8,7 @@ return require("packer").startup(
         use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
         use "tpope/vim-repeat" -- change . to repeat last native command to last "full" command, which feels more natural.
         use "tpope/vim-surround" -- press cs'" to change surrounding ' with ", ds' to delete surrounding ', ysiw) to surround word with ) and yss[ to surround line with [ ... ] (incl. spaces)
+        -- use "tpope/vim-sensible" -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
         use "svermeulen/vim-subversive" -- add substitution functions to e.g. replace a word with clipboard content by writing siw
         use "svermeulen/vim-cutlass" -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
         use "svermeulen/vim-yoink" -- yank history that you can cycle with c-n and c-p
@@ -37,7 +38,7 @@ return require("packer").startup(
         --         {'ms-jpq/coq.artifacts', branch='artifacts'}
         --     }
         -- }
-        use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig", config=function() require "lspinstall".setup() end} -- adds :LspInstall <language> for conveniently installing language support
+        -- use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig", config=function() require "lspinstall".setup() end} -- adds :LspInstall <language> for conveniently installing language support
         -- -- use "hrsh7th/nvim-cmp"  -- autocompletion
         -- -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
         use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
