@@ -17,3 +17,8 @@ yarn global add diagnostic-languageserver
 # index files for LSP, see https://github.com/ms-jpq/coq_nvim
 brew install universal-ctags
 pipx install virtualenv
+
+
+# I had this error message from which-key: https://github.com/LunarVim/LunarVim/issues/2139
+# I fixed it by modifying ~/.local/share/.../start/.../lua/which-key/keys.lua like so: https://github.com/folke/which-key.nvim/pull/231/files
+# It is an error that is not patched yet in which-key resulting from breaking changes in nvim 0.7 , so it should eventually be fixed.
