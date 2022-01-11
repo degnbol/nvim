@@ -49,8 +49,8 @@ return require("packer").startup(
         use {"lewis6991/gitsigns.nvim", requires='nvim-lua/plenary.nvim', config=function() require'gitsigns-nvim' end} -- git decoration to the left
         use "JuliaEditorSupport/julia-vim" -- julia support, colors and unicode substitution.
         -- use "urbainvaes/vim-ripple" -- REPL with some indent and tab problems
-        -- use {"hkupty/iron.nvim", config=function () require'iron-nvim' end} -- REPL that doesn't support bpython or radian
-        use {"pappasam/nvim-repl", config=function() require'pappasam_repl' end} -- REPL that has to be started and can only send whole lines
+        use {"hkupty/iron.nvim", config=function () require'iron-nvim' end} -- REPL that doesn't support bpython or radian
+        -- use {"pappasam/nvim-repl", config=function() require'pappasam_repl' end} -- REPL that has to be started and can only send whole lines
         -- use {"kassio/neoterm", config=function() require'kassio_neoterm' end}
         -- use {"HiPhish/repl.nvim", config=function () require'HiPhish_repl' end}
         use "jeetsukumaran/vim-pythonsense" -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
