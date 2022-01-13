@@ -4,7 +4,7 @@ return require("packer").startup(
     function()
         use "wbthomason/packer.nvim"
 
-        -- typing behaviour
+        -- core behaviour
         use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
         use "tpope/vim-repeat" -- change . to repeat last native command to last "full" command, which feels more natural.
         use "tpope/vim-surround" -- press cs'" to change surrounding ' with ", ds' to delete surrounding ', ysiw) to surround word with ) and yss[ to surround line with [ ... ] (incl. spaces)
@@ -13,6 +13,10 @@ return require("packer").startup(
         use "svermeulen/vim-cutlass" -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
         use "svermeulen/vim-yoink" -- yank history that you can cycle with c-n and c-p
         -- use "mg979/vim-visual-multi" -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
+        -- use "lukelbd/vim-scrollwrapped" -- scroll doesn't jump when presented with wrapped lines. Adds :WrapToggle that toggles its effect.
+        -- use {"moll/vim-bbye", config=function() require'bbye' end}
+        -- use {"famiu/bufdelete.nvim", config=function() require'famiu_bufdelete' end}
+        use "farmergreg/vim-lastplace" -- open file in last edited location
 
         -- color
         use "norcalli/nvim-colorizer.lua" -- when a hex or other color is defined, highlight the text with its color
@@ -68,8 +72,5 @@ return require("packer").startup(
         use {"glepnir/dashboard-nvim", config=function() require'dashboard' end} -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
         use {"kyazdani42/nvim-tree.lua", requires='kyazdani42/nvim-web-devicons', config=function() require'tree' end} -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
         use {"ojroques/nvim-bufdel", config=function() require'ojroques_bufdel' end} -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
-        -- use {"moll/vim-bbye", config=function() require'bbye' end}
-        -- use {"famiu/bufdelete.nvim", config=function() require'famiu_bufdelete' end}
-        use "farmergreg/vim-lastplace" -- open file in last edited location
     end
 )
