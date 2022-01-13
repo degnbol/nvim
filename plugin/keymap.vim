@@ -56,11 +56,13 @@ nnoremap <S-3-ScrollWheelDown> zh
 nnoremap <S-4-ScrollWheelDown> zh
 
 " completion popup keys
-ino <silent><expr> <Esc>   pumvisible() ? "\<C-e><Esc>" : "\<Esc>"
-ino <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
-ino <silent><expr> <BS>    pumvisible() ? "\<C-e><BS>"  : "\<BS>"
-ino <silent><expr> <CR>    pumvisible() ? "\<C-e><CR>" : "\<CR>"
-ino <silent><expr> <Tab>   pumvisible() ? "\<C-y>" : "\<Tab>"
+inoremap <silent><expr> <Esc>   pumvisible() ? "\<C-e><Esc>" : "\<Esc>"
+inoremap <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
+inoremap <silent><expr> <BS>    pumvisible() ? "\<C-e><BS>"  : "\<BS>"
+inoremap <silent><expr> <CR>    pumvisible() ? "\<C-e><CR>" : "\<CR>"
+inoremap <silent><expr> <Tab>   pumvisible() ? "\<C-y>" : "\<Tab>"
 
-
+" move up/down on display lines instead of logical lines with arrows in insert mode
+inoremap <Up> <c-\><c-o>gk
+inoremap <Down> <c-\><c-o>gj
 

@@ -13,7 +13,7 @@ return require("packer").startup(
         use "svermeulen/vim-cutlass" -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
         use "svermeulen/vim-yoink" -- yank history that you can cycle with c-n and c-p
         -- use "mg979/vim-visual-multi" -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
-        -- use "lukelbd/vim-scrollwrapped" -- scroll doesn't jump when presented with wrapped lines. Adds :WrapToggle that toggles its effect.
+        use {"lukelbd/vim-scrollwrapped", config=function() require'scrollwrapped' end} -- sets nowrap for files not listed in its config
         -- use {"moll/vim-bbye", config=function() require'bbye' end}
         -- use {"famiu/bufdelete.nvim", config=function() require'famiu_bufdelete' end}
         use "farmergreg/vim-lastplace" -- open file in last edited location

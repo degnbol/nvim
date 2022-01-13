@@ -3,9 +3,7 @@ local cmd = vim.cmd
 local opt = vim.opt
 local g = vim.g
 
-opt.syntax = "disable"
 opt.expandtab = true
-cmd 'autocmd BufRead,BufNewFile *.tsv,*.tab,*.txt setlocal noexpandtab'  -- Only for text files insert real tab by default.
 opt.shiftwidth = 4
 opt.smartindent = true
 opt.copyindent = true
@@ -22,7 +20,8 @@ opt.wildmode = 'longest:full,full' -- settings for how to show completion on com
 -- opt.number = true -- show line numbering
 -- opt.relativenumber true -- should the line numbering be shown relative to current line?
 opt.clipboard = 'unnamed,unnamedplus' -- share clipboard between copy paste and yank
-opt.wrap = false -- don't wrap lines
+opt.wrap = false -- something run before init.lua is changing he default so we change it back here.
+opt.linebreak = true -- if I sometimes were to wrap lines, do it at whitespaces and other characters indicated in breakat
 opt.numberwidth = 2 -- reduce default numbering from starting as 3 characters wide to 2
 opt.mouse = "a" -- activate the mouse, i.e. click to move cursor, drag to visual select and scroll to scroll window instead of cursor
 opt.termguicolors = true
@@ -44,3 +43,5 @@ g.yoinkSyncNumberedRegisters = 1
 -- move cursor to end instead of start of multi-line paste
 g.yoinkMoveCursorToEndOfPaste = 1
 
+-- go between lines with left/right arrow keys only in normal mode
+opt.whichwrap = '<,>'
