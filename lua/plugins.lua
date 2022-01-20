@@ -43,7 +43,7 @@ return require("packer").startup(
         --     }
         -- }
         -- use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig", config=function() require "lspinstall".setup() end} -- adds :LspInstall <language> for conveniently installing language support
-        -- -- use "hrsh7th/nvim-cmp"  -- autocompletion
+        use {"hrsh7th/nvim-cmp", requires={"hrsh7th/cmp-path", "hrsh7th/cmp-nvim-lsp"}, config=function() require'nvim-cmp' end}  -- autocompletion
         -- -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
         use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
         use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- Toggle commenting out code
