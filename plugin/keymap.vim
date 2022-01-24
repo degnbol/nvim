@@ -36,24 +36,42 @@ nmap y <plug>(YoinkYankPreserveCursorPosition)
 xmap y <plug>(YoinkYankPreserveCursorPosition)
 
 " one scroll signal is one line change instead of 3
-nmap <ScrollWheelUp>   <c-y>
-nmap <2-ScrollWheelUp> <c-y>
-nmap <3-ScrollWheelUp> <c-y>
-nmap <4-ScrollWheelUp> <c-y>
-nmap <ScrollWheelDown>   <c-e>
-nmap <2-ScrollWheelDown> <c-e>
-nmap <3-ScrollWheelDown> <c-e>
-nmap <4-ScrollWheelDown> <c-e>
+map <ScrollWheelUp>   <c-y>
+map <2-ScrollWheelUp> <c-y>
+map <3-ScrollWheelUp> <c-y>
+map <4-ScrollWheelUp> <c-y>
+map <ScrollWheelDown>   <c-e>
+map <2-ScrollWheelDown> <c-e>
+map <3-ScrollWheelDown> <c-e>
+map <4-ScrollWheelDown> <c-e>
+" insert mode requires going to normal mode temporarily
+imap <ScrollWheelUp>   <c-\><c-o><c-y>
+imap <2-ScrollWheelUp> <c-\><c-o><c-y>
+imap <3-ScrollWheelUp> <c-\><c-o><c-y>
+imap <4-ScrollWheelUp> <c-\><c-o><c-y>
+imap <ScrollWheelDown>   <c-\><c-o><c-e>
+imap <2-ScrollWheelDown> <c-\><c-o><c-e>
+imap <3-ScrollWheelDown> <c-\><c-o><c-e>
+imap <4-ScrollWheelDown> <c-\><c-o><c-e>
 
 " shift scroll scrolls horizontally
-nnoremap <S-ScrollWheelUp>   zl
-nnoremap <S-2-ScrollWheelUp> zl
-nnoremap <S-3-ScrollWheelUp> zl
-nnoremap <S-4-ScrollWheelUp> zl
-nnoremap <S-ScrollWheelDown>   zh
-nnoremap <S-2-ScrollWheelDown> zh
-nnoremap <S-3-ScrollWheelDown> zh
-nnoremap <S-4-ScrollWheelDown> zh
+noremap <S-ScrollWheelUp>   zl
+noremap <S-2-ScrollWheelUp> zl
+noremap <S-3-ScrollWheelUp> zl
+noremap <S-4-ScrollWheelUp> zl
+noremap <S-ScrollWheelDown>   zh
+noremap <S-2-ScrollWheelDown> zh
+noremap <S-3-ScrollWheelDown> zh
+noremap <S-4-ScrollWheelDown> zh
+" insert mode requires going to normal mode temporarily
+inoremap <S-ScrollWheelUp>   <c-\><c-o>zl
+inoremap <S-2-ScrollWheelUp> <c-\><c-o>zl
+inoremap <S-3-ScrollWheelUp> <c-\><c-o>zl
+inoremap <S-4-ScrollWheelUp> <c-\><c-o>zl
+inoremap <S-ScrollWheelDown>   <c-\><c-o>zh
+inoremap <S-2-ScrollWheelDown> <c-\><c-o>zh
+inoremap <S-3-ScrollWheelDown> <c-\><c-o>zh
+inoremap <S-4-ScrollWheelDown> <c-\><c-o>zh
 
 " completion popup keys
 inoremap <silent><expr> <Esc>   pumvisible() ? "\<C-e><Esc>" : "\<Esc>"
