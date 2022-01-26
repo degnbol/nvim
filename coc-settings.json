@@ -1,7 +1,10 @@
 {
   "languageserver": {
     "julia": {
-      "lint.missingrefs": false,
+      "lint": {
+          "run": false,
+          "missingrefs": false,
+      },
       "filetypes": ["jl"]
     }
   }

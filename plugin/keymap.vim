@@ -73,12 +73,14 @@ inoremap <S-2-ScrollWheelDown> <c-\><c-o>zh
 inoremap <S-3-ScrollWheelDown> <c-\><c-o>zh
 inoremap <S-4-ScrollWheelDown> <c-\><c-o>zh
 
-" completion popup keys
+" completion popup keys. <C-e> == reject and close pum. <C-y> == accept.
 inoremap <silent><expr> <Esc>   pumvisible() ? "\<C-e><Esc>" : "\<Esc>"
 inoremap <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
-inoremap <silent><expr> <BS>    pumvisible() ? "\<C-e><BS>"  : "\<BS>"
-inoremap <silent><expr> <CR>    pumvisible() ? "\<C-e><CR>" : "\<CR>"
-inoremap <silent><expr> <TAB>   pumvisible() ? "\<C-y>" : "\<Tab>"
+inoremap <silent><expr> <BS>    pumvisible() ? "\<C-y><BS>"  : "\<BS>"
+" Enter makes newline unless pum is visible AND an item has been selected
+" https://vi.stackexchange.com/questions/15092/auto-complete-popup-menu-make-enter-trigger-newline-if-no-item-was-selected
+inoremap <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "<C-y><CR>" : "<C-y>") : "<CR>"
+inoremap <silent><expr> <TAB>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <silent><expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 " move up/down on display lines instead of logical lines with arrows in insert mode
@@ -87,20 +89,10 @@ inoremap <Down> <c-\><c-o>gj
 
 " ## coc setup ##
 
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-" NOTE: not recognizing check_backspace for some reason but we can just use
-" ctrl+space to manually show pum since it appears while typing anyways.
-" function! s:check_backspace() abort
-"   let col = col('.') - 1
-"   return !col || getline('.')[col - 1]  =~# '\s'
-" endfunction
-" inoremap <silent><expr> <TAB>
-"       \ pumvisible() ? "\<C-n>" :
-"       \ <SID>check_backspace() ? "\<TAB>" :
-"       \ coc#refresh()
-
-
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
+
+" default = 4000 [ms]
+set updatetime=1000
+
+
