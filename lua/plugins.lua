@@ -58,6 +58,7 @@ return require("packer").startup(
         -- use {"pappasam/nvim-repl", config=function() require'pappasam_repl' end} -- REPL that has to be started and can only send whole lines
         -- use {"kassio/neoterm", config=function() require'kassio_neoterm' end}
         -- use {"HiPhish/repl.nvim", config=function () require'HiPhish_repl' end}
+        use {"jpalardy/vim-slime"} -- send code to REPL that can even be in another window. TODO: setup to send code to separate kitty window if you can move quickly between them.
         use "jeetsukumaran/vim-pythonsense" -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
         use {"samirettali/shebang.nvim", config=function() require'shebang-nvim' end} -- insert shebang on new file edit
         -- use "metakirby5/codi.vim" -- scratchpad coding, see output of all lines to the right https://github.com/metakirby5/codi.vim
