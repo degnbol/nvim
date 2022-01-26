@@ -18,7 +18,11 @@ yarn global add diagnostic-languageserver
 brew install universal-ctags
 pipx install virtualenv
 
-
 # I had this error message from which-key: https://github.com/LunarVim/LunarVim/issues/2139
 # I fixed it by modifying ~/.local/share/.../start/.../lua/which-key/keys.lua like so: https://github.com/folke/which-key.nvim/pull/231/files
 # It is an error that is not patched yet in which-key resulting from breaking changes in nvim 0.7 , so it should eventually be fixed.
+
+# coc.nvim requires node.js: https://github.com/neoclide/coc.nvim
+curl -sL install-node.vercel.app/lts | bash
+# when coc is installed then you can get julia support with
+:CocInstall coc-julia
