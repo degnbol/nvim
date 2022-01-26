@@ -12,3 +12,6 @@ Iron shows an error first time it is opened if opened with <CR>motion but otherw
 The indention issue happens in .tex files as well when I write \usepackage{ it indents the line twice. Might be a tree sitter issue.
 Enable completion at least for filenames.
 Enter in commandline mode or the Ex mode is annoying. Anyway to make sure the enter to run in repl is only for normal mode while editing a file?
+tile window setup like: https://www.youtube.com/watch?v=GazrDjcdeG4
+Also inspiration from sending to repl in separate kitty window.
+
