@@ -4,7 +4,7 @@ require"nvim-treesitter.configs".setup {
         "lua",
         "json",
         "python",
-        "julia",
+        -- "julia", # works poorly. indents are inserted when I write tmp = []
         "latex",
         "java",
         "r"
