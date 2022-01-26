@@ -24,5 +24,5 @@ pipx install virtualenv
 
 # coc.nvim requires node.js: https://github.com/neoclide/coc.nvim
 curl -sL install-node.vercel.app/lts | bash
-# when coc is installed then you can get julia support with
+# when coc is installed then it should automatically install julia support due to the coc-config.json but otherwise run
 :CocInstall coc-julia

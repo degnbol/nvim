@@ -1,0 +1,8 @@
+{
+  "languageserver": {
+    "julia": {
+      "lint.missingrefs": false,
+      "filetypes": ["jl"]
+    }
+  }
+}
