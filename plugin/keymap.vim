@@ -74,7 +74,7 @@ inoremap <S-3-ScrollWheelDown> <c-\><c-o>zh
 inoremap <S-4-ScrollWheelDown> <c-\><c-o>zh
 
 " completion popup keys. <C-e> == reject and close pum. <C-y> == accept.
-inoremap <silent><expr> <Esc>   pumvisible() ? "\<C-e><Esc>" : "\<Esc>"
+inoremap <silent><expr> <Esc>   pumvisible() ? "\<C-y><Esc>" : "\<Esc>"
 inoremap <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
 inoremap <silent><expr> <BS>    pumvisible() ? "\<C-y><BS>"  : "\<BS>"
 " Enter makes newline unless pum is visible AND an item has been selected
