@@ -52,7 +52,7 @@ return require("packer").startup(
         -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines
         use "tpope/vim-fugitive" -- git
         use {"lewis6991/gitsigns.nvim", requires='nvim-lua/plenary.nvim', config=function() require'gitsigns-nvim' end} -- git decoration to the left
-        use "JuliaEditorSupport/julia-vim" -- julia support, colors and unicode substitution.
+        use {"JuliaEditorSupport/julia-vim", config=function() require'julia' end} -- julia support, colors and unicode substitution.
         -- use "urbainvaes/vim-ripple" -- REPL with some indent and tab problems
         use {"hkupty/iron.nvim", config=function () require'iron-nvim' end} -- REPL that doesn't support bpython or radian
         -- use {"pappasam/nvim-repl", config=function() require'pappasam_repl' end} -- REPL that has to be started and can only send whole lines
