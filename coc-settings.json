@@ -1,11 +1,15 @@
 {
+  "diagnostic.level": "warning",
+  "diagnostic.signLevel": "warning",
+  "diagnostic.messageLevel": "error",
   "languageserver": {
     "julia": {
+      "command": "julia",
       "lint": {
           "run": false,
-          "missingrefs": false,
+          "missingrefs": false
       },
-      "filetypes": ["jl"]
+      "filetypes": ["julia"]
     }
   }
 }
