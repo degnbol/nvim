@@ -11,9 +11,9 @@ require "bufferline".setup {
         max_name_length = 25,
         max_prefix_length = 20,
         tab_size = 25,
-        show_tab_indicators = true,
+        show_tab_indicators = false, -- lsp diagnostics etc.
         enforce_regular_tabs = false, -- enforce same size tabs
-        view = "multiwindow",
+        always_show_bufferline = false, -- hide if only one file is open
         show_buffer_close_icons = false,
         show_close_icon = false,
     }
