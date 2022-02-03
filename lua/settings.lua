@@ -45,3 +45,9 @@ g.yoinkMoveCursorToEndOfPaste = 1
 
 -- go between lines with left/right arrow keys only in normal mode
 opt.whichwrap = '<,>'
+
+-- hide the statusline that shows current file being edited
+opt.laststatus = 0
+-- hide the location in file
+opt.ruler = false
+
