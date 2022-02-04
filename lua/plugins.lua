@@ -46,7 +46,7 @@ return require("packer").startup(
         -- use {"hrsh7th/nvim-cmp", requires={"hrsh7th/cmp-path", "hrsh7th/cmp-nvim-lsp"}, config=function() require'nvim-cmp' end}  -- autocompletion
         use {"neoclide/coc.nvim", branch="release"}
         -- -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
-        use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
+        -- use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
         use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- Toggle commenting out code
         -- use "windwp/nvim-autopairs" -- auto add second parenthesis etc.
         -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines

@@ -10,3 +10,5 @@ local opt = {noremap = true, silent = true}
 utils.map("n", "<leader>/", ":CommentToggle<CR>", opt)
 utils.map("v", "<leader>/", ":CommentToggle<CR>", opt)
 
+-- kitty
+utils.map("n", "<leader>k", ":! kitty @ launch --cwd=current --keep-focus<CR>", {noremap = true, silent = false})
