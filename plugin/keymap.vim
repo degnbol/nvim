@@ -1,9 +1,10 @@
-
+" git on commandline
 cnoreabbrev Gs Git status -uno
 cnoreabbrev Gp Git push
 cnoreabbrev Gl Git pull
 cnoreabbrev Ga Git add %
 cnoreabbrev Gc Git commit -m
+
 
 " substitute motion with clipboard content with https://github.com/svermeulen/vim-subversive
 nmap s <plug>(SubversiveSubstitute)
@@ -35,6 +36,11 @@ nmap <c-=> <plug>(YoinkPostPasteToggleFormat)
 nmap y <plug>(YoinkYankPreserveCursorPosition)
 xmap y <plug>(YoinkYankPreserveCursorPosition)
 
+" when adding new line below or above, write something (a space) and delete it
+" so the indent aren't removed on ESC.
+nmap o o<c-\><c-o> <BS>
+nmap O O<c-\><c-o> <BS>
+
 " one scroll signal is one line change instead of 3
 map <ScrollWheelUp>   <c-y>
 map <2-ScrollWheelUp> <c-y>
@@ -53,7 +59,6 @@ imap <ScrollWheelDown>   <c-\><c-o><c-e>
 imap <2-ScrollWheelDown> <c-\><c-o><c-e>
 imap <3-ScrollWheelDown> <c-\><c-o><c-e>
 imap <4-ScrollWheelDown> <c-\><c-o><c-e>
-
 " shift scroll scrolls horizontally
 noremap <S-ScrollWheelUp>   zl
 noremap <S-2-ScrollWheelUp> zl
@@ -79,7 +84,9 @@ inoremap <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
 inoremap <silent><expr> <BS>    pumvisible() ? "\<C-y><BS>"  : "\<BS>"
 " Enter makes newline unless pum is visible AND an item has been selected
 " https://vi.stackexchange.com/questions/15092/auto-complete-popup-menu-make-enter-trigger-newline-if-no-item-was-selected
-inoremap <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "<C-y><CR>" : "<C-y>") : "<CR>"
+" Also fix unindenting blankline by writing something (a space) and deleting
+" it again.
+inoremap <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "<C-y><CR> <BS>" : "<C-y>") : "<CR> <BS>"
 inoremap <silent><expr> <TAB>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <silent><expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
