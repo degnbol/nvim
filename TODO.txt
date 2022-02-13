@@ -15,3 +15,4 @@ Enter in commandline mode or the Ex mode is annoying. Anyway to make sure the en
 tile window setup like: https://www.youtube.com/watch?v=GazrDjcdeG4
 Also inspiration from sending to repl in separate kitty window.
 
+Slime: Jump to end of motion after sending it to repl.
