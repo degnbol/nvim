@@ -12,9 +12,10 @@ g.slime_python_ipython = 1 -- we are using ipython https://github.com/jpalardy/v
 local filetype2command = {
     python="ipython",
     julia="julia",
+    r="R"
     -- kitty command will not have access to default setup so doesn't know where R is.
-    r="radian --r-binary /Library/Frameworks/R.framework/Resources/R"
-    -- r="R"
+    -- Unfortunately the kitty @ send-text command that is called by slime when using slime_target=kitty sends each line separately where radian then tries to close brackets. 
+    -- r="radian --r-binary /Library/Frameworks/R.framework/Resources/R"
 }
 
 
