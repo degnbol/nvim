@@ -74,8 +74,13 @@ function kittyWindow()
 end
 
 
+function kittyExists(window_id)
+    -- see if kitty window exists by getting text from it and checking if the operation fails (nonzero exit code).
+    return os.execute('kitty @ get-text --match id:' .. window_id .. ' > /dev/null 2> /dev/null') == 0
+end
+
 function slimeCheck()
-    if vim.b.slime_config == nil then
+    if vim.b.slime_config == nil or not kittyExists(vim.b.slime_config["window_id"]) then
         if search_repl() == nil then
             kittyWindow()
         end
@@ -87,7 +92,7 @@ utils.map("n", "<leader><CR>", ":lua kittyWindow()<CR>", opts)
 utils.map("n", "<CR><CR>", ":lua slimeCheck()<CR>:SlimeSendCurrentLine<CR>j", opts)
 -- `> means go to mark named > which will be at the end of the previous selection.
 cmd 'xmap <CR> :lua slimeCheck()<CR><Plug>SlimeRegionSend()`>'
-cmd 'nmap <CR> <Plug>SlimeMotionSend'
+cmd 'nmap <CR> :lua slimeCheck()<CR><Plug>SlimeMotionSend'
 -- easily set kitty window id
 utils.map("n", "<leader>tt", ':lua slime(vim.fn.input("window id: "))<CR>', {noremap=true, silent=true})
 
