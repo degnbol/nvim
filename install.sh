@@ -25,3 +25,5 @@ curl -sL install-node.vercel.app/lts | bash
 # when coc is installed then it should automatically install julia support due to the coc-config.json but otherwise run
 :CocInstall coc-julia coc-python coc-sh coc-r-lsp
 
+# rxi/json.lua has to be linked so it can be found
+ln -s ~/.local/share/nvim/site/pack/packer/start/json.lua/json.lua lua/json.lua
