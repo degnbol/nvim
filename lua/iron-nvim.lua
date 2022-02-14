@@ -1,4 +1,5 @@
-local iron = require("iron")
+local iron = require "iron"
+local cmd = vim.cmd
 
 iron.core.set_config {
   preferred = {
@@ -10,7 +11,7 @@ iron.core.set_config {
 
 function ReplOperator(type, ...)
     iron.core.send_motion(type)
-    vim.cmd("normal `]w") -- go to end of the motion and one more word
+    cmd "normal `]w" -- go to end of the motion and one more word
 end
 
 -- keymaps
