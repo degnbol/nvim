@@ -41,7 +41,6 @@ function search_repl()
                             end
                         end
                         if repl == vim.bo.filetype then
-                            print("REPL:", repl)
                             slime(win["id"])
                         end
                     end
@@ -50,6 +49,9 @@ function search_repl()
         end
     end
 end
+
+-- register an autocommand to run this when entering buffers
+cmd 'au BufEnter * lua search_repl()'
 
 local filetype2command = {
     python="ipython",

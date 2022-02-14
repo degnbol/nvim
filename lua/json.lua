@@ -1,0 +1,1 @@
+/Users/degnbol/.local/share/nvim/site/pack/packer/start/json.lua/json.lua
