@@ -36,12 +36,11 @@ function search_repl()
                         -- [".../python3"] -> python
                         for i_arg, arg in ipairs(cmdline) do
                             repl = string.match(arg, "%w+$")
-                            if cmdline2filetype[repl] ~= nil then
-                                repl = cmdline2filetype[repl]
+                            repl = cmdline2filetype[repl] or repl
+                            if repl == vim.bo.filetype then
+                                slime(win["id"])
+                                return win["id"]
                             end
-                        end
-                        if repl == vim.bo.filetype then
-                            slime(win["id"])
                         end
                     end
                 end
@@ -56,10 +55,11 @@ cmd 'au BufEnter * lua search_repl()'
 local filetype2command = {
     python="ipython",
     julia="julia",
-    r="R"
+    r="R",
     -- kitty command will not have access to default setup so doesn't know where R is.
     -- Unfortunately the kitty @ send-text command that is called by slime when using slime_target=kitty sends each line separately where radian then tries to close brackets. 
     -- r="radian --r-binary /Library/Frameworks/R.framework/Resources/R"
+    lua="lua",
 }
 
 function kittyWindow()
@@ -73,12 +73,21 @@ function kittyWindow()
     slime(window_id)
 end
 
+
+function slimeCheck()
+    if vim.b.slime_config == nil then
+        if search_repl() == nil then
+            kittyWindow()
+        end
+    end
+end
+
 opts = {noremap=true, silent=true}
 utils.map("n", "<leader><CR>", ":lua kittyWindow()<CR>", opts)
-utils.map("n", "<CR><CR>", ":SlimeSendCurrentLine<CR>j", opts)
+utils.map("n", "<CR><CR>", ":lua slimeCheck()<CR>:SlimeSendCurrentLine<CR>j", opts)
 -- `> means go to mark named > which will be at the end of the previous selection.
-cmd 'xmap <CR> <Plug>SlimeRegionSend()`>'
+cmd 'xmap <CR> :lua slimeCheck()<CR><Plug>SlimeRegionSend()`>'
 cmd 'nmap <CR> <Plug>SlimeMotionSend'
 -- easily set kitty window id
-utils.map("n", "<leader>tt", ':lua slimeConf(input("window id: "))<CR>', {noremap=true, silent=true})
+utils.map("n", "<leader>tt", ':lua slime(vim.fn.input("window id: "))<CR>', {noremap=true, silent=true})
 
