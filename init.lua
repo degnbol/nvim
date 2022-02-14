@@ -1,14 +1,15 @@
 -- setup heavily inspired by NvChad (https://github.com/siduck76/NvChad)
 
-require'settings'
+require 'settings'
+require 'keymappings'
 -- if you switch between package managers then remove everything from the other one with rm -rf ~/.local/share/nvim/site/pack/packer or paqs
 -- require 'packages'
-require'plugins'
-require'keymappings'
-require'colors'
+require 'plugins'
+require 'kitty'
+require 'colors'
 
--- require'lsp'
+-- require 'lsp'
 
-require'highlights'
-require'file-icons'
+require 'highlights'
+require 'file-icons'
 
