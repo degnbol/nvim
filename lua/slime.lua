@@ -2,20 +2,21 @@
 local g = vim.g
 local utils = require'utils'
 local cmd = vim.cmd
+local json = require'json'
 
 -- no default keymappings
 g.slime_no_mappings = true
 g.slime_target = "kitty"
 g.slime_python_ipython = 1 -- we are using ipython https://github.com/jpalardy/vim-slime/tree/main/ftplugin/python
 
--- function search_repl()
---     fh = io.popen('kitty @ ls')
---     json_string = fh:read("*a")
---     ls = json.decode(json_string)
---     print(ls)
--- end
--- 
--- search_repl()
+function search_repl()
+    fh = io.popen('kitty @ ls')
+    json_string = fh:read("*a")
+    ls = json.decode(json_string)
+    print(ls)
+end
+
+search_repl()
 
 local filetype2command = {
     python="ipython",
