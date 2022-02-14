@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 local g = vim.g
-local utils = require('utils')
+local utils = require'utils'
 local cmd = vim.cmd
 
 -- no default keymappings
@@ -8,6 +8,14 @@ g.slime_no_mappings = true
 g.slime_target = "kitty"
 g.slime_python_ipython = 1 -- we are using ipython https://github.com/jpalardy/vim-slime/tree/main/ftplugin/python
 
+-- function search_repl()
+--     fh = io.popen('kitty @ ls')
+--     json_string = fh:read("*a")
+--     ls = json.decode(json_string)
+--     print(ls)
+-- end
+-- 
+-- search_repl()
 
 local filetype2command = {
     python="ipython",
@@ -37,5 +45,5 @@ utils.map("n", "<CR><CR>", ":SlimeSendCurrentLine<CR>j", opts)
 cmd 'xmap <CR> <Plug>SlimeRegionSend()`>'
 cmd 'nmap <CR> <Plug>SlimeMotionSend'
 -- easily set kitty window id
-utils.map("n", "<leader>tk", ':let b:slime_config = {"listen_on": ""}<CR>:let b:slime_config["window_id"] = input("window id: ")<CR>', {noremap=true, silent=true})
+utils.map("n", "<leader>tt", ':let b:slime_config = {"listen_on": ""}<CR>:let b:slime_config["window_id"] = input("window id: ")<CR>', {noremap=true, silent=true})
 

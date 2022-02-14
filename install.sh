@@ -1,10 +1,8 @@
 #!/usr/bin/env zsh
-
 # install Paq
 # git clone --depth=1 https://github.com/savq/paq-nvim.git "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/pack/paqs/start/paq-nvim
 # or install packer
 git clone https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
-
 
 # language server currently jedi-language-server for its simplicity and lack of annoying wrong error detection
 # installed with pipx
@@ -26,3 +24,4 @@ pipx install virtualenv
 curl -sL install-node.vercel.app/lts | bash
 # when coc is installed then it should automatically install julia support due to the coc-config.json but otherwise run
 :CocInstall coc-julia coc-python coc-sh coc-r-lsp
+
