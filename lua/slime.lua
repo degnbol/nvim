@@ -91,8 +91,8 @@ opts = {noremap=true, silent=true}
 utils.map("n", "<leader><CR>", ":lua kittyWindow()<CR>", opts)
 utils.map("n", "<CR><CR>", ":lua slimeCheck()<CR>:SlimeSendCurrentLine<CR>j", opts)
 -- `> means go to mark named > which will be at the end of the previous selection.
-cmd 'xmap <CR> :lua slimeCheck()<CR><Plug>SlimeRegionSend()`>'
-cmd 'nmap <CR> :lua slimeCheck()<CR><Plug>SlimeMotionSend'
+cmd 'xmap <silent> <CR> :lua slimeCheck()<CR><Plug>SlimeRegionSend()`>'
+cmd 'nmap <silent> <CR> :lua slimeCheck()<CR><Plug>SlimeMotionSend'
 -- easily set kitty window id
 utils.map("n", "<leader>tt", ':lua slime(vim.fn.input("window id: "))<CR>', {noremap=true, silent=true})
 
