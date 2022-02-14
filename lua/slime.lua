@@ -9,14 +9,47 @@ g.slime_no_mappings = true
 g.slime_target = "kitty"
 g.slime_python_ipython = 1 -- we are using ipython https://github.com/jpalardy/vim-slime/tree/main/ftplugin/python
 
+function slime(window_id)
+    vim.b.slime_config = {listen_on="", window_id=window_id}
+end
+
+local cmdline2filetype = {
+    python3="python",
+    ipython="python",
+    R="r",
+    radian="r",
+}
+
 function search_repl()
     fh = io.popen('kitty @ ls')
     json_string = fh:read("*a")
     ls = json.decode(json_string)
-    print(ls)
+    for i_os_win, os_win in ipairs(ls) do
+        if os_win["is_focused"] then
+            for i_tab, tab in ipairs(os_win["tabs"]) do
+                if tab["is_focused"] then
+                    for i_win, win in ipairs(tab["windows"]) do
+                        cmdline = win["foreground_processes"][1]["cmdline"]
+                        -- ["/usr/local/bin/julia", "-t", "4"] -> julia
+                        -- [".../R"] -> r
+                        -- ["../Python", ".../radian"] -> r
+                        -- [".../python3"] -> python
+                        for i_arg, arg in ipairs(cmdline) do
+                            repl = string.match(arg, "%w+$")
+                            if cmdline2filetype[repl] ~= nil then
+                                repl = cmdline2filetype[repl]
+                            end
+                        end
+                        if repl == vim.bo.filetype then
+                            print("REPL:", repl)
+                            slime(win["id"])
+                        end
+                    end
+                end
+            end
+        end
+    end
 end
-
-search_repl()
 
 local filetype2command = {
     python="ipython",
@@ -27,7 +60,6 @@ local filetype2command = {
     -- r="radian --r-binary /Library/Frameworks/R.framework/Resources/R"
 }
 
-
 function kittyWindow()
     -- default to zsh
     ftcommand = filetype2command[vim.bo.filetype] or ""
@@ -36,7 +68,7 @@ function kittyWindow()
     fh:close()
     -- set title to the id
     os.execute("kitty @ set-window-title --match id:" .. window_id .. " " .. window_id)
-    vim.b.slime_config = {window_id=window_id, listen_on=""}
+    slime(window_id)
 end
 
 opts = {noremap=true, silent=true}
@@ -46,5 +78,5 @@ utils.map("n", "<CR><CR>", ":SlimeSendCurrentLine<CR>j", opts)
 cmd 'xmap <CR> <Plug>SlimeRegionSend()`>'
 cmd 'nmap <CR> <Plug>SlimeMotionSend'
 -- easily set kitty window id
-utils.map("n", "<leader>tt", ':let b:slime_config = {"listen_on": ""}<CR>:let b:slime_config["window_id"] = input("window id: ")<CR>', {noremap=true, silent=true})
+utils.map("n", "<leader>tt", ':lua slimeConf(input("window id: "))<CR>', {noremap=true, silent=true})
 
