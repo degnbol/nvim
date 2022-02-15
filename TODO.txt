@@ -6,13 +6,6 @@ Consider https://github.com/jalvesaq/Nvim-R and https://github.com/jalvesaq/vimc
 Consider https://github.com/seblj/nvim-tabline and https://github.com/alvarosevilla95/luatab.nvim . NvimTree can have keymaps customized to use tabs rather than buffers https://github.com/kyazdani42/nvim-tree.lua
 Delete button cuts, but should just delete. Fixed for backspace now using black hole register.
 inspiration: https://www.reddit.com/r/neovim/comments/pmurow/why_i_prefer_neovim_over_vscode/
-Try different terminals for effect on scrolling in the main doc.
-Going back to iron repl over pappasam since the later started having some indents being created issues for python.
-Iron shows an error first time it is opened if opened with <CR>motion but otherwise works fine so far.
 The indention issue happens in .tex files as well when I write \usepackage{ it indents the line twice. Might be a tree sitter issue.
-Enable completion at least for filenames.
 Enter in commandline mode or the Ex mode is annoying. Anyway to make sure the enter to run in repl is only for normal mode while editing a file?
 tile window setup like: https://www.youtube.com/watch?v=GazrDjcdeG4
-Also inspiration from sending to repl in separate kitty window.
-
-Slime: Jump to end of motion after sending it to repl.
