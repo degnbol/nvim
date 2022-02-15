@@ -90,7 +90,10 @@ end
 function kittySend(text)
     replCheck()
     fh = io.popen('kitty @ send-text --stdin --match id:' .. vim.b.repl_id, 'w')
-    fh:write(text)
+    -- this brilliant little gsub part makes everything in the world beautiful.
+    -- \x01 is the ASCII code for "start of heading" which apparently signals to remove all the whitespace some REPLs add automatically after newline.
+    -- The best part is it works regardless if the REPL does this or not, as opposed to adding \b backspaces to remove whitespace or some other hack.
+    fh:write(text:gsub("\n", "\n\x01"))
     fh:write('\r')
     fh:close()
 end
