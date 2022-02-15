@@ -93,7 +93,9 @@ function kittySend(text)
     -- this brilliant little gsub part makes everything in the world beautiful.
     -- \x01 is the ASCII code for "start of heading" which apparently signals to remove all the whitespace some REPLs add automatically after newline.
     -- The best part is it works regardless if the REPL does this or not, as opposed to adding \b backspaces to remove whitespace or some other hack.
-    fh:write(text:gsub("\n", "\n\x01"))
+    text = text:gsub("\n", "\n\x01")
+    -- Note: for some reason the line above cannot be inserted directly into the write expression. I guess I don't know lua well enough. It will result in number of lines or something appearing.
+    fh:write(text)
     fh:write('\r')
     fh:close()
 end
