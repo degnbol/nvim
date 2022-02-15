@@ -91,7 +91,7 @@ function kittySend(text)
     replCheck()
     -- pcat.sh uses zsh to do bracketed paste cat from stdin to stdout.
     -- An alternative that fixes indentation but sends each line separately is text:gsub('\n', '\n\x01')
-    fh = io.popen([[$XDG_CONFIG_HOME/nvim/kittyREPL/pcat.sh | kitty @ send-text --stdin --match id:]] .. vim.b.repl_id, 'w')
+    fh = io.popen('$XDG_CONFIG_HOME/nvim/kittyREPL/kittyPaste.sh ' .. vim.b.repl_id, 'w')
     fh:write(text)
     fh:close()
 end
