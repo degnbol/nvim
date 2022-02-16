@@ -46,10 +46,12 @@ function search_repl()
                         cmdline = procs[#procs]["cmdline"]
                         -- ["/usr/local/bin/julia", "-t", "4"] -> julia
                         -- [".../R"] -> r
+                        -- ["nvim", ".../file.R"] -/-> r. Make sure we don't set the nvim editor as the REPL by accepting "." in the name match. 
                         -- ["../Python", ".../radian"] -> r
                         -- [".../python3"] -> python
                         for i_arg, arg in ipairs(cmdline) do
-                            repl = string.match(arg, "%w+$")
+                            -- match letters, numbers and period until the end of string arg.
+                            repl = string.match(arg, "[%w.]+$")
                             repl = cmdline2filetype[repl] or repl
                             if repl == vim.bo.filetype then
                                 set_repl(win["id"])
