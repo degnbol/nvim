@@ -20,6 +20,16 @@ local cmdline2filetype = {
     radian="r",
 }
 
+local filetype2command = {
+    python="ipython",
+    julia="julia",
+    -- kitty command will not have access to default setup so doesn't know where R is.
+    -- vanilla r console doesn't handle bracketed paste. Maybe there is a setting but radian works great.
+    r="radian --r-binary /Library/Frameworks/R.framework/Resources/R",
+    lua="lua",
+}
+
+
 function search_repl()
     fh = io.popen('kitty @ ls')
     json_string = fh:read("*a")
@@ -29,7 +39,11 @@ function search_repl()
             for i_tab, tab in ipairs(os_win["tabs"]) do
                 if tab["is_focused"] then
                     for i_win, win in ipairs(tab["windows"]) do
-                        cmdline = win["foreground_processes"][1]["cmdline"]
+                        -- use last foreground process, e.g. I observe if I start julia, then `using PlotlyJS`, 
+                        -- then PlotlyJS will open other processes that are listed earlier in the list. 
+                        -- If there are any problems then just loop and look in all foreground processes.
+                        procs = win["foreground_processes"]
+                        cmdline = procs[#procs]["cmdline"]
                         -- ["/usr/local/bin/julia", "-t", "4"] -> julia
                         -- [".../R"] -> r
                         -- ["../Python", ".../radian"] -> r
@@ -52,14 +66,6 @@ end
 -- register an autocommand to run this when entering buffers
 cmd 'au BufEnter * lua search_repl()'
 
-local filetype2command = {
-    python="ipython",
-    julia="julia",
-    -- kitty command will not have access to default setup so doesn't know where R is.
-    -- vanilla r console doesn't handle bracketed paste. Maybe there is a setting but radian works great.
-    r="radian --r-binary /Library/Frameworks/R.framework/Resources/R",
-    lua="lua",
-}
 
 function kittyWindow()
     -- default to zsh
