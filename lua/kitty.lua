@@ -21,9 +21,10 @@ local cmdline2filetype = {
 }
 
 local filetype2command = {
-    python="ipython",
+    python="~/miniconda3/bin/ipython",
     julia="julia",
-    r="radian",
+    -- kitty command doesn't know where R is since it doesn't have all the env copied.
+    r="radian --r-binary /Library/Frameworks/R.framework/Resources/R",
     lua="lua",
 }
 
@@ -70,8 +71,7 @@ cmd 'au BufEnter * lua search_repl()'
 function kittyWindow()
     -- default to zsh
     ftcommand = filetype2command[vim.bo.filetype] or ""
-    -- arg --copy-env means radian will be able to find R home and ipython will be found in conda
-    fh = io.popen('kitty @ launch --cwd=current --copy-env --keep-focus ' .. ftcommand)
+    fh = io.popen('kitty @ launch --cwd=current --keep-focus ' .. ftcommand)
     window_id = fh:read("*n") -- *n means read number, which means we also strip newline
     fh:close()
     -- set title to the id so we can easily set is as target
