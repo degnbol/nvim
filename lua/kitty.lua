@@ -23,9 +23,7 @@ local cmdline2filetype = {
 local filetype2command = {
     python="ipython",
     julia="julia",
-    -- kitty command will not have access to default setup so doesn't know where R is.
-    -- vanilla r console doesn't handle bracketed paste. Maybe there is a setting but radian works great.
-    r="radian --r-binary /Library/Frameworks/R.framework/Resources/R",
+    r="radian",
     lua="lua",
 }
 
