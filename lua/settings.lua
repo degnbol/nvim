@@ -43,8 +43,8 @@ g.yoinkSyncNumberedRegisters = 1
 -- move cursor to end instead of start of multi-line paste
 g.yoinkMoveCursorToEndOfPaste = 1
 
--- go between lines with left/right arrow keys only in normal mode
-opt.whichwrap = '<,>'
+-- go between lines with left/right arrow keys only in insert mode
+opt.whichwrap = '[,]'
 
 -- hide the statusline that shows current file being edited
 opt.laststatus = 0

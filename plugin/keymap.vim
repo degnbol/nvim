@@ -7,9 +7,9 @@ cnoreabbrev Gc Git commit -m
 
 
 " substitute motion with clipboard content with https://github.com/svermeulen/vim-subversive
-nmap s <plug>(SubversiveSubstitute)
+nmap s  <plug>(SubversiveSubstitute)
 nmap ss <plug>(SubversiveSubstituteLine)
-nmap S <plug>(SubversiveSubstituteToEndOfLine)
+nmap S  <plug>(SubversiveSubstituteToEndOfLine)
 
 
 " yank, cut, delete behavior
@@ -19,10 +19,10 @@ map Y y$
 " Delete to black hole register.
 nnoremap <BS> "_X
 " cutlass map so x is cut
-nnoremap x d
-xnoremap x d
+nnoremap x  d
+xnoremap x  d
 nnoremap xx dd
-nnoremap X D
+nnoremap X  D
 " yoink keymaps
 nmap <c-n> <plug>(YoinkPostPasteSwapBack)
 nmap <c-p> <plug>(YoinkPostPasteSwapForward)
