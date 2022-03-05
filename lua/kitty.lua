@@ -13,21 +13,13 @@ function set_repl(window_id)
     vim.b.repl_id = window_id
 end
 
+-- kitty @ ls foreground_processes cmdline value 
 local cmdline2filetype = {
     python3="python",
     ipython="python",
     R="r",
     radian="r",
 }
-
-local filetype2command = {
-    python="~/miniconda3/bin/ipython",
-    julia="julia",
-    -- kitty command doesn't know where R is since it doesn't have all the env copied.
-    r="radian --r-binary /Library/Frameworks/R.framework/Resources/R",
-    lua="lua",
-}
-
 
 function search_repl()
     fh = io.popen('kitty @ ls')
@@ -67,6 +59,14 @@ end
 -- register an autocommand to run this when entering buffers
 cmd 'au BufEnter * lua search_repl()'
 
+-- command to execute in new kitty window
+local filetype2command = {
+    python="~/miniconda3/bin/ipython",
+    julia="julia",
+    -- kitty command doesn't know where R is since it doesn't have all the env copied.
+    r="radian --r-binary /Library/Frameworks/R.framework/Resources/R",
+    lua="lua",
+}
 
 function kittyWindow()
     -- default to zsh
@@ -90,12 +90,38 @@ function replCheck()
     return get_repl() ~= nil and kittyExists(get_repl()) or search_repl() ~= nil
 end
 
-function kittySend(text)
-    -- pcat.sh uses zsh to do bracketed paste cat from stdin to stdout.
-    -- An alternative that fixes indentation but sends each line separately is text:gsub('\n', '\n\x01')
+function kittySendRaw(text)
+    fh = io.popen('kitty @ send-text --stdin --match id:' .. vim.b.repl_id, 'w')
+    fh:write(text .. '\n')
+    fh:close()
+end
+
+function kittySendSOH(text)
+    -- Fixes indentation by prepending Start Of Header signal. Still sending each line separately.
+    text = text:gsub('\n', '\n\x01')
+    -- might have to be done in two steps, instead of simply inserting gsub expr in kittySend.
+    kittySendRaw(text)
+end
+
+function kittySendPaste(text)
+    -- kittyPaste.sh uses zsh to do bracketed paste cat from stdin to stdout.
     fh = io.popen('$XDG_CONFIG_HOME/nvim/kittyREPL/kittyPaste.sh ' .. vim.b.repl_id, 'w')
     fh:write(text)
     fh:close()
+end
+
+-- not all REPLs support bracketed paste
+local filetype2paste = {
+    lua=kittySendRaw
+}
+
+function kittySend(text)
+    sendf = filetype2paste[vim.bo.filetype]
+    if sendf ~= nil then
+        sendf(text)
+    else
+        kittySendPaste(text)
+    end
 end
 
 function kittySendLine()
