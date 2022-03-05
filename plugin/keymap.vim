@@ -1,4 +1,4 @@
-" git on commandline
+" Fugitive: git on commandline
 cnoreabbrev Gs Git status -uno
 cnoreabbrev Gp Git push
 cnoreabbrev Gl Git pull
@@ -10,9 +10,18 @@ cnoreabbrev Gc Git commit -m
 nmap s  <plug>(SubversiveSubstitute)
 nmap ss <plug>(SubversiveSubstituteLine)
 nmap S  <plug>(SubversiveSubstituteToEndOfLine)
+" Integration with yoink
+xmap s <plug>(SubversiveSubstitute)
+xmap p <plug>(SubversiveSubstitute)
+xmap P <plug>(SubversiveSubstitute)
+" example: <leader>siwip to replace all instances of the current word under the cursor that exist within the paragraph under the cursor. 
+" example: <leader>sl_ to replace all instances of the character under the cursor on the current line.
+" example: <leader>ssip to replace the word under cursor in the current paragraph. Matches complete words so is different from <leader>siwip
+nmap <leader>s <plug>(SubversiveSubstituteRange)
+xmap <leader>s <plug>(SubversiveSubstituteRange)
+nmap <leader>ss <plug>(SubversiveSubstituteWordRange)
 
-
-" yank, cut, delete behavior
+" Yank, cut, delete behavior
 " a logical choice that was supposed to be default? https://github.com/neovim/neovim/issues/416
 map Y y$
 " back space and delete buttons delete should delete also in normal mode.
@@ -23,7 +32,7 @@ nnoremap x  d
 xnoremap x  d
 nnoremap xx dd
 nnoremap X  D
-" yoink keymaps
+" Yoink:
 nmap <c-n> <plug>(YoinkPostPasteSwapBack)
 nmap <c-p> <plug>(YoinkPostPasteSwapForward)
 nmap p <plug>(YoinkPaste_p)

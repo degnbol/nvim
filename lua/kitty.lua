@@ -86,15 +86,11 @@ function kittyExists(window_id)
 end
 
 function replCheck()
-    if get_repl() == nil or not kittyExists(get_repl()) then
-        if search_repl() == nil then
-            kittyWindow()
-        end
-    end
+    -- return whether a valid repl is active or were found.
+    return get_repl() ~= nil and kittyExists(get_repl()) or search_repl() ~= nil
 end
 
 function kittySend(text)
-    replCheck()
     -- pcat.sh uses zsh to do bracketed paste cat from stdin to stdout.
     -- An alternative that fixes indentation but sends each line separately is text:gsub('\n', '\n\x01')
     fh = io.popen('$XDG_CONFIG_HOME/nvim/kittyREPL/kittyPaste.sh ' .. vim.b.repl_id, 'w')
@@ -103,34 +99,47 @@ function kittySend(text)
 end
 
 function kittySendLine()
-    -- easiest to use stdin rather than putting the text as an arg due to worrying about escaping characters
-    kittySend(api.nvim_get_current_line())
+    if not replCheck() then
+        print("No REPL")
+    else
+        -- easiest to use stdin rather than putting the text as an arg due to worrying about escaping characters
+        kittySend(api.nvim_get_current_line())
+        cmd 'silent normal! j'
+    end
 end
 
 function kittySendVisual()
-    -- gv  = reselect last select (unselected for some reason)
-    -- "ky = yank to register k (k for kitty)
-    -- `>  = go to mark ">" = end of last visual select
-    cmd 'silent normal! gv"ky`>'
-    kittySend(fn.getreg('k'))
+    if not replCheck() then
+        print("No REPL")
+    else
+        -- gv  = reselect last select (unselected for some reason)
+        -- "ky = yank to register k (k for kitty)
+        -- `>  = go to mark ">" = end of last visual select
+        cmd 'silent normal! gv"ky`>'
+        kittySend(fn.getreg('k'))
+    end
 end
 
 function ReplOperator(type, ...)
-    -- `[ = go to start of motion
-    -- v or V = select char or lines
-    -- `] = go to end of motion
-    -- "ky = yank selection to register k
-    if type == "char" then
-        cmd 'silent normal! `[v`]"ky`]w'
-    else -- either type == "line" or "block", the latter I never use
-        cmd 'silent normal! `[V`]"ky`]w'
+    if not replCheck() then
+        print("No REPL")
+    else
+        -- `[ = go to start of motion
+        -- v or V = select char or lines
+        -- `] = go to end of motion
+        -- "ky = yank selection to register k
+        if type == "char" then
+            cmd 'silent normal! `[v`]"ky`]w'
+        else -- either type == "line" or "block", the latter I never use
+            cmd 'silent normal! `[V`]"ky`]w'
+        end
+        kittySend(fn.getreg('k'))
     end
-    kittySend(fn.getreg('k'))
 end
 
 opts = {noremap=true, silent=true}
 utils.map("n", "<leader><CR>", ":lua kittyWindow()<CR>", opts)
-utils.map("n", "<CR><CR>", ":lua kittySendLine()<CR>j", opts)
+utils.map("n", "<CR><CR>", ":lua kittySendLine()<CR>", opts)
 utils.map("x", "<CR>", ":lua kittySendVisual()<CR>", opts)
 utils.map('n', "<CR>", 'Operator("v:lua.ReplOperator")', {expr=true, noremap=false})
 -- easily set kitty window id for REPL
