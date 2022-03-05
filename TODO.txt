@@ -9,6 +9,5 @@ inspiration: https://www.reddit.com/r/neovim/comments/pmurow/why_i_prefer_neovim
 The indention issue happens in .tex files as well when I write \usepackage{ it indents the line twice. Might be a tree sitter issue.
 Enter in commandline mode or the Ex mode is annoying. Anyway to make sure the enter to run in repl is only for normal mode while editing a file?
 tile window setup like: https://www.youtube.com/watch?v=GazrDjcdeG4
-Maybe move cursor when (un)indenting?
 Paste match indent.
 visual then s should do like p, i.e. paste rather than like c, i.e. change.
