@@ -11,3 +11,4 @@ Enter in commandline mode or the Ex mode is annoying. Anyway to make sure the en
 tile window setup like: https://www.youtube.com/watch?v=GazrDjcdeG4
 Paste match indent.
 visual then s should do like p, i.e. paste rather than like c, i.e. change.
+Enforce some distance to sides so we always see some characters ahead and behind.
