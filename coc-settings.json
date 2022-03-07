@@ -11,5 +11,6 @@
       },
       "filetypes": ["julia"]
     }
-  }
+  },
+  "signature.target": "echo"
 }
