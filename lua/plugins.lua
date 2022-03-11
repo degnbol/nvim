@@ -17,6 +17,7 @@ return require("packer").startup(
         -- use {"moll/vim-bbye", config=function() require'bbye' end}
         -- use {"famiu/bufdelete.nvim", config=function() require'famiu_bufdelete' end}
         use "farmergreg/vim-lastplace" -- open file in last edited location
+        use {"inkarkat/vim-UnconditionalPaste", requires='inkarkat/vim-ingo-library'} -- lots of ways to paste using g{c,C,l,b}{,i}{p,P} and may others 
 
         -- color
         use "norcalli/nvim-colorizer.lua" -- when a hex or other color is defined, highlight the text with its color
@@ -28,6 +29,7 @@ return require("packer").startup(
         use "sakshamgupta05/vim-todo-highlight" -- highlight todos
         -- use {"Pocco81/TrueZen.nvim", config=function() require'truezen-nvim' end} -- reduce visuals with :TZ... commands to e.g. remove left and bottom element on the screen.
         -- use {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end} -- dim code that isn't currently being edited with :Twilight.
+        -- use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
         use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
 
         -- language
@@ -44,7 +46,7 @@ return require("packer").startup(
         -- }
         -- use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig", config=function() require "lspinstall".setup() end} -- adds :LspInstall <language> for conveniently installing language support
         -- use {"hrsh7th/nvim-cmp", requires={"hrsh7th/cmp-path", "hrsh7th/cmp-nvim-lsp"}, config=function() require'nvim-cmp' end}  -- autocompletion
-        use {"neoclide/coc.nvim", branch="release"}
+        use {"neoclide/coc.nvim", branch="release"} -- https://github.com/neoclide/coc.nvim/wiki/Language-servers e.g. :CocInstall coc-texlab
         -- -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
         -- use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
         use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- Toggle commenting out code
