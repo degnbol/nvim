@@ -1,14 +1,16 @@
 Set up completion with LSP: https://alpha2phi.medium.com/new-neovim-completion-plugins-you-should-try-b5e1a3661623
 Make julia LSP faster with https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#julials
 If you get LSP diagnostics to become good then you can add toggling with WhoIsSethDaniel/toggle-lsp-diagnostics.nvim
-If you want to be able to open nvim within nvim terminal it can be done without nesting: https://github.com/mhinz/neovim-remote see bottom of https://github.com/caenrique/nvim-toggle-terminal
+If you want to be able to open nvim within nvim terminal it can be done without 
+nesting: https://github.com/mhinz/neovim-remote see bottom of 
+https://github.com/caenrique/nvim-toggle-terminal
 Consider https://github.com/jalvesaq/Nvim-R and https://github.com/jalvesaq/vimcmdline
-Consider https://github.com/seblj/nvim-tabline and https://github.com/alvarosevilla95/luatab.nvim . NvimTree can have keymaps customized to use tabs rather than buffers https://github.com/kyazdani42/nvim-tree.lua
+Consider https://github.com/seblj/nvim-tabline and 
+https://github.com/alvarosevilla95/luatab.nvim . NvimTree can have keymaps 
+customized to use tabs rather than buffers 
+https://github.com/kyazdani42/nvim-tree.lua
 Delete button cuts, but should just delete. Fixed for backspace now using black hole register.
 inspiration: https://www.reddit.com/r/neovim/comments/pmurow/why_i_prefer_neovim_over_vscode/
-The indention issue happens in .tex files as well when I write \usepackage{ it indents the line twice. Might be a tree sitter issue.
-Enter in commandline mode or the Ex mode is annoying. Anyway to make sure the enter to run in repl is only for normal mode while editing a file?
+Enter in commandline mode or the Ex mode is annoying. Anyway to make sure the 
+enter to run in repl is only for normal mode while editing a file?
 tile window setup like: https://www.youtube.com/watch?v=GazrDjcdeG4
-Paste match indent.
-visual then s should do like p, i.e. paste rather than like c, i.e. change.
-Enforce some distance to sides so we always see some characters ahead and behind.

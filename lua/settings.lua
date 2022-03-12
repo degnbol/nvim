@@ -16,6 +16,7 @@ opt.hidden = true
 opt.ignorecase = true -- search ignoring case. use \c \C anywhere in search pattern to force case-sensitivity.
 opt.smartcase = true -- only match case-insensitively is query is all lowercase
 opt.scrolloff = 4 -- number of lines of context to always keep above and below the cursorline
+opt.sidescrolloff = 8 -- number of blocks to keep to sides of cursor
 opt.splitbelow = true
 opt.splitright = true
 opt.wildmode = 'longest:full,full' -- settings for how to show completion on command line
