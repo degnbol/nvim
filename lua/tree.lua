@@ -38,11 +38,7 @@ vim.api.nvim_set_keymap("n", "<leader>o", ":NvimTreeToggle<CR>", {noremap = true
 local tree_cb = require"nvim-tree.config".nvim_tree_callback
 
 require'nvim-tree'.setup {
-    ["actions.open_file"] = {
-        quit_on_open = 1,
-        -- when opening a file and a terminal is taking up one of the windows, ignore it for selection of where to put the new window.
-        ["window_picker.exclude.buftype"] = {'terminal'}
-    },
+    actions = {open_file = {quit_on_open = true}},
     -- closes neovim automatically when the tree is the last **WINDOW** in the view
     auto_close = true,
     -- opens the tree when changing/opening a new tab if the tree wasn't previously opened
