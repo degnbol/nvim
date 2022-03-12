@@ -70,23 +70,23 @@ imap <2-ScrollWheelDown> <c-\><c-o><c-e>
 imap <3-ScrollWheelDown> <c-\><c-o><c-e>
 imap <4-ScrollWheelDown> <c-\><c-o><c-e>
 " shift scroll scrolls horizontally
-noremap <S-ScrollWheelUp>   zl
-noremap <S-2-ScrollWheelUp> zl
-noremap <S-3-ScrollWheelUp> zl
-noremap <S-4-ScrollWheelUp> zl
-noremap <S-ScrollWheelDown>   zh
-noremap <S-2-ScrollWheelDown> zh
-noremap <S-3-ScrollWheelDown> zh
-noremap <S-4-ScrollWheelDown> zh
+noremap <S-ScrollWheelUp>   zh
+noremap <S-2-ScrollWheelUp> <NOP>
+noremap <S-3-ScrollWheelUp> <NOP>
+noremap <S-4-ScrollWheelUp> <NOP>
+noremap <S-ScrollWheelDown> zl
+noremap <S-2-ScrollWheelDown> <NOP>
+noremap <S-3-ScrollWheelDown> <NOP>
+noremap <S-4-ScrollWheelDown> <NOP>
 " insert mode requires going to normal mode temporarily
-inoremap <S-ScrollWheelUp>   <c-\><c-o>zl
-inoremap <S-2-ScrollWheelUp> <c-\><c-o>zl
-inoremap <S-3-ScrollWheelUp> <c-\><c-o>zl
-inoremap <S-4-ScrollWheelUp> <c-\><c-o>zl
-inoremap <S-ScrollWheelDown>   <c-\><c-o>zh
-inoremap <S-2-ScrollWheelDown> <c-\><c-o>zh
-inoremap <S-3-ScrollWheelDown> <c-\><c-o>zh
-inoremap <S-4-ScrollWheelDown> <c-\><c-o>zh
+inoremap <S-ScrollWheelUp>   <c-\><c-o>zh
+inoremap <S-2-ScrollWheelUp> <NOP>
+inoremap <S-3-ScrollWheelUp> <NOP>
+inoremap <S-4-ScrollWheelUp> <NOP>
+inoremap <S-ScrollWheelDown>   <c-\><c-o>zl
+inoremap <S-2-ScrollWheelDown> <NOP>
+inoremap <S-3-ScrollWheelDown> <NOP>
+inoremap <S-4-ScrollWheelDown> <NOP>
 
 " completion popup keys. <C-e> == reject and close pum. <C-y> == accept.
 inoremap <silent><expr> <Esc>   pumvisible() ? "\<C-y><Esc>" : "\<Esc>"
