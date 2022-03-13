@@ -5,7 +5,6 @@ return require("packer").startup(
         use "wbthomason/packer.nvim"
 
         -- core behaviour
-        use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
         use "tpope/vim-repeat" -- change . to repeat last native command to last "full" command, which feels more natural.
         use "tpope/vim-surround" -- press cs'" to change surrounding ' with ", ds' to delete surrounding ', ysiw) to surround word with ) and yss[ to surround line with [ ... ] (incl. spaces)
         -- use "tpope/vim-sensible" -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
@@ -61,10 +60,10 @@ return require("packer").startup(
         -- use {"kassio/neoterm", config=function() require'kassio_neoterm' end}
         -- use {"HiPhish/repl.nvim", config=function () require'HiPhish_repl' end}
         -- use {"jpalardy/vim-slime", config=function() require'slime' end, requires='rxi/json.lua'} -- send code to REPL that can even be in another window.
+        -- use "metakirby5/codi.vim" -- scratchpad coding, see output of all lines to the right https://github.com/metakirby5/codi.vim
         use "rxi/json.lua" -- for kitty.lua
         use "jeetsukumaran/vim-pythonsense" -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
         use {"samirettali/shebang.nvim", config=function() require'shebang-nvim' end} -- insert shebang on new file edit
-        -- use "metakirby5/codi.vim" -- scratchpad coding, see output of all lines to the right https://github.com/metakirby5/codi.vim
         -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
         use {"RishabhRD/nvim-cheat.sh", config=function() require'cheat' end, requires="RishabhRD/popfix"}
 
@@ -77,5 +76,7 @@ return require("packer").startup(
         use {"glepnir/dashboard-nvim", config=function() require'dashboard' end} -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
         use {"kyazdani42/nvim-tree.lua", requires='kyazdani42/nvim-web-devicons', config=function() require'tree' end} -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
         use {"ojroques/nvim-bufdel", config=function() require'ojroques_bufdel' end} -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
+        use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
+        use {'sudormrfbin/cheatsheet.nvim', requires='nvim-telescope/telescope.nvim'} -- <leader>? to give cheatsheet popup. 
     end
 )
