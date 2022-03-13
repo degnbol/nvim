@@ -22,6 +22,7 @@ return require("packer").startup(
         use "norcalli/nvim-colorizer.lua" -- when a hex or other color is defined, highlight the text with its color
         use "siduck76/nvim-base16.lua"
         use "maxwells-daemons/base16-gigavolt-scheme"
+        use {"unblevable/quick-scope", config=function() require'quick-scope' end} -- highlight letters for jumping with f/F/t/T
 
         use "ryanoasis/vim-devicons" -- adds icons to files
 
@@ -66,6 +67,7 @@ return require("packer").startup(
         use {"samirettali/shebang.nvim", config=function() require'shebang-nvim' end} -- insert shebang on new file edit
         -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
         use {"RishabhRD/nvim-cheat.sh", config=function() require'cheat' end, requires="RishabhRD/popfix"}
+        use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile
 
         -- use "elzr/vim-json" -- json
 
