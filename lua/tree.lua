@@ -30,11 +30,7 @@ g.nvim_tree_icons = {
     }
 }
 
--- Mappings
-
-vim.api.nvim_set_keymap("n", "<leader>o", ":NvimTreeToggle<CR>", {noremap = true, silent = true})
-
-
+-- open file in default program with o
 local tree_cb = require"nvim-tree.config".nvim_tree_callback
 
 require'nvim-tree'.setup {

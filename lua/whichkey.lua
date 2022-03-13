@@ -1,4 +1,7 @@
-require("which-key").setup {
+local whichkey = require("which-key")
+
+
+whichkey.setup {
     plugins = {
         marks = true, -- shows a list of your marks on ' and `
         registers = true, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
@@ -42,4 +45,83 @@ require("which-key").setup {
     show_help = true, -- show help message on the command line when the popup is visible
     triggers = "auto" -- automatically setup triggers
     -- triggers = {"<leader>"} -- or specifiy a list manually
+}
+
+
+-- name all kinds of shortcuts
+whichkey.register{
+    ["<leader>"] = {
+        ["/"] = "(un)comment",
+        ["1"] = "buffer 1 (bufferline)",
+        ["2"] = "buffer 2 (bufferline)",
+        ["3"] = "buffer 3 (bufferline)",
+        ["4"] = "...",
+        ["5"] = "which_key_ignore",
+        ["6"] = "which_key_ignore",
+        ["7"] = "which_key_ignore",
+        ["8"] = "which_key_ignore",
+        ["9"] = "which_key_ignore",
+        ["?"] = "cheatsheet",
+        ["<CR>"] = {"<CMD>lua kittyWindow()<CR>", "kitty REPL"},
+        a = "swap arg (treesitter textobjects)",
+        A = "swap arg back (treesitter textobjects)",
+        b = "bookmarks",
+        d = "defintion? (treesitter textobjects)",
+        D = "defintion? (treesitter textobjects)",
+        e = {"<CMD>NvimTreeToggle<CR>", "explorer"},
+        f = {
+            name = "file",
+            b = "buffers (telescope)",
+            f = "find (telescope)",
+            h = "help tags (telescope)",
+            n = "new (dashboard)",
+            o = "recent (telescope)",
+            w = "live grep (telescope)",
+        },
+        h = {
+            name = "git(signs)",
+            b = "blame line",
+            p = "preview hunk",
+            r = "reset hunk",
+            s = "stage hunk",
+            u = "undo stage hunk",
+        },
+        s = "substitute OR session",
+        t = {
+            name = "terminal",
+            t = {'<CMD>let b:repl_id = input("window id: ")<CR>', "set REPL id"},
+        },
+        x = "delete buffer",
+    },
+    d = {
+        name = "delete",
+        s = {
+            name = "delete surround"
+        },
+    },
+    g = {
+        -- from UnconditionalPaste
+        ["#"] = "commented paste",
+        [","] = "comma paste",
+        ["="] = "expression paste",
+        [">"] = "indent paste",
+        ["\\"] = "escape paste",
+        ["["] = "indented paste",
+        ["]"] = "indented paste",
+        b = "block paste",
+        B = "jagged paste",
+        -- without UnconditionalPaste plugin it will (un)comment motion
+        c = "char paste OR (un)comment",
+        C = "char condensed paste",
+        h = "combinatorial paste",
+        H = "recombinatorial paste",
+        l = "line paste",
+        q = "queried OR delimited paste",
+        Q = "requeried OR redelimited paste",
+        -- grep paste from UnconditionalPaste, refactor from treesitter
+        r = "grep paste OR refactor",
+        R = "regrep paste",
+        s = "spaced paste",
+        S = "paragraphed paste",
+    }
 }

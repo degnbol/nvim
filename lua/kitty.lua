@@ -164,10 +164,8 @@ function ReplOperator(type, ...)
 end
 
 opts = {noremap=true, silent=true}
-utils.map("n", "<leader><CR>", ":lua kittyWindow()<CR>", opts)
 utils.map("n", "<CR><CR>", ":lua kittySendLine()<CR>", opts)
 utils.map("x", "<CR>", ":lua kittySendVisual()<CR>", opts)
 utils.map('n', "<CR>", 'Operator("v:lua.ReplOperator")', {expr=true, noremap=false})
--- easily set kitty window id for REPL
-utils.map("n", "<leader>tt", ':let b:repl_id = input("window id: ")<CR>', {noremap=true, silent=true})
+-- some other keybindings are in whichkey.lua
 
