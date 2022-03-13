@@ -65,18 +65,20 @@ whichkey.register{
         ["<CR>"] = {":lua kittyWindow()<CR>", "kitty REPL"},
         a = "swap arg (treesitter textobjects)",
         A = "swap arg back (treesitter textobjects)",
-        b = "bookmarks",
+        -- currently just for latex but can be depend on filetype
+        b = {":VimtexCompile<CR>", "build"},
         d = "defintion? (treesitter textobjects)",
         D = "defintion? (treesitter textobjects)",
         e = {":NvimTreeToggle<CR>", "explorer"},
+        -- telescope and dashboard mappings
         f = {
             name = "file",
-            b = "buffers (telescope)",
-            f = "find (telescope)",
-            h = "help tags (telescope)",
-            n = "new (dashboard)",
-            o = "recent (telescope)",
-            w = "live grep (telescope)",
+            b = {":lua require('telescope.builtin').buffers()<CR>", "buffers (telescope)"},
+            f = {":lua require('telescope.builtin').find_files()<CR>", "find (telescope)"},
+            h = {":lua require('telescope.builtin').help_tags()<CR>", "help tags (telescope)"},
+            n = {":DashboardNewFile<CR>", "new (dashboard)"},
+            o = {":lua require('telescope.builtin').oldfiles()<CR>", "recent (telescope)"},
+            w = {":Telescope live_grep<CR>", "live grep (telescope)"},
         },
         h = {
             name = "git(signs)",
@@ -86,7 +88,14 @@ whichkey.register{
             s = "stage hunk",
             u = "undo stage hunk",
         },
-        s = "substitute OR session",
+        m = {
+            m = {":DashboardJumpMarks<CR>", "jump marks (dashboard)"}
+        },
+        s = {
+            name = "substitute OR session",
+            l = {":SessionLoad<CR>", "load session"},
+            s = {":SessionSave<CR>", "save session"},
+        },
         t = {
             name = "terminal",
             t = {':let b:repl_id = input("window id: ")<CR>', "set REPL id"},
@@ -96,6 +105,7 @@ whichkey.register{
     d = {
         name = "delete",
         s = {
+            -- from the surround package
             name = "delete surround"
         },
     },
