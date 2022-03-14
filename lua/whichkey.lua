@@ -126,12 +126,35 @@ whichkey.register{
         h = "combinatorial paste",
         H = "recombinatorial paste",
         l = "line paste",
-        q = "queried OR delimited paste",
+        q = {
+            name = "queried OR delimited paste",
+            b = {
+                name = "delimited paste",
+                p = "after",
+                P = "before",
+            },
+            g = {
+                name = "queried joined paste",
+                p = "after",
+                P = "before",
+            },
+            p = "queried after",
+            P = "queried before",
+            q = "format line",
+        },
         Q = "requeried OR redelimited paste",
         -- grep paste from UnconditionalPaste, refactor from treesitter
         r = "grep paste OR refactor",
         R = "regrep paste",
-        s = "spaced paste",
-        S = "paragraphed paste",
+        s = {
+            name = "spaced paste",
+            p = "after",
+            P = "before",
+        },
+        S = {
+            name = "paragraphed paste",
+            p = "after",
+            P = "before",
+        },
     }
 }
