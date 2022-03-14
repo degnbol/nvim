@@ -37,6 +37,7 @@ return require("packer").startup(
         use {"nvim-treesitter/nvim-treesitter-refactor", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-refactor' end} -- refactor
         use {"nvim-treesitter/nvim-treesitter-textobjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textobjects' end} -- selecting, moving functions etc.
         -- use "romgrk/nvim-treesitter-context" -- show the "context" at the top line, i.e. function name when in a function
+        use {"andymass/vim-matchup", config=function() require'matchup' end} -- % jumps between matching coding blocks, not just single chars.
         use {"neovim/nvim-lspconfig"} -- lsp
         -- use {"neovim/nvim-lspconfig", -- lsp
         --     requires = {

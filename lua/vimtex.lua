@@ -9,3 +9,6 @@ vim.g.vimtex_log_ignore = {
     "Overfull",
 }
 
+-- :h vimtex-af-enhanced-matchparen
+-- wrong matching for some {} with this on:
+-- vim.g.matchup_override_vimtex = true

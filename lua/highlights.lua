@@ -121,3 +121,4 @@ fg("DashboardCenter", grey_fg)
 fg("DashboardShortcut", grey_fg)
 fg("DashboardFooter", "black")
 
+bg("MatchParen", "#1f5c6b")
