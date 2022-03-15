@@ -1,12 +1,14 @@
 require("gitsigns").setup {
     signs = {
-        add = {hl = "DiffAdd", text = "▌", numhl = "GitSignsAddNr"},
-        change = {hl = "DiffChange", text = "▌", numhl = "GitSignsChangeNr"},
-        delete = {hl = "DiffDelete", text = "_", numhl = "GitSignsDeleteNr"},
-        topdelete = {hl = "DiffDelete", text = "‾", numhl = "GitSignsDeleteNr"},
-        changedelete = {hl = "DiffChange", text = "~", numhl = "GitSignsChangeNr"}
+        add = {hl = "DiffAdd", text = "▌", numhl = "DiffAdd"},
+        change = {hl = "DiffChange", text = "▌", numhl = "DiffChangeNr"},
+        delete = {hl = "DiffDelete", text = "_", numhl = "DiffDeleteNr"},
+        topdelete = {hl = "DiffDelete", text = "‾", numhl = "DiffTopDeleteNr"},
+        changedelete = {hl = "DiffChange", text = "~", numhl = "DiffChangeDeleteNr"}
     },
-    numhl = false,
+    -- highlight in signcolumn to the left of numbers, although :set signcolumn=no means this is suppressed.
+    signcolumn = true, 
+    numhl = true, -- highlight line number
     keymaps = {
         -- Default keymap options
         noremap = true,

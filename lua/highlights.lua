@@ -19,6 +19,7 @@ local nord_blue = colors.nord_blue
 local blue = colors.blue
 local yellow = colors.yellow
 local purple = colors.purple
+local dark_purple = colors.dark_purple
 
 -- for guifg, bg
 
@@ -58,8 +59,13 @@ fg("cursorlinenr", white)
 -- git signs ---
 fg_bg("DiffAdd", green, "none")
 fg_bg("DiffChange", one_bg2, "none")
-fg_bg("DiffModified", nord_blue, "none")
+fg_bg("DiffChangeNr", nord_blue, "none")
 fg_bg("DiffDelete", red, "none")
+cmd("hi DiffDeleteNr guifg=" .. grey .. " gui=underline guisp=" .. red)
+cmd("hi DiffTopDeleteNr guifg=" .. red)
+cmd("hi DiffChangeDeleteNr guifg=" .. dark_purple)
+-- file has changed indication
+fg_bg("DiffModified", nord_blue, "none")
 
 -- NvimTree
 fg("NvimTreeFolderIcon", blue)

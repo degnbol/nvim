@@ -28,15 +28,16 @@ opt.linebreak = true -- if I sometimes were to wrap lines, do it at whitespaces 
 opt.numberwidth = 2 -- reduce default numbering from starting as 3 characters wide to 2
 opt.mouse = "a" -- activate the mouse, i.e. click to move cursor, drag to visual select and scroll to scroll window instead of cursor
 opt.termguicolors = true
--- opt.cul = true -- highlight current line
-opt.signcolumn = "yes" -- show a column left of the numbering that can be used to add signs to lines for git etc.
+-- opt.cursorline = true -- highlight current line
+-- show a column that can be used to add signs to lines showing git changes and LSP diagnostics.
+-- "number" means it replaces line numbering rather than e.g. "yes" where it is a column left of numbering.
+opt.signcolumn = "no" -- "number"
 -- http://stackoverflow.com/questions/2490227/how-does-vims-autoread-work#20418591
 -- when regaining focus, reload file if it was changed somewhere else
 cmd 'autocmd FocusGained,BufEnter * :silent! !'
 opt.completeopt = 'menuone,noinsert'
 opt.showmode = false
 opt.showcmd = false
-
 -- Highlight on yank, e.g. press Y to yank line which will highlight the line for a moment
 cmd 'autocmd TextYankPost * lua vim.highlight.on_yank {on_visual = false}'
 -- yoink integration with cutlass
