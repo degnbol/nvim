@@ -58,12 +58,13 @@ fg("cursorlinenr", white)
 
 -- git signs ---
 fg_bg("DiffAdd", green, "none")
+fg_bg("DiffAddNr", grey, green)
 fg_bg("DiffChange", one_bg2, "none")
-fg_bg("DiffChangeNr", nord_blue, "none")
+fg_bg("DiffChangeNr", grey, nord_blue)
 fg_bg("DiffDelete", red, "none")
 cmd("hi DiffDeleteNr guifg=" .. grey .. " gui=underline guisp=" .. red)
-cmd("hi DiffTopDeleteNr guifg=" .. red)
-cmd("hi DiffChangeDeleteNr guifg=" .. dark_purple)
+fg_bg("DiffTopDeleteNr", grey, red)
+fg_bg("DiffChangeDeleteNr", grey, dark_purple)
 -- file has changed indication
 fg_bg("DiffModified", nord_blue, "none")
 
@@ -128,3 +129,8 @@ fg("DashboardShortcut", grey_fg)
 fg("DashboardFooter", "black")
 
 bg("MatchParen", "#1f5c6b")
+
+
+-- Coc indicate error with read undercurl instead of default uncolored underline
+cmd("hi CocErrorHighlight cterm=undercurl gui=undercurl guisp=red")
+
