@@ -1,3 +1,4 @@
+#!/usr/bin/env lua
 local gl = require("galaxyline")
 local gls = gl.section
 local vim = vim
