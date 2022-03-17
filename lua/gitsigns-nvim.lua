@@ -1,6 +1,6 @@
 require("gitsigns").setup {
     signs = {
-        add = {hl = "DiffAdd", text = "▌", numhl = "DiffAdd"},
+        add = {hl = "DiffAdd", text = "▌", numhl = "DiffAddNr"},
         change = {hl = "DiffChange", text = "▌", numhl = "DiffChangeNr"},
         delete = {hl = "DiffDelete", text = "_", numhl = "DiffDeleteNr"},
         topdelete = {hl = "DiffDelete", text = "‾", numhl = "DiffTopDeleteNr"},

@@ -15,8 +15,4 @@ Enter in commandline mode or the Ex mode is annoying. Anyway to make sure the
 enter to run in repl is only for normal mode while editing a file?
 tile window setup like: https://www.youtube.com/watch?v=GazrDjcdeG4
 
-Show diagnostics by coloring line number. Show git changes etc if possible by 
-also modifying line number, e.g. instead of green bar for new lines, make green 
-number. :set signcolumn=number
-
 convert cmd 'au ...' and cmd 'autocmd ...' to nvim autocmd
