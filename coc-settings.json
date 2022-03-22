@@ -1,7 +1,12 @@
+// https://github.com/neoclide/coc.nvim/wiki/Using-the-configuration-file
+// inspiration: https://github.com/hallettj/dot-vim/blob/master/home/.config/nvim/coc-settings.json
 {
-  "diagnostic.level": "warning",
-  "diagnostic.signLevel": "warning",
-  "diagnostic.messageLevel": "error",
+  "diagnostic": {
+    "level": "warning",
+    "signLevel": "warning",
+    "messageLevel": "error",
+    "warningSign": ""
+  },
   "languageserver": {
     "julia": {
       "command": "julia",
