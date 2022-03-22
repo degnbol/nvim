@@ -69,6 +69,7 @@ return require("packer").startup(
         -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
         use {"RishabhRD/nvim-cheat.sh", config=function() require'cheat' end, requires="RishabhRD/popfix"}
         use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile
+        use "tpope/vim-sleuth" -- sleuth that let's you autodetect if file is using 2 or 4 spaces
 
         -- use "elzr/vim-json" -- json
 
@@ -81,5 +82,6 @@ return require("packer").startup(
         use {"ojroques/nvim-bufdel", config=function() require'ojroques_bufdel' end} -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
         use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
         use {'sudormrfbin/cheatsheet.nvim', requires='nvim-telescope/telescope.nvim'} -- <leader>? to give cheatsheet popup. 
+        use {"lalitmee/browse.nvim", requires="nvim-telescope/telescope.nvim"} -- search stackoverflow quicker
     end
 )
