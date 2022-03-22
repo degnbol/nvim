@@ -21,14 +21,14 @@ opt.splitbelow = true
 opt.splitright = true
 opt.wildmode = 'longest:full,full' -- settings for how to show completion on command line
 -- opt.number = true -- show line numbering
--- opt.relativenumber true -- should the line numbering be shown relative to current line?
+-- opt.relativenumber = true -- should the line numbering be shown relative to current line?
 opt.clipboard = 'unnamed,unnamedplus' -- share clipboard between copy paste and yank
 opt.wrap = false -- something run before init.lua is changing he default so we change it back here.
 opt.linebreak = true -- if I sometimes were to wrap lines, do it at whitespaces and other characters indicated in breakat
 opt.numberwidth = 2 -- reduce default numbering from starting as 3 characters wide to 2
 opt.mouse = "a" -- activate the mouse, i.e. click to move cursor, drag to visual select and scroll to scroll window instead of cursor
 opt.termguicolors = true
--- opt.cursorline = true -- highlight current line
+opt.cursorline = true -- highlight current line
 -- show a column that can be used to add signs to lines showing git changes and LSP diagnostics.
 -- "number" means it replaces line numbering rather than e.g. "yes" where it is a column left of numbering.
 opt.signcolumn = "no" -- "number"
