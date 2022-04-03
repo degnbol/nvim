@@ -16,4 +16,19 @@ tile window setup like: https://www.youtube.com/watch?v=GazrDjcdeG4
 
 convert cmd 'au ...' and cmd 'autocmd ...' to nvim autocmd
 
-inspiration: https://github.com/rstacruz/vim-coc-settings/blob/master/README.md
+inspiration:
+https://github.com/rstacruz/vim-coc-settings/blob/master/README.md
+https://www.youtube.com/c/benbrastmckie/videos
+
+insp for latex:
+https://jdhao.github.io/2019/03/26/nvim_latex_write_preview/
+
+browse search to go slightly quicker to stackoverflow or other google results for your problems:
+https://www.reddit.com/r/neovim/comments/td9uwd/plugin_browse_internet_from_neovim/
+https://github.com/lalitmee/browse.nvim/blob/main/lua/browse/input.lua
+
+try to make a union highlight group to show both git and diagnostics:
+https://github.com/neoclide/coc.nvim/blob/release/doc/coc.txt # CocErrorHighlight and other highlight groups
+google vim combine highlight groups
+https://github.com/gerw/vim-HiLinkTrace
+
