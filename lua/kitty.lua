@@ -24,6 +24,9 @@ local cmdline2filetype = {
 function search_repl()
     fh = io.popen('kitty @ ls')
     json_string = fh:read("*a")
+    -- if we are not in fact in a kitty terminal then the command will fail
+    if json_string == "" then return end
+    
     ls = json.decode(json_string)
     for i_os_win, os_win in ipairs(ls) do
         if os_win["is_focused"] then
