@@ -38,6 +38,10 @@ cmd 'autocmd FocusGained,BufEnter * :silent! !'
 opt.completeopt = 'menuone,noinsert'
 opt.showmode = false
 opt.showcmd = false
+-- t=use textwidth for formatting. a=auto format. w=respect explicit newline.
+-- tcqj is default, so only adding w which is relevant when autoformatting with set fo+=a or manually with gq
+opt.formatoptions='tcqjw'
+
 -- Highlight on yank, e.g. press Y to yank line which will highlight the line for a moment
 cmd 'autocmd TextYankPost * lua vim.highlight.on_yank {on_visual = false}'
 -- yoink integration with cutlass
