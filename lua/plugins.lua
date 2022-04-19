@@ -76,7 +76,7 @@ return require("packer").startup(
         -- use "elzr/vim-json" -- json
 
         -- UI
-        use {"akinsho/nvim-bufferline.lua", requires="kyazdani42/nvim-web-devicons", config=function() require'top-bufferline' end} -- add a line at the top with all the files open in the buffer
+        use {"akinsho/nvim-bufferline.lua", tag = "*", requires="kyazdani42/nvim-web-devicons", config=function() require'top-bufferline' end} -- add a line at the top with all the files open in the buffer
         -- use {"glepnir/galaxyline.nvim", config=function() require'statusline' end}
         use {"nvim-telescope/telescope.nvim", requires="nvim-lua/plenary.nvim"} -- Fuzzy finder
         use {"glepnir/dashboard-nvim", config=function() require'dashboard' end} -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.

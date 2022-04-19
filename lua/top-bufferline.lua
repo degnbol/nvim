@@ -1,6 +1,7 @@
 require "bufferline".setup {
     options = {
-        numbers = "ordinal", -- can be customized to show both ordinal number and buffer id (see readme)
+        -- numbers = "ordinal", -- can be customized to show both ordinal number and buffer id (see readme)
+        numbers = function(opts) return string.format('%s', opts.raise(opts.ordinal)) end,
         offsets = {{filetype = "NvimTree"}}, -- moves bufferline to the right when tree view is open
         indicator_icon = " ", -- no line or other indicator in front of selected tab
         buffer_close_icon = "",

@@ -101,35 +101,22 @@ fg("LspDiagnosticsSignHint", purple)
 fg("LspDiagnosticsVirtualTextHint", purple)
 
 -- bufferline
-
-fg_bg("BufferLineFill", "black", "black")
-fg_bg("BufferLineBackground", "black", "black")
-fg_bg("BufferLineBufferVisible", "black", "black")
-fg_bg("BufferLineBufferSelected", "black", "black")
+fg("BufferLineBackground", colors.grey_fg2)
+fg("BufferLineNumbers", colors.grey_fg2)
+cmd "hi BufferLineBufferVisible guifg=white"
+cmd "hi BufferLineNumbersVisible guifg=white"
 -- bold instead of italic bold selected file
 cmd "hi BufferLineBufferSelected gui=bold"
+cmd "hi BufferLineNumbersSelected gui=bold"
 
--- tabs
-fg_bg("BufferLineTab", "black", "black")
-fg_bg("BufferLineTabSelected", "black", nord_blue)
-
-fg_bg("BufferLineIndicator", "black", "black")
-fg_bg("BufferLineIndicatorSelected", "black", "black")
-
--- -- separators
-fg_bg("BufferLineSeparator", "black", "black")
-fg_bg("BufferLineSeparatorVisible", "black", "black")
-fg_bg("BufferLineSeparatorSelected", "black", "black")
 
 -- dashboard
-
 fg("DashboardHeader", grey_fg)
 fg("DashboardCenter", grey_fg)
 fg("DashboardShortcut", grey_fg)
 fg("DashboardFooter", "black")
 
 bg("MatchParen", "#1f5c6b")
-
 
 -- Coc indicate error with read undercurl instead of default uncolored underline
 cmd("hi CocErrorHighlight cterm=undercurl gui=undercurl guisp=red")
