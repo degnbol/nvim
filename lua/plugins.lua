@@ -36,7 +36,7 @@ return require("packer").startup(
         use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate', config=function() require'treesitter' end} -- language coloring and ensuring of installation
         use {"nvim-treesitter/nvim-treesitter-refactor", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-refactor' end} -- refactor
         use {"nvim-treesitter/nvim-treesitter-textobjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textobjects' end} -- selecting, moving functions etc.
-        use {"RRethy/nvim-treesitter-textsubjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textsubjects' end} -- press V then . to inc (, for decrease) select based on treesitter 
+        use {"RRethy/nvim-treesitter-textsubjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textsubjects' end} -- in vis mode use . , ; i; to select based on treesitter 
         -- use "romgrk/nvim-treesitter-context" -- show the "context" at the top line, i.e. function name when in a function
         use {"andymass/vim-matchup", config=function() require'matchup' end} -- % jumps between matching coding blocks, not just single chars.
         use {"neovim/nvim-lspconfig"} -- lsp
