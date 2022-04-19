@@ -1,6 +1,5 @@
 local g = vim.g
 
-g.nvim_tree_indent_markers = 1
 g.nvim_tree_git_hl = 1
 -- some issue with highlighting shell file logo
 -- g.nvim_tree_highlight_opened_files = 1
@@ -35,8 +34,6 @@ local tree_cb = require"nvim-tree.config".nvim_tree_callback
 
 require'nvim-tree'.setup {
     actions = {open_file = {quit_on_open = true}},
-    -- closes neovim automatically when the tree is the last **WINDOW** in the view
-    auto_close = true,
     -- opens the tree when changing/opening a new tab if the tree wasn't previously opened
     open_on_tab = true,
     -- update the focused file on `BufEnter`, un-collapses the folders recursively until it finds the file
@@ -51,7 +48,8 @@ require'nvim-tree'.setup {
     filters = {
         dotfiles = true,
         custom = {".git", ".cache", "Icon\r", ".DS_Store"}
-    }
+    },
+    renderer={indent_markers={enable = true}},
 }
 
 
