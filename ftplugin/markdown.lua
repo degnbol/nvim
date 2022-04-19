@@ -8,4 +8,5 @@ vim.api.nvim_buf_set_option(0, "commentstring", "% %s")
 -- a=auto format by default
 vim.opt.formatoptions:append "croa"
 -- this also had to be set for the above to understand how a comment line looks.
-vim.opt.comments = ":%"
+-- the b means the % should always be followed by a blank, i.e. space
+vim.opt.comments = "b:%"
