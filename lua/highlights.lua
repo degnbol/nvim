@@ -35,24 +35,15 @@ local function fg_bg(group, fgcol, bgcol)
     cmd("hi " .. group .. " guifg=" .. fgcol .. " guibg=" .. bgcol)
 end
 
-
-
-
--- blankline
-
--- fg("IndentBlanklineChar", line)
-
--- misc --
 fg("LineNr", grey)
+fg("CursorLineNr", white)
 fg("NvimInternalError", red)
 fg("VertSplit", line)
 cmd "hi! EndOfBuffer ctermbg=black ctermfg=black guibg=black guifg=black"
 
--- inactive statuslines as thin splitlines
-cmd "hi! StatusLineNC gui=underline guifg=black"
-cmd "hi StatusLine guibg=black"
-
-fg("CursorLineNr", white)
+-- inactive statuslines as thin splitlines. Not used since statusline is disabled.
+-- cmd "hi! StatusLineNC gui=underline guifg=black"
+-- cmd "hi StatusLine guibg=black"
 
 -- git signs ---
 fg_bg("DiffAdd", green, "none")
@@ -63,7 +54,6 @@ fg_bg("DiffDelete", red, "none")
 cmd("hi DiffDeleteNr guifg=" .. grey .. " gui=underline guisp=" .. red)
 fg_bg("DiffTopDeleteNr", grey, red)
 fg_bg("DiffChangeDeleteNr", grey, dark_purple)
-fg_bg("DiffChangeDeleteNrCursor", white, dark_purple)
 -- file has changed indication
 fg_bg("DiffModified", nord_blue, "none")
 
