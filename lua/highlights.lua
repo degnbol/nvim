@@ -52,9 +52,7 @@ cmd "hi! EndOfBuffer ctermbg=black ctermfg=black guibg=black guifg=black"
 cmd "hi! StatusLineNC gui=underline guifg=black"
 cmd "hi StatusLine guibg=black"
 
--- if cursorline is on, only highlight the number not the whole line
-cmd "hi clear CursorLine"
-fg("cursorlinenr", white)
+fg("CursorLineNr", white)
 
 -- git signs ---
 fg_bg("DiffAdd", green, "none")
@@ -65,6 +63,7 @@ fg_bg("DiffDelete", red, "none")
 cmd("hi DiffDeleteNr guifg=" .. grey .. " gui=underline guisp=" .. red)
 fg_bg("DiffTopDeleteNr", grey, red)
 fg_bg("DiffChangeDeleteNr", grey, dark_purple)
+fg_bg("DiffChangeDeleteNrCursor", white, dark_purple)
 -- file has changed indication
 fg_bg("DiffModified", nord_blue, "none")
 
