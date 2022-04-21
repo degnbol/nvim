@@ -121,3 +121,6 @@ bg("MatchParen", "#1f5c6b")
 -- Coc indicate error with read undercurl instead of default uncolored underline
 cmd("hi CocErrorHighlight cterm=undercurl gui=undercurl guisp=red")
 
+-- HlSearchLens. Less agressive coloring but still matching search hl
+cmd "hi HlSearchLens ctermfg=11 ctermbg=242 guifg=#ffdc2d guibg=#5a576e"
+cmd "hi HlSearchLensNear ctermfg=11 ctermbg=242 guifg=#19f988 guibg=#5a576e"

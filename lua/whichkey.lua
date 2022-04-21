@@ -88,16 +88,21 @@ whichkey.register{
             s = "stage hunk",
             u = "undo stage hunk",
         },
+        l = {":noh<CR>", "clear highlights"},
         m = {
             m = {":DashboardJumpMarks<CR>", "jump marks (dashboard)"}
         },
         s = {
             name = "substitute OR session",
+            -- substitute is an optional feature enabled from the substitute package where
+            -- I can substitute e.g. all occurrences of a word in a paragraph with some new text by writing <leader>swip then the replacement text.
             l = {":SessionLoad<CR>", "load session"},
             s = {":SessionSave<CR>", "save session"},
         },
         t = {
-            name = "terminal",
+            name = "toggle OR terminal",
+            l = {':silent HlSearchLensToggle<CR>', "HlSearchLens"},
+            s = {':ScrollbarToggle<CR>', "scrollbar"},
             t = {':let b:repl_id = input("window id: ")<CR>', "set REPL id"},
         },
         x = "delete buffer",

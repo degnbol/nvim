@@ -17,6 +17,7 @@ return require("packer").startup(
         -- use {"famiu/bufdelete.nvim", config=function() require'famiu_bufdelete' end}
         use "farmergreg/vim-lastplace" -- open file in last edited location
         use {"inkarkat/vim-UnconditionalPaste", requires='inkarkat/vim-ingo-library'} -- lots of ways to paste using g{c,C,l,b}{,i}{p,P} and may others 
+        use "google/vim-searchindex" -- let's search result box show number of matches when there's >99 matches
 
         -- color
         use "norcalli/nvim-colorizer.lua" -- when a hex or other color is defined, highlight the text with its color
@@ -85,5 +86,7 @@ return require("packer").startup(
         use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
         use {'sudormrfbin/cheatsheet.nvim', requires='nvim-telescope/telescope.nvim'} -- <leader>? to give cheatsheet popup. 
         use {"lalitmee/browse.nvim", requires="nvim-telescope/telescope.nvim"} -- search stackoverflow quicker
+        use {"kevinhwang91/nvim-hlslens", config=function() require'hlslens-conf' end} -- show search match numbers
+        use {"petertriho/nvim-scrollbar", requires="kevinhwang91/nvim-hlslens", config=function() require'scrollbar-conf' end} -- requires hlslens to show search results in scrollbar
     end
 )
