@@ -92,6 +92,7 @@ whichkey.register{
         m = {
             m = {":DashboardJumpMarks<CR>", "jump marks (dashboard)"}
         },
+        p = {':lua require("nabla").popup()<CR>', "equation"},
         s = {
             name = "substitute OR session",
             -- substitute is an optional feature enabled from the substitute package where
