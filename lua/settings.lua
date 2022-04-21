@@ -29,6 +29,7 @@ opt.numberwidth = 2 -- reduce default numbering from starting as 3 characters wi
 opt.mouse = "a" -- activate the mouse, i.e. click to move cursor, drag to visual select and scroll to scroll window instead of cursor
 opt.termguicolors = true
 opt.cursorline = true -- highlight current line
+opt.cursorlineopt = "number" -- only highlight cursorline number
 -- show a column that can be used to add signs to lines showing git changes and LSP diagnostics.
 -- "number" means it replaces line numbering rather than e.g. "yes" where it is a column left of numbering.
 opt.signcolumn = "no" -- "number"
