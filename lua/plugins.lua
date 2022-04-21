@@ -18,6 +18,7 @@ return require("packer").startup(
         use "farmergreg/vim-lastplace" -- open file in last edited location
         use {"inkarkat/vim-UnconditionalPaste", requires='inkarkat/vim-ingo-library'} -- lots of ways to paste using g{c,C,l,b}{,i}{p,P} and may others 
         use "google/vim-searchindex" -- let's search result box show number of matches when there's >99 matches
+        use "haya14busa/vim-asterisk" -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
 
         -- color
         use "norcalli/nvim-colorizer.lua" -- when a hex or other color is defined, highlight the text with its color
