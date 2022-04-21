@@ -126,7 +126,10 @@ whichkey.register{
         b = "block paste",
         B = "jagged paste",
         -- without UnconditionalPaste plugin it will (un)comment motion
-        c = "char paste OR (un)comment",
+        c = {
+            name = "char paste OR (un)comment",
+            c = "(un)comment line"
+        },
         C = "char condensed paste",
         h = "combinatorial paste",
         H = "recombinatorial paste",

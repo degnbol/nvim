@@ -32,3 +32,5 @@ https://github.com/neoclide/coc.nvim/blob/release/doc/coc.txt # CocErrorHighligh
 google vim combine highlight groups
 https://github.com/gerw/vim-HiLinkTrace
 
+inspiration:
+https://github.com/rockerBOO/awesome-neovim
