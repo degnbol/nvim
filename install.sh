@@ -27,3 +27,6 @@ curl -sL install-node.vercel.app/lts | bash
 
 # rxi/json.lua has to be linked so it can be found
 ln -s ~/.local/share/nvim/site/pack/packer/start/json.lua/json.lua lua/json.lua
+
+# for telescope to perform searching of words within files
+brew install ripgrep

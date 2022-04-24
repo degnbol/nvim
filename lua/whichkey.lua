@@ -75,12 +75,13 @@ whichkey.register{
         -- telescope and dashboard mappings
         f = {
             name = "file",
-            b = {":lua require('telescope.builtin').buffers()<CR>", "buffers (telescope)"},
-            f = {":lua require('telescope.builtin').find_files()<CR>", "find (telescope)"},
-            h = {":lua require('telescope.builtin').help_tags()<CR>", "help tags (telescope)"},
+            b = {":Telescope buffers<CR>", "buffers (telescope)"},
+            f = {":Telescope find_files<CR>", "find (telescope)"},
+            h = {":Telescope help_tags<CR>", "help tags (telescope)"},
             n = {":DashboardNewFile<CR>", "new (dashboard)"},
-            o = {":lua require('telescope.builtin').oldfiles()<CR>", "recent (telescope)"},
-            w = {":Telescope live_grep<CR>", "live grep (telescope)"},
+            o = {":Telescope oldfiles<CR>", "recent (telescope)"},
+            w = {":Telescope live_grep<CR>", "find in files (telescope)"},
+            W = {":Telescope grep_string<CR>", "find word under cursor (telescope)"},
         },
         h = {
             name = "git(signs)",
