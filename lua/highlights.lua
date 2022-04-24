@@ -96,7 +96,8 @@ cmd "hi BufferLineBufferVisible guifg=white"
 cmd "hi BufferLineNumbersVisible guifg=white"
 -- bold instead of italic bold selected file
 cmd "hi BufferLineBufferSelected gui=bold"
-cmd "hi BufferLineNumbersSelected gui=bold"
+-- only show tab number for tabs we may want to select, i.e. not current tab
+cmd "hi link BufferLineNumbersSelected Ignore"
 
 
 -- dashboard
