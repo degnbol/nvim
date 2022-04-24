@@ -50,17 +50,19 @@ whichkey.setup {
 
 -- name all kinds of shortcuts
 whichkey.register{
+    ["<TAB>"] = {":BufferLineCycleNext<CR>", "next buffer"},
+    ["<S-TAB>"] = {":BufferLineCyclePrev<CR>", "previous buffer"},
     ["<leader>"] = {
         ["/"] = "(un)comment",
-        ["1"] = "buffer 1 (bufferline)",
-        ["2"] = "buffer 2 (bufferline)",
-        ["3"] = "buffer 3 (bufferline)",
-        ["4"] = "...",
-        ["5"] = "which_key_ignore",
-        ["6"] = "which_key_ignore",
-        ["7"] = "which_key_ignore",
-        ["8"] = "which_key_ignore",
-        ["9"] = "which_key_ignore",
+        ["1"] = {":BufferLineGoToBuffer 1<CR>", "buffer 1 (bufferline)"},
+        ["2"] = {":BufferLineGoToBuffer 2<CR>", "buffer 2 (bufferline)"},
+        ["3"] = {":BufferLineGoToBuffer 3<CR>", "buffer 3 (bufferline)"},
+        ["4"] = {":BufferLineGoToBuffer 4<CR>", "..."},
+        ["5"] = {":BufferLineGoToBuffer 5<CR>", "which_key_ignore"},
+        ["6"] = {":BufferLineGoToBuffer 6<CR>", "which_key_ignore"},
+        ["7"] = {":BufferLineGoToBuffer 7<CR>", "which_key_ignore"},
+        ["8"] = {":BufferLineGoToBuffer 8<CR>", "which_key_ignore"},
+        ["9"] = {":BufferLineGoToBuffer 9<CR>", "which_key_ignore"},
         ["?"] = "cheatsheet",
         ["<CR>"] = {":lua kittyWindow()<CR>", "kitty REPL"},
         a = "swap arg (treesitter textobjects)",
