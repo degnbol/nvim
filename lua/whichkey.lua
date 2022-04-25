@@ -119,11 +119,21 @@ whichkey.register{
         },
     },
     g = {
-        -- from UnconditionalPaste
-        ["#"] = "commented paste",
+        -- paste commands from UnconditionalPaste
+        ["*"] = "search word under cursor flexibly", -- flexibly=ignore case and whole word
+        ["#"] = "search word under cursor flexibly OR commented paste",
         [","] = "comma paste",
-        ["="] = "expression paste",
+        -- ["="] = "expression paste",
+        -- replace the UnconditionalPaste expression paste with pasting then formatting
+        ["="] = {
+            name = "paste then format",
+            -- switch to paste mode even though it is reported in :h nopaste as obsolete. 
+            -- p=paste below. gq=format a motion. '] mark for end of last edit (the paste). $=goto EOL.
+            p = {":set paste<CR>pgq']$:set nopaste<CR>", "after"},
+            P = {":set paste<CR>Pgq']$:set nopaste<CR>", "before"},
+        },
         [">"] = "indent paste",
+        ["/"] = "highlight last search",
         ["\\"] = "escape paste",
         ["["] = "indented paste",
         ["]"] = "indented paste",
