@@ -12,3 +12,5 @@ vim.opt.formatoptions:append "croa"
 vim.opt.comments = "b:%"
 -- ai is useful for lists but a problem if I try to indent start of sentence, then the next lines are also indented.
 vim.opt.autoindent = false
+-- since we are actively using the textwidth in markdown then the moving of the window is just annoying for a slim window
+vim.opt.sidescrolloff = 0
