@@ -10,3 +10,5 @@ vim.opt.formatoptions:append "croa"
 -- this also had to be set for the above to understand how a comment line looks.
 -- the b means the % should always be followed by a blank, i.e. space
 vim.opt.comments = "b:%"
+-- ai is useful for lists but a problem if I try to indent start of sentence, then the next lines are also indented.
+vim.opt.autoindent = false
