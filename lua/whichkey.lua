@@ -129,8 +129,8 @@ whichkey.register{
             name = "paste then format",
             -- switch to paste mode even though it is reported in :h nopaste as obsolete. 
             -- p=paste below. gq=format a motion. '] mark for end of last edit (the paste). $=goto EOL.
-            p = {":set paste<CR>pgq']$:set nopaste<CR>", "after"},
-            P = {":set paste<CR>Pgq']$:set nopaste<CR>", "before"},
+            p = {":set paste<CR>p:set nopaste<CR>gq']$", "after"},
+            P = {":set paste<CR>P:set nopaste<CR>gq']$", "before"},
         },
         [">"] = "indent paste",
         ["/"] = "highlight last search",
