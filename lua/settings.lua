@@ -1,4 +1,4 @@
-local utils = require('utils')
+local utils = require'utils'
 local cmd = vim.cmd
 local opt = vim.opt
 local g = vim.g
@@ -9,7 +9,8 @@ opt.smartindent = true
 opt.breakindent = true -- when wrapping line, match indent on the wrapped line.
 opt.breakindentopt = "shift:4" -- indent to show line was wrapped.
 opt.copyindent = true
-opt.smartindent = true -- round off indents to multiple of indent size (4)
+-- indent after words in cinwords (^for,^while,...) and stuff with {}. Should def not be active for normal text docs.
+opt.smartindent = false -- has to be set to false explicitly even though it is default probs because some plugin changes it.
 opt.tabstop = 4 -- how many spaces does a tab correspond to?
 -- Has to be set for bufferline to work by hiding an open buffer when switching to another
 opt.hidden = true 
@@ -20,7 +21,6 @@ opt.sidescrolloff = 8 -- number of blocks to keep to sides of cursor
 opt.splitbelow = true
 opt.splitright = true
 opt.wildmode = 'longest:full,full' -- settings for how to show completion on command line
--- opt.number = true -- show line numbering
 -- opt.relativenumber = true -- should the line numbering be shown relative to current line?
 opt.clipboard = 'unnamed,unnamedplus' -- share clipboard between copy paste and yank
 opt.wrap = false -- something run before init.lua is changing he default so we change it back here.
