@@ -1,7 +1,25 @@
 #!/usr/bin/env zsh
-# install Paq
-# git clone --depth=1 https://github.com/savq/paq-nvim.git "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/pack/paqs/start/paq-nvim
-# or install packer
+if [ `uname` = "Darwin" ]; then
+    mac=true
+else
+    mac=false
+fi
+
+if $mac; then
+    # --HEAD for development version instead of stable necessary for some lua config
+    brew install --HEAD luajit
+    brew install --HEAD neovim
+    brew install npm # install npm for :LspInstall python that install python support for Lsp. 
+    npm install -g neovim # if I do :checkhealth it makes a warning recommending to install this so I did
+else
+    cd ~/bin
+    wget https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
+    tar xzvf nvim-linux64.tar.gz
+    ln -s ~/bin/nvim-linux64/bin/nvim ~/bin/nvim
+    rm nvim-linux64.tar.gz
+fi
+
+# Install packer
 git clone https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 
 # language server currently jedi-language-server for its simplicity and lack of annoying wrong error detection
