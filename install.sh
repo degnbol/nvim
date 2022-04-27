@@ -46,4 +46,8 @@ pipx install virtualenv
 :CocInstall coc-julia coc-python coc-sh coc-r-lsp
 
 # for telescope to perform searching of words within files
-brew install ripgrep
+if $mac; then
+    brew install ripgrep
+else
+    conda install -c conda-forge ripgrep
+fi
