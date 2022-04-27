@@ -25,6 +25,9 @@ git clone https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pac
 # coc.nvim requires node.js: https://github.com/neoclide/coc.nvim
 curl -sL install-node.vercel.app/lts | bash || # if it fails then install to $HOME/bin
 curl -sL install-node.vercel.app/lts | bash -s -- --prefix=$HOME
+# coc needs pynvim
+conda install -y pynvim -c conda-forge
+
 
 # language server currently jedi-language-server for its simplicity and lack of annoying wrong error detection
 # installed with pipx
@@ -51,3 +54,4 @@ if $mac; then
 else
     conda install -c conda-forge ripgrep
 fi
+
