@@ -52,6 +52,6 @@ pipx install virtualenv
 if $mac; then
     brew install ripgrep
 else
-    conda install -c conda-forge ripgrep
+    conda install -y -c conda-forge ripgrep
 fi
 
