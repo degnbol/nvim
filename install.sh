@@ -22,6 +22,10 @@ fi
 # Install packer
 git clone https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 
+# coc.nvim requires node.js: https://github.com/neoclide/coc.nvim
+curl -sL install-node.vercel.app/lts | bash || # if it fails then install to $HOME/bin
+curl -sL install-node.vercel.app/lts | bash -s -- --prefix=$HOME
+
 # language server currently jedi-language-server for its simplicity and lack of annoying wrong error detection
 # installed with pipx
 brew install pipx
@@ -38,13 +42,8 @@ pipx install virtualenv
 # I fixed it by modifying ~/.local/share/.../start/.../lua/which-key/keys.lua like so: https://github.com/folke/which-key.nvim/pull/231/files
 # It is an error that is not patched yet in which-key resulting from breaking changes in nvim 0.7 , so it should eventually be fixed.
 
-# coc.nvim requires node.js: https://github.com/neoclide/coc.nvim
-curl -sL install-node.vercel.app/lts | bash
 # when coc is installed then it should automatically install julia support due to the coc-config.json but otherwise run
 :CocInstall coc-julia coc-python coc-sh coc-r-lsp
-
-# rxi/json.lua has to be linked so it can be found
-ln -s ~/.local/share/nvim/site/pack/packer/start/json.lua/json.lua lua/json.lua
 
 # for telescope to perform searching of words within files
 brew install ripgrep
