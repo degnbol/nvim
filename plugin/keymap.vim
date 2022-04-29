@@ -100,12 +100,15 @@ inoremap <silent><expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 " inoremap <Down> <c-\><c-o>gj
 
 " Danglish support
-nmap æ ;
-nmap Æ :
-nmap ø '
-nmap Ø "
-nmap å [
-nmap Å {
+nnoremap æ ;
+nnoremap Æ :
+nnoremap ø '
+nnoremap Ø "
+nnoremap å [
+nnoremap Å {
+" In Danglish I moved : and ; to the }] botton
+noremap ; ]
+noremap : }
 
 " ## coc setup ##
 
