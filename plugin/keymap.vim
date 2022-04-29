@@ -27,11 +27,6 @@ map Y y$
 " back space and delete buttons delete should delete also in normal mode.
 " Delete to black hole register.
 nnoremap <BS> "_X
-" cutlass map so x is cut
-nnoremap x  d
-xnoremap x  d
-nnoremap xx dd
-nnoremap X  D
 " Yoink:
 nmap <c-n> <plug>(YoinkPostPasteSwapBack)
 nmap <c-p> <plug>(YoinkPostPasteSwapForward)
@@ -41,8 +36,8 @@ nmap gp <plug>(YoinkPaste_gp)
 nmap gP <plug>(YoinkPaste_gP)
 nmap [y <plug>(YoinkRotateBack)
 nmap ]y <plug>(YoinkRotateForward)
-" Not working?
-" nmap <c-=> <plug>(YoinkPostPasteToggleFormat)
+" toggle if pasting with == formatting or not
+nmap <c-=> <plug>(YoinkPostPasteToggleFormat)
 nmap y <plug>(YoinkYankPreserveCursorPosition)
 xmap y <plug>(YoinkYankPreserveCursorPosition)
 

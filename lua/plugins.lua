@@ -9,7 +9,7 @@ return require("packer").startup(
         use "tpope/vim-surround" -- press cs'" to change surrounding ' with ", ds' to delete surrounding ', ysiw) to surround word with ) and yss[ to surround line with [ ... ] (incl. spaces)
         -- use "tpope/vim-sensible" -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
         use "svermeulen/vim-subversive" -- add substitution functions to e.g. replace a word with clipboard content by writing siw
-        use "svermeulen/vim-cutlass" -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
+        use {"gbprod/cutlass.nvim", config=function() require'cutlass-conf' end} -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
         use "svermeulen/vim-yoink" -- yank history that you can cycle with c-n and c-p
         -- use "mg979/vim-visual-multi" -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
         -- use {"moll/vim-bbye", config=function() require'bbye' end}

@@ -51,6 +51,8 @@ g.yoinkIncludeDeleteOperations = 1
 g.yoinkSyncNumberedRegisters = 1 
 -- move cursor to end instead of start of multi-line paste
 g.yoinkMoveCursorToEndOfPaste = 1
+-- preserve yank between neovim sessions
+g.yoinkSavePersistently = 1
 
 -- go between lines with left/right arrow keys only in insert mode
 opt.whichwrap = '[,]'
