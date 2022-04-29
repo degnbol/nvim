@@ -62,3 +62,8 @@ opt.laststatus = 0
 -- hide the location in file
 opt.ruler = false
 
+-- Danglish support
+opt.keymap = "danglish"
+-- use ctrl+6 to toggle
+opt.iminsert = 0
+

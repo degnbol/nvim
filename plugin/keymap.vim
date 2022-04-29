@@ -99,16 +99,26 @@ inoremap <silent><expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 " inoremap <Up> <c-\><c-o>gk
 " inoremap <Down> <c-\><c-o>gj
 
-" Danglish support
+" Danglish support. For when Danglish keyboard is selected, 
+" generally you should instead stay in code keyboard and use iminsert=2
+" This can also be done with langmap but since these are 
+" never used in normal mode then it doesn't hurt.
 nnoremap æ ;
 nnoremap Æ :
 nnoremap ø '
 nnoremap Ø "
 nnoremap å [
 nnoremap Å {
+xnoremap æ ;
+xnoremap Æ :
+xnoremap ø '
+xnoremap Ø "
+xnoremap å [
+xnoremap Å {
 " In Danglish I moved : and ; to the }] botton
-noremap ; ]
-noremap : }
+" But this messes with things when I'm not in Danglish.
+" However visual : shouldn't do anything as far as I know
+xnoremap : }
 
 " ## coc setup ##
 
