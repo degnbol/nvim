@@ -96,8 +96,16 @@ inoremap <silent><expr> <TAB>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <silent><expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 " move up/down on display lines instead of logical lines with arrows in insert mode
-inoremap <Up> <c-\><c-o>gk
-inoremap <Down> <c-\><c-o>gj
+" inoremap <Up> <c-\><c-o>gk
+" inoremap <Down> <c-\><c-o>gj
+
+" Danglish support
+nmap æ ;
+nmap Æ :
+nmap ø '
+nmap Ø "
+nmap å [
+nmap Å {
 
 " ## coc setup ##
 
