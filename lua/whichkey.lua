@@ -108,6 +108,7 @@ whichkey.register{
             -- switch to/from Danish æøå and to insert mode, which is convenient.
             d = {'i<C-^>', "Danish (ctrl+^)"},
             l = {':silent HlSearchLensToggle<CR>', "HlSearchLens"},
+            m = {':MarkdownToggle', "markdown preview"},
             s = {':ScrollbarToggle<CR>', "scrollbar"},
             t = {':let b:repl_id = input("window id: ")<CR>', "set REPL id"},
         },

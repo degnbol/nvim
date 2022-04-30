@@ -73,6 +73,7 @@ return require("packer").startup(
         use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile
         -- use "tpope/vim-sleuth" -- sleuth that let's you autodetect if file is using 2 or 4 spaces. Mistakenly set noexpandtab
         -- use "preservim/vim-markdown" -- conceal markdown expressions like _emphasis_ and folding. Overkill, see after/syntax/markdown.vim
+        use {"iamcco/markdown-preview.nvim", run=':call mkdp#util#install()'} -- :MarkdownPreview live in browser
         use "jbyuki/nabla.nvim" -- show pretty math in term
 
         -- use "elzr/vim-json" -- json
