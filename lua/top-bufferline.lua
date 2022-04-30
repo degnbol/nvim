@@ -4,6 +4,7 @@ require "bufferline".setup {
         numbers = function(opts) return string.format('%s', opts.raise(opts.ordinal)) end,
         offsets = {{filetype = "NvimTree"}}, -- moves bufferline to the right when tree view is open
         indicator_icon = " ", -- no line or other indicator in front of selected tab
+        separator_style = {"", ""}, -- remove separators
         buffer_close_icon = "",
         modified_icon = "",
         close_icon = "",
