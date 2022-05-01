@@ -115,10 +115,8 @@ xnoremap ø '
 xnoremap Ø "
 xnoremap å [
 xnoremap Å {
-" In Danglish I moved : and ; to the }] botton
+" In Danglish I moved : and ; to the }] button
 " But this messes with things when I'm not in Danglish.
-" However visual : shouldn't do anything as far as I know
-xnoremap : }
 
 " ## coc setup ##
 
