@@ -98,6 +98,8 @@ cmd "hi BufferLineNumbersVisible guifg=white"
 cmd "hi BufferLineBufferSelected gui=bold"
 -- only show tab number for tabs we may want to select, i.e. not current tab
 cmd "hi link BufferLineNumbersSelected Ignore"
+-- why did this stop working? I had to add this:
+cmd "hi BufferLineNumbersSelected guifg=black"
 
 
 -- dashboard
