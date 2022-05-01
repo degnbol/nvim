@@ -18,6 +18,8 @@ return require("packer").startup(
         use {"inkarkat/vim-UnconditionalPaste", requires='inkarkat/vim-ingo-library'} -- lots of ways to paste using g{c,C,l,b}{,i}{p,P} and may others 
         use "google/vim-searchindex" -- let's search result box show number of matches when there's >99 matches
         use "haya14busa/vim-asterisk" -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
+        use "kana/vim-textobj-user" -- easily define custom textobjects such as i( and a( to select in/an \left( \right) block in latex
+        -- TODO: add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
 
         -- color
         use "norcalli/nvim-colorizer.lua" -- when a hex or other color is defined, highlight the text with its color
@@ -57,7 +59,7 @@ return require("packer").startup(
         -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines
         use "tpope/vim-fugitive" -- git
         use {"lewis6991/gitsigns.nvim", requires='nvim-lua/plenary.nvim', config=function() require'gitsigns-nvim' end} -- git decoration to the left
-        use {"JuliaEditorSupport/julia-vim", config=function() require'julia' end} -- julia support, colors and unicode substitution.
+        use {"JuliaEditorSupport/julia-vim", config=function() require'julia' end, ft='julia'} -- julia support, colors and unicode substitution.
         -- use "urbainvaes/vim-ripple" -- REPL with some indent and tab problems
         -- use {"hkupty/iron.nvim", config=function () require'iron-nvim' end} -- REPL that doesn't support bpython or radian
         -- use {"pappasam/nvim-repl", config=function() require'pappasam_repl' end} -- REPL that has to be started and can only send whole lines
@@ -66,14 +68,15 @@ return require("packer").startup(
         -- use {"jpalardy/vim-slime", config=function() require'slime' end, requires='rxi/json.lua'} -- send code to REPL that can even be in another window.
         -- use "metakirby5/codi.vim" -- scratchpad coding, see output of all lines to the right https://github.com/metakirby5/codi.vim
         use "rxi/json.lua" -- for kitty.lua
-        use "jeetsukumaran/vim-pythonsense" -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
+        use {"jeetsukumaran/vim-pythonsense", ft='python'} -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
         use {"samirettali/shebang.nvim", config=function() require'shebang-nvim' end} -- insert shebang on new file edit
         -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
         use {"RishabhRD/nvim-cheat.sh", config=function() require'cheat' end, requires="RishabhRD/popfix"}
         use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile
         -- use "tpope/vim-sleuth" -- sleuth that let's you autodetect if file is using 2 or 4 spaces. Mistakenly set noexpandtab
         -- use "preservim/vim-markdown" -- conceal markdown expressions like _emphasis_ and folding. Overkill, see after/syntax/markdown.vim
-        use {"iamcco/markdown-preview.nvim", run=':call mkdp#util#install()'} -- :MarkdownPreview live in browser
+        use {"iamcco/markdown-preview.nvim", run=':call mkdp#util#install()', ft='markdown'} -- :MarkdownPreview live in browser
+        use {"habamax/vim-asciidoctor", config=function() require'asciidoc' end, ft='asciidoctor'}
         use "jbyuki/nabla.nvim" -- show pretty math in term
 
         -- use "elzr/vim-json" -- json

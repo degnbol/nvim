@@ -15,3 +15,12 @@ opt.comments = "b:%"
 opt.autoindent = false
 -- since we are actively using the textwidth in markdown then the moving of the window is just annoying for a slim window
 opt.sidescrolloff = 0
+
+-- conceal comment leader and the _ and * around emphasis
+-- level=1 -> conceal but don't remove block
+opt.conceallevel = 1
+-- nvc=normal,visual,command -> only unconceal in insert mode with cursor on 
+-- the line.
+opt.concealcursor = "nvc"
+
+
