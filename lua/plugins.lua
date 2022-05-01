@@ -59,7 +59,7 @@ return require("packer").startup(
         -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines
         use "tpope/vim-fugitive" -- git
         use {"lewis6991/gitsigns.nvim", requires='nvim-lua/plenary.nvim', config=function() require'gitsigns-nvim' end} -- git decoration to the left
-        use {"JuliaEditorSupport/julia-vim", config=function() require'julia' end, ft='julia'} -- julia support, colors and unicode substitution.
+        use {"JuliaEditorSupport/julia-vim", config=function() require'julia' end} -- julia support, colors and unicode substitution. CANNOT use ft=julia
         -- use "urbainvaes/vim-ripple" -- REPL with some indent and tab problems
         -- use {"hkupty/iron.nvim", config=function () require'iron-nvim' end} -- REPL that doesn't support bpython or radian
         -- use {"pappasam/nvim-repl", config=function() require'pappasam_repl' end} -- REPL that has to be started and can only send whole lines
@@ -74,9 +74,10 @@ return require("packer").startup(
         use {"RishabhRD/nvim-cheat.sh", config=function() require'cheat' end, requires="RishabhRD/popfix"}
         use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile
         -- use "tpope/vim-sleuth" -- sleuth that let's you autodetect if file is using 2 or 4 spaces. Mistakenly set noexpandtab
-        -- use "preservim/vim-markdown" -- conceal markdown expressions like _emphasis_ and folding. Overkill, see after/syntax/markdown.vim
+        -- use {"preservim/vim-markdown", ft='markdown'} -- conceal markdown expressions like _emphasis_ and folding. Overkill, see after/syntax/markdown.vim
         use {"iamcco/markdown-preview.nvim", run=':call mkdp#util#install()', ft='markdown'} -- :MarkdownPreview live in browser
         use {"habamax/vim-asciidoctor", config=function() require'asciidoc' end, ft='asciidoctor'}
+        use {"habamax/vim-rst"}
         use "jbyuki/nabla.nvim" -- show pretty math in term
 
         -- use "elzr/vim-json" -- json
@@ -94,5 +95,6 @@ return require("packer").startup(
         use {"lalitmee/browse.nvim", requires="nvim-telescope/telescope.nvim"} -- search stackoverflow quicker
         use {"kevinhwang91/nvim-hlslens", config=function() require'hlslens-conf' end} -- show search match numbers
         use {"petertriho/nvim-scrollbar", requires="kevinhwang91/nvim-hlslens", config=function() require'scrollbar-conf' end} -- requires hlslens to show search results in scrollbar
+        use "tyru/capture.vim" -- :Capture hi to call :hi where you can search etc.
     end
 )
