@@ -34,3 +34,6 @@ https://github.com/gerw/vim-HiLinkTrace
 
 inspiration:
 https://github.com/rockerBOO/awesome-neovim
+
+# text objectsssss
+https://github.com/kana/vim-textobj-user/wiki
