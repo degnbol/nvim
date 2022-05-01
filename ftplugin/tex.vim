@@ -8,4 +8,6 @@ set nosmartindent
 " https://www.vim.org/scripts/script.php?script_id=2307
 " https://www.vim.org/scripts/script.php?script_id=2187
 set fo+=a
+" lists doesn't start with number on first column but uses \item
+set fo-=n
 
