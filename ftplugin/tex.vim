@@ -10,4 +10,8 @@ set nosmartindent
 set fo+=a
 " lists doesn't start with number on first column but uses \item
 set fo-=n
+" we will often be writing prose that wraps at textwidth columns but not code.
+" Let's try with sidescrolloff so the window doesn't scroll when we get close 
+" to the edge.
+set sidescrolloff=0
 
