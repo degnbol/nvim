@@ -13,24 +13,22 @@ return require("packer").startup(
         use "svermeulen/vim-yoink" -- yank history that you can cycle with c-n and c-p
         -- use "mg979/vim-visual-multi" -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
         -- use {"moll/vim-bbye", config=function() require'bbye' end}
-        -- use {"famiu/bufdelete.nvim", config=function() require'famiu_bufdelete' end}
         use "farmergreg/vim-lastplace" -- open file in last edited location
         use {"inkarkat/vim-UnconditionalPaste", requires='inkarkat/vim-ingo-library'} -- lots of ways to paste using g{c,C,l,b}{,i}{p,P} and may others 
         use "google/vim-searchindex" -- let's search result box show number of matches when there's >99 matches
         use "haya14busa/vim-asterisk" -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
         use "kana/vim-textobj-user" -- easily define custom textobjects such as i( and a( to select in/an \left( \right) block in latex
         -- TODO: add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
+        use {"glts/vim-textobj-comment", requires="kana/vim-textobj-user"} -- not working?
 
         -- color
-        use "norcalli/nvim-colorizer.lua" -- when a hex or other color is defined, highlight the text with its color
-        use "siduck76/nvim-base16.lua"
-        use "maxwells-daemons/base16-gigavolt-scheme"
+        use {"norcalli/nvim-colorizer.lua", config=function() require'colorizer'.setup() end} -- when a hex or other color is defined, highlight the text with its color
+        use {"norcalli/nvim-base16.lua", requires="norcalli/nvim.lua"}
         use {"unblevable/quick-scope", config=function() require'quick-scope' end} -- highlight letters for jumping with f/F/t/T
 
         use "ryanoasis/vim-devicons" -- adds icons to files
 
         use "sakshamgupta05/vim-todo-highlight" -- highlight todos
-        -- use {"Pocco81/TrueZen.nvim", config=function() require'truezen-nvim' end} -- reduce visuals with :TZ... commands to e.g. remove left and bottom element on the screen.
         -- use {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end} -- dim code that isn't currently being edited with :Twilight.
         -- use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
         use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
@@ -61,11 +59,11 @@ return require("packer").startup(
         use {"lewis6991/gitsigns.nvim", requires='nvim-lua/plenary.nvim', config=function() require'gitsigns-nvim' end} -- git decoration to the left
         use {"JuliaEditorSupport/julia-vim", config=function() require'julia' end} -- julia support, colors and unicode substitution. CANNOT use ft=julia
         -- use "urbainvaes/vim-ripple" -- REPL with some indent and tab problems
-        -- use {"hkupty/iron.nvim", config=function () require'iron-nvim' end} -- REPL that doesn't support bpython or radian
-        -- use {"pappasam/nvim-repl", config=function() require'pappasam_repl' end} -- REPL that has to be started and can only send whole lines
-        -- use {"kassio/neoterm", config=function() require'kassio_neoterm' end}
-        -- use {"HiPhish/repl.nvim", config=function () require'HiPhish_repl' end}
-        -- use {"jpalardy/vim-slime", config=function() require'slime' end, requires='rxi/json.lua'} -- send code to REPL that can even be in another window.
+        -- use {"hkupty/iron.nvim", config=function () require'repl/iron-nvim' end} -- REPL that doesn't support bpython or radian
+        -- use {"pappasam/nvim-repl", config=function() require'repl/pappasam_repl' end} -- REPL that has to be started and can only send whole lines
+        -- use {"kassio/neoterm", config=function() require'repl/kassio_neoterm' end}
+        -- use {"HiPhish/repl.nvim", config=function () require'repl/HiPhish_repl' end}
+        -- use {"jpalardy/vim-slime", config=function() require'repl/slime' end, requires='rxi/json.lua'} -- send code to REPL that can even be in another window.
         -- use "metakirby5/codi.vim" -- scratchpad coding, see output of all lines to the right https://github.com/metakirby5/codi.vim
         use "rxi/json.lua" -- for kitty.lua
         use {"jeetsukumaran/vim-pythonsense", ft='python'} -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
@@ -89,7 +87,7 @@ return require("packer").startup(
         use {"nvim-telescope/telescope.nvim", requires={"nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim"}, config=function() require'telescope-conf' end} -- Fuzzy finder
         use {"glepnir/dashboard-nvim", config=function() require'dashboard' end} -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
         use {"kyazdani42/nvim-tree.lua", requires='kyazdani42/nvim-web-devicons', config=function() require'tree' end} -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
-        use {"ojroques/nvim-bufdel", config=function() require'ojroques_bufdel' end} -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
+        use "ojroques/nvim-bufdel" -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
         use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
         use {'sudormrfbin/cheatsheet.nvim', requires='nvim-telescope/telescope.nvim'} -- <leader>? to give cheatsheet popup. 
         use {"lalitmee/browse.nvim", requires="nvim-telescope/telescope.nvim"} -- search stackoverflow quicker

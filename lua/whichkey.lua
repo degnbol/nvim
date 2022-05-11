@@ -112,7 +112,7 @@ whichkey.register{
             s = {':ScrollbarToggle<CR>', "scrollbar"},
             t = {':let b:repl_id = input("window id: ")<CR>', "set REPL id"},
         },
-        x = "delete buffer",
+        x = {':BufDel<CR>', "delete buffer"}, -- using ojroques bufdel
     },
     d = {
         name = "delete",
