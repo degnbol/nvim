@@ -39,7 +39,6 @@ fg("LineNr", grey)
 fg("CursorLineNr", white)
 fg("NvimInternalError", red)
 fg("VertSplit", line)
-cmd "hi! EndOfBuffer ctermbg=black ctermfg=black guibg=black guifg=black"
 
 -- inactive statuslines as thin splitlines. Not used since statusline is disabled.
 -- cmd "hi! StatusLineNC gui=underline guifg=black"

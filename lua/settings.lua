@@ -2,6 +2,7 @@ local utils = require'utils'
 local cmd = vim.cmd
 local opt = vim.opt
 local g = vim.g
+local api = vim.api
 
 opt.expandtab = true
 opt.shiftwidth = 4
@@ -35,7 +36,10 @@ opt.cursorlineopt = "number" -- only highlight cursorline number
 opt.signcolumn = "no" -- "number"
 -- http://stackoverflow.com/questions/2490227/how-does-vims-autoread-work#20418591
 -- when regaining focus, reload file if it was changed somewhere else
-cmd 'autocmd FocusGained,BufEnter * :silent! !'
+api.nvim_create_autocmd({"FocusGained", "BufEnter"}, {
+    pattern="*",
+    command=':silent! !'
+})
 opt.completeopt = 'menuone,noinsert'
 opt.showmode = false
 opt.showcmd = false
@@ -44,7 +48,10 @@ opt.showcmd = false
 opt.formatoptions='tcqjw'
 
 -- Highlight on yank, e.g. press Y to yank line which will highlight the line for a moment
-cmd 'autocmd TextYankPost * lua vim.highlight.on_yank {on_visual = false}'
+api.nvim_create_autocmd({"TextYankPost"}, {
+    pattern="*",
+    callback=function() vim.highlight.on_yank{on_visual=false} end
+})
 -- yoink integration with cutlass
 g.yoinkIncludeDeleteOperations = 1
 -- add yanks to numbered register
@@ -66,4 +73,6 @@ opt.ruler = false
 opt.keymap = "danglish"
 -- use ctrl+6 to toggle
 opt.iminsert = 0
+-- hide ~ tilde at end of buffer.
+opt.fillchars = "eob: "
 
