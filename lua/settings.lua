@@ -76,3 +76,6 @@ opt.iminsert = 0
 -- hide ~ tilde at end of buffer.
 opt.fillchars = "eob: "
 
+local g = vim.g
+g.mapleader = ' '
+g.maplocalleader = ' '

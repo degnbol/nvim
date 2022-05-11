@@ -52,7 +52,7 @@ return require("packer").startup(
         use {"neoclide/coc.nvim", branch="release"} -- https://github.com/neoclide/coc.nvim/wiki/Language-servers e.g. :CocInstall coc-texlab
         -- -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
         -- use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
-        use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- Toggle commenting out code
+        use {"terrortylor/nvim-comment", config=function() require'comment' end} -- add keybindings to toggle comments with motions etc.
         -- use "windwp/nvim-autopairs" -- auto add second parenthesis etc.
         -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines
         use "tpope/vim-fugitive" -- git

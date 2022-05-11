@@ -11,7 +11,7 @@ require"nvim-treesitter.configs".setup {
                 ["af"] = "@function.outer",
                 ["if"] = "@function.inner",
                 ["ac"] = "@comment.outer",
-                ["ic"] = "@comment.inner",
+                -- ["ic"] = "@comment.inner", -- doesn't exist
             }
         },
         swap = {

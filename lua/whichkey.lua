@@ -53,7 +53,7 @@ whichkey.register{
     ["<TAB>"] = {":BufferLineCycleNext<CR>", "next buffer"},
     ["<S-TAB>"] = {":BufferLineCyclePrev<CR>", "previous buffer"},
     ["<leader>"] = {
-        ["/"] = "(un)comment",
+        ["/"] = "(un)comment", -- see comment.lua
         ["1"] = {":BufferLineGoToBuffer 1<CR>", "buffer 1 (bufferline)"},
         ["2"] = {":BufferLineGoToBuffer 2<CR>", "buffer 2 (bufferline)"},
         ["3"] = {":BufferLineGoToBuffer 3<CR>", "buffer 3 (bufferline)"},
@@ -145,7 +145,7 @@ whichkey.register{
         -- without UnconditionalPaste plugin it will (un)comment motion
         c = {
             name = "char paste OR (un)comment",
-            c = "(un)comment line"
+            c = "(un)comment line",
         },
         C = "char condensed paste",
         h = "combinatorial paste",
