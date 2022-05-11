@@ -49,11 +49,11 @@ whichkey.setup {
 
 
 -- name all kinds of shortcuts
-whichkey.register{
+whichkey.register {
     ["<TAB>"] = {":BufferLineCycleNext<CR>", "next buffer"},
     ["<S-TAB>"] = {":BufferLineCyclePrev<CR>", "previous buffer"},
     ["<leader>"] = {
-        ["/"] = "(un)comment", -- see comment.lua
+        ["/"] = {":CommentToggle<CR>", "(un)comment"}, -- see comment.lua
         ["1"] = {":BufferLineGoToBuffer 1<CR>", "buffer 1 (bufferline)"},
         ["2"] = {":BufferLineGoToBuffer 2<CR>", "buffer 2 (bufferline)"},
         ["3"] = {":BufferLineGoToBuffer 3<CR>", "buffer 3 (bufferline)"},
@@ -72,6 +72,7 @@ whichkey.register{
         d = "defintion? (treesitter textobjects)",
         D = "defintion? (treesitter textobjects)",
         e = {":NvimTreeToggle<CR>", "explorer"},
+        E = {':lua require("nabla").popup()<CR>', "equation"},
         -- telescope and dashboard mappings
         f = {
             name = "file",
@@ -95,7 +96,36 @@ whichkey.register{
         m = {
             m = {":DashboardJumpMarks<CR>", "jump marks (dashboard)"}
         },
-        p = {':lua require("nabla").popup()<CR>', "equation"},
+        p = {
+            name = "paste after",
+            ["#"] = {"<Plug>UnconditionalPasteCommentedAfter", "commented"},
+            -- switch to paste mode even though it is reported in :h nopaste as obsolete. 
+            -- p=paste below. gq=format a motion. '] mark for end of last edit (the paste). $=goto EOL.
+            ["="] = {":set paste<CR>p:set nopaste<CR>gq']$", "format"},
+            b = {"<Plug>UnconditionalPasteBlockAfter", "blockwise"},
+            c = {"<Plug>UnconditionalPasteCharAfter", "charwise"},
+            C = {"<Plug>UnconditionalPasteCharCondensedAfter", "charwise condensed"},
+            i = {"<Plug>UnconditionalPasteIndentedAfter", "indented"},
+            j = {"<Plug>UnconditionalPasteJustJoinedAfter", "just joined"},
+            l = {"<Plug>UnconditionalPasteLineAfter", "linewise"},
+            n = {"<Plug>UnconditionalPasteInlinedAfter", "inlined"},
+            -- ... there are many more to consider https://github.com/inkarkat/vim-UnconditionalPaste
+        },
+        P = {
+            name = "paste before",
+            ["#"] = {"<Plug>UnconditionalPasteCommentedBefore", "commented"},
+            -- switch to paste mode even though it is reported in :h nopaste as obsolete. 
+            -- p=paste below. gq=format a motion. '] mark for end of last edit (the paste). $=goto EOL.
+            ["="] = {":set paste<CR>P:set nopaste<CR>gq']$", "format"},
+            b = {"<Plug>UnconditionalPasteBlockBefore", "blockwise"},
+            c = {"<Plug>UnconditionalPasteCharBefore", "charwise"},
+            C = {"<Plug>UnconditionalPasteCharCondensedBefore", "charwise condensed"},
+            i = {"<Plug>UnconditionalPasteIndentedBefore", "indented"},
+            j = {"<Plug>UnconditionalPasteJustJoinedBefore", "just joined"},
+            l = {"<Plug>UnconditionalPasteLineBefore", "linewise"},
+            n = {"<Plug>UnconditionalPasteInlinedBefore", "inlined"},
+            -- ... there are many more to consider https://github.com/inkarkat/vim-UnconditionalPaste
+        },
         s = {
             name = "substitute OR session",
             -- substitute is an optional feature enabled from the substitute package where
@@ -112,74 +142,39 @@ whichkey.register{
             s = {':ScrollbarToggle<CR>', "scrollbar"},
             t = {':let b:repl_id = input("window id: ")<CR>', "set REPL id"},
         },
-        x = {':BufDel<CR>', "delete buffer"}, -- using ojroques bufdel
+        x = {':BufDel<CR>', "delete buffer"}, -- ojroques BufDel
     },
     d = {
         name = "delete",
         s = {
             -- from the surround package
-            name = "delete surround"
+            name = "delete surround",
         },
     },
     g = {
-        -- paste commands from UnconditionalPaste
         ["*"] = "search word under cursor flexibly", -- flexibly=ignore case and whole word
-        ["#"] = "search word under cursor flexibly OR commented paste",
-        [","] = "comma paste",
-        -- ["="] = "expression paste",
-        -- replace the UnconditionalPaste expression paste with pasting then formatting
-        ["="] = {
-            name = "paste then format",
-            -- switch to paste mode even though it is reported in :h nopaste as obsolete. 
-            -- p=paste below. gq=format a motion. '] mark for end of last edit (the paste). $=goto EOL.
-            p = {":set paste<CR>p:set nopaste<CR>gq']$", "after"},
-            P = {":set paste<CR>P:set nopaste<CR>gq']$", "before"},
-        },
-        [">"] = "indent paste",
+        ["#"] = "search word under cursor flexibly",
         ["/"] = "highlight last search",
-        ["\\"] = "escape paste",
-        ["["] = "indented paste",
-        ["]"] = "indented paste",
-        b = "block paste",
-        B = "jagged paste",
-        -- without UnconditionalPaste plugin it will (un)comment motion
         c = {
-            name = "char paste OR (un)comment",
-            c = "(un)comment line",
+            name = "(un)comment motion",
+            c = "line",
         },
-        C = "char condensed paste",
-        h = "combinatorial paste",
-        H = "recombinatorial paste",
-        l = "line paste",
+        -- normally gp is p where cursor is moved at end. Since we do that by default, we can use it for whitepaste
+        p = {"", "whitepaste after"},
+        P = {"", "whitepaste before"},
         q = {
-            name = "queried OR delimited paste",
-            b = {
-                name = "delimited paste",
-                p = "after",
-                P = "before",
-            },
-            g = {
-                name = "queried joined paste",
-                p = "after",
-                P = "before",
-            },
-            p = "queried after",
-            P = "queried before",
-            q = "format line",
+            name = "format motion",
+            q = "line",
         },
-        Q = "requeried OR redelimited paste",
-        -- grep paste from UnconditionalPaste, refactor from treesitter
-        r = "grep paste OR refactor",
-        R = "regrep paste",
-        s = {
-            name = "spaced paste",
-            p = "after",
-            P = "before",
-        },
-        S = {
-            name = "paragraphed paste",
-            p = "after",
-            P = "before",
-        },
+        -- refactor from treesitter
+        r = "refactor",
     }
 }
+
+-- visual
+whichkey.register({
+    ["<leader>"] = {
+        ["/"] = {":CommentToggle<CR>", "(un)comment"}, -- see comment.lua
+    }
+}, {mode='x'})
+

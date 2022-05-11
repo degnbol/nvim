@@ -14,7 +14,8 @@ return require("packer").startup(
         -- use "mg979/vim-visual-multi" -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
         -- use {"moll/vim-bbye", config=function() require'bbye' end}
         use "farmergreg/vim-lastplace" -- open file in last edited location
-        use {"inkarkat/vim-UnconditionalPaste", requires='inkarkat/vim-ingo-library'} -- lots of ways to paste using g{c,C,l,b}{,i}{p,P} and may others 
+        use {"inkarkat/vim-UnconditionalPaste", requires='inkarkat/vim-ingo-library', config=function() require'UnconditionalPaste' end} -- lots of ways to paste using g{c,C,l,b}{,i}{p,P} and may others 
+        use {"AndrewRadev/whitespaste.vim", config=function() require'whitespaste' end} -- paste without empty newlines
         use "google/vim-searchindex" -- let's search result box show number of matches when there's >99 matches
         use "haya14busa/vim-asterisk" -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
         -- use "kana/vim-textobj-user" -- easily define custom textobjects such as i( and a( to select in/an \left( \right) block in latex
@@ -52,7 +53,7 @@ return require("packer").startup(
         use {"neoclide/coc.nvim", branch="release"} -- https://github.com/neoclide/coc.nvim/wiki/Language-servers e.g. :CocInstall coc-texlab
         -- -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
         -- use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
-        use {"terrortylor/nvim-comment", config=function() require'comment' end} -- add keybindings to toggle comments with motions etc.
+        use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- add keybindings to toggle comments with motions etc.
         -- use "windwp/nvim-autopairs" -- auto add second parenthesis etc.
         -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines
         use "tpope/vim-fugitive" -- git
