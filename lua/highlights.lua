@@ -1,5 +1,11 @@
 local cmd = vim.cmd
 
+
+-- Italic highlight group doesn't actually make terminal text italic by default.
+cmd "highlight Italic cterm=italic gui=italic"
+
+
+
 local colors = require "themes/onedark"
 
 local white = colors.white

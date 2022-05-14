@@ -73,7 +73,7 @@ return require("packer").startup(
         use {"RishabhRD/nvim-cheat.sh", config=function() require'cheat' end, requires="RishabhRD/popfix"}
         use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile
         -- use "tpope/vim-sleuth" -- sleuth that let's you autodetect if file is using 2 or 4 spaces. Mistakenly set noexpandtab
-        -- use {"preservim/vim-markdown", ft='markdown'} -- conceal markdown expressions like _emphasis_ and folding. Overkill, see after/syntax/markdown.vim
+        -- use {"preservim/vim-markdown", requires="godlygeek/tabular"} -- conceal markdown expressions like _emphasis_ and folding. Overkill, see {after/,}syntax/markdown.vim
         use {"iamcco/markdown-preview.nvim", run=':call mkdp#util#install()', ft='markdown'} -- :MarkdownPreview live in browser
         use {"habamax/vim-asciidoctor", config=function() require'asciidoc' end, ft='asciidoctor'}
         use {"habamax/vim-rst"}
