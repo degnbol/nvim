@@ -15,7 +15,7 @@ api.nvim_create_autocmd({"BufNewFile"}, {
             cmd("e " .. folder)
             -- we need to let the tree explorer plugin open the window before we can search.
             vim.wait(1)
-            cmd('/' .. fname)
+            cmd('silent! /' .. fname)
         end
     end
 })
