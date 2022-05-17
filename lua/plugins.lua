@@ -14,7 +14,7 @@ return require("packer").startup(
         -- use "mg979/vim-visual-multi" -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
         -- use {"moll/vim-bbye", config=function() require'bbye' end}
         use "farmergreg/vim-lastplace" -- open file in last edited location
-        use {"inkarkat/vim-UnconditionalPaste", requires='inkarkat/vim-ingo-library', config=function() require'UnconditionalPaste' end} -- lots of ways to paste using g{c,C,l,b}{,i}{p,P} and may others 
+        use {"inkarkat/vim-UnconditionalPaste", requires='inkarkat/vim-ingo-library', config=function() require'unconditionalPaste' end} -- lots of ways to paste using g{c,C,l,b}{,i}{p,P} and may others 
         use {"AndrewRadev/whitespaste.vim", config=function() require'whitespaste' end} -- paste without empty newlines
         use "google/vim-searchindex" -- let's search result box show number of matches when there's >99 matches
         use "haya14busa/vim-asterisk" -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
