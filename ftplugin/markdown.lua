@@ -4,10 +4,10 @@ opt = vim.opt
 -- For making tex documents with the markdown package it is possible to ignore latex comments, hence:
 vim.api.nvim_buf_set_option(0, "commentstring", "% %s")
 -- c=continue comment when wrapping. Should already be enabled.
--- r=with enter in insert mode
--- o=with o/O in normal mode
+-- r=with enter in insert mode. Should already be enabled.
+-- o=with o/O in normal mode. Not sure if I want this.
 -- a=auto format by default
-opt.formatoptions:append "croa"
+opt.formatoptions:append "cra"
 -- this also had to be set for the above to understand how a comment line looks.
 -- the b means the % should always be followed by a blank, i.e. space
 opt.comments = "b:%"

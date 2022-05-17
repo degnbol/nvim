@@ -1,6 +1,0 @@
-See `:h initialization` for order of calls under startup.
-Broadly
- - init.lua runs lua/ files.
- - ftplugin/
- - plugins does their own things which may change settings
- - after/
