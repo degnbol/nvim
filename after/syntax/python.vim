@@ -1,3 +1,5 @@
+hi clear Conceal
+
 " copied from
 " https://github.com/alok/python-conceal/blob/master/after/syntax/python.vim
 " because of the article https://alok.github.io/2018/04/26/using-vim-s-conceal-to-make-languages-more-tolerable/
@@ -9,14 +11,7 @@ silent! syntax clear pythonOperator
 " XXX least specific cases at the top, since the match rules seem to be
 " cumulative.
 
-
-" Include the space after “not” – if present – so that “not a” becomes “¬a”.
-" also, don't hide “not” behind  ‘¬’ if it is after “is ”.
-"
-" syntax match pyOperator "\%(is \)\@<!\<not\%( \|\>\)" conceal cchar=¬
-
 " Subscripts
-
 
 " Matches x0 -> x₀ A2 -> A₂ word2 -> word₂
 " Use ms=s+1 to avoid concealing the letter before the number
@@ -72,25 +67,12 @@ syntax match Normal '\v<\zs_\ze>' conceal cchar=_
 syntax match Normal '\v<not in>' conceal cchar=∉
 syntax match Normal '\v<in>' conceal cchar=∈
 
-
-syntax match Normal '->' conceal cchar=→
-syntax match Normal '<=' conceal cchar=≤
-syntax match Normal '>=' conceal cchar=≥
-
 syntax match Normal '\s@\s'ms=s+1,me=e-1 conceal cchar=⊗
 syntax match Normal '\s\*\s'ms=s+1,me=e-1 conceal cchar=∙
-" syntax match Normal '\v(\+|-|*|/|\%)@!\=' conceal cchar=←
-syntax match Normal '\v[^-=+*/]\zs\=\ze[^=]' conceal cchar=←
-syntax match Normal '\v\=@<!\=\=\=@!' conceal cchar=≝
 
-
-" only conceal `==` if alone, to avoid concealing merge conflict markers
-syntax match Normal '!=' conceal cchar=≠
-
-
-syntax match Normal '\v<((math|torch|np|tf|scipy|sp)\.)?ceil>' conceal cchar=⌈
-syntax match Normal '\v<((math|torch|np|tf|scipy|sp)\.)?floor>' conceal cchar=⌊
-syntax match Normal '\v<((torch|np|tf|scipy|sp)\.)?(eye|identity)>' conceal cchar=𝕀
+" syntax match Normal '\v<((math|torch|np|tf|scipy|sp)\.)?ceil>' conceal cchar=⌈
+" syntax match Normal '\v<((math|torch|np|tf|scipy|sp)\.)?floor>' conceal cchar=⌊
+" syntax match Normal '\v<((torch|np|tf|scipy|sp)\.)?(eye|identity)>' conceal cchar=𝕀
 syntax match Normal '\v<((math|np|scipy|sp)\.)e>' conceal cchar=ℯ
 syntax match Normal '\v<((math|np|scipy|sp)\.)?inf>' conceal cchar=∞
 syntax match Normal "\v<float('inf')>" conceal cchar=∞
@@ -124,7 +106,7 @@ syntax match Normal '\v\.T>' conceal cchar=ᵀ
 
 syntax match Normal '\v\.inverse\(\)' conceal cchar=⁻
 
-syntax match Normal '\v\.reshape>'ms=s conceal cchar=♚
+" syntax match Normal '\v\.reshape>'ms=s conceal cchar=♚
 
 syntax match Normal '<<' conceal cchar=≺
 syntax match Normal '>>' conceal cchar=≻
@@ -160,36 +142,28 @@ syntax keyword Normal Omega conceal cchar=Ω
 syntax keyword Normal omega OMEGA conceal cchar=ω
 syntax keyword Normal nabla NABLA conceal cchar=∇
 
-" like APL
-" Need to use `syntax match` instead of `syntax keyword` or else keyword takes
-" priority and `range(len...` isn't matched.
-syntax match Normal '\v<range>' conceal cchar=⍳
-syntax match Normal '\v<\zsrange\(len\ze\(' conceal cchar=⍳
-syntax keyword Normal enumerate conceal cchar=↑
-
-
 syntax keyword Constant None conceal cchar=∅
-syntax keyword Constant True conceal cchar=⊤
-syntax keyword Constant False conceal cchar=⊥
+" syntax keyword Constant True conceal cchar=⊤
+" syntax keyword Constant False conceal cchar=⊥
 
 " http://www.fileformat.info/info/unicode/block/geometric_shapes/images.htm
-syntax keyword Keyword break conceal cchar=◁
-syntax keyword Keyword continue conceal cchar=↻
+" syntax keyword Keyword break conceal cchar=◁
+" syntax keyword Keyword continue conceal cchar=↻
 syntax keyword Keyword return conceal cchar=◀
-syntax keyword Keyword if conceal cchar=▸
-syntax keyword Keyword elif conceal cchar=▹
-syntax keyword Keyword else conceal cchar=▪
+" syntax keyword Conditional if conceal cchar=▸
+" syntax keyword Conditional elif conceal cchar=▹
+" syntax keyword Conditional else conceal cchar=▪
 
-syntax keyword Normal for conceal cchar=∀
-syntax keyword Normal while conceal cchar=⥁
+syntax keyword Repeat for conceal cchar=∀
+" syntax keyword Repeat while conceal cchar=⥁
 
-syntax keyword Normal def conceal cchar=λ
-syntax keyword Normal class conceal cchar=※
+syntax keyword Define def conceal cchar=λ
+" syntax keyword Structure class conceal cchar=※
 " syntax keyword Keyword assert conceal cchar=‽
-syntax match Keyword 'yield from' conceal cchar=⇄
-syntax keyword Keyword yield conceal cchar=⇇
-syntax match Normal '\v<self>' conceal cchar=⚕
-syntax match Normal '\v<self>\.' conceal cchar=“
+" syntax match Keyword 'yield from' conceal cchar=⇄
+" syntax keyword Keyword yield conceal cchar=⇇
+" syntax match Normal '\v<self>' conceal cchar=⚕
+" syntax match Normal '\v<self>\.' conceal cchar=“
 
 syntax keyword Type Vector conceal cchar=V
 syntax match Type '(np|scipy|sp)\.ndarray' conceal cchar=V
@@ -210,8 +184,6 @@ syntax match Type '\v<float(\(|[^\s)\],:])@!' conceal cchar=ℝ
 syntax match Type '\v<complex(\(|[^\s)\],:])@!' conceal cchar=ℂ
 syntax match Type '\v<str(\(|[^\s)\],:])@!' conceal cchar=𝐒
 syntax match Type '\v<bool(\(|[^\s)\],:])@!' conceal cchar=𝔹
-
-syntax match Normal '\v((np|scipy|sp|torch)\.)?arange' conceal cchar=⍳
 
 syntax keyword Builtin all
 syntax keyword Builtin any conceal cchar=∃
