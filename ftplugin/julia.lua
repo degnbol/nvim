@@ -13,6 +13,7 @@ vim.opt.formatoptions = "jwcrqla"
 -- Setting the treesitter config enable flag sets indentexpr=nvim_treesitter#indent()
 -- I think I finally found the solution to fix indent for julia.
 -- Simply use the builtin smartindent instead of indentexpr.
+-- UNLESS the additional_vim_regex_highlighting option is set for treesitter, then use GetJuliaIndent.
 -- vim.opt.indentexpr = "" -- is set in after/syntax/julia.vim since this dir isn't late enough
-vim.opt.smartindent = true
+-- vim.opt.smartindent = true
 

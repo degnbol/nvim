@@ -53,6 +53,9 @@ whichkey.register {
     ["<TAB>"] = {":BufferLineCycleNext<CR>", "next buffer"},
     ["<S-TAB>"] = {":BufferLineCyclePrev<CR>", "previous buffer"},
     ["<leader>"] = {
+        ["<up>"] = "select increment (treesitter)",
+        ["<down>"] = "select decrement (treesitter)",
+        ["<S-up>"] = "select scope increment (treesitter)",
         ["/"] = {":CommentToggle<CR>", "(un)comment"}, -- see comment.lua
         ["1"] = {":BufferLineGoToBuffer 1<CR>", "buffer 1 (bufferline)"},
         ["2"] = {":BufferLineGoToBuffer 2<CR>", "buffer 2 (bufferline)"},
@@ -175,6 +178,8 @@ whichkey.register {
 whichkey.register({
     ["<leader>"] = {
         ["/"] = {":CommentToggle<CR>", "(un)comment"}, -- see comment.lua
-    }
+    },
+    ["."] = "increment",
+    [","] = "decrement",
 }, {mode='x'})
 

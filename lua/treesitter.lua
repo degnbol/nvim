@@ -12,6 +12,18 @@ require"nvim-treesitter.configs".setup {
     highlight = {
         enable = true,
         use_languagetree = true,
+        -- sometimes highlight fails with julia, so having both highlighters active helps.
+        -- again, this affects indent somehow.
+        additional_vim_regex_highlighting = "julia",
+    },
+    incremental_selection = {
+        enable = true,
+        keymaps = {
+            init_selection = "<leader><up>",
+            node_incremental = "<leader><up>",
+            scope_incremental = "<leader><S-up>",
+            node_decremental = "<leader><down>",
+        },
     },
 }
 
