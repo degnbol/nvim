@@ -3,6 +3,12 @@ vim.api.nvim_buf_set_option(0, "commentstring", "# %s")
 -- remove o, we want to continue comments while editing them only (r).
 -- no t and having c+a means only comments are autoformatted.
 vim.opt.formatoptions = "jwcrqla"
+
+-- see ../after/syntax/julia.vim
+vim.opt.conceallevel = 1
+-- you have to be in insert mode to unconceal
+vim.opt.concealcursor = "nvc"
+
 -- when treesitter runs for julia the indent is wrong after inline for loop,
 -- but setting the indentexpr to the one from treesitter it works, but then it
 -- breaks indents after end of function.
