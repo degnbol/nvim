@@ -1,0 +1,20 @@
+" some settings for https://github.com/chrisbra/csv.vim
+" seems to work better for csv than tsv. I mostly edit tables with mlr and I 
+" can show tab delim files simpler by using vartabstop, so this plugin is not 
+" currently in use.
+let g:csv_autocmd_arrange = 1
+let g:csv_autocmd_arrange_size = 1024*1024
+" only detect delim from first 100 lines
+let g:csv_end = 100
+" faster column arrange when assuming delim is not inside any field
+let g:csv_strict_columns = 1
+" alternatively, if the file is from someone else it might even have newlines 
+" inside a field:
+" let g:csv_nl = 1
+" show delimiter instead of |
+let g:csv_no_conceal = 1
+" CSVColumnOdd is linked to String. Normal and String look the right amount of 
+" similar
+hi link CSVColumnEven Normal
+" map B instead of E to going back 1 column
+let g:csv_bind_B = 1
