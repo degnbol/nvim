@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 api = vim.api
-opt = vim.opt
+opt_local = vim.opt_local
 
 function Vartabstop()
     local vartabstop = {}
@@ -22,12 +22,12 @@ function Vartabstop()
         end
     end
     
-    -- add 1 minimum space
+    -- tab represented as minimum 2 spaces.
     for i, v in ipairs(vartabstop) do
-        vartabstop[i] = v+1
+        vartabstop[i] = v+2
     end
     
-    opt.vartabstop = vartabstop
+    opt_local.vartabstop = vartabstop
 end
 
 -- run automatically sometimes. Maybe add after making changes, e.g. leaving 
