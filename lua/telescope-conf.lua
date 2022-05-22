@@ -6,6 +6,13 @@ require'telescope'.setup {
         entry_prefix = '',
         multi_icon = '',
     },
+    extensions = {
+        dash = {
+            file_type_keywords = {
+                python = {"python", "numpy", "scipy", "pandas"}
+            }
+        }
+    }
 }
 
 -- load the native fzf as recommended. Not working.

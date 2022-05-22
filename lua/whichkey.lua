@@ -95,6 +95,8 @@ whichkey.register {
             s = "stage hunk",
             u = "undo stage hunk",
         },
+        -- <leader>K since K is regular defintion of word under cursor.
+        K = {":DashWord<CR>", "Dash word"},
         l = {":noh<CR>", "clear highlights"},
         m = {
             m = {":DashboardJumpMarks<CR>", "jump marks (dashboard)"}
