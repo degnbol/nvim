@@ -47,9 +47,7 @@ whichkey.setup {
     -- triggers = {"<leader>"} -- or specifiy a list manually
 }
 
-
--- name all kinds of shortcuts
-whichkey.register {
+whichkey.register({
     ["<TAB>"] = {":BufferLineCycleNext<CR>", "next buffer"},
     ["<S-TAB>"] = {":BufferLineCyclePrev<CR>", "previous buffer"},
     ["<leader>"] = {
@@ -104,9 +102,10 @@ whichkey.register {
         p = {
             name = "paste after",
             ["#"] = {"<Plug>UnconditionalPasteCommentedAfter", "commented"},
-            -- switch to paste mode even though it is reported in :h nopaste as obsolete. 
-            -- p=paste below. gq=format a motion. '] mark for end of last edit (the paste). $=goto EOL.
-            ["="] = {":set paste<CR>p:set nopaste<CR>gq']$", "format"},
+            -- the `[ shouldn't be necessary but for some reason the cursor may 
+            -- be moved to the first empty line of the paste, so we make sure 
+            -- to move it to start of paste before autoindent.
+            ["="] = {"<Plug>UnconditionalPasteLineAfter()`[=']", "autoindent"},
             b = {"<Plug>UnconditionalPasteBlockAfter", "blockwise"},
             c = {"<Plug>UnconditionalPasteCharAfter", "charwise"},
             C = {"<Plug>UnconditionalPasteCharCondensedAfter", "charwise condensed"},
@@ -114,14 +113,19 @@ whichkey.register {
             j = {"<Plug>UnconditionalPasteJustJoinedAfter", "just joined"},
             l = {"<Plug>UnconditionalPasteLineAfter", "linewise"},
             n = {"<Plug>UnconditionalPasteInlinedAfter", "inlined"},
+            -- switch to paste mode even though it is reported in :h nopaste as 
+            -- obsolete. p=paste after. gq=format a motion. '[ and '] marks for 
+            -- start and end of last edit (the paste). Depending on setting for 
+            -- p the cursor will be at one or the other end after paste. 
+            -- Default vim settings are cursor unchanged after paste. I here 
+            -- assume it is moved after pasted text.
+            q = {":set paste<CR>p:set nopaste<CR>`[gq']", "format"},
             -- ... there are many more to consider https://github.com/inkarkat/vim-UnconditionalPaste
         },
         P = {
             name = "paste before",
             ["#"] = {"<Plug>UnconditionalPasteCommentedBefore", "commented"},
-            -- switch to paste mode even though it is reported in :h nopaste as obsolete. 
-            -- p=paste below. gq=format a motion. '] mark for end of last edit (the paste). $=goto EOL.
-            ["="] = {":set paste<CR>P:set nopaste<CR>gq']$", "format"},
+            ["="] = {"<Plug>UnconditionalPasteLineBefore()`[=']", "autoindent"},
             b = {"<Plug>UnconditionalPasteBlockBefore", "blockwise"},
             c = {"<Plug>UnconditionalPasteCharBefore", "charwise"},
             C = {"<Plug>UnconditionalPasteCharCondensedBefore", "charwise condensed"},
@@ -129,6 +133,7 @@ whichkey.register {
             j = {"<Plug>UnconditionalPasteJustJoinedBefore", "just joined"},
             l = {"<Plug>UnconditionalPasteLineBefore", "linewise"},
             n = {"<Plug>UnconditionalPasteInlinedBefore", "inlined"},
+            q = {":set paste<CR>P:set nopaste<CR>`[gq']", "format"},
             -- ... there are many more to consider https://github.com/inkarkat/vim-UnconditionalPaste
         },
         s = {
@@ -174,14 +179,16 @@ whichkey.register {
         -- refactor from treesitter
         r = "refactor",
     }
-}
+}, {mode='n'})
 
 -- visual
 whichkey.register({
     ["<leader>"] = {
         ["/"] = {":CommentToggle<CR>", "(un)comment"}, -- see comment.lua
     },
+    ["<ScrollWheelUp>"] = "which_key_ignore",
+    ["<ScrollWheelDown>"] = "which_key_ignore",
     ["."] = "increment",
     [","] = "decrement",
-}, {mode='x'})
+}, {mode='v'})
 
