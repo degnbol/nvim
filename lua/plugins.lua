@@ -74,6 +74,7 @@ return require("packer").startup(
         use {"mrjones2014/dash.nvim", run='make install', requires='nvim-telescope/telescope.nvim'} -- :DashWord with <leader>K. conf in telescope-conf.lua
         use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile
         -- use "tpope/vim-sleuth" -- sleuth that let's you autodetect if file is using 2 or 4 spaces. Mistakenly set noexpandtab
+        use "tpope/vim-abolish" -- crs: snake_case, crm: MixedCase, crc: camelCase, cru: UPPER_CASE, cr-: dash-case, cr.: dot.case, cr<SPACE>: space case, crt: Title Case
         -- use {"preservim/vim-markdown", requires="godlygeek/tabular"} -- conceal markdown expressions like _emphasis_ and folding. Overkill, see {after/,}syntax/markdown.vim
         use {"iamcco/markdown-preview.nvim", run=':call mkdp#util#install()', ft='markdown'} -- :MarkdownPreview live in browser
         use {"habamax/vim-asciidoctor", config=function() require'asciidoc' end, ft='asciidoctor'}
