@@ -37,3 +37,10 @@ https://github.com/rockerBOO/awesome-neovim
 
 # text objectsssss
 https://github.com/kana/vim-textobj-user/wiki
+
+# consider ALE for lint
+https://github.com/dense-analysis/ale
+
+color theme according to terminal color theme but with an option to use the 
+hardcoded tested color theme so we don't end up with a broken theme.
+
