@@ -21,9 +21,11 @@ fi
 
 # Install packer
 git clone https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+nvim +PackerSync
 
 # coc.nvim requires node.js: https://github.com/neoclide/coc.nvim
-curl -sL install-node.vercel.app/lts | bash || # if it fails then install to $HOME/bin
+# if it fails then install to $HOME/bin
+curl -sL install-node.vercel.app/lts | bash ||
 curl -sL install-node.vercel.app/lts | bash -s -- --prefix=$HOME
 # coc needs pynvim
 conda install -y pynvim -c conda-forge
@@ -41,12 +43,8 @@ yarn global add diagnostic-languageserver
 brew install universal-ctags
 pipx install virtualenv
 
-# I had this error message from which-key: https://github.com/LunarVim/LunarVim/issues/2139
-# I fixed it by modifying ~/.local/share/.../start/.../lua/which-key/keys.lua like so: https://github.com/folke/which-key.nvim/pull/231/files
-# It is an error that is not patched yet in which-key resulting from breaking changes in nvim 0.7 , so it should eventually be fixed.
-
 # when coc is installed then it should automatically install julia support due to the coc-config.json but otherwise run
-:CocInstall coc-julia coc-python coc-sh coc-r-lsp
+# :CocInstall coc-julia coc-python coc-sh coc-r-lsp
 
 # for telescope to perform searching of words within files
 if $mac; then
