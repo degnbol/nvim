@@ -88,7 +88,7 @@ return require("packer").startup(
         -- use {"glepnir/galaxyline.nvim", config=function() require'statusline' end}
         use {"nvim-telescope/telescope-fzf-native.nvim", run='make', opt=true} -- recommended compiled fuzzy finder for telescope
         use {"nvim-telescope/telescope.nvim", requires={"nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim"}, config=function() require'telescope-conf' end} -- Fuzzy finder
-        use {"glepnir/dashboard-nvim", config=function() require'dashboard' end} -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
+        use {"glepnir/dashboard-nvim", config=function() require'dashboard-conf' end} -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
         use {"kyazdani42/nvim-tree.lua", requires='kyazdani42/nvim-web-devicons', config=function() require'tree' end} -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
         use "ojroques/nvim-bufdel" -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
         use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
