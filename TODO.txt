@@ -1,8 +1,5 @@
 Make julia LSP faster with https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#julials
 If you get LSP diagnostics to become good then you can add toggling with WhoIsSethDaniel/toggle-lsp-diagnostics.nvim
-If you want to be able to open nvim within nvim terminal it can be done without 
-nesting: https://github.com/mhinz/neovim-remote see bottom of 
-https://github.com/caenrique/nvim-toggle-terminal
 Consider https://github.com/jalvesaq/Nvim-R and https://github.com/jalvesaq/vimcmdline
 Consider https://github.com/seblj/nvim-tabline and 
 customized to use tabs rather than buffers 
@@ -44,3 +41,10 @@ https://github.com/dense-analysis/ale
 color theme according to terminal color theme but with an option to use the 
 hardcoded tested color theme so we don't end up with a broken theme.
 
+see video again from kitty main page and implement super useful things, e.g. the thing that let's you edit remote files locally.
+https://sw.kovidgoyal.net/kitty/
+
+lsp is probs better now. Make a config that allows easy switching between coc and builtin lsp.
+Rewatch video and make a better setup where keymaps are only set when lsp is 
+active etc so you are only replacing keymaps when the lsp is actually attached.
+https://www.youtube.com/watch?v=puWgHa7k3SY
