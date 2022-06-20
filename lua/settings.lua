@@ -34,6 +34,7 @@ opt.cursorlineopt = "number" -- only highlight cursorline number
 -- show a column that can be used to add signs to lines showing git changes and LSP diagnostics.
 -- "number" means it replaces line numbering rather than e.g. "yes" where it is a column left of numbering.
 opt.signcolumn = "no" -- "number"
+opt.cmdheight = 0 -- hide cmdline when not in use
 -- http://stackoverflow.com/questions/2490227/how-does-vims-autoread-work#20418591
 -- when regaining focus, reload file if it was changed somewhere else
 api.nvim_create_autocmd({"FocusGained", "BufEnter"}, {
