@@ -15,6 +15,9 @@
           "missingrefs": false
       },
       "filetypes": ["julia"]
+    },
+    "python": {
+        "setIntepreter": "~/miniconda3/bin/python"
     }
   },
   "signature.target": "echo"
