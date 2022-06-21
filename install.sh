@@ -45,7 +45,7 @@ pipx install virtualenv
 
 # when coc is installed then it should automatically install julia support due to the coc-config.json but otherwise run
 # :CocInstall coc-julia coc-python coc-sh coc-r-lsp
-# Similarly, if you get a module jedi not found on e.g. gd (go to definition) then set the python intepreter to conda python with command
+# NOTE: Set the python intepreter to conda python with command
 # :CocCommand python.setInterpreter
 # Followed by selecting the miniconda python in the menu that opens.
 
