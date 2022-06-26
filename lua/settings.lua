@@ -34,7 +34,7 @@ opt.cursorlineopt = "number" -- only highlight cursorline number
 -- show a column that can be used to add signs to lines showing git changes and LSP diagnostics.
 -- "number" means it replaces line numbering rather than e.g. "yes" where it is a column left of numbering.
 opt.signcolumn = "no" -- "number"
-opt.cmdheight = 0 -- hide cmdline when not in use
+-- opt.cmdheight = 0 -- hide cmdline when not in use. Messes with search currently, by asking for confirm after a search.
 -- http://stackoverflow.com/questions/2490227/how-does-vims-autoread-work#20418591
 -- when regaining focus, reload file if it was changed somewhere else
 api.nvim_create_autocmd({"FocusGained", "BufEnter"}, {
@@ -44,9 +44,9 @@ api.nvim_create_autocmd({"FocusGained", "BufEnter"}, {
 opt.completeopt = 'menuone,noinsert'
 opt.showmode = false
 opt.showcmd = false
--- t=use textwidth for formatting. a=auto format. w=respect explicit newline.
+-- t=use textwidth for formatting. a=auto format. w=respect explicit newline. r=continue comment leader with newline in insert mode.
 -- tcqj is default, so only adding w which is relevant when autoformatting with set fo+=a or manually with gq
-opt.formatoptions='tcqjw'
+opt.formatoptions='tcqjwr'
 
 -- Highlight on yank, e.g. press Y to yank line which will highlight the line for a moment
 api.nvim_create_autocmd({"TextYankPost"}, {
