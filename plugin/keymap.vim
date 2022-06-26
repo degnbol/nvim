@@ -83,6 +83,26 @@ inoremap <S-2-ScrollWheelDown> <NOP>
 inoremap <S-3-ScrollWheelDown> <NOP>
 inoremap <S-4-ScrollWheelDown> <NOP>
 
+" typical modifier to arrow key behavior. 
+" TODO decide what to do with shift: select things like outside vim, move 
+" further than alt, etc.
+nnoremap <A-Up> {
+nnoremap <A-Down> }
+nnoremap <A-Left> b
+nnoremap <A-Right> w
+
+xnoremap <A-Up> {
+xnoremap <A-Down> }
+xnoremap <A-Left> b
+xnoremap <A-Right> w
+
+inoremap <A-Up> <c-\><c-o>{
+inoremap <A-Down> <c-\><c-o>}
+inoremap <A-Left> <c-\><c-o>b
+inoremap <A-Right> <c-\><c-o>w
+
+
+
 " completion popup keys. <C-e> == reject and close pum. <C-y> == accept.
 inoremap <silent><expr> <Esc>   pumvisible() ? "\<C-y><Esc>" : "\<Esc>"
 inoremap <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
