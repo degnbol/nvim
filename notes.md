@@ -9,5 +9,6 @@ Broadly
 
 ctrl+f(oward) and ctrl+b(ack) to navigate hover windows.
 K to jump to definition in help docs and ctrl+o to go back.
-
+ctrl+e(extra) and ctrl+y(ester) to move screen.
+zz to center line in screen, zt to put it at top of screen and zb for bottom.
 
