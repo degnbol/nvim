@@ -48,3 +48,7 @@ lsp is probs better now. Make a config that allows easy switching between coc an
 Rewatch video and make a better setup where keymaps are only set when lsp is 
 active etc so you are only replacing keymaps when the lsp is actually attached.
 https://www.youtube.com/watch?v=puWgHa7k3SY
+
+Maybe move around vim and kitty windows more seamlessly
+https://github.com/knubie/vim-kitty-navigator
+
