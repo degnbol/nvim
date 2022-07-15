@@ -111,7 +111,12 @@ inoremap <silent><expr> <BS>    pumvisible() ? "\<C-y><BS>"  : "\<BS>"
 " https://vi.stackexchange.com/questions/15092/auto-complete-popup-menu-make-enter-trigger-newline-if-no-item-was-selected
 " Also fix unindenting blankline by writing something (a space) and deleting
 " it again.
-inoremap <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "<C-y><CR> <BS>" : "<C-y>") : "<CR> <BS>"
+" NOTE: very important, the <c-\><c-o> is needed. I removed it at some point 
+" because I thought it was redudant but it makes sure that when typing 
+" newline, followed by e.g. else (from indentkeys) that indentexpr is called. 
+" If <c-\><c-o> is removed, then indent will no longer be called 
+" automatically.
+inoremap <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "<C-y><CR><c-\><c-o> <BS>" : "<C-y>") : "<CR><c-\><c-o> <BS>"
 inoremap <silent><expr> <TAB>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <silent><expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
@@ -137,13 +142,4 @@ xnoremap å [
 xnoremap Å {
 " In Danglish I moved : and ; to the }] button
 " But this messes with things when I'm not in Danglish.
-
-" ## coc setup ##
-
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" default = 4000 [ms]
-set updatetime=1000
-
 
