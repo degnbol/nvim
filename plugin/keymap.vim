@@ -115,8 +115,10 @@ inoremap <silent><expr> <BS>    pumvisible() ? "\<C-y><BS>"  : "\<BS>"
 " because I thought it was redudant but it makes sure that when typing 
 " newline, followed by e.g. else (from indentkeys) that indentexpr is called. 
 " If <c-\><c-o> is removed, then indent will no longer be called 
-" automatically.
-inoremap <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "<C-y><CR><c-\><c-o> <BS>" : "<C-y>") : "<CR><c-\><c-o> <BS>"
+" automatically. <c-\><c-o> goes to normal mode temporarily, <ESC> is to do 
+" nothing there, but somehow that means that something has been done so the 
+" whitespace line is not reduced to empty line.
+inoremap <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "<C-y><CR><c-\><c-o><ESC>" : "<C-y>") : "<CR><c-\><c-o><ESC>"
 inoremap <silent><expr> <TAB>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <silent><expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
