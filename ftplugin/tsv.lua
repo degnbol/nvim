@@ -1,6 +1,7 @@
 #!/usr/bin/env lua
 api = vim.api
 opt_local = vim.opt_local
+require 'split'
 
 function Vartabstop()
     local vartabstop = {}
@@ -8,7 +9,7 @@ function Vartabstop()
     -- first take values from header, so we don't have to check for nil for every 
     -- line.
     local line = api.nvim_buf_get_lines(0, 0, 1, true)[1]
-    for field in line:gmatch('[^\t]+') do
+    for field in line:split('\t') do
         table.insert(vartabstop, field:len())
     end
     
@@ -16,7 +17,7 @@ function Vartabstop()
     local lines = api.nvim_buf_get_lines(0, 1, -1, true)
     for _, line in ipairs(lines) do
         local i = 1
-        for field in line:gmatch('[^\t]+') do
+        for field in line:split('\t') do
             vartabstop[i] = math.max(vartabstop[i], field:len())
             i=i+1
         end
