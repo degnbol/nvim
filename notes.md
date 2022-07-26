@@ -12,3 +12,12 @@ K to jump to definition in help docs and ctrl+o to go back.
 ctrl+e(extra) and ctrl+y(ester) to move screen.
 zz to center line in screen, zt to put it at top of screen and zb for bottom.
 
+miller (mlr) syntax highlighting added from https://github.com/johnkerl/miller/tree/main/vim
+to ftdetect/mlr.vim and syntax/mlr.vim
+It can also be done as a plugin with packer:
+use {"johnkerl/miller", ft="mlr", rtp="vim"}
+but it seemed the ftdetect was overridden to "conf" and it requires all of 
+miller git be cloned so a bit much. ftdetect/mlr.vim probs won't need updating, 
+other files probs won't be added and I don't edit miller files that much so it 
+seems fine to update manually with copy paste with
+./update.sh
