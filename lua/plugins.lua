@@ -77,6 +77,7 @@ return require("packer").startup(function()
     -- use {"preservim/vim-markdown", requires="godlygeek/tabular"} -- conceal markdown expressions like _emphasis_ and folding. Overkill, see {after/,}syntax/markdown.vim
     use {"iamcco/markdown-preview.nvim", run=':call mkdp#util#install()', ft='markdown'} -- :MarkdownPreview live in browser
     use {"habamax/vim-asciidoctor", config=function() require'asciidoc' end, ft='asciidoctor'}
+    use {"quarto-dev/quarto-vim", requires="vim-pandoc/vim-pandoc-syntax", ft="quarto"} -- https://quarto.org/
     use {"habamax/vim-rst"}
     use "jbyuki/nabla.nvim" -- show pretty math in term
     
