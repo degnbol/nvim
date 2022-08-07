@@ -69,11 +69,18 @@ whichkey.register({
         a = "swap arg (treesitter textobjects)",
         A = "swap arg back (treesitter textobjects)",
         -- currently just for latex but can be depend on filetype
-        b = {":VimtexCompile<CR>", "build"},
-        d = "defintion? (treesitter textobjects)",
-        D = "defintion? (treesitter textobjects)",
+        c = {
+            name = "code (LSP)...",
+            a = "code action (LSP)...",
+        },
+        d = {
+            name = "defintion peek (treesitter textobjects + LSP)",
+            f = "function",
+            F = "class",
+        },
+        D = "type defintion (LSP)",
         e = {":NvimTreeToggle<CR>", "explorer"},
-        E = {':lua require("nabla").popup()<CR>', "equation"},
+        E = "errors (LSP diagnostics)",
         -- telescope and dashboard mappings
         f = {
             name = "file",
@@ -96,6 +103,11 @@ whichkey.register({
         -- <leader>K since K is regular defintion of word under cursor.
         K = {":DashWord<CR>", "Dash word"},
         l = {":noh<CR>", "clear highlights"},
+        L = {
+            name = "LaTeX",
+            b = {":VimtexCompile<CR>", "build"},
+            e = {':lua require("nabla").popup()<CR>', "equation"},
+        },
         m = {
             m = {":DashboardJumpMarks<CR>", "jump marks (dashboard)"}
         },
@@ -135,6 +147,11 @@ whichkey.register({
             n = {"<Plug>UnconditionalPasteInlinedBefore", "inlined"},
             q = {":set paste<CR>P:set nopaste<CR>`[gq']", "format"},
             -- ... there are many more to consider https://github.com/inkarkat/vim-UnconditionalPaste
+        },
+        r = {
+            -- as long as there is only one function under r
+            name = "rename...",
+            n = "rename",
         },
         s = {
             name = "substitute OR session",
@@ -176,8 +193,7 @@ whichkey.register({
             name = "format motion",
             q = "line",
         },
-        -- refactor from treesitter
-        r = "refactor",
+        r = "references (LSP)",
     }
 }, {mode='n'})
 

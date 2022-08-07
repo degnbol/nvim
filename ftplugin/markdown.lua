@@ -1,3 +1,4 @@
+#!/usr/bin/env lua
 opt = vim.opt
 -- markdown doesn't really have comments. 
 -- The default is html comments <!-- ... -->.
@@ -23,5 +24,4 @@ opt.conceallevel = 1
 -- nvc=normal,visual,command -> only unconceal in insert mode with cursor on 
 -- the line.
 opt.concealcursor = "nvc"
-
 

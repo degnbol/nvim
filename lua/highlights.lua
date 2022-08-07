@@ -121,3 +121,6 @@ cmd("hi CocErrorHighlight cterm=undercurl gui=undercurl guisp=red")
 -- HlSearchLens. Less agressive coloring but still matching search hl
 cmd "hi HlSearchLens ctermfg=11 ctermbg=242 guifg=#ffdc2d guibg=#5a576e"
 cmd "hi HlSearchLensNear ctermfg=11 ctermbg=242 guifg=#19f988 guibg=#5a576e"
+
+-- set completion menu bg to main bg
+cmd "hi! link Pmenu Normal"

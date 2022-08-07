@@ -41,7 +41,6 @@ api.nvim_create_autocmd({"FocusGained", "BufEnter"}, {
     pattern="*",
     command=':silent! !'
 })
-opt.completeopt = 'menuone,noinsert'
 opt.showmode = false
 opt.showcmd = false
 -- t=use textwidth for formatting. a=auto format. w=respect explicit newline. r=continue comment leader with newline in insert mode.
@@ -80,3 +79,10 @@ opt.fillchars = "eob: "
 local g = vim.g
 g.mapleader = ' '
 g.maplocalleader = ' '
+
+-- 'set spell' to show red underline for spelling errors.
+-- As of writing, spell is on for markdown (ftplugin/markdown.lua)
+vim.opt.spelllang = { 'en_US', 'en_GB', 'da' }
+-- never complain about sentence starting with lowercase word
+vim.opt.spellcapcheck = ""
+

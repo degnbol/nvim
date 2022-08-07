@@ -104,9 +104,10 @@ inoremap <A-Right> <c-\><c-o>w
 
 
 " completion popup keys. <C-e> == reject and close pum. <C-y> == accept.
-inoremap <silent><expr> <Esc>   pumvisible() ? "\<C-y><Esc>" : "\<Esc>"
-inoremap <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
-inoremap <silent><expr> <BS>    pumvisible() ? "\<C-y><BS>"  : "\<BS>"
+" seems unnecessary with cmp
+" inoremap <silent><expr> <Esc>   pumvisible() ? "\<C-y><Esc>" : "\<Esc>"
+" inoremap <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
+" inoremap <silent><expr> <BS>    pumvisible() ? "\<C-y><BS>"  : "\<BS>"
 " Enter makes newline unless pum is visible AND an item has been selected
 " https://vi.stackexchange.com/questions/15092/auto-complete-popup-menu-make-enter-trigger-newline-if-no-item-was-selected
 " Also fix unindenting blankline by writing something (a space) and deleting
@@ -118,9 +119,11 @@ inoremap <silent><expr> <BS>    pumvisible() ? "\<C-y><BS>"  : "\<BS>"
 " automatically. <c-\><c-o> goes to normal mode temporarily, <ESC> is to do 
 " nothing there, but somehow that means that something has been done so the 
 " whitespace line is not reduced to empty line.
-inoremap <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "<C-y><CR><c-\><c-o><ESC>" : "<C-y>") : "<CR><c-\><c-o><ESC>"
-inoremap <silent><expr> <TAB>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <silent><expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" inoremap <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "<C-y><CR><c-\><c-o><ESC>" : "<C-y>") : "<CR><c-\><c-o><ESC>"
+" above version seems unnecessary with cmp
+inoremap <silent><expr> <CR>    "<CR><c-\><c-o><ESC>"
+" inoremap <silent><expr> <TAB>   pumvisible() ? "\<C-n>" : "\<Tab>"
+" inoremap <silent><expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 " move up/down on display lines instead of logical lines with arrows in insert mode
 " inoremap <Up> <c-\><c-o>gk

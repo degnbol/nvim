@@ -31,27 +31,61 @@ return require("packer").startup(function()
     use "sakshamgupta05/vim-todo-highlight" -- highlight todos
     -- use {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end} -- dim code that isn't currently being edited with :Twilight.
     -- use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
-    use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
     
-    -- language
+    -- UI
+    use {"akinsho/nvim-bufferline.lua", tag="*", requires="kyazdani42/nvim-web-devicons", config=function() require'top-bufferline' end} -- add a line at the top with all the files open in the buffer
+    -- use {"glepnir/galaxyline.nvim", config=function() require'statusline' end}
+    use {"nvim-telescope/telescope-fzf-native.nvim", run='make'} -- recommended compiled fuzzy finder for telescope. Cannot be opt=true when needed by tzachar/cmp-fuzzy-path
+    use {"nvim-telescope/telescope.nvim", requires={"nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim"}, config=function() require'telescope-conf' end} -- Fuzzy finder
+    use {"glepnir/dashboard-nvim", config=function() require'dashboard-conf' end} -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
+    use {"kyazdani42/nvim-tree.lua", requires='kyazdani42/nvim-web-devicons', config=function() require'tree' end} -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
+    use "ojroques/nvim-bufdel" -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
+    use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
+    use {'sudormrfbin/cheatsheet.nvim', requires='nvim-telescope/telescope.nvim'} -- <leader>? to give cheatsheet popup. 
+    use {"lalitmee/browse.nvim", requires="nvim-telescope/telescope.nvim"} -- search stackoverflow quicker
+    -- use {"kevinhwang91/nvim-hlslens", config=function() require'hlslens-conf' end} -- show search match numbers
+    -- use {"petertriho/nvim-scrollbar", requires="kevinhwang91/nvim-hlslens", config=function() require'scrollbar-conf' end} -- requires hlslens to show search results in scrollbar
+    use "tyru/capture.vim" -- :Capture hi to call :hi where you can search etc.
+    
+    -- treesitter
     use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate', config=function() require'treesitter' end} -- language coloring and ensuring of installation
     use {"nvim-treesitter/nvim-treesitter-refactor", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-refactor' end} -- refactor
     use {"nvim-treesitter/nvim-treesitter-textobjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textobjects' end} -- selecting, moving functions etc.
     use {"RRethy/nvim-treesitter-textsubjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textsubjects' end} -- in vis mode use . , ; i; to select based on treesitter 
     -- use "romgrk/nvim-treesitter-context" -- show the "context" at the top line, i.e. function name when in a function
-    use {"andymass/vim-matchup", config=function() require'matchup' end} -- % jumps between matching coding blocks, not just single chars.
-    use {"neovim/nvim-lspconfig"} -- lsp
+    use {"andymass/vim-matchup", requires='nvim-treesitter/nvim-treesitter', config=function() require'matchup' end} -- % jumps between matching coding blocks, not just single chars.
+    use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
+    
+    -- LSP
+    use {"neovim/nvim-lspconfig", config=function() require'lsp' end}
+    -- add :LspInstall <language> and :Mason for conveniently installing LSP language specific servers
+    use {"williamboman/mason-lspconfig.nvim", requires={"neovim/nvim-lspconfig", "williamboman/mason.nvim"}, config=function() require "mason-conf" end}
+    -- coq
     -- use {"neovim/nvim-lspconfig", -- lsp
     --     requires = {
     --         {'ms-jpq/coq_nvim', branch='coq', config=function() require'coq-nvim' end}, -- completion
     --         {'ms-jpq/coq.artifacts', branch='artifacts'}
     --     }
     -- }
-    -- use {"kabouzeid/nvim-lspinstall", requires="neovim/nvim-lspconfig", config=function() require "lspinstall".setup() end} -- adds :LspInstall <language> for conveniently installing language support
-    -- use {"hrsh7th/nvim-cmp", requires={"hrsh7th/cmp-path", "hrsh7th/cmp-nvim-lsp"}, config=function() require'nvim-cmp' end}  -- autocompletion
-    use {"neoclide/coc.nvim", branch="release"} -- https://github.com/neoclide/coc.nvim/wiki/Language-servers e.g. :CocInstall coc-texlab
+    -- completion menu using builtin LSP
+    use {"hrsh7th/nvim-cmp", requires = {
+        'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-buffer',
+        'hrsh7th/cmp-path',
+        'hrsh7th/cmp-nvim-lsp-signature-help',
+        'onsails/lspkind.nvim', -- pretty pictograms
+        -- decide on snippet engine among 4 options. If changed then also change cmp-conf.lua at two places
+        -- 'hrsh7th/vim-vsnip', 'hrsh7th/cmp-vsnip',
+        'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip',
+        -- 'SirVer/ultisnips', 'quangnguyen30192/cmp-nvim-ultisnips',
+        -- 'dcampos/nvim-snippy', 'dcampos/cmp-snippy',
+        'hrsh7th/cmp-calc', -- quick math in completion
+        'f3fora/cmp-spell', -- spell check
+    }, config=function() require'cmp-conf' end}
+    -- use {'tzachar/cmp-fuzzy-path', requires={'tzachar/fuzzy.nvim', 'hrsh7th/nvim-cmp', 'nvim-telescope/telescope-fzf-native.nvim'}}
+    -- use {"neoclide/coc.nvim", branch="release"} -- https://github.com/neoclide/coc.nvim/wiki/Language-servers e.g. :CocInstall coc-texlab
     -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
-    -- use {"onsails/lspkind-nvim", config=function() require'lspkind'.init() end} -- VS code like pictograms for completion
+    
+    -- language
     use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- add keybindings to toggle comments with motions etc.
     -- use "windwp/nvim-autopairs" -- auto add second parenthesis etc.
     -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines
@@ -82,20 +116,5 @@ return require("packer").startup(function()
     use "jbyuki/nabla.nvim" -- show pretty math in term
     
     -- use "elzr/vim-json" -- json
-    
-    -- UI
-    use {"akinsho/nvim-bufferline.lua", tag="*", requires="kyazdani42/nvim-web-devicons", config=function() require'top-bufferline' end} -- add a line at the top with all the files open in the buffer
-    -- use {"glepnir/galaxyline.nvim", config=function() require'statusline' end}
-    use {"nvim-telescope/telescope-fzf-native.nvim", run='make', opt=true} -- recommended compiled fuzzy finder for telescope
-    use {"nvim-telescope/telescope.nvim", requires={"nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim"}, config=function() require'telescope-conf' end} -- Fuzzy finder
-    use {"glepnir/dashboard-nvim", config=function() require'dashboard-conf' end} -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
-    use {"kyazdani42/nvim-tree.lua", requires='kyazdani42/nvim-web-devicons', config=function() require'tree' end} -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
-    use "ojroques/nvim-bufdel" -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
-    use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
-    use {'sudormrfbin/cheatsheet.nvim', requires='nvim-telescope/telescope.nvim'} -- <leader>? to give cheatsheet popup. 
-    use {"lalitmee/browse.nvim", requires="nvim-telescope/telescope.nvim"} -- search stackoverflow quicker
-    -- use {"kevinhwang91/nvim-hlslens", config=function() require'hlslens-conf' end} -- show search match numbers
-    -- use {"petertriho/nvim-scrollbar", requires="kevinhwang91/nvim-hlslens", config=function() require'scrollbar-conf' end} -- requires hlslens to show search results in scrollbar
-    use "tyru/capture.vim" -- :Capture hi to call :hi where you can search etc.
 end)
 
