@@ -52,3 +52,11 @@ https://www.youtube.com/watch?v=puWgHa7k3SY
 Maybe move around vim and kitty windows more seamlessly
 https://github.com/knubie/vim-kitty-navigator
 
+Check out https://github.com/ms-jpq/isomorphic_copy
+to deal with clipboard on remote.
+
+Don't have enter run as code in quickfix
+
+I wanted to have both cmp, coc and coq installed and easily compare altho it seems they are all equally fast and the real bottleneck is the lsp.
+coc uses jedi, and it seems it is just as slow as cmp on startup but maybe it's fine, it has to warmup.
+
