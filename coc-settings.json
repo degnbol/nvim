@@ -17,5 +17,6 @@
       "filetypes": ["julia"]
     }
   },
-  "signature.target": "echo"
+  "signature.target": "echo",
+  "suggest.autoTrigger": "none"
 }

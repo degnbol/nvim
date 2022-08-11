@@ -18,7 +18,7 @@ return require("packer").startup(function()
     use "google/vim-searchindex" -- let's search result box show number of matches when there's >99 matches
     use "haya14busa/vim-asterisk" -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
     -- use "kana/vim-textobj-user" -- easily define custom textobjects such as i( and a( to select in/an \left( \right) block in latex
-    -- TODO: add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
+    -- TODO add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
     use {"glts/vim-textobj-comment", requires="kana/vim-textobj-user"} -- not working?
     
     -- color
@@ -56,22 +56,19 @@ return require("packer").startup(function()
     use {"andymass/vim-matchup", requires='nvim-treesitter/nvim-treesitter', config=function() require'matchup' end} -- % jumps between matching coding blocks, not just single chars.
     use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
     
-    -- LSP
+    -- LSP. For a given file, either complete with cmp (builtin recommended, but e.g. jedi language servers is slow), coc (old, not using builtin LSP), or coq (hacks builtin LSP)
     use {"neovim/nvim-lspconfig", config=function() require'lsp' end}
     -- add :LspInstall <language> and :Mason for conveniently installing LSP language specific servers
     use {"williamboman/mason-lspconfig.nvim", requires={"neovim/nvim-lspconfig", "williamboman/mason.nvim"}, config=function() require "mason-conf" end}
-    -- coq
-    -- use {"neovim/nvim-lspconfig", -- lsp
-    --     requires = {
-    --         {'ms-jpq/coq_nvim', branch='coq', config=function() require'coq-nvim' end}, -- completion
-    --         {'ms-jpq/coq.artifacts', branch='artifacts'}
-    --     }
-    -- }
+    -- coq. Run :COQdeps to install
+    use {'ms-jpq/coq_nvim', branch='coq', config=function() require'coq-conf' end}
+    use {'ms-jpq/coq.artifacts', branch='artifacts', requires='ms-jpq/coq_nvim'} -- snippets
     -- completion menu using builtin LSP
     use {"hrsh7th/nvim-cmp", requires = {
         'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-buffer',
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-nvim-lsp-signature-help',
+        'hrsh7th/cmp-nvim-lua', -- neovim Lua API
         'onsails/lspkind.nvim', -- pretty pictograms
         -- decide on snippet engine among 4 options. If changed then also change cmp-conf.lua at two places
         -- 'hrsh7th/vim-vsnip', 'hrsh7th/cmp-vsnip',
@@ -81,9 +78,9 @@ return require("packer").startup(function()
         'hrsh7th/cmp-calc', -- quick math in completion
         'f3fora/cmp-spell', -- spell check
     }, config=function() require'cmp-conf' end}
-    -- use {'tzachar/cmp-fuzzy-path', requires={'tzachar/fuzzy.nvim', 'hrsh7th/nvim-cmp', 'nvim-telescope/telescope-fzf-native.nvim'}}
+    use {"j-hui/fidget.nvim", config=function() require"fidget".setup() end} -- corner print what LSP is running
     -- use {"neoclide/coc.nvim", branch="release"} -- https://github.com/neoclide/coc.nvim/wiki/Language-servers e.g. :CocInstall coc-texlab
-    -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. 
+    -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. Alternative to hrsh7th/cmp-nvim-lsp-signature-help
     
     -- language
     use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- add keybindings to toggle comments with motions etc.
@@ -114,6 +111,7 @@ return require("packer").startup(function()
     use {"quarto-dev/quarto-vim", requires="vim-pandoc/vim-pandoc-syntax", ft="quarto"} -- https://quarto.org/
     use {"habamax/vim-rst"}
     use "jbyuki/nabla.nvim" -- show pretty math in term
+    use {"goerz/jupytext.vim", config=function() require'jupytext-conf' end} -- edit jupyter notebook. requires `pip install jupytext`
     
     -- use "elzr/vim-json" -- json
 end)

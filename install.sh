@@ -30,7 +30,6 @@ curl -sL install-node.vercel.app/lts | bash -s -- --prefix=$HOME
 # coc needs pynvim
 conda install -y pynvim -c conda-forge
 
-
 # language server currently jedi-language-server for its simplicity and lack of annoying wrong error detection
 # installed with pipx
 brew install pipx
@@ -40,10 +39,11 @@ brew install yarn
 yarn global add diagnostic-languageserver
 
 # index files for LSP, see https://github.com/ms-jpq/coq_nvim
+brew uninstall ctags
 brew install universal-ctags
 pipx install virtualenv
 
-# when coc is installed then it should automatically install julia support due to the coc-config.json but otherwise run
+# If using coc then after it is installed it should automatically install julia support due to the coc-config.json but otherwise run
 # :CocInstall coc-julia coc-python coc-sh coc-r-lsp
 # NOTE: Set the python intepreter to conda python with command
 # :CocCommand python.setInterpreter
@@ -55,4 +55,7 @@ if $mac; then
 else
     conda install -y -c conda-forge ripgrep
 fi
+
+# for editing jupyter notebooks
+pip install jupytext
 

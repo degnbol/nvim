@@ -122,5 +122,8 @@ cmd("hi CocErrorHighlight cterm=undercurl gui=undercurl guisp=red")
 cmd "hi HlSearchLens ctermfg=11 ctermbg=242 guifg=#ffdc2d guibg=#5a576e"
 cmd "hi HlSearchLensNear ctermfg=11 ctermbg=242 guifg=#19f988 guibg=#5a576e"
 
--- set completion menu bg to main bg
+-- set completion menu bg to main bg and make scrollbar minimal
 cmd "hi! link Pmenu Normal"
+cmd "hi! link PmenuSbar Ignore"
+cmd "hi! link PmenuThumb Visual"
+

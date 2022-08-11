@@ -40,6 +40,11 @@ cmp.setup {
         -- completion = cmp.config.window.bordered(),
         -- documentation = cmp.config.window.bordered(),
     },
+    view = {
+        -- when menu is above, show best result at bottom instead of at top
+        -- https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
+        entries = {name = 'custom', selection_order = 'near_cursor' }
+    },
     mapping = cmp.mapping.preset.insert {
         -- the Down and Up calls means we don't move in the list (default) but rather ignore the menu and move the cursor in the file.
         ['<up>'] = cmp.mapping.closeFallback(),
@@ -106,3 +111,18 @@ cmp.setup.filetype('markdown', {
     }
 })
 
+cmp.setup.filetype('lua', {
+    sources = cmp.config.sources {
+        { name = 'nvim_lua' },
+        { name = 'nvim_lsp' },
+        { name = 'path' },
+        { name = 'nvim_lsp_signature_help' }, -- show signature of arg while writing it
+        -- { name = 'vsnip' }, -- For vsnip users.
+        { name = 'luasnip' }, -- For luasnip users.
+        -- { name = 'ultisnips' }, -- For ultisnips users.
+        -- { name = 'snippy' }, -- For snippy users.
+        { name = 'calc' },
+    }, {
+        { name = 'buffer' },
+    }
+})

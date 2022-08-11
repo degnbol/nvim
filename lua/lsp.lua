@@ -56,23 +56,6 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   }
 )
 
--- now for adding the language servers
-local lsp = require "lspconfig"
--- assuming we are using the hrsh7th/cmp-nvim-lsp associated with hrsh7th/nvim-cmp
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-
--- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
--- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
-lsp.bashls.setup { filetypes = {"sh", "bash", "zsh"}, on_attach=on_attach, capabilities=capabilities }
-lsp.jedi_language_server.setup { on_attach=on_attach, capabilities=capabilities }
--- lsp.pyright.setup { on_attach=on_attach, capabilities=capabilities }
--- lsp.pylsp.setup { on_attach=on_attach, capabilities=capabilities }
-lsp.julials.setup { on_attach=on_attach, capabilities=capabilities }
-lsp.ltex.setup { on_attach=on_attach, capabilities=capabilities }
-lsp.r_language_server.setup { on_attach=on_attach, capabilities=capabilities }
-lsp.sumneko_lua.setup { on_attach=on_attach, capabilities=capabilities }
-lsp.vimls.setup { on_attach=on_attach, capabilities=capabilities }
-
 -- color kinds
 vim.api.nvim_set_hl(0, 'CmpItemAbbrDeprecated', {fg="#808080", strikethrough=true})
 vim.api.nvim_set_hl(0, 'CmpItemAbbrMatch', {fg="#569CD6"})
@@ -85,4 +68,24 @@ vim.api.nvim_set_hl(0, 'CmpItemKindMethod', {fg="#C586C0"})
 vim.api.nvim_set_hl(0, 'CmpItemKindKeyword', {fg="#D4D4D4"})
 vim.api.nvim_set_hl(0, 'CmpItemKindProperty', {fg="#D4D4D4"})
 vim.api.nvim_set_hl(0, 'CmpItemKindUnit', {fg="#D4D4D4"})
+
+-- now for adding the language servers
+local lsp = require "lspconfig"
+-- coq for speed
+-- local coq = require "coq"
+-- cmp for functional, customizable and easy to control
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+-- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
+-- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
+lsp.bashls.setup { filetypes = {"sh", "bash", "zsh"}, on_attach=on_attach, capabilities=capabilities }
+-- lsp.pyright.setup { on_attach=on_attach, capabilities=capabilities }
+-- lsp.pylsp.setup { on_attach=on_attach, capabilities=capabilities }
+lsp.jedi_language_server.setup { on_attach=on_attach, capabilities=capabilities }
+-- lsp.jedi_language_server.setup(coq.lsp_ensure_capabilities { on_attach=on_attach })
+lsp.julials.setup { on_attach=on_attach, capabilities=capabilities }
+lsp.ltex.setup { on_attach=on_attach, capabilities=capabilities }
+lsp.r_language_server.setup { on_attach=on_attach, capabilities=capabilities }
+lsp.vimls.setup { on_attach=on_attach, capabilities=capabilities }
+lsp.sumneko_lua.setup { on_attach=on_attach, capabilities=capabilities }
 
