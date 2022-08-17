@@ -5,7 +5,7 @@ return require("packer").startup(function()
 
     -- core behaviour
     use "tpope/vim-repeat" -- change . to repeat last native command to last "full" command, which feels more natural.
-    use "tpope/vim-surround" -- press cs'" to change surrounding ' with ", ds' to delete surrounding ', ysiw) to surround word with ) and yss[ to surround line with [ ... ] (incl. spaces)
+    use {"kylechui/nvim-surround", tag='*', config=function() require("nvim-surround").setup() end} -- press cs'" to change surrounding ' with ", ds' to delete surrounding ', ysiw) to surround word with ) and yss[ to surround line with [ ... ] (incl. spaces)
     -- use "tpope/vim-sensible" -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
     use "svermeulen/vim-subversive" -- add substitution functions to e.g. replace a word with clipboard content by writing siw
     use {"gbprod/cutlass.nvim", config=function() require'cutlass-conf' end} -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
@@ -78,7 +78,7 @@ return require("packer").startup(function()
         'hrsh7th/cmp-calc', -- quick math in completion
         'f3fora/cmp-spell', -- spell check
     }, config=function() require'cmp-conf' end}
-    use {"j-hui/fidget.nvim", config=function() require"fidget".setup() end} -- corner print what LSP is running
+    use {"j-hui/fidget.nvim", config=function() require"fidget-conf" end} -- corner print what LSP is running
     -- use {"neoclide/coc.nvim", branch="release"} -- https://github.com/neoclide/coc.nvim/wiki/Language-servers e.g. :CocInstall coc-texlab
     -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. Alternative to hrsh7th/cmp-nvim-lsp-signature-help
     
