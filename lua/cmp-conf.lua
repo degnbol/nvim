@@ -85,7 +85,6 @@ cmp.setup {
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
         { name = 'calc' },
-    }, {
         { name = 'buffer' },
     },
     formatting = {
@@ -106,7 +105,6 @@ cmp.setup.filetype('markdown', {
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
         { name = 'calc' },
-    }, {
         { name = 'buffer' },
     }
 })
@@ -122,7 +120,6 @@ cmp.setup.filetype('lua', {
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
         { name = 'calc' },
-    }, {
         { name = 'buffer' },
     }
 })
