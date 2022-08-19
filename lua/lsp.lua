@@ -78,14 +78,27 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protoco
 
 -- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
 -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
+
 lsp.bashls.setup { filetypes = {"sh", "bash", "zsh"}, on_attach=on_attach, capabilities=capabilities }
+
 -- lsp.pyright.setup { on_attach=on_attach, capabilities=capabilities }
 -- lsp.pylsp.setup { on_attach=on_attach, capabilities=capabilities }
 lsp.jedi_language_server.setup { on_attach=on_attach, capabilities=capabilities }
 -- lsp.jedi_language_server.setup(coq.lsp_ensure_capabilities { on_attach=on_attach })
+
 lsp.julials.setup { on_attach=on_attach, capabilities=capabilities }
-lsp.ltex.setup { on_attach=on_attach, capabilities=capabilities }
+
+lsp.ltex.setup { on_attach=function(client, bufnr)
+    on_attach(client, bufnr)
+    -- hacky. VimtexErrors puts errors found by Vimtex in quickfix (should be 
+    -- running, use <leader>Lb) then cclose closes quickfix, and then Telescope 
+    -- opens the quickfix in a nicer view.
+    vim.keymap.set('n', '<space>E', "<cmd>VimtexErrors<cr>|:cclose|<cmd>Telescope quickfix<cr>", opts)
+end, capabilities=capabilities }
+
 lsp.r_language_server.setup { on_attach=on_attach, capabilities=capabilities }
+
 lsp.vimls.setup { on_attach=on_attach, capabilities=capabilities }
+
 lsp.sumneko_lua.setup { on_attach=on_attach, capabilities=capabilities }
 
