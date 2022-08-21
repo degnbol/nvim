@@ -5,7 +5,9 @@ return require("packer").startup(function()
 
     -- core behaviour
     use "tpope/vim-repeat" -- change . to repeat last native command to last "full" command, which feels more natural.
-    use {"kylechui/nvim-surround", tag='*', config=function() require("nvim-surround").setup() end} -- press cs'" to change surrounding ' with ", ds' to delete surrounding ', ysiw) to surround word with ) and yss[ to surround line with [ ... ] (incl. spaces)
+    -- problems: it doesn't have simple ds working at all.
+    -- use {"kylechui/nvim-surround", config=function() require"surround-conf" end} -- press cs'" to change surrounding ' with ", ds' to delete surrounding ', ysiw) to surround word with ) and yss[ to surround line with [ ... ] (incl. spaces)
+    use { 'echasnovski/mini.nvim', branch = 'stable', config=function() require'mini-conf' end } -- mini.surround
     -- use "tpope/vim-sensible" -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
     use "svermeulen/vim-subversive" -- add substitution functions to e.g. replace a word with clipboard content by writing siw
     use {"gbprod/cutlass.nvim", config=function() require'cutlass-conf' end} -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
@@ -20,6 +22,7 @@ return require("packer").startup(function()
     -- use "kana/vim-textobj-user" -- easily define custom textobjects such as i( and a( to select in/an \left( \right) block in latex
     -- TODO add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
     use {"glts/vim-textobj-comment", requires="kana/vim-textobj-user"} -- not working?
+    use {"AckslD/nvim-trevJ.lua", config=function() require'trevj-conf' end}
     
     -- color
     use {"norcalli/nvim-colorizer.lua", config=function() require'colorizer'.setup() end} -- when a hex or other color is defined, highlight the text with its color
@@ -61,8 +64,8 @@ return require("packer").startup(function()
     -- add :LspInstall <language> and :Mason for conveniently installing LSP language specific servers
     use {"williamboman/mason-lspconfig.nvim", requires={"neovim/nvim-lspconfig", "williamboman/mason.nvim"}, config=function() require "mason-conf" end}
     -- coq. Run :COQdeps to install
-    use {'ms-jpq/coq_nvim', branch='coq', config=function() require'coq-conf' end}
-    use {'ms-jpq/coq.artifacts', branch='artifacts', requires='ms-jpq/coq_nvim'} -- snippets
+    -- use {'ms-jpq/coq_nvim', branch='coq', config=function() require'coq-conf' end}
+    -- use {'ms-jpq/coq.artifacts', branch='artifacts', requires='ms-jpq/coq_nvim'} -- snippets
     -- completion menu using builtin LSP
     use {"hrsh7th/nvim-cmp", requires = {
         'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-buffer',
@@ -79,8 +82,9 @@ return require("packer").startup(function()
         'f3fora/cmp-spell', -- spell check
     }, config=function() require'cmp-conf' end}
     use {"j-hui/fidget.nvim", config=function() require"fidget-conf" end} -- corner print what LSP is running
-    -- use {"neoclide/coc.nvim", branch="release"} -- https://github.com/neoclide/coc.nvim/wiki/Language-servers e.g. :CocInstall coc-texlab
+    use "rafamadriz/friendly-snippets"
     -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. Alternative to hrsh7th/cmp-nvim-lsp-signature-help
+    -- use {"neoclide/coc.nvim", branch="release"} -- https://github.com/neoclide/coc.nvim/wiki/Language-servers e.g. :CocInstall coc-texlab
     
     -- language
     use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- add keybindings to toggle comments with motions etc.

@@ -6,7 +6,7 @@ require"nvim-treesitter.configs".setup {
         "python",
         "julia",
         "latex",
-        "java",
+        -- "java",
         "r"
     },
     highlight = {
@@ -25,6 +25,11 @@ require"nvim-treesitter.configs".setup {
             node_decremental = "<leader><down>",
         },
     },
+    -- opt-in to using treesitter for https://github.com/andymass/vim-matchup
+    matchup = {
+        enable = true,
+        disable = {}, -- optional, list of language that will be disabled
+    }
 }
 
 vim.wo.foldlevel = 99 -- so we don't fold from the start

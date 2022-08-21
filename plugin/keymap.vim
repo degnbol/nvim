@@ -26,7 +26,8 @@ nmap <leader>ss <plug>(SubversiveSubstituteWordRange)
 map Y y$
 " back space and delete buttons delete should delete also in normal mode.
 " Delete to black hole register.
-nnoremap <BS> "_X
+" Maybe too dangerous sometimes with backspace, e.g. when leaving commandline
+" nnoremap <BS> "_X
 " Yoink:
 nmap <c-n> <plug>(YoinkPostPasteSwapBack)
 nmap <c-p> <plug>(YoinkPostPasteSwapForward)
@@ -101,7 +102,9 @@ inoremap <A-Down> <c-\><c-o>}
 inoremap <A-Left> <c-\><c-o>b
 inoremap <A-Right> <c-\><c-o>w
 
-
+" like J(oin) but selects the current container, e.g. brackets cursor is in, 
+" and joins it all. Uses https://github.com/andymass/vim-matchup
+nmap gJ va%J
 
 " completion popup keys. <C-e> == reject and close pum. <C-y> == accept.
 " seems unnecessary with cmp

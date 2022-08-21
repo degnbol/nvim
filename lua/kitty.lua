@@ -1,10 +1,10 @@
 #!/usr/bin/env lua
 local g = vim.g
-local utils = require'utils'
 local cmd = vim.cmd
 local json = require'json'
 local api = vim.api
 local fn = vim.fn
+local keymap = vim.keymap
 
 function get_repl()
     return vim.b.repl_id
@@ -167,8 +167,8 @@ function ReplOperator(type, ...)
 end
 
 opts = {noremap=true, silent=true}
-utils.map("n", "<CR><CR>", ":lua kittySendLine()<CR>", opts)
-utils.map("x", "<CR>", ":lua kittySendVisual()<CR>", opts)
-utils.map('n', "<CR>", 'Operator("v:lua.ReplOperator")', {expr=true, noremap=false})
+keymap.set("n", "<CR><CR>", ":lua kittySendLine()<CR>", opts)
+keymap.set("x", "<CR>", ":lua kittySendVisual()<CR>", opts)
+keymap.set('n', "<CR>", 'Operator("v:lua.ReplOperator")', {expr=true, noremap=false})
 -- some other keybindings are in whichkey.lua
 

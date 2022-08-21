@@ -57,6 +57,5 @@ to deal with clipboard on remote.
 
 Don't have enter run as code in quickfix
 
-I wanted to have both cmp, coc and coq installed and easily compare altho it seems they are all equally fast and the real bottleneck is the lsp.
-coc uses jedi, and it seems it is just as slow as cmp on startup but maybe it's fine, it has to warmup.
+Hide last search if / or ? is used as textobj, e.g. y/\. that yanks sentence that may go on for multiple lines.
 

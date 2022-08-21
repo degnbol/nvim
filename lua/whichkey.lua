@@ -1,7 +1,7 @@
-local whichkey = require("which-key")
+local wk = require("which-key")
 
 
-whichkey.setup {
+wk.setup {
     plugins = {
         marks = true, -- shows a list of your marks on ' and `
         registers = true, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
@@ -30,15 +30,15 @@ whichkey.setup {
         group = "+" -- symbol prepended to a group
     },
     window = {
-        border = "none", -- none, single, double, shadow
-        position = "bottom", -- bottom, top
-        margin = {1, 0, 1, 0}, -- extra window margin [top, right, bottom, left]
-        padding = {2, 2, 2, 2} -- extra window padding [top, right, bottom, left]
+        border = "none",
+        position = "bottom",
+        margin = {0, 0, 0, 0},
+        padding = {0, 0, 0, 0}
     },
     layout = {
         height = {min = 4, max = 25}, -- min and max height of the columns
         width = {min = 20, max = 50}, -- min and max width of the columns
-        spacing = 3 -- spacing between columns
+        spacing = 0 -- spacing between columns
     },
     ignore_missing = false, -- enable this to hide mappings for which you didn't specify a label
     hidden = {"<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "}, -- hide mapping boilerplate
@@ -47,7 +47,7 @@ whichkey.setup {
     -- triggers = {"<leader>"} -- or specifiy a list manually
 }
 
-whichkey.register({
+wk.register({
     ["<TAB>"] = {":BufferLineCycleNext<CR>", "next buffer"},
     ["<S-TAB>"] = {":BufferLineCyclePrev<CR>", "previous buffer"},
     ["<leader>"] = {
@@ -171,12 +171,14 @@ whichkey.register({
         },
         x = {':BufDel<CR>', "delete buffer"}, -- ojroques BufDel
     },
+    c = {
+        name = "change...",
+        s = "surround...",
+    },
     d = {
-        name = "delete",
-        s = {
-            -- from the surround package
-            name = "delete surround",
-        },
+        name = "delete...",
+        -- mini package
+        s = "surround...",
     },
     g = {
         ["*"] = "search word under cursor flexibly", -- flexibly=ignore case and whole word
@@ -186,9 +188,13 @@ whichkey.register({
             name = "(un)comment motion",
             c = "line",
         },
+        j = {function() require"trevj".format_at_cursor() end, "unjoin (trevj)"},
+        -- uses % from andymass/vim-matchup which first jumps to container start, then visual, then container end, then core vim Join.
+        -- Couldn't get it to work with whichkey probably since we need to remap %, so it is mapped in keymap.vim
+        J = "join container",
         -- normally gp is p where cursor is moved at end. Since we do that by default, we can use it for whitepaste
-        p = {"", "whitepaste after"},
-        P = {"", "whitepaste before"},
+        p = "whitepaste after",
+        P = "whitepaste before",
         q = {
             name = "format motion",
             q = "line",
@@ -198,7 +204,7 @@ whichkey.register({
 }, {mode='n'})
 
 -- visual
-whichkey.register({
+wk.register({
     ["<leader>"] = {
         ["/"] = {":CommentToggle<CR>", "(un)comment"}, -- see comment.lua
     },

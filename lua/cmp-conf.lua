@@ -1,8 +1,12 @@
 #!/usr/bin/env lua
+-- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
 local cmd = vim.cmd
 
 -- menu=show completion menu. menuone=also when only one option. noselect=don't select automatically.
 vim.opt.completeopt = {"menu", "menuone", "noselect"}
+
+-- load friendly-snippets with luasnip
+require("luasnip.loaders.from_vscode").lazy_load()
 
 local cmp = require "cmp"
 -- for tab support, code copied from https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
@@ -28,13 +32,7 @@ end
 
 cmp.setup {
     snippet = {
-        -- REQUIRED - you must specify a snippet engine
-        expand = function(args)
-            -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-            require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-            -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-            -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-        end,
+        expand = function(args) require('luasnip').lsp_expand(args.body) end,
     },
     window = {
         -- completion = cmp.config.window.bordered(),
@@ -79,11 +77,8 @@ cmp.setup {
     sources = cmp.config.sources {
         { name = 'nvim_lsp' },
         { name = 'path', option = {trailing_slash=true} },
-        { name = 'nvim_lsp_signature_help' }, -- show signature of arg while writing it
-        -- { name = 'vsnip' }, -- For vsnip users.
-        { name = 'luasnip' }, -- For luasnip users.
-        -- { name = 'ultisnips' }, -- For ultisnips users.
-        -- { name = 'snippy' }, -- For snippy users.
+        { name = 'nvim_lsp_signature_help' },
+        { name = 'luasnip' },
         { name = 'calc' },
         { name = 'buffer' },
     },
@@ -99,11 +94,8 @@ cmp.setup.filetype('markdown', {
     sources = cmp.config.sources {
         { name = 'nvim_lsp' },
         { name = 'path' },
-        { name = 'nvim_lsp_signature_help' }, -- show signature of arg while writing it
-        -- { name = 'vsnip' }, -- For vsnip users.
-        { name = 'luasnip' }, -- For luasnip users.
-        -- { name = 'ultisnips' }, -- For ultisnips users.
-        -- { name = 'snippy' }, -- For snippy users.
+        { name = 'nvim_lsp_signature_help' },
+        { name = 'luasnip' },
         { name = 'calc' },
         { name = 'buffer' },
     }
@@ -114,11 +106,8 @@ cmp.setup.filetype('lua', {
         { name = 'nvim_lua' },
         { name = 'nvim_lsp' },
         { name = 'path' },
-        { name = 'nvim_lsp_signature_help' }, -- show signature of arg while writing it
-        -- { name = 'vsnip' }, -- For vsnip users.
-        { name = 'luasnip' }, -- For luasnip users.
-        -- { name = 'ultisnips' }, -- For ultisnips users.
-        -- { name = 'snippy' }, -- For snippy users.
+        { name = 'nvim_lsp_signature_help' },
+        { name = 'luasnip' },
         { name = 'calc' },
         { name = 'buffer' },
     }
