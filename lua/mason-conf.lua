@@ -12,6 +12,7 @@ require("mason-lspconfig").setup {
         "pylsp",
         "julials",
         "ltex",
+        "texlab",
         "r_language_server",
         "sumneko_lua",
         "vimls",

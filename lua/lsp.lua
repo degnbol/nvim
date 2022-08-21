@@ -90,6 +90,7 @@ lsp.julials.setup {}
 lsp.r_language_server.setup {}
 lsp.vimls.setup {}
 lsp.sumneko_lua.setup {}
+-- seems ltex has more text description for functions but texlab has more functions so I use both in combination
 lsp.ltex.setup { on_attach=function(client, bufnr)
     on_attach(client, bufnr)
     -- hacky. VimtexErrors puts errors found by Vimtex in quickfix (should be 
@@ -97,4 +98,5 @@ lsp.ltex.setup { on_attach=function(client, bufnr)
     -- opens the quickfix in a nicer view.
     vim.keymap.set('n', '<space>E', "<cmd>VimtexErrors<cr>|:cclose|<cmd>Telescope quickfix<cr>", opts)
 end }
+lsp.texlab.setup {}
 
