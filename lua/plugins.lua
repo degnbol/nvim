@@ -29,7 +29,7 @@ return require("packer").startup(function()
     use {"norcalli/nvim-base16.lua", requires="norcalli/nvim.lua"}
     use {"unblevable/quick-scope", config=function() require'quick-scope' end} -- highlight letters for jumping with f/F/t/T
     
-    use "ryanoasis/vim-devicons" -- adds icons to files
+    use "kyazdani42/nvim-web-devicons" -- adds icons to files
     
     use "sakshamgupta05/vim-todo-highlight" -- highlight todos
     -- use {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end} -- dim code that isn't currently being edited with :Twilight.
