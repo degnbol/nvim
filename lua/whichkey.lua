@@ -105,7 +105,7 @@ wk.register({
         l = {":noh<CR>", "clear highlights"},
         L = {
             name = "LaTeX",
-            b = {":VimtexCompile<CR>", "build"},
+            c = {":VimtexCompile<CR>", "compile"},
             e = {':lua require("nabla").popup()<CR>', "equation"},
         },
         m = {
