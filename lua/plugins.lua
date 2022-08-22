@@ -106,7 +106,7 @@ return require("packer").startup(function()
     -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
     use {"RishabhRD/nvim-cheat.sh", config=function() require'cheat' end, requires="RishabhRD/popfix"}
     -- use {"mrjones2014/dash.nvim", run='make install', requires='nvim-telescope/telescope.nvim'} -- :DashWord with <leader>K. conf in telescope-conf.lua
-    use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile
+    use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
     -- use "tpope/vim-sleuth" -- sleuth that let's you autodetect if file is using 2 or 4 spaces. Mistakenly set noexpandtab
     use "tpope/vim-abolish" -- crs: snake_case, crm: MixedCase, crc: camelCase, cru: UPPER_CASE, cr-: dash-case, cr.: dot.case, cr<SPACE>: space case, crt: Title Case
     -- use {"preservim/vim-markdown", requires="godlygeek/tabular"} -- conceal markdown expressions like _emphasis_ and folding. Overkill, see {after/,}syntax/markdown.vim
