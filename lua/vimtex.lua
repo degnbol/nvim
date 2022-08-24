@@ -1,7 +1,6 @@
 #!/usr/bin/env lua
 g = vim.g
 
--- try out skim, otherwise preview would open.
 g.vimtex_view_method = 'skim'
 -- inspiration from https://dr563105.github.io/blog/skim-vimtex-setup/
 -- forward search after every successful compilation
@@ -19,3 +18,9 @@ g.vimtex_log_ignore = {
 -- :h vimtex-af-enhanced-matchparen
 -- wrong matching for some {} with this on:
 -- vim.g.matchup_override_vimtex = true
+
+-- defaults at :h vimtex_compiler_latexmk
+g.vimtex_compiler_latexmk = {
+    build_dir = "build",
+}
+
