@@ -24,3 +24,6 @@ g.vimtex_compiler_latexmk = {
     build_dir = "build",
 }
 
+g.vimtex_syntax_conceal = {
+    sections = true, -- all other conceals are enabled by default
+}
