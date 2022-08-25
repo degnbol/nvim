@@ -1,7 +1,6 @@
 #!/usr/bin/env lua
 local g = vim.g
 local cmd = vim.cmd
-local json = require'json'
 local api = vim.api
 local fn = vim.fn
 local keymap = vim.keymap
@@ -27,7 +26,7 @@ function search_repl()
     -- if we are not in fact in a kitty terminal then the command will fail
     if json_string == "" then return end
     
-    ls = json.decode(json_string)
+    ls = vim.json.decode(json_string)
     for i_os_win, os_win in ipairs(ls) do
         if os_win["is_focused"] then
             for i_tab, tab in ipairs(os_win["tabs"]) do

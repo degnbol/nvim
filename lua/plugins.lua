@@ -100,7 +100,6 @@ return require("packer").startup(function()
     -- use {"HiPhish/repl.nvim", config=function () require'repl/HiPhish_repl' end}
     -- use {"jpalardy/vim-slime", config=function() require'repl/slime' end, requires='rxi/json.lua'} -- send code to REPL that can even be in another window.
     -- use "metakirby5/codi.vim" -- scratchpad coding, see output of all lines to the right https://github.com/metakirby5/codi.vim
-    use "rxi/json.lua" -- for kitty.lua
     use {"jeetsukumaran/vim-pythonsense", ft='python'} -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
     use {"samirettali/shebang.nvim", config=function() require'shebang-nvim' end} -- insert shebang on new file edit
     -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
