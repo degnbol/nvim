@@ -15,7 +15,6 @@ set fo-=n
 " to the edge.
 set sidescrolloff=0
 
-" vimtex has a lot of nice default conceals, e.g. greek in maths, \textbf, 
-" etc. Don't use concealcursor=nvc since it's too different from unconcealed 
-" so it would be a mess to go in and out of insert mode as the line jumps.
+" vimtex has a lot of nice default conceals, e.g. greek in maths, \textbf, etc.
 set conceallevel=2
+set concealcursor=nvc
