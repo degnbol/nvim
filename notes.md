@@ -22,3 +22,5 @@ miller git be cloned so a bit much. ftdetect/mlr.vim probs won't need updating,
 other files probs won't be added and I don't edit miller files that much so it 
 seems fine to update manually with copy paste with
 ./update.sh
+
+word count: g then ctrl+g
