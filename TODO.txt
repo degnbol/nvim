@@ -59,3 +59,5 @@ Don't have enter run as code in quickfix
 
 Hide last search if / or ? is used as textobj, e.g. y/\. that yanks sentence that may go on for multiple lines.
 
+autocomplete words from buffer with casing according to start of word, i.e. match case-insensitive and don't change case on what has been written thus far.
+
