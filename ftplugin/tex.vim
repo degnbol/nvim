@@ -17,4 +17,3 @@ set sidescrolloff=0
 
 " vimtex has a lot of nice default conceals, e.g. greek in maths, \textbf, etc.
 set conceallevel=2
-set concealcursor=nvc
