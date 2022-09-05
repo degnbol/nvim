@@ -2,7 +2,7 @@
 -- Run PackerSync after making changes to this file to recompile the file in plugin
 return require("packer").startup(function()
     use "wbthomason/packer.nvim"
-
+    
     -- core behaviour
     use "tpope/vim-repeat" -- change . to repeat last native command to last "full" command, which feels more natural.
     -- problems: it doesn't have simple ds working at all.
@@ -23,6 +23,7 @@ return require("packer").startup(function()
     -- TODO add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
     use {"glts/vim-textobj-comment", requires="kana/vim-textobj-user"} -- not working?
     use {"AckslD/nvim-trevJ.lua", config=function() require'trevj-conf' end}
+    use {"monaqa/dial.nvim", config=function() require'dial-conf' end} -- increment and decrement numbers, dates, color hex, even bool
     
     -- color
     use {"norcalli/nvim-colorizer.lua", config=function() require'colorizer'.setup() end} -- when a hex or other color is defined, highlight the text with its color
