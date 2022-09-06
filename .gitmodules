@@ -1,0 +1,3 @@
+[submodule "kittyREPL.nvim"]
+	path = kittyREPL.nvim
+	url = https://github.com/degnbol/kittyREPL.nvim

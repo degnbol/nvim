@@ -50,6 +50,7 @@ return require("packer").startup(function()
     -- use {"kevinhwang91/nvim-hlslens", config=function() require'hlslens-conf' end} -- show search match numbers
     -- use {"petertriho/nvim-scrollbar", requires="kevinhwang91/nvim-hlslens", config=function() require'scrollbar-conf' end} -- requires hlslens to show search results in scrollbar
     use "tyru/capture.vim" -- :Capture hi to call :hi where you can search etc.
+    use {"~/nvim/kittyREPL.nvim", config=function() require'kittyREPL-conf' end}
     
     -- treesitter
     use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate', config=function() require'treesitter' end} -- language coloring and ensuring of installation

@@ -65,7 +65,7 @@ wk.register({
         ["8"] = {":BufferLineGoToBuffer 8<CR>", "which_key_ignore"},
         ["9"] = {":BufferLineGoToBuffer 9<CR>", "which_key_ignore"},
         ["?"] = "cheatsheet",
-        ["<CR>"] = {":lua kittyWindow()<CR>", "kitty REPL"},
+        ["<CR>"] = "kitty REPL",
         a = "swap arg (treesitter textobjects)",
         A = "swap arg back (treesitter textobjects)",
         -- currently just for latex but can be depend on filetype
