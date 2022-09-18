@@ -5,6 +5,7 @@ local cmp = require "cmp"
 -- https://github.com/onsails/lspkind.nvim
 local lspkind = require "lspkind"
 local luasnip = require "luasnip"
+local rtp = vim.opt.runtimepath:get()[1]
 
 -- menu=show completion menu. menuone=also when only one option. noselect=don't select automatically.
 vim.opt.completeopt = {"menu", "menuone", "noselect"}
@@ -19,6 +20,17 @@ luasnip.config.set_config {
 }
 -- load friendly-snippets with luasnip
 require("luasnip.loaders.from_vscode").lazy_load()
+
+require("cmp_dictionary").setup {
+    dic = {
+        -- dicts generated with ./spell.sh
+        ["*"] = {
+            rtp .. "/spell/custom.dic",
+            rtp .. "/spell/en.dic",
+            rtp .. "/spell/da.dic"},
+    },
+    first_case_insensitive = true,
+}
 
 -- for tab completion
 local has_words_before = function()
@@ -97,7 +109,7 @@ cmp.setup {
     },
 }
 
-cmp.setup.filetype('markdown', {
+cmp.setup.filetype({'markdown', 'tex'}, {
     sources = cmp.config.sources {
         { name = 'nvim_lsp' },
         { name = 'path' },
@@ -105,6 +117,7 @@ cmp.setup.filetype('markdown', {
         { name = 'luasnip' },
         { name = 'calc' },
         { name = 'buffer' },
+        { name = 'dictionary', keyword_length = 3 },
     }
 })
 

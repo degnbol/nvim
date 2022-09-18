@@ -82,7 +82,7 @@ return require("packer").startup(function()
         -- 'SirVer/ultisnips', 'quangnguyen30192/cmp-nvim-ultisnips',
         -- 'dcampos/nvim-snippy', 'dcampos/cmp-snippy',
         'hrsh7th/cmp-calc', -- quick math in completion
-        'f3fora/cmp-spell', -- spell check
+        'uga-rosa/cmp-dictionary', -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
     }, config=function() require'cmp-conf' end}
     use {"j-hui/fidget.nvim", config=function() require"fidget-conf" end} -- corner print what LSP is running
     use "rafamadriz/friendly-snippets"
