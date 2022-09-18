@@ -34,25 +34,17 @@ https://github.com/rockerBOO/awesome-neovim
 # text objectsssss
 https://github.com/kana/vim-textobj-user/wiki
 
-# consider ALE for lint
-https://github.com/dense-analysis/ale
-
 color theme according to terminal color theme but with an option to use the 
 hardcoded tested color theme so we don't end up with a broken theme.
 
 see video again from kitty main page and implement super useful things, e.g. the thing that let's you edit remote files locally.
 https://sw.kovidgoyal.net/kitty/
 
-lsp is probs better now. Make a config that allows easy switching between coc and builtin lsp.
-Rewatch video and make a better setup where keymaps are only set when lsp is 
-active etc so you are only replacing keymaps when the lsp is actually attached.
-https://www.youtube.com/watch?v=puWgHa7k3SY
-
 Maybe move around vim and kitty windows more seamlessly
 https://github.com/knubie/vim-kitty-navigator
 
 Check out https://github.com/ms-jpq/isomorphic_copy
-to deal with clipboard on remote.
+to deal with clipboard on remote. Ideally use kitty kittens tho.
 
 Hide last search if / or ? is used as textobj, e.g. y/\. that yanks sentence that may go on for multiple lines.
 
@@ -64,10 +56,7 @@ If possible. In latex, and maybe in general, only autoformat simple text, i.e. n
 
 Very annoying: when autocompleting on the fo=a autoformats, the completion is duplicated on the new line.
 
-Change latex map from leader l to L, so leader l can work faster for unhighlight.
-
 Syntax coloring messed up in latex probs due to conceal.
 
-When at start of line in figure caption, pressing tab makes cursor jump to random locations? what is happening
+markid better syntax highlighting
 
-Enter is slow in quickfix because it waits for double enter. Fix this by e.g. only registering for normal buffers (buftype == "") or something

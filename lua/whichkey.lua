@@ -92,7 +92,7 @@ wk.register({
             w = {":Telescope live_grep<CR>", "find in files (telescope)"},
             W = {":Telescope grep_string<CR>", "find word under cursor (telescope)"},
         },
-        h = {
+        g = {
             name = "git(signs)",
             b = "blame line",
             p = "preview hunk",
@@ -100,13 +100,33 @@ wk.register({
             s = "stage hunk",
             u = "undo stage hunk",
         },
+        h = {":noh<CR>", "clear highlights"},
         -- <leader>K since K is regular defintion of word under cursor.
         K = {":DashWord<CR>", "Dash word"},
-        l = {":noh<CR>", "clear highlights"},
-        L = {
-            name = "LaTeX",
-            c = {":VimtexCompile<CR>", "compile"},
-            e = {':lua require("nabla").popup()<CR>', "equation"},
+        l = {
+            name = "LaTeX (vimtex and nabla)",
+            a = "context menu",
+            c = "clean",
+            C = "clean full",
+            e = "errors",
+            E = {':lua require("nabla").popup()<CR>', "equation"},
+            g = "status",
+            G = "status all",
+            i = "info",
+            I = "info full",
+            k = "stop",
+            K = "stop all",
+            l = "compile",
+            L = "compile selected",
+            m = "imaps list",
+            o = "compile output",
+            q = "log",
+            s = "toggle main",
+            t = "TOC open",
+            T = "TOC toggle",
+            v = "view",
+            x = "reload",
+            X = "reload state",
         },
         m = {
             m = {":DashboardJumpMarks<CR>", "jump marks (dashboard)"}
