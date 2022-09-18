@@ -1,18 +1,24 @@
 #!/usr/bin/env lua
 -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
 local cmd = vim.cmd
+local cmp = require "cmp"
+-- https://github.com/onsails/lspkind.nvim
+local lspkind = require "lspkind"
+local luasnip = require "luasnip"
 
 -- menu=show completion menu. menuone=also when only one option. noselect=don't select automatically.
 vim.opt.completeopt = {"menu", "menuone", "noselect"}
 
+-- https://youtu.be/Dn800rlPIho?t=440
+luasnip.config.set_config {
+    -- don't jump back into exited snippet
+    history = false,
+    -- dynamic snippets update as you type
+    updateevents = "TextChanged,TextChangedI",
+    enable_autosnippets = true,
+}
 -- load friendly-snippets with luasnip
 require("luasnip.loaders.from_vscode").lazy_load()
-
-local cmp = require "cmp"
--- for tab support, code copied from https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
-local luasnip = require "luasnip"
--- https://github.com/onsails/lspkind.nvim
-local lspkind = require "lspkind"
 
 -- for tab completion
 local has_words_before = function()
@@ -30,6 +36,7 @@ cmp.mapping.closeFallback = function()
     end
 end
 
+-- for tab support, code copied from https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
 cmp.setup {
     snippet = {
         expand = function(args) require('luasnip').lsp_expand(args.body) end,
