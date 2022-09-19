@@ -14,6 +14,7 @@ cmpd.setup {
         }
     },
     first_case_insensitive = true,
+    async = true, -- from slight but noticeable startup delay to instant.
 }
 
 -- We want spelllang=en,da so we can underline bad spelling in both, 
@@ -29,6 +30,8 @@ function CmpDictUpdate()
     end
 end
 
--- not sure why defer works but simply calling the function doesn't.
-vim.defer_fn(CmpDictUpdate, 0)
+-- was needed with 0 ms even without async=true.
+-- 1000 ms should be a second but it seems it is called instantly after everything else?
+-- Anyways, it works.
+vim.defer_fn(CmpDictUpdate, 1000)
 
