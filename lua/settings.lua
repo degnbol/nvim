@@ -65,23 +65,22 @@ opt.whichwrap = '[,]'
 
 -- hide the statusline that shows current file being edited
 opt.laststatus = 0
--- hide the location in file
+-- hide the location in file by default
 opt.ruler = false
+-- hide ~ tilde at end of buffer.
+opt.fillchars = "eob: "
 
 -- Danglish support
 opt.keymap = "danglish"
 -- use ctrl+6 to toggle
 opt.iminsert = 0
--- hide ~ tilde at end of buffer.
-opt.fillchars = "eob: "
 
-local g = vim.g
 g.mapleader = ' '
 g.maplocalleader = ' '
 
 -- 'set spell' to show red underline for spelling errors.
 -- As of writing, spell is on for markdown (ftplugin/markdown.lua)
-vim.opt.spelllang = { 'en_US', 'en_GB', 'da' }
+vim.opt.spelllang = { 'en', 'da' }
 -- never complain about sentence starting with lowercase word
 vim.opt.spellcapcheck = ""
 

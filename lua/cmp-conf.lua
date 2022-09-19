@@ -27,7 +27,12 @@ require("cmp_dictionary").setup {
         ["*"] = {
             rtp .. "/spell/custom.dic",
             rtp .. "/spell/en.dic",
-            rtp .. "/spell/da.dic"},
+        },
+        spelllang = { 
+            -- TODO we want spelllang=en,da so we can underline bad spelling in both, 
+            -- but toggle completion from danish only when iminsert=1
+            -- da = rtp .. "/spell/da.dic",
+        }
     },
     first_case_insensitive = true,
 }
@@ -110,25 +115,38 @@ cmp.setup {
 }
 
 cmp.setup.filetype({'markdown', 'tex'}, {
-    sources = cmp.config.sources {
+    sources = {
         { name = 'nvim_lsp' },
-        { name = 'path' },
+        { name = 'path', option = {trailing_slash=true} },
         { name = 'nvim_lsp_signature_help' },
         { name = 'luasnip' },
         { name = 'calc' },
-        { name = 'buffer' },
-        { name = 'dictionary', keyword_length = 3 },
+        { name = 'buffer', group_index=2 },
+        { name = 'dictionary', keyword_length=3, max_item_count=10, group_index=2 },
     }
 })
 
 cmp.setup.filetype('lua', {
-    sources = cmp.config.sources {
+    sources = {
         { name = 'nvim_lua' },
         { name = 'nvim_lsp' },
-        { name = 'path' },
+        { name = 'path', option = {trailing_slash=true} },
         { name = 'nvim_lsp_signature_help' },
         { name = 'luasnip' },
         { name = 'calc' },
-        { name = 'buffer' },
+        { name = 'buffer', group_index=2  },
     }
 })
+
+cmp.setup.filetype('zsh', {
+    sources = {
+        { name = 'zsh' },
+        { name = 'nvim_lsp' },
+        { name = 'path', option = {trailing_slash=true} },
+        { name = 'nvim_lsp_signature_help' },
+        { name = 'luasnip' },
+        { name = 'calc' },
+        { name = 'buffer', group_index=2  },
+    }
+})
+
