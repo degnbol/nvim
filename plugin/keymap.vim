@@ -151,3 +151,7 @@ xnoremap Å {
 " In Danglish I moved : and ; to the }] button
 " But this messes with things when I'm not in Danglish.
 
+" when changing to and from danglish with ctrl+6,
+" also switch cmp-dictionary language (cmp_dict.lua)
+inoremap <silent> <C-6> <C-6><C-\><C-o>:lua CmpDictUpdate()<CR>
+

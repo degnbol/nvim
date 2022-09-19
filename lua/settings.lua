@@ -3,6 +3,9 @@ local opt = vim.opt
 local g = vim.g
 local api = vim.api
 
+g.mapleader = ' '
+g.maplocalleader = ' '
+
 opt.expandtab = true
 opt.shiftwidth = 4
 opt.smartindent = true
@@ -74,9 +77,6 @@ opt.fillchars = "eob: "
 opt.keymap = "danglish"
 -- use ctrl+6 to toggle
 opt.iminsert = 0
-
-g.mapleader = ' '
-g.maplocalleader = ' '
 
 -- 'set spell' to show red underline for spelling errors.
 -- As of writing, spell is on for markdown (ftplugin/markdown.lua)

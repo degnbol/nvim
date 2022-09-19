@@ -74,13 +74,11 @@ return require("packer").startup(function()
         'hrsh7th/cmp-nvim-lua', -- neovim Lua API
         'tamago324/cmp-zsh', -- neovim zsh completion
         'onsails/lspkind.nvim', -- pretty pictograms
-        -- decide on snippet engine among 4 options. If changed then also change cmp-conf.lua at two places
-        -- 'hrsh7th/vim-vsnip', 'hrsh7th/cmp-vsnip',
-        'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip',
-        -- 'SirVer/ultisnips', 'quangnguyen30192/cmp-nvim-ultisnips',
         'hrsh7th/cmp-calc', -- quick math in completion
-        'uga-rosa/cmp-dictionary', -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
     }, config=function() require'cmp-conf' end}
+    use {'saadparwaiz1/cmp_luasnip', requires={'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp"}, config=function() require"luasnip-conf" end } -- alts: hrsh7th/vim-vsnip, SirVer/ultisnips, ...
+    -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
+    use {'uga-rosa/cmp-dictionary', config=function() require"cmp_dict" end}
     use {"j-hui/fidget.nvim", config=function() require"fidget-conf" end} -- corner print what LSP is running
     use "rafamadriz/friendly-snippets"
     

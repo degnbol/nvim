@@ -4,38 +4,9 @@ local cmd = vim.cmd
 local cmp = require "cmp"
 -- https://github.com/onsails/lspkind.nvim
 local lspkind = require "lspkind"
-local luasnip = require "luasnip"
-local rtp = vim.opt.runtimepath:get()[1]
 
 -- menu=show completion menu. menuone=also when only one option. noselect=don't select automatically.
 vim.opt.completeopt = {"menu", "menuone", "noselect"}
-
--- https://youtu.be/Dn800rlPIho?t=440
-luasnip.config.set_config {
-    -- don't jump back into exited snippet
-    history = false,
-    -- dynamic snippets update as you type
-    updateevents = "TextChanged,TextChangedI",
-    enable_autosnippets = true,
-}
--- load friendly-snippets with luasnip
-require("luasnip.loaders.from_vscode").lazy_load()
-
-require("cmp_dictionary").setup {
-    dic = {
-        -- dicts generated with ./spell.sh
-        ["*"] = {
-            rtp .. "/spell/custom.dic",
-            rtp .. "/spell/en.dic",
-        },
-        spelllang = { 
-            -- TODO we want spelllang=en,da so we can underline bad spelling in both, 
-            -- but toggle completion from danish only when iminsert=1
-            -- da = rtp .. "/spell/da.dic",
-        }
-    },
-    first_case_insensitive = true,
-}
 
 -- for tab completion
 local has_words_before = function()
@@ -56,7 +27,7 @@ end
 -- for tab support, code copied from https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
 cmp.setup {
     snippet = {
-        expand = function(args) require('luasnip').lsp_expand(args.body) end,
+        expand = function(args) require'luasnip'.lsp_expand(args.body) end,
     },
     window = {
         -- completion = cmp.config.window.bordered(),
@@ -80,8 +51,8 @@ cmp.setup {
         ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-                luasnip.expand_or_jump()
+            elseif require'luasnip'.expand_or_jumpable() then
+                require'luasnip'.expand_or_jump()
             elseif has_words_before() then
                 cmp.complete()
             else
@@ -91,8 +62,8 @@ cmp.setup {
         ["<S-Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-                luasnip.jump(-1)
+            elseif require'luasnip'.jumpable(-1) then
+                require'luasnip'.jump(-1)
             else
                 fallback()
             end
