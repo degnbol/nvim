@@ -51,7 +51,7 @@ return require("packer").startup(function()
     -- use {"petertriho/nvim-scrollbar", requires="kevinhwang91/nvim-hlslens", config=function() require'scrollbar-conf' end} -- requires hlslens to show search results in scrollbar
     use "tyru/capture.vim" -- :Capture hi to call :hi where you can search etc.
     use {"~/nvim/kittyREPL.nvim", config=function() require'kittyREPL-conf' end}
-    use {'kevinhwang91/nvim-bqf'} -- better quickfix window
+    use {'kevinhwang91/nvim-bqf', config=function() require'bqf-conf' end, requires='junegunn/fzf'} -- better quickfix window. zf to open fzf inside quickfix.
     
     -- treesitter
     use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate', config=function() require'treesitter' end} -- language coloring and ensuring of installation
@@ -66,28 +66,23 @@ return require("packer").startup(function()
     use {"neovim/nvim-lspconfig", config=function() require'lsp' end}
     -- add :LspInstall <language> and :Mason for conveniently installing LSP language specific servers
     use {"williamboman/mason-lspconfig.nvim", requires={"neovim/nvim-lspconfig", "williamboman/mason.nvim"}, config=function() require "mason-conf" end}
-    -- coq. Run :COQdeps to install
-    -- use {'ms-jpq/coq_nvim', branch='coq', config=function() require'coq-conf' end}
-    -- use {'ms-jpq/coq.artifacts', branch='artifacts', requires='ms-jpq/coq_nvim'} -- snippets
     -- completion menu using builtin LSP
     use {"hrsh7th/nvim-cmp", requires = {
         'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-buffer',
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-nvim-lsp-signature-help',
         'hrsh7th/cmp-nvim-lua', -- neovim Lua API
+        'tamago324/cmp-zsh', -- neovim zsh completion
         'onsails/lspkind.nvim', -- pretty pictograms
         -- decide on snippet engine among 4 options. If changed then also change cmp-conf.lua at two places
         -- 'hrsh7th/vim-vsnip', 'hrsh7th/cmp-vsnip',
         'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip',
         -- 'SirVer/ultisnips', 'quangnguyen30192/cmp-nvim-ultisnips',
-        -- 'dcampos/nvim-snippy', 'dcampos/cmp-snippy',
         'hrsh7th/cmp-calc', -- quick math in completion
         'uga-rosa/cmp-dictionary', -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
     }, config=function() require'cmp-conf' end}
     use {"j-hui/fidget.nvim", config=function() require"fidget-conf" end} -- corner print what LSP is running
     use "rafamadriz/friendly-snippets"
-    -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. Alternative to hrsh7th/cmp-nvim-lsp-signature-help
-    -- use {"neoclide/coc.nvim", branch="release"} -- https://github.com/neoclide/coc.nvim/wiki/Language-servers e.g. :CocInstall coc-texlab
     
     -- language
     use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- add keybindings to toggle comments with motions etc.
@@ -118,7 +113,6 @@ return require("packer").startup(function()
     use {"habamax/vim-rst"}
     use "jbyuki/nabla.nvim" -- show pretty math in term
     use {"goerz/jupytext.vim", config=function() require'jupytext-conf' end} -- edit jupyter notebook. requires `pip install jupytext`
-    
     -- use "elzr/vim-json" -- json
 end)
 
