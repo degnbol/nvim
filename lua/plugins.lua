@@ -26,7 +26,7 @@ return require("packer").startup(function()
     use {"monaqa/dial.nvim", config=function() require'dial-conf' end} -- increment and decrement numbers, dates, color hex, even bool
     
     -- color
-    use {"norcalli/nvim-colorizer.lua", config=function() require'colorizer'.setup() end} -- when a hex or other color is defined, highlight the text with its color
+    use {"NvChad/nvim-colorizer.lua", config=function() require'colorizer-conf' end} -- when a hex or other color is defined, highlight the text with its color
     use {"norcalli/nvim-base16.lua", requires="norcalli/nvim.lua"}
     use {"unblevable/quick-scope", config=function() require'quick-scope' end} -- highlight letters for jumping with f/F/t/T
     
