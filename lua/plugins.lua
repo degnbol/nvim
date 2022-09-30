@@ -52,6 +52,7 @@ return require("packer").startup(function()
     use "tyru/capture.vim" -- :Capture hi to call :hi where you can search etc.
     use {"~/nvim/kittyREPL.nvim", config=function() require'kittyREPL-conf' end}
     use {'kevinhwang91/nvim-bqf', config=function() require'bqf-conf' end, requires='junegunn/fzf'} -- better quickfix window. zf to open fzf inside quickfix.
+    use {'kevinhwang91/nvim-ufo', requires='kevinhwang91/promise-async', config=function() require'ufo-conf' end}
     
     -- treesitter
     use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate', config=function() require'treesitter' end} -- language coloring and ensuring of installation
@@ -82,12 +83,16 @@ return require("packer").startup(function()
     use {"j-hui/fidget.nvim", config=function() require"fidget-conf" end} -- corner print what LSP is running
     use "rafamadriz/friendly-snippets"
     
+    -- git
+    use "tpope/vim-fugitive" -- git
+    use {"lewis6991/gitsigns.nvim", requires='nvim-lua/plenary.nvim', config=function() require'gitsigns-conf' end} -- git decoration to the left
+    use {"rhysd/conflict-marker.vim"} -- highlight git conflicts, jump with [x and ]x, resolve by keeping none (cn), theirs (ct), our (co), both (cb), or both reverse (cB)
+    use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' } -- :DiffviewOpen
+
     -- language
-    use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- add keybindings to toggle comments with motions etc.
+    use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- add keybindings to toggle comments with motions etc. Consider alt: https://github.com/numToStr/Comment.nvim
     -- use "windwp/nvim-autopairs" -- auto add second parenthesis etc.
     -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines
-    use "tpope/vim-fugitive" -- git
-    -- use {"lewis6991/gitsigns.nvim", requires='nvim-lua/plenary.nvim', config=function() require'gitsigns-nvim' end} -- git decoration to the left
     use {"JuliaEditorSupport/julia-vim", config=function() require'julia' end} -- julia support, colors and unicode substitution. CANNOT use ft=julia
     -- use "urbainvaes/vim-ripple" -- REPL with some indent and tab problems
     -- use {"hkupty/iron.nvim", config=function () require'repl/iron-nvim' end} -- REPL that doesn't support bpython or radian

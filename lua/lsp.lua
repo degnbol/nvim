@@ -73,6 +73,12 @@ end
 
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
+-- added for https://github.com/kevinhwang91/nvim-ufo see ufo-conf etc
+capabilities.textDocument.foldingRange = {
+    dynamicRegistration = false,
+    lineFoldingOnly = true
+}
+
 -- add to lsp default config
 lsp.util.default_config = vim.tbl_deep_extend('force', lsp.util.default_config, {
     capabilities = capabilities,
