@@ -127,3 +127,9 @@ cmd "hi! link Pmenu Normal"
 cmd "hi! link PmenuSbar Ignore"
 cmd "hi! link PmenuThumb Visual"
 
+-- make bg black for things that would use terminal background
+cmd "hi LineNr guibg=black"
+cmd "hi CursorLineNr guibg=black"
+cmd "hi VertSplit guibg=black"
+cmd "hi Folded guibg=black"
+cmd "hi FoldColumn guibg=black"
