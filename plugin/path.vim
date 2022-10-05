@@ -9,4 +9,4 @@ exec "setlocal path+=" . ROOT . '/src'
 exec "setlocal path+=" . ROOT . '/src/*'
 
 " For edit-in-kitty on remotes:
-let $PATH .= ':/opt/homebrew/bin:~/.local/bin:~/miniconda3/bin'
+let $PATH .= ':/opt/homebrew/bin:' . $HOME . '/miniconda3/bin'
