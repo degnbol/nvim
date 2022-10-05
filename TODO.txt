@@ -63,3 +63,5 @@ then maybe update cmp to understand the word has been added.
 Then you can add unknown (lots of scientific) words to your dictionary.
 Add a keybinding in whichkey
 
+GOTTA fix autocomplete from using enter for insertion when I haven't selected any item.
+
