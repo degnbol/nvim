@@ -48,6 +48,8 @@ opt.showcmd = false
 -- t=use textwidth for formatting. a=auto format. w=respect explicit newline. r=continue comment leader with newline in insert mode.
 -- tcqj is default, so only adding w which is relevant when autoformatting with set fo+=a or manually with gq
 opt.formatoptions='tcqjwr'
+-- why is this not default. Persistent undo history.
+opt.undofile = true
 
 -- Highlight on yank, e.g. press Y to yank line which will highlight the line for a moment
 api.nvim_create_autocmd({"TextYankPost"}, {
