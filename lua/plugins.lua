@@ -12,6 +12,7 @@ return require("packer").startup(function()
     use "svermeulen/vim-subversive" -- add substitution functions to e.g. replace a word with clipboard content by writing siw
     use {"gbprod/cutlass.nvim", config=function() require'cutlass-conf' end} -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
     use "svermeulen/vim-yoink" -- yank history that you can cycle with c-n and c-p
+    use { 'ibhagwan/smartyank.nvim', config=function() require'smartyank-conf' end } -- yank in tmux and over ssh
     -- use "mg979/vim-visual-multi" -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
     -- use {"moll/vim-bbye", config=function() require'bbye' end}
     use "farmergreg/vim-lastplace" -- open file in last edited location
@@ -34,7 +35,6 @@ return require("packer").startup(function()
     
     use "sakshamgupta05/vim-todo-highlight" -- highlight todos
     -- use {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end} -- dim code that isn't currently being edited with :Twilight.
-    -- use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
     
     -- UI
     use {"akinsho/nvim-bufferline.lua", tag="*", requires="kyazdani42/nvim-web-devicons", config=function() require'top-bufferline' end} -- add a line at the top with all the files open in the buffer
@@ -62,6 +62,7 @@ return require("packer").startup(function()
     -- use "romgrk/nvim-treesitter-context" -- show the "context" at the top line, i.e. function name when in a function
     use {"andymass/vim-matchup", requires='nvim-treesitter/nvim-treesitter', config=function() require'matchup' end} -- % jumps between matching coding blocks, not just single chars.
     use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
+    use {"nvim-treesitter/playground"} -- provides :TSHighlightCapturesUnderCursor to see highlight groups for a word under the cursor
     
     -- LSP. For a given file, either complete with cmp (builtin recommended, but e.g. jedi language servers is slow), coc (old, not using builtin LSP), or coq (hacks builtin LSP)
     use {"neovim/nvim-lspconfig", config=function() require'lsp' end}
@@ -106,7 +107,6 @@ return require("packer").startup(function()
     -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
     use {"RishabhRD/nvim-cheat.sh", config=function() require'cheat' end, requires="RishabhRD/popfix"}
     -- use {"mrjones2014/dash.nvim", run='make install', requires='nvim-telescope/telescope.nvim'} -- :DashWord with <leader>K. conf in telescope-conf.lua
-    use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
     -- use "tpope/vim-sleuth" -- sleuth that let's you autodetect if file is using 2 or 4 spaces. Mistakenly set noexpandtab
     use "tpope/vim-abolish" -- crs: snake_case, crm: MixedCase, crc: camelCase, cru: UPPER_CASE, cr-: dash-case, cr.: dot.case, cr<SPACE>: space case, crt: Title Case
     -- use {"preservim/vim-markdown", requires="godlygeek/tabular"} -- conceal markdown expressions like _emphasis_ and folding. Overkill, see {after/,}syntax/markdown.vim
@@ -117,5 +117,11 @@ return require("packer").startup(function()
     use "jbyuki/nabla.nvim" -- show pretty math in term
     use {"goerz/jupytext.vim", config=function() require'jupytext-conf' end} -- edit jupyter notebook. requires `pip install jupytext`
     -- use "elzr/vim-json" -- json
+    use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
+    -- bibliography references, mostly relevant for citations in .tex documents.
+    use { "jghauser/papis.nvim", after = { "telescope.nvim", "nvim-cmp" },
+        requires = { "kkharji/sqlite.lua", "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim", "nvim-treesitter/nvim-treesitter", },
+        rocks = { "lyaml" }, config = function() require("papis").setup() end,
+    }
 end)
 
