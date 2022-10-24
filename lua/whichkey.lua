@@ -220,7 +220,13 @@ wk.register({
             q = "line",
         },
         r = "references (LSP)",
-    }
+    },
+    ['\\'] = {
+        f = "forward to (leap)",
+        F = "backward to (leap)",
+        t = "forward till (leap)",
+        T = "backward till (leap)",
+    },
 }, {mode='n'})
 
 -- visual
@@ -232,5 +238,11 @@ wk.register({
     ["<ScrollWheelDown>"] = "which_key_ignore",
     ["."] = "increment",
     [","] = "decrement",
+    ['\\'] = {
+        f = "forward to (leap)",
+        F = "backward to (leap)",
+        t = "forward till (leap)",
+        T = "backward till (leap)",
+    },
 }, {mode='v'})
 
