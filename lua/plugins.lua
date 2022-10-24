@@ -25,6 +25,8 @@ return require("packer").startup(function()
     use {"glts/vim-textobj-comment", requires="kana/vim-textobj-user"} -- not working?
     use {"AckslD/nvim-trevJ.lua", config=function() require'trevj-conf' end}
     use {"monaqa/dial.nvim", config=function() require'dial-conf' end} -- increment and decrement numbers, dates, color hex, even bool
+    use 'monkoose/matchparen.nvim' -- supposedly faster and less buggy version of neovim builtin (:h )matchparen which highlights matching parenthesis etc.
+    use {'ggandor/leap.nvim', config=function() require"leap-conf" end} -- jump to anywhere with \ + f or F or t or T
     
     -- color
     use {"NvChad/nvim-colorizer.lua", config=function() require'colorizer-conf' end} -- when a hex or other color is defined, highlight the text with its color
@@ -119,9 +121,13 @@ return require("packer").startup(function()
     -- use "elzr/vim-json" -- json
     use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
     -- bibliography references, mostly relevant for citations in .tex documents.
+    use_rocks "lyaml"
     use { "jghauser/papis.nvim", after = { "telescope.nvim", "nvim-cmp" },
         requires = { "kkharji/sqlite.lua", "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim", "nvim-treesitter/nvim-treesitter", },
-        rocks = { "lyaml" }, config = function() require("papis").setup() end,
+        rocks = "lyaml", config = function() require("papis").setup() end,
     }
+    
+    use 'lewis6991/impatient.nvim'
+
 end)
 
