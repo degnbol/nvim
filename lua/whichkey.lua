@@ -1,6 +1,5 @@
 local wk = require("which-key")
 
-
 wk.setup {
     plugins = {
         marks = true, -- shows a list of your marks on ' and `
@@ -93,12 +92,17 @@ wk.register({
             W = {":Telescope grep_string<CR>", "find word under cursor (telescope)"},
         },
         g = {
-            name = "git(signs)",
-            b = "blame line",
-            p = "preview hunk",
-            r = "reset hunk",
-            s = "stage hunk",
-            u = "undo stage hunk",
+            name = "git",
+            b = "blame line (Gitsigns)",
+            -- hide untracked files with -uno. Open during merge or rebase should show conflicts nicer automatically.
+            d = {":DiffviewOpen -uno", "open diffview"},
+            -- % for just this file, spell out the command to see history for the whole branch
+            h = {":DiffviewFileHistory %<CR>", "history (Diffview)"},
+            p = "preview hunk (Gitsigns)",
+            q = {":DiffviewClose<CR>", "quit (Diffview)"},
+            r = "reset hunk (Gitsigns)",
+            s = "stage hunk (Gitsigns)",
+            u = "undo stage hunk (Gitsigns)",
         },
         h = {":noh<CR>", "clear highlights"},
         -- <leader>K since K is regular defintion of word under cursor.
@@ -234,12 +238,14 @@ wk.register({
     ["<leader>"] = {
         ["/"] = {":CommentToggle<CR>", "(un)comment"}, -- see comment.lua
         g = {
-            name = "git(signs)",
-            b = {":Gitsigns blame_line<CR>", "blame line"},
-            p = {":Gitsigns preview_hunk<CR>", "preview hunk"},
-            r = {":Gitsigns reset_hunk<CR>", "reset hunk"},
-            s = {":Gitsigns stage_hunk<CR>", "stage hunk"},
-            u = {":Gitsigns undo_stage_hunk<CR>", "undo stage hunk"},
+            name = "git",
+            b = {":Gitsigns blame_line<CR>", "blame line (gitsigns)"},
+            -- pretty cool: history of a specific range of code
+            h = {":DiffviewFileHistory<CR>", "history (Diffview)"},
+            p = {":Gitsigns preview_hunk<CR>", "preview hunk (gitsigns)"},
+            r = {":Gitsigns reset_hunk<CR>", "reset hunk (gitsigns)"},
+            s = {":Gitsigns stage_hunk<CR>", "stage hunk (gitsigns)"},
+            u = {":Gitsigns undo_stage_hunk<CR>", "undo stage hunk (gitsigns)"},
         },
     },
     ["<ScrollWheelUp>"] = "which_key_ignore",
