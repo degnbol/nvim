@@ -233,6 +233,14 @@ wk.register({
 wk.register({
     ["<leader>"] = {
         ["/"] = {":CommentToggle<CR>", "(un)comment"}, -- see comment.lua
+        g = {
+            name = "git(signs)",
+            b = {":Gitsigns blame_line<CR>", "blame line"},
+            p = {":Gitsigns preview_hunk<CR>", "preview hunk"},
+            r = {":Gitsigns reset_hunk<CR>", "reset hunk"},
+            s = {":Gitsigns stage_hunk<CR>", "stage hunk"},
+            u = {":Gitsigns undo_stage_hunk<CR>", "undo stage hunk"},
+        },
     },
     ["<ScrollWheelUp>"] = "which_key_ignore",
     ["<ScrollWheelDown>"] = "which_key_ignore",
