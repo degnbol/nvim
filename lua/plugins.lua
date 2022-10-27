@@ -90,7 +90,7 @@ return require("packer").startup(function()
     use "tpope/vim-fugitive" -- git
     use {"lewis6991/gitsigns.nvim", requires='nvim-lua/plenary.nvim', config=function() require'gitsigns-conf' end} -- git decoration to the left
     use {"rhysd/conflict-marker.vim"} -- highlight git conflicts, jump with [x and ]x, resolve by keeping none (cn), theirs (ct), our (co), both (cb), or both reverse (cB)
-    use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' } -- :DiffviewOpen
+    use { 'sindrets/diffview.nvim', requires='nvim-lua/plenary.nvim', config=function() require'diffview-conf' end } -- :DiffviewOpen and other commands for seeing git diff and git history for files.
 
     -- language
     use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- add keybindings to toggle comments with motions etc. Consider alt: https://github.com/numToStr/Comment.nvim
@@ -121,11 +121,10 @@ return require("packer").startup(function()
     -- use "elzr/vim-json" -- json
     use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
     -- bibliography references, mostly relevant for citations in .tex documents.
-    use_rocks "lyaml"
-    use { "jghauser/papis.nvim", after = { "telescope.nvim", "nvim-cmp" },
-        requires = { "kkharji/sqlite.lua", "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim", "nvim-treesitter/nvim-treesitter", },
-        rocks = "lyaml", config = function() require("papis").setup() end,
-    }
+    -- use { "jghauser/papis.nvim", after = { "telescope.nvim", "nvim-cmp" },
+    --     requires = { "kkharji/sqlite.lua", "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim", "nvim-treesitter/nvim-treesitter", },
+    --     rocks="lyaml", config = function() require("papis").setup() end,
+    -- }
     
     use 'lewis6991/impatient.nvim'
 

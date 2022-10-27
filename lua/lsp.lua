@@ -71,7 +71,7 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<space>F', vim.lsp.buf.format, bufopts)
 end
 
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 -- added for https://github.com/kevinhwang91/nvim-ufo see ufo-conf etc
 capabilities.textDocument.foldingRange = {

@@ -37,7 +37,7 @@ wk.setup {
     layout = {
         height = {min = 4, max = 25}, -- min and max height of the columns
         width = {min = 20, max = 50}, -- min and max width of the columns
-        spacing = 0 -- spacing between columns
+        spacing = 2 -- spacing between columns
     },
     ignore_missing = false, -- enable this to hide mappings for which you didn't specify a label
     hidden = {"<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "}, -- hide mapping boilerplate
@@ -67,10 +67,19 @@ wk.register({
         ["<CR>"] = "kitty REPL",
         a = "swap arg (treesitter textobjects)",
         A = "swap arg back (treesitter textobjects)",
-        -- currently just for latex but can be depend on filetype
+        b = {
+            name = "bibliography (papis)",
+            o = {"<>", "open"},
+        },
         c = {
-            name = "code (LSP)...",
-            a = "code action (LSP)...",
+            -- works with both since Diffview only overwrites keybindings for their own buffer types
+            -- For choosing none, use dx (delete conflict)
+            name = "code (LSP) || choose (Diffview)...",
+            a = "code action (LSP)... || all (diffview)",
+            b = "base (diffview)",
+            d = {"dx", "none/delete (diffview). Use dx"},
+            o = "ours (diffview)",
+            t = "theirs (diffview)",
         },
         d = {
             name = "defintion peek (treesitter textobjects + LSP)",
@@ -78,7 +87,9 @@ wk.register({
             F = "class",
         },
         D = "type defintion (LSP)",
-        e = {":NvimTreeToggle<CR>", "explorer"},
+        -- is overwritten by Diffview for its own buffer types so
+        -- the description is correct here even though the command only indicates NvimTree
+        e = {":NvimTreeToggle<CR>", "explorer (NvimTree || Diffview)"},
         E = "errors (LSP diagnostics)",
         -- telescope and dashboard mappings
         f = {
@@ -94,8 +105,10 @@ wk.register({
         g = {
             name = "git",
             b = "blame line (Gitsigns)",
-            -- hide untracked files with -uno. Open during merge or rebase should show conflicts nicer automatically.
-            d = {":DiffviewOpen -uno", "open diffview"},
+            -- hide untracked files with -uno.
+            -- hide gitsigns' file explorer with DiffviewToggleFiles (unhide with <leader>e like NvimTreeToggle)
+            -- Open during merge or rebase should show conflicts nicer automatically.
+            d = {":DiffviewOpen -uno<CR>:DiffviewToggleFiles<CR>", "open diffview"},
             -- % for just this file, spell out the command to see history for the whole branch
             h = {":DiffviewFileHistory %<CR>", "history (Diffview)"},
             p = "preview hunk (Gitsigns)",
@@ -178,14 +191,14 @@ wk.register({
             n = "rename",
         },
         s = {
-            name = "substitute OR session",
+            name = "substitute || session",
             -- substitute is an optional feature enabled from the substitute package where
             -- I can substitute e.g. all occurrences of a word in a paragraph with some new text by writing <leader>swip then the replacement text.
             l = {":SessionLoad<CR>", "load session"},
             s = {":SessionSave<CR>", "save session"},
         },
         t = {
-            name = "toggle OR terminal",
+            name = "toggle || terminal",
             -- switch to/from Danish æøå and to insert mode, which is convenient.
             d = {'i<C-^>', "Danish (ctrl+^)"},
             l = {':silent HlSearchLensToggle<CR>', "HlSearchLens"},
@@ -230,6 +243,20 @@ wk.register({
         F = "backward to (leap)",
         t = "forward till (leap)",
         T = "backward till (leap)",
+    },
+    ['['] = {
+        name = "Previous...",
+        d = "diagnostic (LSP)",
+        h = "hunk (gitsigns)",
+        y = "Change paste (Yoink)",
+        x = "conflict (Diffview)",
+    },
+    [']'] = {
+        name = "Next...",
+        d = "diagnostic (LSP)",
+        h = "hunk (gitsigns)",
+        y = "Change paste (Yoink)",
+        x = "conflict (Diffview)",
     },
 }, {mode='n'})
 
