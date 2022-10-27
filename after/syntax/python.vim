@@ -64,8 +64,8 @@ syntax match Normal '\v<\zs_\ze>' conceal cchar=_
 
 
 " Need to be handled specially for `not in` to work. Order doesn't matter.
-syntax match Normal '\v<not in>' conceal cchar=∉
-syntax match Normal '\v<in>' conceal cchar=∈
+syntax match Repeat '\v<not in>' conceal cchar=∉
+syntax match Repeat '\v<in>' conceal cchar=∈
 
 syntax match Normal '\s@\s'ms=s+1,me=e-1 conceal cchar=⊗
 syntax match Normal '\s\*\s'ms=s+1,me=e-1 conceal cchar=∙
@@ -198,4 +198,13 @@ highlight! link pySpecial Special
 highlight! link pyIdentifier Identifier
 highlight! link pyType Type
 
+" treesitter colors in as operator, but I would rather it be considered Repeat to match 'for'
+" The correct way to do this would probably be to make a custom capture group 
+" in treesitter but I couldn't figure that out.
+hi Operator guifg=transparent
+" recolor operators that lost color due to setting Operator transparent.
+syn keyword Keyword is and or not
+syn match Keyword '='
+syn match Keyword '>'
+syn match Keyword '<'
 
