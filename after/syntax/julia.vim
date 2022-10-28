@@ -18,7 +18,8 @@ hi Conceal ctermfg=5 guifg=#ae94f9
 " treesitter colors in as @keyword.operator, but I would rather it be considered @repeat to match 'for'
 " The correct way to do this would probably be to make a custom capture group 
 " in treesitter but I couldn't figure that out.
-hi link @keyword.operator @repeat
+" ! needed to force it
+hi! link @keyword.operator @repeat
 syn keyword Repeat in
 syn match Repeat '∈'
 
