@@ -198,13 +198,3 @@ highlight! link pySpecial Special
 highlight! link pyIdentifier Identifier
 highlight! link pyType Type
 
-" treesitter colors in as operator, but I would rather it be considered Repeat to match 'for'
-" The correct way to do this would probably be to make a custom capture group 
-" in treesitter but I couldn't figure that out.
-hi Operator guifg=transparent
-" recolor operators that lost color due to setting Operator transparent.
-syn keyword Keyword is and or not
-syn match Keyword '='
-syn match Keyword '>'
-syn match Keyword '<'
-

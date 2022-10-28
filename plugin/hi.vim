@@ -1,11 +1,14 @@
 " Italics are not default since terms aren't assumed to support it,
 " however bold is sometimes set for highlight groups for some languages.
 " italic for builtin reserved words makes sense.
+" highlight groups starting with @ are from treesitter and others from regex 
+" syntax groups. Which one is edited matters, since editing one with color 
+" will combine the color with the italic, while editing the other may replace 
+" the color with italic. Before making changes look at test files in 
+" testfiles/
 hi @include gui=italic
-hi @keyword gui=italic
+hi Keyword gui=italic
 hi @keyword.operator gui=italic
-" Not setting `hi Keyword gui=italic` since the @ groups are treesitter which are more accurate. 
-" E.g. = and other operations are Keyword in python.
 hi Repeat gui=italic
 hi Conditional gui=italic
 hi Exception gui=italic
