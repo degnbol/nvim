@@ -1,5 +1,5 @@
 #!/usr/bin/env vimscript
-source after/syntax/sh.vim
+runtime after/syntax/sh.vim
 
 " add sudo to precommands and remove -
 " https://github.com/vim/vim/blob/master/runtime/syntax/zsh.vim
