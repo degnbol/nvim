@@ -37,3 +37,11 @@ vim.wo.foldlevel = 99 -- so we don't fold from the start
 -- vim.wo.foldmethod = 'indent'
 vim.wo.foldmethod = 'expr'
 vim.wo.foldexpr = 'nvim_treesitter#foldexpr()'
+
+-- use bash treesitter for zsh since zsh is very basic
+local ft_to_lang = require('nvim-treesitter.parsers').ft_to_lang
+require('nvim-treesitter.parsers').ft_to_lang = function(ft)
+    if ft == 'zsh' then return 'bash' end
+    return ft_to_lang(ft)
+end
+

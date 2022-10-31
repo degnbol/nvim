@@ -1,3 +1,4 @@
+" :h group-name
 " Italics are not default since terms aren't assumed to support it,
 " however bold is sometimes set for highlight groups for some languages.
 " italic for builtin reserved words makes sense.
@@ -12,6 +13,7 @@ hi Keyword gui=italic
 " guifg shine through, fixing "in"
 hi @keyword.operator gui=italic
 hi Repeat gui=italic
+hi Label gui=italic
 hi Conditional gui=italic
 hi Exception gui=italic
 
