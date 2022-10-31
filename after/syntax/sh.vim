@@ -16,9 +16,11 @@ fun! LocalHi()
         " used by other filetypes we must change it each time we change focus
         " hi link @variable Identifier
         hi link @variable Identifier
-    elseif &ft =~ 'NvimTree\|'
+    elseif &ft =~ 'NvimTree\|TelescopePrompt'
         " Don't do anything when just swithing to an unaffected buffer, e.g. 
         " treeviewer NvimTree or buffer without filetype (empty string)
+    elseif &ft == ''
+        " exactly nothing didn't work in the regex, it matches anything then
     else
         " reset for other languages
         hi link @parameter Identifier
