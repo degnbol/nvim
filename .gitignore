@@ -1,2 +1,5 @@
 .DS_Store
 kittyREPL.nvim # here for dev, not to be incorporated.
+
+node_modules/
+plugin/packer_compiled.lua
