@@ -16,7 +16,7 @@ end
 :return: b
 """
 function hejsa(b::Matrix{Float64})
-    return b
+    return .!b .| b .& b
 end
 
 begin a .+= 2 end

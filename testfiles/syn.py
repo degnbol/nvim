@@ -18,7 +18,7 @@ def hejsa(b):
 a += 2
 
 while a < 0:
-    hejsa(a)
+    assert not ~all(hejsa(a)) and 3 or 2
     np.mean(a, axis=1)
     a = 1 if b > a else 3.4
 
