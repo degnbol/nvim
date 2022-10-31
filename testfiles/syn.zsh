@@ -30,4 +30,8 @@ source file.sh
 . ~/dir/file.sh
 ~/dir/file.sh
 
+echo "\ "
+$0:h/pdb2tsv.sh | mlr -t filter '$atom == "CA"' +\
+    cut -f x,y,z,resi,chain then uniq -a + count
+
 

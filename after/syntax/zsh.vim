@@ -57,3 +57,11 @@ hi link zshOldSubst String
 " all contexts and highlighted as a keyword, which we color differently from 
 " other function calls and italize. Color them according to functions instead.
 hi link zshCommands @function.call
+
+" A terminal \ means no newline
+syn match Operator '\\$'
+
+" estra goodies for specific tools such as miller
+syn match MillerOperator '+'
+hi link MillerOperator Operator
+
