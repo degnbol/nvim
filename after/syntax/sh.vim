@@ -5,17 +5,28 @@ hi link shLoop Repeat
 
 syn keyword Repeat in
 
-au BufEnter *.zsh,*.sh,*.bash hi @parameter guifg=NONE
-au BufLeave *.zsh,*.sh,*.bash hi link @parameter Identifier
 
-" color treesitter variable which replaces inconsistent coloring of zshDeref 
-" (de-reference, i.e. expanding $). This works better for mixing variables 
-" into paths, etc. see testfiles/syn.zsh
-" NOTE: since :hi is a global modifier and @variable is cleared by default and 
-" used by other filetypes we must change it each time we change focus
-" hi link @variable Identifier
-au BufEnter *.zsh,*.sh,*.bash hi link @variable Identifier
-au BufLeave *.zsh,*.sh,*.bash hi clear @variable
+fun! LocalHi()
+    if &ft =~ 'sh\|zsh'
+        hi @parameter guifg=NONE
+        " color treesitter variable which replaces inconsistent coloring of zshDeref 
+        " (de-reference, i.e. expanding $). This works better for mixing variables 
+        " into paths, etc. see testfiles/syn.zsh
+        " NOTE: since :hi is a global modifier and @variable is cleared by default and 
+        " used by other filetypes we must change it each time we change focus
+        " hi link @variable Identifier
+        hi link @variable Identifier
+    elseif &ft =~ 'NvimTree\|'
+        " Don't do anything when just swithing to an unaffected buffer, e.g. 
+        " treeviewer NvimTree or buffer without filetype (empty string)
+    else
+        " reset for other languages
+        hi link @parameter Identifier
+        hi clear @variable
+    endif
+endfun
+au BufEnter * call LocalHi()
+
 
 syn match Arg / [-+]\{1,2}[A-Za-z0-9-]\+/
 hi link Arg Special
