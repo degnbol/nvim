@@ -7,11 +7,12 @@
 " will combine the color with the italic, while editing the other may replace 
 " the color with italic. Before making changes look at test files in 
 " testfiles/
-hi @include gui=italic
+" hi @include gui=italic
+hi Include gui=italic
 hi Keyword gui=italic
 " effectively clears the guifg on @keyword.operator which let's the regex 
 " guifg shine through, fixing "in"
-hi @keyword.operator gui=italic
+" hi @keyword.operator gui=italic
 hi Repeat gui=italic
 hi Label gui=italic
 hi Conditional gui=italic

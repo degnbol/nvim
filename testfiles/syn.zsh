@@ -12,7 +12,8 @@ elif [[ -n 4 ]]; then
     fisk subcommand ok hej
 fi
 
-git clone --recurse-submodules git@github.com:degnbol/dotfiles.git
+git clone --recurse-submodules git@github.com:degnbol/dotfiles.git --cwd=$HOME
+kitty +kitten ssh username@server.dk
 kitty +kitten ssh username@server
 
 sed 's/a /b_/g' file.txt
