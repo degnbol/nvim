@@ -56,6 +56,15 @@ map <ScrollWheelDown>   <c-e>
 map <2-ScrollWheelDown> <c-e>
 map <3-ScrollWheelDown> <c-e>
 map <4-ScrollWheelDown> <c-e>
+" uncomment to make shift have no effect on scroll
+" map <S-ScrollWheelUp>   <c-y>
+map <S-2-ScrollWheelUp> <c-y>
+map <S-3-ScrollWheelUp> <c-y>
+map <S-4-ScrollWheelUp> <c-y>
+" map <S-ScrollWheelDown>   <c-e>
+map <S-2-ScrollWheelDown> <c-e>
+map <S-3-ScrollWheelDown> <c-e>
+map <S-4-ScrollWheelDown> <c-e>
 " insert mode requires going to normal mode temporarily
 imap <ScrollWheelUp>   <c-\><c-o><c-y>
 imap <2-ScrollWheelUp> <c-\><c-o><c-y>
@@ -65,24 +74,52 @@ imap <ScrollWheelDown>   <c-\><c-o><c-e>
 imap <2-ScrollWheelDown> <c-\><c-o><c-e>
 imap <3-ScrollWheelDown> <c-\><c-o><c-e>
 imap <4-ScrollWheelDown> <c-\><c-o><c-e>
-" shift scroll scrolls horizontally
-noremap <S-ScrollWheelUp>   zh
-noremap <S-2-ScrollWheelUp> <NOP>
-noremap <S-3-ScrollWheelUp> <NOP>
-noremap <S-4-ScrollWheelUp> <NOP>
-noremap <S-ScrollWheelDown> zl
-noremap <S-2-ScrollWheelDown> <NOP>
-noremap <S-3-ScrollWheelDown> <NOP>
-noremap <S-4-ScrollWheelDown> <NOP>
+" make shift have no effect on scroll
+imap <S-ScrollWheelUp>   <c-\><c-o><c-y>
+imap <S-2-ScrollWheelUp> <c-\><c-o><c-y>
+imap <S-3-ScrollWheelUp> <c-\><c-o><c-y>
+imap <S-4-ScrollWheelUp> <c-\><c-o><c-y>
+imap <S-ScrollWheelDown>   <c-\><c-o><c-e>
+imap <S-2-ScrollWheelDown> <c-\><c-o><c-e>
+imap <S-3-ScrollWheelDown> <c-\><c-o><c-e>
+imap <S-4-ScrollWheelDown> <c-\><c-o><c-e>
+
+" horizontal scroll with sideways trackpad 1 column instead of default 6
+map <ScrollWheelLeft> zh
+map <2-ScrollWheelLeft> <NOP>
+map <3-ScrollWheelLeft> <NOP>
+map <4-ScrollWheelLeft> <NOP>
+map <ScrollWheelRight>   zl
+map <2-ScrollWheelRight> <NOP>
+map <3-ScrollWheelRight> <NOP>
+map <4-ScrollWheelRight> <NOP>
 " insert mode requires going to normal mode temporarily
-inoremap <S-ScrollWheelUp>   <c-\><c-o>zh
-inoremap <S-2-ScrollWheelUp> <NOP>
-inoremap <S-3-ScrollWheelUp> <NOP>
-inoremap <S-4-ScrollWheelUp> <NOP>
-inoremap <S-ScrollWheelDown>   <c-\><c-o>zl
-inoremap <S-2-ScrollWheelDown> <NOP>
-inoremap <S-3-ScrollWheelDown> <NOP>
-inoremap <S-4-ScrollWheelDown> <NOP>
+imap <ScrollWheelLeft>   <c-\><c-o>zh
+imap <2-ScrollWheelLeft> <NOP>
+imap <3-ScrollWheelLeft> <NOP>
+imap <4-ScrollWheelLeft> <NOP>
+imap <ScrollWheelRight>   <c-\><c-o>zl
+imap <2-ScrollWheelRight> <NOP>
+imap <3-ScrollWheelRight> <NOP>
+imap <4-ScrollWheelRight> <NOP>
+" shift should have no effect on side scroll
+map <S-ScrollWheelLeft> zh
+map <S-2-ScrollWheelLeft> <NOP>
+map <S-3-ScrollWheelLeft> <NOP>
+map <S-4-ScrollWheelLeft> <NOP>
+map <S-ScrollWheelRight>   zl
+map <S-2-ScrollWheelRight> <NOP>
+map <S-3-ScrollWheelRight> <NOP>
+map <S-4-ScrollWheelRight> <NOP>
+" insert mode requires going to normal mode temporarily
+imap <S-ScrollWheelLeft>   <c-\><c-o>zh
+imap <S-2-ScrollWheelLeft> <NOP>
+imap <S-3-ScrollWheelLeft> <NOP>
+imap <S-4-ScrollWheelLeft> <NOP>
+imap <S-ScrollWheelRight>   <c-\><c-o>zl
+imap <S-2-ScrollWheelRight> <NOP>
+imap <S-3-ScrollWheelRight> <NOP>
+imap <S-4-ScrollWheelRight> <NOP>
 
 " typical modifier to arrow key behavior. 
 " TODO decide what to do with shift: select things like outside vim, move 
