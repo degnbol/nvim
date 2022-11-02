@@ -28,6 +28,7 @@ require"nvim-treesitter.configs".setup {
         disable = {
             "vim", -- not perfect
             -- "help", -- removes useful colors from :h group-name
+            "markdown", -- not as good as regular syntax highlight
         }, 
         additional_vim_regex_highlighting = {
             "julia", -- basic things like true and false are not recognized as bool and I couldn't fix it with a custom highlights.scm
