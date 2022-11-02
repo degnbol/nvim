@@ -120,13 +120,15 @@ return require("packer").startup(function()
     use {"goerz/jupytext.vim", config=function() require'jupytext-conf' end} -- edit jupyter notebook. requires `pip install jupytext`
     -- use "elzr/vim-json" -- json
     use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
+    use {"nvim-telescope/telescope-bibtex.nvim", requires='nvim-telescope/telescope.nvim', config=function() require"telescope-bibtex-conf" end}
     -- bibliography references, mostly relevant for citations in .tex documents.
     -- use { "jghauser/papis.nvim", after = { "telescope.nvim", "nvim-cmp" },
     --     requires = { "kkharji/sqlite.lua", "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim", "nvim-treesitter/nvim-treesitter", },
     --     rocks="lyaml", config = function() require("papis").setup() end,
     -- }
     
-    use 'lewis6991/impatient.nvim'
+    -- gives can't cache file error if file is not found. Maybe you are using :luafile or :source when :runtime would work.
+    use 'lewis6991/impatient.nvim' 
 
 end)
 

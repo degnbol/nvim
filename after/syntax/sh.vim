@@ -1,4 +1,5 @@
 #!/usr/bin/env vimscript
+runtime after/syntax/sh.lua
 hi link shLoop Repeat
 
 " it is still colored according to @function.call since treesitter takes 

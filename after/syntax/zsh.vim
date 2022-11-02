@@ -1,5 +1,5 @@
 #!/usr/bin/env vimscript
-luafile after/syntax/sh.lua
+runtime after/syntax/sh.lua
 
 " add sudo to precommands and remove -
 " https://github.com/vim/vim/blob/master/runtime/syntax/zsh.vim
