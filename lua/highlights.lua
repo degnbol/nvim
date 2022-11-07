@@ -135,3 +135,5 @@ cmd "hi FoldColumn guibg=black"
 
 cmd "hi Operator ctermfg=5 guifg=#ae94f9"
 
+cmd("hi! NonText gui=NONE guifg=" .. light_grey)
+
