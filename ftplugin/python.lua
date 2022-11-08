@@ -4,3 +4,4 @@
 -- However, a made comment reformat slow, so don't use by default.
 vim.opt.formatoptions = "jwcrql"
 vim.opt.concealcursor = ""
+vim.opt.list = false

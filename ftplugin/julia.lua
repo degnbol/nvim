@@ -23,3 +23,4 @@ vim.opt.concealcursor = "nvc"
 -- vim.opt.indentexpr = "" -- is set in after/syntax/julia.vim since this dir isn't late enough
 -- vim.opt.smartindent = true
 
+vim.opt.list = false
