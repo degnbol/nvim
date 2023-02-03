@@ -119,10 +119,15 @@ wk.register({
         },
         h = {":noh<CR>", "clear highlights"},
         -- <leader>K since K is regular defintion of word under cursor.
+        j = {
+            name = "to multiline (revj)",
+            j = "line",
+        },
         K = {":DashWord<CR>", "Dash word"},
         l = {
-            name = "LaTeX (vimtex and nabla)",
+            name = "LaTeX (vimtex || telescope-bibtex || nabla)",
             a = "context menu",
+            b = {":Telescope bibtex<CR>", "insert citation (bibtex)"},
             c = "clean",
             C = "clean full",
             e = "errors",

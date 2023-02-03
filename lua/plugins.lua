@@ -1,13 +1,14 @@
+#!/usr/bin/env lua
 -- packer as package manager as opposed to packages.lua
 -- Run PackerSync after making changes to this file to recompile the file in plugin
-return require("packer").startup(function()
+return require("packer").startup(function(use)
     use "wbthomason/packer.nvim"
     
     -- core behaviour
     use "tpope/vim-repeat" -- change . to repeat last native command to last "full" command, which feels more natural.
     -- problems: it doesn't have simple ds working at all.
     -- use {"kylechui/nvim-surround", config=function() require"surround-conf" end} -- press cs'" to change surrounding ' with ", ds' to delete surrounding ', ysiw) to surround word with ) and yss[ to surround line with [ ... ] (incl. spaces)
-    use { 'echasnovski/mini.nvim', branch = 'stable', config=function() require'mini-conf' end } -- mini.surround
+    use { 'echasnovski/mini.nvim', branch='stable', config=function() require'mini-conf' end } -- mini.surround
     -- use "tpope/vim-sensible" -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
     use "svermeulen/vim-subversive" -- add substitution functions to e.g. replace a word with clipboard content by writing siw
     use {"gbprod/cutlass.nvim", config=function() require'cutlass-conf' end} -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
@@ -23,7 +24,8 @@ return require("packer").startup(function()
     -- use "kana/vim-textobj-user" -- easily define custom textobjects such as i( and a( to select in/an \left( \right) block in latex
     -- TODO add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
     use {"glts/vim-textobj-comment", requires="kana/vim-textobj-user"} -- not working?
-    use {"AckslD/nvim-trevJ.lua", config=function() require'trevj-conf' end}
+    use {"AckslD/nvim-trevJ.lua", config=function() require'trevj-conf' end} -- if it fails (gj), try revj (<leader>j[j] or motion INSIDE brackets)
+    use {"AckslD/nvim-revJ.lua", config=function() require'revj-conf' end, requires={'kana/vim-textobj-user', 'sgur/vim-textobj-parameter'}}
     use {"monaqa/dial.nvim", config=function() require'dial-conf' end} -- increment and decrement numbers, dates, color hex, even bool
     use 'monkoose/matchparen.nvim' -- supposedly faster and less buggy version of neovim builtin (:h )matchparen which highlights matching parenthesis etc.
     use {'ggandor/leap.nvim', config=function() require"leap-conf" end} -- jump to anywhere with \ + f or F or t or T
@@ -33,18 +35,18 @@ return require("packer").startup(function()
     use {"norcalli/nvim-base16.lua", requires="norcalli/nvim.lua"}
     use {"unblevable/quick-scope", config=function() require'quick-scope' end} -- highlight letters for jumping with f/F/t/T
     
-    use "kyazdani42/nvim-web-devicons" -- adds icons to files
+    use {"DaikyXendo/nvim-material-icon", config=function() require'icons' end}
     
     use "sakshamgupta05/vim-todo-highlight" -- highlight todos
     -- use {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end} -- dim code that isn't currently being edited with :Twilight.
     
     -- UI
-    use {"akinsho/nvim-bufferline.lua", tag="*", requires="kyazdani42/nvim-web-devicons", config=function() require'top-bufferline' end} -- add a line at the top with all the files open in the buffer
+    use {"akinsho/nvim-bufferline.lua", tag="*", requires="DaikyXendo/nvim-material-icon", config=function() require'top-bufferline' end} -- add a line at the top with all the files open in the buffer
     -- use {"glepnir/galaxyline.nvim", config=function() require'statusline' end}
     use {"nvim-telescope/telescope-fzf-native.nvim", run='make'} -- recommended compiled fuzzy finder for telescope. Cannot be opt=true when needed by tzachar/cmp-fuzzy-path
     use {"nvim-telescope/telescope.nvim", requires={"nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim"}, config=function() require'telescope-conf' end} -- Fuzzy finder
     use {"glepnir/dashboard-nvim", config=function() require'dashboard-conf' end} -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
-    use {"kyazdani42/nvim-tree.lua", requires='kyazdani42/nvim-web-devicons', config=function() require'tree' end} -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
+    use {"DaikyXendo/nvim-tree.lua", requires='DaikyXendo/nvim-material-icon', config=function() require'tree' end} -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
     use "ojroques/nvim-bufdel" -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
     use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
     use {'sudormrfbin/cheatsheet.nvim', requires='nvim-telescope/telescope.nvim'} -- <leader>? to give cheatsheet popup. 
@@ -54,7 +56,7 @@ return require("packer").startup(function()
     use "tyru/capture.vim" -- :Capture hi to call :hi where you can search etc.
     use {"~/nvim/kittyREPL.nvim", config=function() require'kittyREPL-conf' end}
     use {'kevinhwang91/nvim-bqf', config=function() require'bqf-conf' end, requires='junegunn/fzf'} -- better quickfix window. zf to open fzf inside quickfix.
-    use {'kevinhwang91/nvim-ufo', requires='kevinhwang91/promise-async', config=function() require'ufo-conf' end}
+    use {'kevinhwang91/nvim-ufo', requires='kevinhwang91/promise-async', config=function() require'ufo-conf' end} -- ultra fold
     
     -- treesitter
     use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate', config=function() require'treesitter' end} -- language coloring and ensuring of installation
@@ -62,9 +64,10 @@ return require("packer").startup(function()
     use {"nvim-treesitter/nvim-treesitter-textobjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textobjects' end} -- selecting, moving functions etc.
     use {"RRethy/nvim-treesitter-textsubjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textsubjects' end} -- in vis mode use . , ; i; to select based on treesitter 
     -- use "romgrk/nvim-treesitter-context" -- show the "context" at the top line, i.e. function name when in a function
-    use {"andymass/vim-matchup", requires='nvim-treesitter/nvim-treesitter', config=function() require'matchup' end} -- % jumps between matching coding blocks, not just single chars.
+    -- error for julia tree-sitter:
+    -- use {"andymass/vim-matchup", requires='nvim-treesitter/nvim-treesitter', config=function() require'matchup' end} -- % jumps between matching coding blocks, not just single chars.
     use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
-    use {"nvim-treesitter/playground"} -- provides :TSHighlightCapturesUnderCursor to see highlight groups for a word under the cursor
+    use {"nvim-treesitter/playground"} -- provides :TSHighlightCapturesUnderCursor to see highlight groups for a word under the cursor, TSPlaygroundToggle. "a" for hidden, "o" for scratch edit scheme.
     
     -- LSP. For a given file, either complete with cmp (builtin recommended, but e.g. jedi language servers is slow), coc (old, not using builtin LSP), or coq (hacks builtin LSP)
     use {"neovim/nvim-lspconfig", config=function() require'lsp' end}
@@ -90,7 +93,7 @@ return require("packer").startup(function()
     use "tpope/vim-fugitive" -- git
     use {"lewis6991/gitsigns.nvim", requires='nvim-lua/plenary.nvim', config=function() require'gitsigns-conf' end} -- git decoration to the left
     use {"rhysd/conflict-marker.vim"} -- highlight git conflicts, jump with [x and ]x, resolve by keeping none (cn), theirs (ct), our (co), both (cb), or both reverse (cB)
-    use { 'sindrets/diffview.nvim', requires='nvim-lua/plenary.nvim', config=function() require'diffview-conf' end } -- :DiffviewOpen and other commands for seeing git diff and git history for files.
+    use { 'sindrets/diffview.nvim', requires={'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons'}, config=function() require'diffview-conf' end } -- :DiffviewOpen and other commands for seeing git diff and git history for files.
 
     -- language
     use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- add keybindings to toggle comments with motions etc. Consider alt: https://github.com/numToStr/Comment.nvim
@@ -126,6 +129,8 @@ return require("packer").startup(function()
     --     requires = { "kkharji/sqlite.lua", "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim", "nvim-treesitter/nvim-treesitter", },
     --     rocks="lyaml", config = function() require("papis").setup() end,
     -- }
+    use {"OmniSharp/omnisharp-vim", ft="cs"}
+    -- use {"neoclide/coc.nvim", branch="release", run="npm install"}
     
     -- gives can't cache file error if file is not found. Maybe you are using :luafile or :source when :runtime would work.
     use 'lewis6991/impatient.nvim' 
