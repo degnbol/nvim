@@ -71,3 +71,7 @@ Syntax coloring messed up in latex probs due to conceal.
 When at start of line in figure caption, pressing tab makes cursor jump to random locations? what is happening
 
 Enter is slow in quickfix because it waits for double enter. Fix this by e.g. only registering for normal buffers (buftype == "") or something
+
+Checkout https://www.reddit.com/r/neovim/comments/x53lzx/i_must_be_missing_something/
+
+
