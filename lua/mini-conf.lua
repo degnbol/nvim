@@ -17,7 +17,9 @@ require('mini.surround').setup {
           input = { find = '%"%"%".-%"%"%"', extract = '^(...).*(...)$' },
           output = { left = '"""', right = '"""' }
       },
-   }
+   },
+   -- Number of lines within which surrounding is searched
+  n_lines = 100,
 }
 
 -- Remap adding surrounding to Visual mode selection

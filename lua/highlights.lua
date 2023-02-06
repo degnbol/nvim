@@ -5,7 +5,6 @@ local cmd = vim.cmd
 cmd "highlight Italic cterm=italic gui=italic"
 
 
-
 local colors = require "themes/onedark"
 
 local white = colors.white
@@ -126,4 +125,15 @@ cmd "hi HlSearchLensNear ctermfg=11 ctermbg=242 guifg=#19f988 guibg=#5a576e"
 cmd "hi! link Pmenu Normal"
 cmd "hi! link PmenuSbar Ignore"
 cmd "hi! link PmenuThumb Visual"
+
+-- make bg black for things that would use terminal background
+cmd "hi LineNr guibg=black"
+cmd "hi CursorLineNr guibg=black"
+cmd "hi VertSplit guibg=black"
+cmd "hi Folded guibg=black"
+cmd "hi FoldColumn guibg=black"
+
+cmd "hi Operator ctermfg=5 guifg=#ae94f9"
+
+cmd("hi! NonText gui=NONE guifg=" .. light_grey)
 

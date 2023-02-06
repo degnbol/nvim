@@ -71,7 +71,13 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<space>F', vim.lsp.buf.format, bufopts)
 end
 
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+-- added for https://github.com/kevinhwang91/nvim-ufo see ufo-conf etc
+capabilities.textDocument.foldingRange = {
+    dynamicRegistration = false,
+    lineFoldingOnly = true
+}
 
 -- add to lsp default config
 lsp.util.default_config = vim.tbl_deep_extend('force', lsp.util.default_config, {
@@ -90,8 +96,11 @@ lsp.julials.setup {}
 lsp.r_language_server.setup {}
 lsp.vimls.setup {}
 lsp.sumneko_lua.setup {}
+lsp.marksman.setup {filetypes={"markdown"}}
 -- seems ltex has more text description for functions but texlab has more functions so I use both in combination
-lsp.ltex.setup { on_attach=function(client, bufnr)
+lsp.ltex.setup {
+    filetypes={"tex"}, -- active for markdown as well by default which crashes
+    on_attach=function(client, bufnr)
     on_attach(client, bufnr)
     -- hacky. VimtexErrors puts errors found by Vimtex in quickfix (should be 
     -- running, use <leader>Lb) then cclose closes quickfix, and then Telescope 

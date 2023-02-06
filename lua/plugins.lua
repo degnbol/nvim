@@ -1,17 +1,19 @@
+#!/usr/bin/env lua
 -- packer as package manager as opposed to packages.lua
 -- Run PackerSync after making changes to this file to recompile the file in plugin
-return require("packer").startup(function()
+return require("packer").startup(function(use)
     use "wbthomason/packer.nvim"
     
     -- core behaviour
     use "tpope/vim-repeat" -- change . to repeat last native command to last "full" command, which feels more natural.
     -- problems: it doesn't have simple ds working at all.
     -- use {"kylechui/nvim-surround", config=function() require"surround-conf" end} -- press cs'" to change surrounding ' with ", ds' to delete surrounding ', ysiw) to surround word with ) and yss[ to surround line with [ ... ] (incl. spaces)
-    use { 'echasnovski/mini.nvim', branch = 'stable', config=function() require'mini-conf' end } -- mini.surround
+    use { 'echasnovski/mini.nvim', branch='stable', config=function() require'mini-conf' end } -- mini.surround
     -- use "tpope/vim-sensible" -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
     use "svermeulen/vim-subversive" -- add substitution functions to e.g. replace a word with clipboard content by writing siw
     use {"gbprod/cutlass.nvim", config=function() require'cutlass-conf' end} -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
     use "svermeulen/vim-yoink" -- yank history that you can cycle with c-n and c-p
+    use { 'ibhagwan/smartyank.nvim', config=function() require'smartyank-conf' end } -- yank in tmux and over ssh
     -- use "mg979/vim-visual-multi" -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
     -- use {"moll/vim-bbye", config=function() require'bbye' end}
     use "farmergreg/vim-lastplace" -- open file in last edited location
@@ -22,27 +24,29 @@ return require("packer").startup(function()
     -- use "kana/vim-textobj-user" -- easily define custom textobjects such as i( and a( to select in/an \left( \right) block in latex
     -- TODO add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
     use {"glts/vim-textobj-comment", requires="kana/vim-textobj-user"} -- not working?
-    use {"AckslD/nvim-trevJ.lua", config=function() require'trevj-conf' end}
+    use {"AckslD/nvim-trevJ.lua", config=function() require'trevj-conf' end} -- if it fails (gj), try revj (<leader>j[j] or motion INSIDE brackets)
+    use {"AckslD/nvim-revJ.lua", config=function() require'revj-conf' end, requires={'kana/vim-textobj-user', 'sgur/vim-textobj-parameter'}}
     use {"monaqa/dial.nvim", config=function() require'dial-conf' end} -- increment and decrement numbers, dates, color hex, even bool
+    use 'monkoose/matchparen.nvim' -- supposedly faster and less buggy version of neovim builtin (:h )matchparen which highlights matching parenthesis etc.
+    use {'ggandor/leap.nvim', config=function() require"leap-conf" end} -- jump to anywhere with \ + f or F or t or T
     
     -- color
-    use {"norcalli/nvim-colorizer.lua", config=function() require'colorizer'.setup() end} -- when a hex or other color is defined, highlight the text with its color
+    use {"NvChad/nvim-colorizer.lua", config=function() require'colorizer-conf' end} -- when a hex or other color is defined, highlight the text with its color
     use {"norcalli/nvim-base16.lua", requires="norcalli/nvim.lua"}
     use {"unblevable/quick-scope", config=function() require'quick-scope' end} -- highlight letters for jumping with f/F/t/T
     
-    use "kyazdani42/nvim-web-devicons" -- adds icons to files
+    use {"DaikyXendo/nvim-material-icon", config=function() require'icons' end}
     
     use "sakshamgupta05/vim-todo-highlight" -- highlight todos
     -- use {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end} -- dim code that isn't currently being edited with :Twilight.
-    -- use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
     
     -- UI
-    use {"akinsho/nvim-bufferline.lua", tag="*", requires="kyazdani42/nvim-web-devicons", config=function() require'top-bufferline' end} -- add a line at the top with all the files open in the buffer
+    use {"akinsho/nvim-bufferline.lua", tag="*", requires="DaikyXendo/nvim-material-icon", config=function() require'top-bufferline' end} -- add a line at the top with all the files open in the buffer
     -- use {"glepnir/galaxyline.nvim", config=function() require'statusline' end}
     use {"nvim-telescope/telescope-fzf-native.nvim", run='make'} -- recommended compiled fuzzy finder for telescope. Cannot be opt=true when needed by tzachar/cmp-fuzzy-path
     use {"nvim-telescope/telescope.nvim", requires={"nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim"}, config=function() require'telescope-conf' end} -- Fuzzy finder
     use {"glepnir/dashboard-nvim", config=function() require'dashboard-conf' end} -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
-    use {"kyazdani42/nvim-tree.lua", requires='kyazdani42/nvim-web-devicons', config=function() require'tree' end} -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
+    use {"DaikyXendo/nvim-tree.lua", requires='DaikyXendo/nvim-material-icon', config=function() require'tree' end} -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
     use "ojroques/nvim-bufdel" -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
     use {"folke/which-key.nvim", config=function() require'whichkey' end} -- pop-up to help with keybindings that have been started
     use {'sudormrfbin/cheatsheet.nvim', requires='nvim-telescope/telescope.nvim'} -- <leader>? to give cheatsheet popup. 
@@ -51,7 +55,8 @@ return require("packer").startup(function()
     -- use {"petertriho/nvim-scrollbar", requires="kevinhwang91/nvim-hlslens", config=function() require'scrollbar-conf' end} -- requires hlslens to show search results in scrollbar
     use "tyru/capture.vim" -- :Capture hi to call :hi where you can search etc.
     use {"~/nvim/kittyREPL.nvim", config=function() require'kittyREPL-conf' end}
-    use {'kevinhwang91/nvim-bqf'} -- better quickfix window
+    use {'kevinhwang91/nvim-bqf', config=function() require'bqf-conf' end, requires='junegunn/fzf'} -- better quickfix window. zf to open fzf inside quickfix.
+    use {'kevinhwang91/nvim-ufo', requires='kevinhwang91/promise-async', config=function() require'ufo-conf' end} -- ultra fold
     
     -- treesitter
     use {'nvim-treesitter/nvim-treesitter', run=':TSUpdate', config=function() require'treesitter' end} -- language coloring and ensuring of installation
@@ -59,42 +64,41 @@ return require("packer").startup(function()
     use {"nvim-treesitter/nvim-treesitter-textobjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textobjects' end} -- selecting, moving functions etc.
     use {"RRethy/nvim-treesitter-textsubjects", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-textsubjects' end} -- in vis mode use . , ; i; to select based on treesitter 
     -- use "romgrk/nvim-treesitter-context" -- show the "context" at the top line, i.e. function name when in a function
-    use {"andymass/vim-matchup", requires='nvim-treesitter/nvim-treesitter', config=function() require'matchup' end} -- % jumps between matching coding blocks, not just single chars.
+    -- error for julia tree-sitter:
+    -- use {"andymass/vim-matchup", requires='nvim-treesitter/nvim-treesitter', config=function() require'matchup' end} -- % jumps between matching coding blocks, not just single chars.
     use {"p00f/nvim-ts-rainbow", requires='nvim-treesitter/nvim-treesitter', config=function() require'treesitter-rainbow' end} -- tree sitter based rainbow color parenthesis to easily see the matching
+    use {"nvim-treesitter/playground"} -- provides :TSHighlightCapturesUnderCursor to see highlight groups for a word under the cursor, TSPlaygroundToggle. "a" for hidden, "o" for scratch edit scheme.
     
     -- LSP. For a given file, either complete with cmp (builtin recommended, but e.g. jedi language servers is slow), coc (old, not using builtin LSP), or coq (hacks builtin LSP)
     use {"neovim/nvim-lspconfig", config=function() require'lsp' end}
     -- add :LspInstall <language> and :Mason for conveniently installing LSP language specific servers
     use {"williamboman/mason-lspconfig.nvim", requires={"neovim/nvim-lspconfig", "williamboman/mason.nvim"}, config=function() require "mason-conf" end}
-    -- coq. Run :COQdeps to install
-    -- use {'ms-jpq/coq_nvim', branch='coq', config=function() require'coq-conf' end}
-    -- use {'ms-jpq/coq.artifacts', branch='artifacts', requires='ms-jpq/coq_nvim'} -- snippets
     -- completion menu using builtin LSP
     use {"hrsh7th/nvim-cmp", requires = {
         'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-buffer',
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-nvim-lsp-signature-help',
         'hrsh7th/cmp-nvim-lua', -- neovim Lua API
+        'tamago324/cmp-zsh', -- neovim zsh completion
         'onsails/lspkind.nvim', -- pretty pictograms
-        -- decide on snippet engine among 4 options. If changed then also change cmp-conf.lua at two places
-        -- 'hrsh7th/vim-vsnip', 'hrsh7th/cmp-vsnip',
-        'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip',
-        -- 'SirVer/ultisnips', 'quangnguyen30192/cmp-nvim-ultisnips',
-        -- 'dcampos/nvim-snippy', 'dcampos/cmp-snippy',
         'hrsh7th/cmp-calc', -- quick math in completion
-        'f3fora/cmp-spell', -- spell check
     }, config=function() require'cmp-conf' end}
+    use {'saadparwaiz1/cmp_luasnip', requires={'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp"}, config=function() require"luasnip-conf" end } -- alts: hrsh7th/vim-vsnip, SirVer/ultisnips, ...
+    -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
+    use {'uga-rosa/cmp-dictionary', config=function() require"cmp_dict" end}
     use {"j-hui/fidget.nvim", config=function() require"fidget-conf" end} -- corner print what LSP is running
     use "rafamadriz/friendly-snippets"
-    -- use "ray-x/lsp_signature.nvim" -- hover signatures for function arguments. Alternative to hrsh7th/cmp-nvim-lsp-signature-help
-    -- use {"neoclide/coc.nvim", branch="release"} -- https://github.com/neoclide/coc.nvim/wiki/Language-servers e.g. :CocInstall coc-texlab
     
+    -- git
+    use "tpope/vim-fugitive" -- git
+    use {"lewis6991/gitsigns.nvim", requires='nvim-lua/plenary.nvim', config=function() require'gitsigns-conf' end} -- git decoration to the left
+    use {"rhysd/conflict-marker.vim"} -- highlight git conflicts, jump with [x and ]x, resolve by keeping none (cn), theirs (ct), our (co), both (cb), or both reverse (cB)
+    use { 'sindrets/diffview.nvim', requires={'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons'}, config=function() require'diffview-conf' end } -- :DiffviewOpen and other commands for seeing git diff and git history for files.
+
     -- language
-    use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- add keybindings to toggle comments with motions etc.
+    use {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end} -- add keybindings to toggle comments with motions etc. Consider alt: https://github.com/numToStr/Comment.nvim
     -- use "windwp/nvim-autopairs" -- auto add second parenthesis etc.
     -- use "lukas-reineke/indent-blankline.nvim" -- show "|" on indented lines
-    use "tpope/vim-fugitive" -- git
-    -- use {"lewis6991/gitsigns.nvim", requires='nvim-lua/plenary.nvim', config=function() require'gitsigns-nvim' end} -- git decoration to the left
     use {"JuliaEditorSupport/julia-vim", config=function() require'julia' end} -- julia support, colors and unicode substitution. CANNOT use ft=julia
     -- use "urbainvaes/vim-ripple" -- REPL with some indent and tab problems
     -- use {"hkupty/iron.nvim", config=function () require'repl/iron-nvim' end} -- REPL that doesn't support bpython or radian
@@ -108,7 +112,6 @@ return require("packer").startup(function()
     -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
     use {"RishabhRD/nvim-cheat.sh", config=function() require'cheat' end, requires="RishabhRD/popfix"}
     -- use {"mrjones2014/dash.nvim", run='make install', requires='nvim-telescope/telescope.nvim'} -- :DashWord with <leader>K. conf in telescope-conf.lua
-    use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
     -- use "tpope/vim-sleuth" -- sleuth that let's you autodetect if file is using 2 or 4 spaces. Mistakenly set noexpandtab
     use "tpope/vim-abolish" -- crs: snake_case, crm: MixedCase, crc: camelCase, cru: UPPER_CASE, cr-: dash-case, cr.: dot.case, cr<SPACE>: space case, crt: Title Case
     -- use {"preservim/vim-markdown", requires="godlygeek/tabular"} -- conceal markdown expressions like _emphasis_ and folding. Overkill, see {after/,}syntax/markdown.vim
@@ -118,7 +121,19 @@ return require("packer").startup(function()
     use {"habamax/vim-rst"}
     use "jbyuki/nabla.nvim" -- show pretty math in term
     use {"goerz/jupytext.vim", config=function() require'jupytext-conf' end} -- edit jupyter notebook. requires `pip install jupytext`
-    
     -- use "elzr/vim-json" -- json
+    use {"lervag/vimtex", config=function() require'vimtex' end} -- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
+    use {"nvim-telescope/telescope-bibtex.nvim", requires='nvim-telescope/telescope.nvim', config=function() require"telescope-bibtex-conf" end}
+    -- bibliography references, mostly relevant for citations in .tex documents.
+    -- use { "jghauser/papis.nvim", after = { "telescope.nvim", "nvim-cmp" },
+    --     requires = { "kkharji/sqlite.lua", "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim", "nvim-treesitter/nvim-treesitter", },
+    --     rocks="lyaml", config = function() require("papis").setup() end,
+    -- }
+    use {"OmniSharp/omnisharp-vim", ft="cs"}
+    -- use {"neoclide/coc.nvim", branch="release", run="npm install"}
+    
+    -- gives can't cache file error if file is not found. Maybe you are using :luafile or :source when :runtime would work.
+    use 'lewis6991/impatient.nvim' 
+
 end)
 

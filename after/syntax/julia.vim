@@ -5,8 +5,15 @@
 syntax clear juliaOperator
 syntax match juliaOperator '*' conceal cchar=⋅
 " This removes the highlight 
-hi clear Conceal
+" hi clear Conceal
+" Instead I color it according to operator, copied from :hi operator, 
+" since :hi link didn't work
+hi Conceal ctermfg=5 guifg=#ae94f9
 
 " a bit of a hack but it has to be put in this folder to be invoked late 
 " enough apparently. See ftplugin/julia.lua for context.
 " set indentexpr=
+
+syn keyword Repeat in
+syn match Repeat '∈'
+

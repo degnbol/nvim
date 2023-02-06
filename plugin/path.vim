@@ -7,3 +7,13 @@ exec "setlocal path^=" . ROOT
 exec "setlocal path+=" . ROOT . '/src'
 " append $ROOT/src/*
 exec "setlocal path+=" . ROOT . '/src/*'
+
+" edit-in-kitty on remotes doesn't copy the env variables that are normally 
+" present locally so we have to set the necessary ones. These are for julia 
+" and python lsp to find the right binaries. These were found by copying all 
+" of `env` and checking which fixed the problem by adding them to 
+" `edit-in-kitty --env ...` which can be given multiple times like the kitty @ 
+" launch command.
+let $PATH = $HOME . '/miniconda3/bin:/opt/homebrew/bin:' . $PATH
+let $CONDA_PREFIX = $HOME . '/miniconda3'
+

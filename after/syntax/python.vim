@@ -64,8 +64,8 @@ syntax match Normal '\v<\zs_\ze>' conceal cchar=_
 
 
 " Need to be handled specially for `not in` to work. Order doesn't matter.
-syntax match Normal '\v<not in>' conceal cchar=∉
-syntax match Normal '\v<in>' conceal cchar=∈
+syntax match Repeat '\v<not in>' conceal cchar=∉
+syntax match Repeat '\v<in>' conceal cchar=∈
 
 syntax match Normal '\s@\s'ms=s+1,me=e-1 conceal cchar=⊗
 syntax match Normal '\s\*\s'ms=s+1,me=e-1 conceal cchar=∙
@@ -198,4 +198,9 @@ highlight! link pySpecial Special
 highlight! link pyIdentifier Identifier
 highlight! link pyType Type
 
-
+" Operators such as "not", "and", "or" are overlooked by other regex syntax groups and
+" captured by treesitter. However, in fixing the "in" that is colored 
+" according to @keyword.operator rather than @repeat by default treesitter, we 
+" have to let regex guifg shine through (see plugin/hi.vim). Therefore, I here 
+" improve the regex syntax group with color.
+syntax keyword Operator not and or

@@ -1,3 +1,4 @@
+#!/usr/bin/env lua
 require'telescope'.setup {
     defaults = {
         layout_strategy = "vertical",
@@ -15,5 +16,6 @@ require'telescope'.setup {
     }
 }
 
--- load the native fzf as recommended. Not working.
--- require'telescope'.load_extension('fzf')
+-- load the native fzf as recommended
+require'telescope'.load_extension('fzf')
+

@@ -11,12 +11,15 @@ if $mac; then
     brew install --HEAD neovim
     brew install npm # install npm for :LspInstall python that install python support for Lsp. 
     npm install -g neovim # if I do :checkhealth it makes a warning recommending to install this so I did
+    brew install aspell
+    ./spell.sh
 else
     cd ~/bin
     wget https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
     tar xzvf nvim-linux64.tar.gz
     ln -s ~/bin/nvim-linux64/bin/nvim ~/bin/nvim
     rm nvim-linux64.tar.gz
+    echo "install aspell then run ./spell.sh"
 fi
 
 # Install packer

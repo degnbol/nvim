@@ -1,18 +1,12 @@
 #!/usr/bin/env lua
 -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
 local cmd = vim.cmd
+local cmp = require "cmp"
+-- https://github.com/onsails/lspkind.nvim
+local lspkind = require "lspkind"
 
 -- menu=show completion menu. menuone=also when only one option. noselect=don't select automatically.
 vim.opt.completeopt = {"menu", "menuone", "noselect"}
-
--- load friendly-snippets with luasnip
-require("luasnip.loaders.from_vscode").lazy_load()
-
-local cmp = require "cmp"
--- for tab support, code copied from https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
-local luasnip = require "luasnip"
--- https://github.com/onsails/lspkind.nvim
-local lspkind = require "lspkind"
 
 -- for tab completion
 local has_words_before = function()
@@ -30,9 +24,10 @@ cmp.mapping.closeFallback = function()
     end
 end
 
+-- for tab support, code copied from https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
 cmp.setup {
     snippet = {
-        expand = function(args) require('luasnip').lsp_expand(args.body) end,
+        expand = function(args) require'luasnip'.lsp_expand(args.body) end,
     },
     window = {
         -- completion = cmp.config.window.bordered(),
@@ -56,8 +51,8 @@ cmp.setup {
         ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-                luasnip.expand_or_jump()
+            elseif require'luasnip'.expand_or_jumpable() then
+                require'luasnip'.expand_or_jump()
             elseif has_words_before() then
                 cmp.complete()
             else
@@ -67,8 +62,8 @@ cmp.setup {
         ["<S-Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-                luasnip.jump(-1)
+            elseif require'luasnip'.jumpable(-1) then
+                require'luasnip'.jump(-1)
             else
                 fallback()
             end
@@ -90,25 +85,39 @@ cmp.setup {
     },
 }
 
-cmp.setup.filetype('markdown', {
-    sources = cmp.config.sources {
+cmp.setup.filetype({'markdown', 'tex'}, {
+    sources = {
         { name = 'nvim_lsp' },
-        { name = 'path' },
+        { name = 'path', option = {trailing_slash=true} },
         { name = 'nvim_lsp_signature_help' },
         { name = 'luasnip' },
         { name = 'calc' },
-        { name = 'buffer' },
+        { name = 'buffer', group_index=2 },
+        { name = 'dictionary', keyword_length=3, max_item_count=10, group_index=2 },
     }
 })
 
 cmp.setup.filetype('lua', {
-    sources = cmp.config.sources {
+    sources = {
         { name = 'nvim_lua' },
         { name = 'nvim_lsp' },
-        { name = 'path' },
+        { name = 'path', option = {trailing_slash=true} },
         { name = 'nvim_lsp_signature_help' },
         { name = 'luasnip' },
         { name = 'calc' },
-        { name = 'buffer' },
+        { name = 'buffer', group_index=2  },
     }
 })
+
+cmp.setup.filetype('zsh', {
+    sources = {
+        { name = 'zsh' },
+        { name = 'nvim_lsp' },
+        { name = 'path', option = {trailing_slash=true} },
+        { name = 'nvim_lsp_signature_help' },
+        { name = 'luasnip' },
+        { name = 'calc' },
+        { name = 'buffer', group_index=2  },
+    }
+})
+
