@@ -80,3 +80,10 @@ Automatically uppercase cypher keywords like a spell check word replacement call
 Or make a command to toggle entire doc between uppercase and lowercase keywords.
 It is nice that they are uppercase if you read without syntax highlighting but 
 no need when they are colored.
+
+Enter is slow in quickfix because it waits for double enter. Fix this by e.g. only registering for normal buffers (buftype == "") or something
+
+Checkout https://www.reddit.com/r/neovim/comments/x53lzx/i_must_be_missing_something/
+
+Lazy:
+https://www.youtube.com/watch?v=aqlxqpHs-aQ
