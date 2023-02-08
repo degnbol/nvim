@@ -65,3 +65,18 @@ Add a keybinding in whichkey
 
 GOTTA fix autocomplete from using enter for insertion when I haven't selected any item.
 
+maybe?
+https://github.com/ibhagwan/smartyank.nvim
+
+consider colortheme https://github.com/nealmckee/penumbra
+
+BUG: scrolling in nvim tree turns it into another buffer.
+
+add useful things to mouse.
+
+
+play with cypher syntax highlight.
+Automatically uppercase cypher keywords like a spell check word replacement call?
+Or make a command to toggle entire doc between uppercase and lowercase keywords.
+It is nice that they are uppercase if you read without syntax highlighting but 
+no need when they are colored.
