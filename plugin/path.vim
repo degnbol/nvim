@@ -16,6 +16,7 @@ exec "setlocal path+=" . ROOT . '/src/*'
 " launch command.
 " Hardcoding miniforge base env path. It would be cooler to use activated env 
 " somehow.
-let $PATH = $HOME . '/opt/homebrew/Caskroom/miniforge/base/bin:/opt/homebrew/bin:' . $PATH
+" ~/.local/bin is location of jedi-language-server
+let $PATH = $HOME . '/.local/bin/:/opt/homebrew/Caskroom/miniforge/base/bin:/opt/homebrew/bin:' . $PATH
 let $CONDA_PREFIX = $HOME . '/miniconda3'
 
