@@ -14,6 +14,8 @@ exec "setlocal path+=" . ROOT . '/src/*'
 " of `env` and checking which fixed the problem by adding them to 
 " `edit-in-kitty --env ...` which can be given multiple times like the kitty @ 
 " launch command.
-let $PATH = $HOME . '/miniconda3/bin:/opt/homebrew/bin:' . $PATH
+" Hardcoding miniforge base env path. It would be cooler to use activated env 
+" somehow.
+let $PATH = $HOME . '/opt/homebrew/Caskroom/miniforge/base/bin:/opt/homebrew/bin:' . $PATH
 let $CONDA_PREFIX = $HOME . '/miniconda3'
 
