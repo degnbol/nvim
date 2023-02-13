@@ -137,3 +137,9 @@ cmd "hi Operator ctermfg=5 guifg=#ae94f9"
 
 cmd("hi! NonText gui=NONE guifg=" .. light_grey)
 
+-- if you want, you can also show search as flipping foreground and background
+cmd "hi! Search gui=inverse guifg=NONE guibg=NONE"
+-- note, this doesn't break the green IncSearch, it's already broken
+
+-- @variable seemed to start being linked to @identifier after update?
+vim.api.nvim_set_hl(0, "@variable", {gui=nil})

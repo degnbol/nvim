@@ -9,7 +9,7 @@ vim.api.nvim_buf_set_option(0, "commentstring", "% %s")
 -- o=with o/O in normal mode. Not sure if I want this.
 -- a=auto format by default
 -- v=inserted now, don't edit other lines.
-opt.formatoptions:append "crav"
+opt.formatoptions:append "crv"
 -- this also had to be set for the above to understand how a comment line looks.
 -- the b means the % should always be followed by a blank, i.e. space
 opt.comments = "b:%"
@@ -25,3 +25,4 @@ opt.conceallevel = 1
 -- the line.
 opt.concealcursor = "nvc"
 
+opt.list = false

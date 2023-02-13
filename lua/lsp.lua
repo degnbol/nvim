@@ -95,7 +95,7 @@ lsp.jedi_language_server.setup {}
 lsp.julials.setup {}
 lsp.r_language_server.setup {}
 lsp.vimls.setup {}
-lsp.sumneko_lua.setup {}
+lsp.lua_ls.setup {}
 lsp.marksman.setup {filetypes={"markdown"}}
 -- seems ltex has more text description for functions but texlab has more functions so I use both in combination
 lsp.ltex.setup {
@@ -108,4 +108,10 @@ lsp.ltex.setup {
     vim.keymap.set('n', '<space>E', "<cmd>VimtexErrors<cr>|:cclose|<cmd>Telescope quickfix<cr>", opts)
 end }
 lsp.texlab.setup {}
+
+lsp.csharp_ls.setup {
+    -- AutomaticWorkspaceInit = true,
+}
+
+lsp.rust_analyzer.setup {}
 

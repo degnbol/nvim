@@ -1,6 +1,7 @@
 require"nvim-treesitter.configs".setup {
     ensure_installed = {
         "bash",
+        "c_sharp",
         "lua",
         "json",
         "python",
@@ -10,7 +11,8 @@ require"nvim-treesitter.configs".setup {
         -- "kotlin",
         "help", -- vim help files https://github.com/neovim/tree-sitter-vimdoc
         "r",
-        "markdown",
+        -- "markdown", -- for block code
+        -- "markdown_inline", -- for inline code
         "toml",
         "vim",
         "regex",
@@ -22,13 +24,13 @@ require"nvim-treesitter.configs".setup {
         "gitattributes",
         "diff", -- for diff output https://github.com/the-mikedavis/tree-sitter-diff
         "scheme", -- what treesitter queries (*.scm) are written in
+        "awk",
     },
     highlight = {
         enable = true,
         disable = {
             "vim", -- not perfect
             -- "help", -- removes useful colors from :h group-name
-            "markdown", -- not as good as regular syntax highlight
         }, 
         additional_vim_regex_highlighting = {
             "julia", -- basic things like true and false are not recognized as bool and I couldn't fix it with a custom highlights.scm
@@ -62,6 +64,10 @@ vim.wo.foldexpr = 'nvim_treesitter#foldexpr()'
 local ft_to_parser = require"nvim-treesitter.parsers".filetype_to_parsername
 ft_to_parser.zsh = "bash"
 
-
+-- TODO: add
+-- https://github.com/nvim-treesitter/nvim-treesitter/#adding-parsers
+-- https://github.com/Beaglefoot/tree-sitter-awk
+-- then make bash/injections.scm that takes command awk raw_string and captures the raw_string with @awk
+-- maybe mlr but would probs have to write it or something
 
 

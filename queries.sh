@@ -8,6 +8,11 @@ ROOT=~/dotfiles/config/nvim/
 for after in $ROOT/after/queries/*; do
     lang=$after:t
     mkdir -p "$ROOT/queries/$lang/"
-    cat "$default/$lang/highlights.scm" "$after/highlights.scm" > "$ROOT/queries/$lang/highlights.scm"
+    if [ -f $after/highlights.scm ]; then
+        cat {$default/$lang/,$after}/highlights.scm > "$ROOT/queries/$lang/highlights.scm"
+    fi
+    if [ -f $after/injections.scm ]; then
+        cat {$default/$lang/,$after}/injections.scm > "$ROOT/queries/$lang/injections.scm"
+    fi
 done
 

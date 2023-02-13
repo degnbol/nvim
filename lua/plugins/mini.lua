@@ -1,4 +1,10 @@
 #!/usr/bin/env lua
+-- mini.surround
+return {
+    'echasnovski/mini.nvim',
+    branch='stable',
+    config=function()
+
 require('mini.surround').setup {
     mappings = {
     add = 'ys', -- Add surrounding in Normal and Visual modes
@@ -29,3 +35,4 @@ vim.api.nvim_set_keymap('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], 
 -- Make special mapping for "add surrounding for line"
 vim.api.nvim_set_keymap('n', 'yss', 'ys_', { noremap = false })
 
+end}
