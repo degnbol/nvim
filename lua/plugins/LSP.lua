@@ -27,6 +27,7 @@ return {
                     "r_language_server",
                     "lua_ls",
                     "vimls",
+                    "rust_analyzer",
                 }
             }
         end

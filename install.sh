@@ -22,6 +22,10 @@ else
     echo "install aspell then run ./spell.sh"
 fi
 
+# https://tree-sitter.github.io/tree-sitter/creating-parsers#installation
+cargo install tree-sitter-cli
+
+
 # Install packer
 git clone https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 nvim +PackerSync
