@@ -26,6 +26,7 @@ require"nvim-treesitter.configs".setup {
         "scheme", -- what treesitter queries (*.scm) are written in
         "awk",
         "rust",
+        "javascript",
     },
     highlight = {
         enable = true,

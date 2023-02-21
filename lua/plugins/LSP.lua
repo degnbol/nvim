@@ -28,6 +28,7 @@ return {
                     "lua_ls",
                     "vimls",
                     "rust_analyzer",
+                    "tsserver", -- javascript. MasonInstall typescript-language-server
                 }
             }
         end

@@ -115,3 +115,7 @@ lsp.csharp_ls.setup {
 
 lsp.rust_analyzer.setup {}
 
+-- MasonInstall typescript-language-server
+-- Used on javascript as well.
+lsp.tsserver.setup {}
+
