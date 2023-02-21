@@ -42,6 +42,17 @@ nmap <c-=> <plug>(YoinkPostPasteToggleFormat)
 nmap y <plug>(YoinkYankPreserveCursorPosition)
 xmap y <plug>(YoinkYankPreserveCursorPosition)
 
+" For remote with problematic clipboard we replace the cutlass x that works 
+" locally with a mapping where we call y (which is mapped to smartyank) then 
+" d.
+nmap xx yydd
+xmap x ygvd
+function CutOperator(type, ...)
+    normal `[v`]ygvd
+endfunction
+# Operator is a convenience function in plugin/operator.vim
+nnoremap <expr> x Operator('CutOperator')
+
 " when adding new line below or above, write something (a space) and delete it
 " so the indent aren't removed on ESC.
 nmap o o<c-\><c-o> <BS>
