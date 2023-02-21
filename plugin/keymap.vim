@@ -50,7 +50,7 @@ xmap x ygvd
 function CutOperator(type, ...)
     normal `[v`]ygvd
 endfunction
-# Operator is a convenience function in plugin/operator.vim
+" Operator is a convenience function in plugin/operator.vim
 nnoremap <expr> x Operator('CutOperator')
 
 " when adding new line below or above, write something (a space) and delete it
