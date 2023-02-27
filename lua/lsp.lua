@@ -119,3 +119,18 @@ lsp.rust_analyzer.setup {}
 -- Used on javascript as well.
 lsp.tsserver.setup {}
 
+-- scala. Linked as minimal setup from on nvim-metals git:
+-- https://github.com/scalameta/nvim-metals/discussions/39
+local metals_config = require"metals".bare_config()
+metals_config.capabilities = capabilities
+-- Autocmd that will actually be in charging of starting the whole thing.
+-- Create a .sc file, then reopen it. There should be a MetalsInstall warning.
+-- Run MetalsInstall, wait patiently until it gives a new message and restart.
+local nvim_metals_group = api.nvim_create_augroup("nvim-metals", { clear = true })
+api.nvim_create_autocmd("FileType", {
+  pattern = { "scala", "sbt" },
+  callback = function()
+    require("metals").initialize_or_attach(metals_config)
+  end,
+  group = nvim_metals_group,
+})
