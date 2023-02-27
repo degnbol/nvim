@@ -33,6 +33,9 @@ return {
             }
         end
     },
+    -- scala (not yet in Mason)
+    {"scalameta/nvim-metals", dependencies = { "nvim-lua/plenary.nvim" }},
+    
     -- completion menu using builtin LSP
     {"hrsh7th/nvim-cmp", dependencies = {
         'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-buffer',

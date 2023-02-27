@@ -27,6 +27,7 @@ require"nvim-treesitter.configs".setup {
         "awk",
         "rust",
         "javascript",
+        "scala",
     },
     highlight = {
         enable = true,
