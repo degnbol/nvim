@@ -54,7 +54,7 @@ pipx install virtualenv
 if $mac; then
     brew install coursier/formulas/coursier
     cs setup
-    echo 'export PATH="$PATH:$HOME/Library/Application Support/Coursier/bin"' >> ~/.zshrc
+    echo 'export PATH="$PATH:$HOME/Library/Application\ Support/Coursier/bin"' >> ~/.zshrc
 else
     curl -fL "https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-pc-linux.gz" | gzip -d > cs
     chmod +x ./cs
