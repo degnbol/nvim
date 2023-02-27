@@ -50,6 +50,20 @@ brew uninstall ctags
 brew install universal-ctags
 pipx install virtualenv
 
+# scala
+if $mac; then
+    brew install coursier/formulas/coursier
+    cs setup
+    echo 'export PATH="$PATH:$HOME/Library/Application Support/Coursier/bin"' >> ~/.zshrc
+else
+    curl -fL "https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-pc-linux.gz" | gzip -d > cs
+    chmod +x ./cs
+    ./cs setup
+    echo 'export PATH="$PATH:$HOME/.local/share/coursier/bin"' >> ~/.zshrc
+    rm ./cs
+fi
+
+
 # If using coc then after it is installed it should automatically install julia support due to the coc-config.json but otherwise run
 # :CocInstall coc-julia coc-python coc-sh coc-r-lsp
 # NOTE: Set the python intepreter to conda python with command
