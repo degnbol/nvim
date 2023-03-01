@@ -28,6 +28,7 @@ require"nvim-treesitter.configs".setup {
         "rust",
         "javascript",
         "scala",
+        "graphql", --ext .gql, e.g. schema for graph databases
     },
     highlight = {
         enable = true,
