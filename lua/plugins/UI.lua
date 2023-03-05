@@ -1,18 +1,26 @@
 #!/usr/bin/env lua
 return {
-    {"akinsho/nvim-bufferline.lua", dependencies={"DaikyXendo/nvim-material-icon"}, config=function() require'top-bufferline' end}, -- add a line at the top with all the files open in the buffer
-    -- {"glepnir/galaxyline.nvim", config=function() require'statusline' end},
-    {"nvim-telescope/telescope-fzf-native.nvim", build='make'}, -- recommended compiled fuzzy finder for telescope. Cannot be opt=true when needed by tzachar/cmp-fuzzy-path
-    -- {"nvim-telescope/telescope.nvim", dependencies={"nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim"}, config=function() require'telescope-conf' end}, -- Fuzzy finder
-    {"glepnir/dashboard-nvim", config=function() require'dashboard-conf' end}, -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
-    {"DaikyXendo/nvim-tree.lua", dependencies={'DaikyXendo/nvim-material-icon'}, config=function() require'tree' end}, -- tree file explorer to the left. A more featured alternative: https://github.com/ms-jpq/chadtree
     "ojroques/nvim-bufdel", -- :BufDel that deletes a buffer better than built-in :bdelete and :bwipeout, by preserving layout and closing terminal buffers better.
-    {'sudormrfbin/cheatsheet.nvim', dependencies={'nvim-telescope/telescope.nvim'}}, -- <leader>? to give cheatsheet popup. 
-    {"lalitmee/browse.nvim", dependencies={"nvim-telescope/telescope.nvim"}}, -- search stackoverflow quicker
-    -- {"kevinhwang91/nvim-hlslens", config=function() require'hlslens-conf' end}, -- show search match numbers
-    -- {"petertriho/nvim-scrollbar", dependencies={"kevinhwang91/nvim-hlslens"}, config=function() require'scrollbar-conf' end}, -- requires hlslens to show search results in scrollbar
+    -- {"moll/vim-bbye", config=function()
+    --     vim.api.nvim_set_keymap("n", "<leader>x", [[<Cmd>Bdelete<CR>]], {silent = true})
+    -- end},
     "tyru/capture.vim", -- :Capture hi to call :hi where you can search etc.
-    {dir="~/nvim/kittyREPL.nvim", config=function() require'kittyREPL-conf' end},
-    {'kevinhwang91/nvim-bqf', config=function() require'bqf-conf' end, dependencies={'junegunn/fzf'}}, -- better quickfix window. zf to open fzf inside quickfix.
-    {'kevinhwang91/nvim-ufo', dependencies={'kevinhwang91/promise-async'}, config=function() require'ufo-conf' end}, -- ultra fold
+    {dir="~/nvim/kittyREPL.nvim", config=true},
+    -- ultra fold
+    {'kevinhwang91/nvim-ufo', dependencies={'kevinhwang91/promise-async'}, config=function()
+        -- https://github.com/kevinhwang91/nvim-ufo
+
+        -- 1 char width column showing icons to indicate folding levels
+        -- vim.o.foldcolumn = '1'
+        -- pretty icons maybe although default plus and minus are pretty clear
+        -- vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+        -- vim.o.fillchars = [[eob: ,fold: ,foldopen:▾,foldsep: ,foldclose:▸]]
+        -- vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+        -- vim.o.fillchars = [[eob: ,fold: ,foldopen:-,foldsep: ,foldclose:+]]
+
+        vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
+        vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+
+        require('ufo').setup()
+    end},
 }

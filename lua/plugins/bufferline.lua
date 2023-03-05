@@ -1,4 +1,5 @@
-require "bufferline".setup {
+-- add a line at the top with all the files open in the buffer
+return {"akinsho/nvim-bufferline.lua", dependencies={"DaikyXendo/nvim-material-icon"}, opts={
     options = {
         -- numbers = "ordinal", -- can be customized to show both ordinal number and buffer id (see readme)
         numbers = function(opts) return string.format('%s', opts.raise(opts.ordinal)) end,
@@ -19,5 +20,5 @@ require "bufferline".setup {
         show_buffer_close_icons = false,
         show_close_icon = false,
     }
-}
+}}
 
