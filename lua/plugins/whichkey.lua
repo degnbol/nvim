@@ -214,7 +214,8 @@ wk.register({
             l = {':silent HlSearchLensToggle<CR>', "HlSearchLens"},
             m = {':MarkdownToggle', "markdown preview"},
             s = {':ScrollbarToggle<CR>', "scrollbar"},
-            t = {':let b:repl_id = input("window id: ")<CR>', "set REPL id"},
+            T = {':let b:repl_id = input("window id: ")<CR>', "set REPL winid"},
+            t = {':lua repl_prompt()<CR>', "set REPL window"},
         },
         x = {':BufDel<CR>', "delete buffer"}, -- ojroques BufDel
     },
