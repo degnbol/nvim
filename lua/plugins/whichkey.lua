@@ -215,7 +215,7 @@ wk.register({
             m = {':MarkdownToggle', "markdown preview"},
             s = {':ScrollbarToggle<CR>', "scrollbar"},
             T = {':let b:repl_id = input("window id: ")<CR>', "set REPL winid"},
-            t = {':lua repl_prompt()<CR>', "set REPL window"},
+            t = {':lua set_repl_last()<CR>', "set last window as REPL"},
         },
         x = {':BufDel<CR>', "delete buffer"}, -- ojroques BufDel
     },
