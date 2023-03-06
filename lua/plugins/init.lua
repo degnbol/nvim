@@ -12,14 +12,49 @@ return {
     -- "kana/vim-textobj-user", -- easily define custom textobjects such as i( and a( to select in/an \left( \right) block in latex
     -- TODO add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
     {"glts/vim-textobj-comment", dependencies={"kana/vim-textobj-user"}}, -- not working?
-    {"AckslD/nvim-trevJ.lua", config=function() require'trevj-conf' end}, -- if it fails (gj), try revj (<leader>j[j] or motion INSIDE brackets)
-    {"AckslD/nvim-revJ.lua", config=function() require'revj-conf' end, dependencies={'kana/vim-textobj-user', 'sgur/vim-textobj-parameter'}},
-    {"monaqa/dial.nvim", config=function() require'dial-conf' end}, -- increment and decrement numbers, dates, color hex, even bool
+    -- increment and decrement numbers, dates, color hex, even bool
+    -- https://github.com/monaqa/dial.nvim
+    {"monaqa/dial.nvim", config=function()
+        local augend = require("dial.augend")
+        require("dial.config").augends:register_group {
+            default = {
+                augend.integer.alias.decimal_int,
+                augend.constant.alias.bool,    -- boolean value (true <-> false)
+                augend.constant.new{ elements={"True", "False"}, word=true, cyclic=true, }, -- python
+                augend.hexcolor.new{ case="lower", },
+                augend.date.alias["%Y/%m/%d"],
+                augend.date.alias["%Y-%m-%d"],
+                augend.date.alias["%m/%d"],
+                augend.date.alias["%H:%M"],
+            },
+        }
+
+        vim.api.nvim_set_keymap("n", "<C-a>", require("dial.map").inc_normal(), {noremap = true})
+        vim.api.nvim_set_keymap("n", "<C-x>", require("dial.map").dec_normal(), {noremap = true})
+        vim.api.nvim_set_keymap("v", "<C-a>", require("dial.map").inc_visual(), {noremap = true})
+        vim.api.nvim_set_keymap("v", "<C-x>", require("dial.map").dec_visual(), {noremap = true})
+        vim.api.nvim_set_keymap("v", "g<C-a>", require("dial.map").inc_gvisual(), {noremap = true})
+        vim.api.nvim_set_keymap("v", "g<C-x>", require("dial.map").dec_gvisual(), {noremap = true})
+    end},
     
     "monkoose/matchparen.nvim", -- supposedly faster and less buggy version of neovim builtin (:h )matchparen which highlights matching parenthesis etc.
     
-    {'ggandor/leap.nvim', config=function() require"leap-conf" end}, -- jump to anywhere with \ + f or F or t or T
-    
+    -- jump to anywhere with \ + f or F or t or T
+    {'ggandor/leap.nvim', config=function()
+        leap = require 'leap'
+
+        -- make s and S "unsafe", i.e. available immediately as a command
+        -- add ' and ` as safe since it would be unlikely that I would want to jump to a mark right after a leap
+        -- add [] as safe since it would be unlikely that I would want to jump with those after a leap
+        leap.opts.safe_labels = {'f','n','u','t','/','`',"'",'[',']','F','N','L','H','M','U','G','T','?','Z'}
+
+        -- mentioned in whichkey
+        vim.keymap.set({'n', 'x', 'o'}, '\\f', '<Plug>(leap-forward-to)')
+        vim.keymap.set({'n', 'x', 'o'}, '\\F', '<Plug>(leap-backward-to)')
+        vim.keymap.set({'n', 'x', 'o'}, '\\t', '<Plug>(leap-forward-till)')
+        vim.keymap.set({'n', 'x', 'o'}, '\\T', '<Plug>(leap-backward-till)')
+    end},
+
     -- color
     -- when a hex or other color is defined, highlight the text with its color
     {"NvChad/nvim-colorizer.lua", opts={
@@ -28,11 +63,18 @@ return {
             julia = { RGB = false, }
         }
     }}, 
-    {"norcalli/nvim-base16.lua", dependencies={"norcalli/nvim.lua"}},
+    {"norcalli/nvim-base16.lua", dependencies={"norcalli/nvim.lua"}, config=function ()
+        base16 = require'base16'
+        theme = base16.theme_from_array(require("themes/gigavoltArray"))
+        -- theme = base16.themes["unikitty-dark"]
+        base16(theme, true)
+    end},
+    
+    -- highlight letters for jumping with f/F/t/T
     {"unblevable/quick-scope", enabled=false, config=function()
         -- Trigger a highlight in the appropriate direction when pressing these keys:
         vim.g.qs_highlight_on_keys = {'f', 'F', 't', 'T'}
-    end}, -- highlight letters for jumping with f/F/t/T
+    end},
 
     "sakshamgupta05/vim-todo-highlight", -- highlight todos
     -- {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end}, -- dim code that isn't currently being edited with :Twilight.

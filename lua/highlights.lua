@@ -1,12 +1,24 @@
-local cmd = vim.cmd
+local function hi(name, val)
+    vim.api.nvim_set_hl(0, name, val)
+end
 
+local function fg(name, color)
+    hi(name, {fg=color})
+end
 
--- Italic highlight group doesn't actually make terminal text italic by default.
-cmd "highlight Italic cterm=italic gui=italic"
+local function bg(name, color)
+    hi(name, {bg=color})
+end
 
+local function fgbg(name, fgcol, bgcol)
+    hi(name, {fg=fgcol, bg=bgcol})
+end
+
+local function link(name, linkto)
+    hi(name, {link=linkto})
+end
 
 local colors = require "themes/onedark"
-
 local white = colors.white
 local darker_black = colors.darker_black
 local black = colors.black
@@ -26,40 +38,29 @@ local yellow = colors.yellow
 local purple = colors.purple
 local dark_purple = colors.dark_purple
 
--- for guifg, bg
+-- Italic highlight group doesn't actually make terminal text italic by default.
+hi("Italic", {italic=true})
 
-local function fg(group, color)
-    cmd("hi " .. group .. " guifg=" .. color)
-end
-
-local function bg(group, color)
-    cmd("hi " .. group .. " guibg=" .. color)
-end
-
-local function fg_bg(group, fgcol, bgcol)
-    cmd("hi " .. group .. " guifg=" .. fgcol .. " guibg=" .. bgcol)
-end
-
-fg("LineNr", grey)
-fg("CursorLineNr", white)
+fgbg("LineNr", grey, "black")
+fgbg("CursorLineNr", white, "black")
 fg("NvimInternalError", red)
-fg("VertSplit", line)
+fgbg("VertSplit", line, "black")
 
 -- inactive statuslines as thin splitlines. Not used since statusline is disabled.
--- cmd "hi! StatusLineNC gui=underline guifg=black"
--- cmd "hi StatusLine guibg=black"
+-- hi("StatusLineNC", {underline=true, fg="black"})
+-- bg("StatusLine", "black")
 
 -- git signs ---
-fg_bg("DiffAdd", green, "none")
-fg_bg("DiffAddNr", grey, green)
-fg_bg("DiffChange", one_bg2, "none")
-fg_bg("DiffChangeNr", grey, nord_blue)
-fg_bg("DiffDelete", red, "none")
-cmd("hi DiffDeleteNr guifg=" .. grey .. " gui=underline guisp=" .. red)
-fg_bg("DiffTopDeleteNr", grey, red)
-fg_bg("DiffChangeDeleteNr", grey, dark_purple)
+fgbg("DiffAdd", green, nil)
+fgbg("DiffAddNr", grey, green)
+fgbg("DiffChange", one_bg2, nil)
+fgbg("DiffChangeNr", grey, nord_blue)
+fgbg("DiffDelete", red, nil)
+hi("DiffDeleteNr", {fg=grey, underline=true, special=red})
+fgbg("DiffTopDeleteNr", grey, red)
+fgbg("DiffChangeDeleteNr", grey, dark_purple)
 -- file has changed indication
-fg_bg("DiffModified", nord_blue, "none")
+fgbg("DiffModified", nord_blue, nil)
 
 -- NvimTree
 fg("NvimTreeFolderIcon", blue)
@@ -69,7 +70,7 @@ fg("NvimTreeVertSplit", "black")
 -- bg("NvimTreeVertSplit", darker_black)
 fg("NvimTreeRootFolder", "black")
 bg("NvimTreeNormal", "black")
-fg_bg("NvimTreeStatuslineNc", "black", "black")
+fgbg("NvimTreeStatuslineNc", "black", "black")
 
 -- telescope
 fg("TelescopeBorder", grey)
@@ -96,15 +97,14 @@ fg("LspDiagnosticsVirtualTextHint", purple)
 -- bufferline
 fg("BufferLineBackground", colors.grey_fg2)
 fg("BufferLineNumbers", colors.grey_fg2)
-cmd "hi BufferLineBufferVisible guifg=white"
-cmd "hi BufferLineNumbersVisible guifg=white"
+fg("BufferLineBufferVisible", "white")
+fg("BufferLineNumbersVisible", "white")
 -- bold instead of italic bold selected file
-cmd "hi BufferLineBufferSelected gui=bold"
+hi("BufferLineBufferSelected", {bold=true})
 -- only show tab number for tabs we may want to select, i.e. not current tab
-cmd "hi link BufferLineNumbersSelected Ignore"
+link("BufferLineNumbersSelected", "Ignore")
 -- why did this stop working? I had to add this:
-cmd "hi BufferLineNumbersSelected guifg=black"
-
+fg("BufferLineNumbersSelected", "black")
 
 -- dashboard
 fg("DashboardHeader", grey_fg)
@@ -114,32 +114,25 @@ fg("DashboardFooter", "black")
 
 bg("MatchParen", "#1f5c6b")
 
--- Coc indicate error with read undercurl instead of default uncolored underline
-cmd("hi CocErrorHighlight cterm=undercurl gui=undercurl guisp=red")
-
 -- HlSearchLens. Less agressive coloring but still matching search hl
-cmd "hi HlSearchLens ctermfg=11 ctermbg=242 guifg=#ffdc2d guibg=#5a576e"
-cmd "hi HlSearchLensNear ctermfg=11 ctermbg=242 guifg=#19f988 guibg=#5a576e"
+hi("HlSearchLens", {ctermfg=11, ctermbg=242, fg="#ffdc2d", bg="#5a576e"})
+hi("HlSearchLensNear", {ctermfg=11, ctermbg=242, fg="#19f988", bg="#5a576e"})
 
 -- set completion menu bg to main bg and make scrollbar minimal
-cmd "hi! link Pmenu Normal"
-cmd "hi! link PmenuSbar Ignore"
-cmd "hi! link PmenuThumb Visual"
+link("Pmenu", "Normal")
+link("PmenuSbar", "Ignore")
+link("PmenuThumb", "Visual")
 
--- make bg black for things that would use terminal background
-cmd "hi LineNr guibg=black"
-cmd "hi CursorLineNr guibg=black"
-cmd "hi VertSplit guibg=black"
-cmd "hi Folded guibg=black"
-cmd "hi FoldColumn guibg=black"
+bg("Folded", "black")
+bg("FoldColumn", "black")
 
-cmd "hi Operator ctermfg=5 guifg=#ae94f9"
+hi("Operator", {ctermfg=5, fg="#ae94f9"})
 
-cmd("hi! NonText gui=NONE guifg=" .. light_grey)
+fg("NonText", light_grey)
 
 -- if you want, you can also show search as flipping foreground and background
-cmd "hi! Search gui=inverse guifg=NONE guibg=NONE"
--- note, this doesn't break the green IncSearch, it's already broken
+-- note, this doesn't break the green IncSearch
+hi("Search", {reverse=true, fg=nil, bg=nil})
 
 -- @variable seemed to start being linked to @identifier after update?
-vim.api.nvim_set_hl(0, "@variable", {gui=nil})
+hi("@variable", {gui=nil})

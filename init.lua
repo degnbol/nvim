@@ -17,7 +17,4 @@ require'lazy'.setup('plugins', {
     change_detection = { notify = false, }
 })
 
-require 'colors'
 require 'highlights'
-
-

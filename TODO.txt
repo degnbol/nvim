@@ -65,9 +65,6 @@ Add a keybinding in whichkey
 
 GOTTA fix autocomplete from using enter for insertion when I haven't selected any item.
 
-maybe?
-https://github.com/ibhagwan/smartyank.nvim
-
 consider colortheme https://github.com/nealmckee/penumbra
 
 BUG: scrolling in nvim tree turns it into another buffer.
@@ -85,5 +82,3 @@ Enter is slow in quickfix because it waits for double enter. Fix this by e.g. on
 
 Checkout https://www.reddit.com/r/neovim/comments/x53lzx/i_must_be_missing_something/
 
-Lazy:
-https://www.youtube.com/watch?v=aqlxqpHs-aQ

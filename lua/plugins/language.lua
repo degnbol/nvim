@@ -4,13 +4,13 @@ return {
     -- add keybindings to toggle comments with motions etc. Consider alt: https://github.com/numToStr/Comment.nvim
     {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end},
     -- "windwp/nvim-autopairs", -- auto add second parenthesis etc.
-    -- "lukas-reineke/indent-blankline.nvim", -- show "|" on indented lines
+    -- julia support, colors and unicode substitution. CANNOT use ft=julia
     {"JuliaEditorSupport/julia-vim", config=function()
         -- this was necessary, random lhs rhs messages was appearing 
         g.latex_to_unicode_tab = "off"
         -- auto insert latex if moving on with e.g. space or other writing that is not part of a unicode char
         -- g.latex_to_unicode_auto = true
-    end}, -- julia support, colors and unicode substitution. CANNOT use ft=julia
+    end},
     {"jeetsukumaran/vim-pythonsense", ft='python'}, -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
     -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
     {"RishabhRD/nvim-cheat.sh", config=function()
@@ -21,12 +21,14 @@ return {
     -- "tpope/vim-sleuth", -- sleuth that let's you autodetect if file is using 2 or 4 spaces. Mistakenly set noexpandtab
     "tpope/vim-abolish", -- crs: snake_case, crm: MixedCase, crc: camelCase, cru: UPPER_CASE, cr-: dash-case, cr.: dot.case, cr<SPACE>: space case, crt: Title Case
     -- {"preservim/vim-markdown", dependencies={"godlygeek/tabular"}}, -- conceal markdown expressions like _emphasis_ and folding. Overkill, see {after/,}syntax/markdown.vim
-    {"iamcco/markdown-preview.nvim", build=':call mkdp#util#install()', ft='markdown'}, -- :MarkdownPreview live in browser
+    -- :MarkdownPreview live in browser
+    {"iamcco/markdown-preview.nvim", build=':call mkdp#util#install()', ft='markdown'},
     {"habamax/vim-asciidoctor", config=function()
         -- conceal _ and * in _italic_ and *bold*
         vim.g.asciidoctor_syntax_conceal = 1
     end, ft='asciidoctor'},
-    {"quarto-dev/quarto-vim", dependencies={"vim-pandoc/vim-pandoc-syntax"}, ft="quarto"}, -- https://quarto.org/
+    -- https://quarto.org/
+    {"quarto-dev/quarto-vim", dependencies={"vim-pandoc/vim-pandoc-syntax"}, ft="quarto"},
     {"habamax/vim-rst"},
     "jbyuki/nabla.nvim", -- show pretty math in term
     -- "elzr/vim-json", -- json
