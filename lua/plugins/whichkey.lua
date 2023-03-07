@@ -52,6 +52,7 @@ wk.setup {
 }
 
 wk.register({
+    ["<S-CR>"] = {":lua focus_repl()<CR>", "Focus REPL"},
     ["<TAB>"] = {":BufferLineCycleNext<CR>", "next buffer"},
     ["<S-TAB>"] = {":BufferLineCyclePrev<CR>", "previous buffer"},
     ["<leader>"] = {
