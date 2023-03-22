@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 # after/queries/{language}/highlights.scm seems to have no effect and
-# queries/... completely replaces so we extend the default scemas with this
+# queries/... completely replaces so we extend the default schemas with this
 
-default=~/.local/share/nvim/site/pack/packer/start/nvim-treesitter/queries
+default=~/.local/share/nvim/lazy/nvim-treesitter/queries
 ROOT=~/dotfiles/config/nvim/
 
 for after in $ROOT/after/queries/*; do
