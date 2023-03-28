@@ -203,3 +203,7 @@ xnoremap Å {
 " also switch cmp-dictionary language (cmp_dict.lua)
 inoremap <silent> <C-6> <C-6><C-\><C-o>:lua CmpDictUpdate()<CR>
 
+" completion mapping for function keys available on mechanical keyboard
+imap <F13> <C-space>
+imap <F14> <C-p>
+imap <F15> <C-n>

@@ -1,4 +1,5 @@
 #!/usr/bin/env lua
+-- this script sets vartabstop on file save based on longest cell in each column.
 api = vim.api
 opt_local = vim.opt_local
 require 'split'

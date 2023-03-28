@@ -1,7 +1,7 @@
 " map tab non-recursively to tab to simply write a tab character rather than
 " autocompletion functionality
-inoremap <TAB> <TAB>
-snoremap <TAB> <TAB>
+" inoremap <TAB> <TAB>
+" snoremap <TAB> <TAB>
 " insert real tab by default.
 setlocal noexpandtab
 
@@ -10,4 +10,3 @@ set concealcursor=nvc
 
 " show tabs by default
 set list
-
