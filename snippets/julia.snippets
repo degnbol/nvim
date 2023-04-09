@@ -1,20 +1,29 @@
+# overwrite the one from https://github.com/honza/vim-snippets
+# just to go to next line.
 snippet #!
 	#!/usr/bin/env julia
 	$0
 
+# for some reason the simple keyword continue seems to be missing from 
+# completion.
 snippet cont
 	continue
 
+# I type this often.
 snippet usedf
 	using CSV, DataFrames
 	$0
 
+# This is missing when editing on remote and it doesn't use the right julia env 
+# without DataFrames or something.
 snippet DF
 	DataFrame
 
+# I type this often.
 snippet ROOT
 	ROOT = \`git root\` |> readchomp
 	$0
 
+# Change by removing parenthesis around arg.
 snippet ret
 	return $0
