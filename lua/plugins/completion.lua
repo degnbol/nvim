@@ -1,7 +1,8 @@
 #!/usr/bin/env lua
 return {
     -- completion menu using builtin LSP
-    {"hrsh7th/nvim-cmp", dependencies = {
+    {"hrsh7th/nvim-cmp",
+    dependencies = {
         'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-buffer',
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-nvim-lsp-signature-help',
@@ -9,7 +10,8 @@ return {
         'tamago324/cmp-zsh', -- neovim zsh completion
         'onsails/lspkind.nvim', -- pretty pictograms
         'hrsh7th/cmp-calc', -- quick math in completion
-    }, config=function()
+    },
+    config=function()
         -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
         local cmd = vim.cmd
         local cmp = require "cmp"
@@ -35,6 +37,42 @@ return {
             end
         end
 
+        mappings = {
+            -- the Down and Up calls means we don't move in the list (default) but rather ignore the menu and move the cursor in the file.
+            ['<up>'] = cmp.mapping.closeFallback(),
+            ['<down>'] = cmp.mapping.closeFallback(),
+            ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+            ['<C-f>'] = cmp.mapping.scroll_docs(4),
+            ['<C-space>'] = cmp.mapping.complete(),
+            ['<C-e>'] = cmp.mapping.abort(),
+            -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+            ['<CR>'] = cmp.mapping.confirm({select=false}),
+            ["<Tab>"] = cmp.mapping(function(fallback)
+                if vim.bo.filetype == "tsv" then
+                    fallback()
+                elseif cmp.visible() then
+                    cmp.select_next_item()
+                elseif require'luasnip'.expand_or_jumpable() then
+                    require'luasnip'.expand_or_jump()
+                elseif has_words_before() then
+                    cmp.complete()
+                else
+                    fallback()
+                end
+            end, { "i", "s" }),
+        ["<S-Tab>"] = cmp.mapping(function(fallback)
+                if vim.bo.filetype == "tsv" then
+                    fallback()
+                elseif cmp.visible() then
+                    cmp.select_prev_item()
+                elseif require'luasnip'.jumpable(-1) then
+                    require'luasnip'.jump(-1)
+                else
+                    fallback()
+                end
+            end, { "i", "s" }),
+        }
+
         -- for tab support, code copied from https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
         cmp.setup {
             snippet = {
@@ -49,37 +87,7 @@ return {
                 -- https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
                 entries = {name = 'custom', selection_order = 'near_cursor' }
             },
-            mapping = cmp.mapping.preset.insert {
-                -- the Down and Up calls means we don't move in the list (default) but rather ignore the menu and move the cursor in the file.
-                ['<up>'] = cmp.mapping.closeFallback(),
-                ['<down>'] = cmp.mapping.closeFallback(),
-                ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-                ['<C-f>'] = cmp.mapping.scroll_docs(4),
-                ['<C-space>'] = cmp.mapping.complete(),
-                ['<C-e>'] = cmp.mapping.abort(),
-                -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-                ['<CR>'] = cmp.mapping.confirm({select=false}),
-                -- ["<Tab>"] = cmp.mapping(function(fallback)
-                --     if cmp.visible() then
-                --         cmp.select_next_item()
-                --     elseif require'luasnip'.expand_or_jumpable() then
-                --         require'luasnip'.expand_or_jump()
-                --     elseif has_words_before() then
-                --         cmp.complete()
-                --     else
-                --         fallback()
-                --     end
-                -- end, { "i", "s" }),
-                -- ["<S-Tab>"] = cmp.mapping(function(fallback)
-                --     if cmp.visible() then
-                --         cmp.select_prev_item()
-                --     elseif require'luasnip'.jumpable(-1) then
-                --         require'luasnip'.jump(-1)
-                --     else
-                --         fallback()
-                --     end
-                -- end, { "i", "s" }),
-            },
+            mapping = cmp.mapping.preset.insert(mappings),
             sources = cmp.config.sources {
                 { name = 'nvim_lsp' },
                 { name = 'path', option = {trailing_slash=true} },
@@ -132,6 +140,9 @@ return {
             }
         })
     end},
+    -- the make command is optional: https://github.com/L3MON4D3/LuaSnip
+    "honza/vim-snippets",
+    {'L3MON4D3/LuaSnip', build="make install_jsregexp"},
     {'saadparwaiz1/cmp_luasnip', dependencies={'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp"}, config=function() 
         local luasnip = require "luasnip"
         -- https://youtu.be/Dn800rlPIho?t=440
@@ -185,5 +196,7 @@ return {
     {"rafamadriz/friendly-snippets", dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
         -- load friendly-snippets with luasnip
         require("luasnip.loaders.from_vscode").lazy_load()
+        -- load https://github.com/honza/vim-snippets
+        require("luasnip.loaders.from_snipmate").lazy_load()
     end}
 }
