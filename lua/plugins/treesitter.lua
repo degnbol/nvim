@@ -33,6 +33,7 @@ return {
                 "rust",
                 "javascript",
                 "scala",
+                "sql",
                 "graphql", --ext .gql, e.g. schema for graph databases
             },
             highlight = {
@@ -122,6 +123,9 @@ return {
                         ["if"] = "@function.inner",
                         ["ac"] = "@comment.outer",
                         -- ["ic"] = "@comment.inner", -- doesn't exist
+                        -- these are so cool:
+                        ["aa"] = "@parameter.outer",
+                        ["ia"] = "@parameter.inner",
                     }
                 },
                 swap = {
@@ -138,19 +142,19 @@ return {
                     set_jumps = true, -- whether to set jumps in the jumplist
                     goto_next_start = {
                         ["]m"] = "@function.outer",
-                        ["]]"] = "@class.outer",
+                        ["]o"] = "@loop.outer",
                     },
                     goto_next_end = {
                         ["]M"] = "@function.outer",
-                        ["]["] = "@class.outer",
+                        ["]O"] = "@loop.outer",
                     },
                     goto_previous_start = {
                         ["[m"] = "@function.outer",
-                        ["[["] = "@class.outer",
+                        ["[o"] = "@loop.outer",
                     },
                     goto_previous_end = {
                         ["[M"] = "@function.outer",
-                        ["[]"] = "@class.outer",
+                        ["[O"] = "@loop.outer",
                     }
                 },
                 lsp_interop = {
@@ -198,7 +202,7 @@ return {
             -- for the p00f/nvim-ts-rainbow plugin
             rainbow = {
                 enable = true, -- update broke this plugin
-                disable = {"julia"},
+                -- disable = {"julia"},
                 extended_mode = true, -- Highlight also non-parentheses delimiters, boolean or table: lang -> boolean
                 max_file_lines = 1000, -- Do not enable for files with more than 1000 lines, int
             },

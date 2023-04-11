@@ -2,10 +2,21 @@
 -- mini.surround
 return {
     'echasnovski/mini.nvim',
-    branch='stable',
+    version=false,
     config=function()
 
-require('mini.surround').setup {
+require('mini.bracketed').setup {
+  indent = { suffix = 'i', options = { change_type="diff" } },
+}
+
+-- mini_indentscope = require('mini.indentscope')
+-- mini_indentscope.setup {
+--     draw = { animation = mini_indentscope.gen_animation.none() },
+--     symbol = "▏",
+-- }
+
+
+require'mini.surround'.setup {
     mappings = {
     add = 'ys', -- Add surrounding in Normal and Visual modes
     delete = 'ds', -- Delete surrounding
@@ -34,5 +45,8 @@ vim.api.nvim_set_keymap('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], 
 
 -- Make special mapping for "add surrounding for line"
 vim.api.nvim_set_keymap('n', 'yss', 'ys_', { noremap = false })
+
+
+
 
 end}

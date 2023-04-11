@@ -4,6 +4,7 @@ return {
     "tpope/vim-repeat", -- change . to repeat last native command to last "full" command, which feels more natural.
     -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
     -- "tpope/vim-sensible",
+    "tpope/vim-unimpaired", -- [e, ]e exchange line with above/below, ]<space> add newlines, more: https://github.com/tpope/
     -- add substitution functions to e.g. replace a word with clipboard content by writing siw
     "svermeulen/vim-subversive",
     -- "mg979/vim-visual-multi", -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
@@ -78,5 +79,11 @@ return {
 
     "sakshamgupta05/vim-todo-highlight", -- highlight todos
     -- {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end}, -- dim code that isn't currently being edited with :Twilight.
+
+    {
+        "chrisgrieser/nvim-various-textobjs",
+        opts = { useDefaultKeymaps = true },
+    },
+
 }
 
