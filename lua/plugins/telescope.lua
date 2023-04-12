@@ -5,6 +5,9 @@ return {
         "nvim-telescope/telescope-fzf-native.nvim", build='make', config=function ()
             -- load the native fzf as recommended
             -- require'telescope'.load_extension('fzf')
+            -- pcall is protected call, i.e. doesn't make a big deal out of errors
+            -- taken from https://github.com/nvim-lua/kickstart.nvim/blob/master/init.lua
+            pcall(require('telescope').load_extension, 'fzf')
         end
     },
     {
