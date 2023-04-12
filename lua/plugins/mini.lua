@@ -6,7 +6,8 @@ return {
     config=function()
 
 require('mini.bracketed').setup {
-  indent = { suffix = 'i', options = { change_type="diff" } },
+    -- compliment with using [[, ]], [], ][ to jump to less indented region and to next region
+    indent = { suffix = 'i', options = { change_type="more" } },
 }
 
 -- mini_indentscope = require('mini.indentscope')

@@ -236,6 +236,17 @@ wk.register({
         c = {
             name = "(un)comment motion",
             c = "line",
+            A = "new EOL",
+            a = {
+                name = "a(round)...",
+                c = "comment",
+            },
+            i = {
+                name = "in(side)...",
+                c = "comment",
+            },
+            o = "new under",
+            O = "new above",
         },
         j = {function() require"trevj".format_at_cursor() end, "unjoin (trevj)"},
         -- uses % from andymass/vim-matchup which first jumps to container start, then visual, then container end, then core vim Join.
