@@ -37,6 +37,7 @@ return {
             end
         end
 
+        -- for tab support, code copied from https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
         mappings = {
             -- the Down and Up calls means we don't move in the list (default) but rather ignore the menu and move the cursor in the file.
             ['<up>'] = cmp.mapping.closeFallback(),
@@ -52,8 +53,6 @@ return {
                     fallback()
                 elseif cmp.visible() then
                     cmp.select_next_item()
-                elseif require'luasnip'.expand_or_jumpable() then
-                    require'luasnip'.expand_or_jump()
                 elseif has_words_before() then
                     cmp.complete()
                 else
@@ -65,15 +64,12 @@ return {
                     fallback()
                 elseif cmp.visible() then
                     cmp.select_prev_item()
-                elseif require'luasnip'.jumpable(-1) then
-                    require'luasnip'.jump(-1)
                 else
                     fallback()
                 end
             end, { "i", "s" }),
         }
 
-        -- for tab support, code copied from https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
         cmp.setup {
             snippet = {
                 expand = function(args) require'luasnip'.lsp_expand(args.body) end,
@@ -148,11 +144,25 @@ return {
         -- https://youtu.be/Dn800rlPIho?t=440
         luasnip.config.set_config {
             -- don't jump back into exited snippet
-            history = false,
+            -- history = false,
             -- dynamic snippets update as you type
             updateevents = "TextChanged,TextChangedI",
             enable_autosnippets = true,
         }
+        
+    vim.keymap.set({ "i", "s" }, "<c-k>", function ()
+        if luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+        end
+    end, { silent = true })
+    
+    vim.keymap.set({ "i", "s" }, "<c-j>", function ()
+        if luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+        end
+    end, { silent = true })
+
+
     end }, -- alts: hrsh7th/vim-vsnip, SirVer/ultisnips, ...
     -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
     {'uga-rosa/cmp-dictionary', config=function()
