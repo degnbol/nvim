@@ -12,8 +12,29 @@ set sidescrolloff=0
 " vimtex has a lot of nice default conceals, e.g. greek in maths, \textbf, etc.
 set conceallevel=2
 
-" save on calls to this with event InsertEnter but if we sometimes move to and 
-" from math mode without going in and out of normal mode then use CursorMovedI
-" as well.
-autocmd InsertEnter *.tex if vimtex#syntax#in_mathzone() | set fo-=a | else | set fo+=a | endif
+" in_mathzone and others call stack under the hood:
+" https://github.com/lervag/vimtex/blob/c2f38c25375e6fb06654c3de945995c925b286e6/autoload/vimtex/syntax.vim
+" It is kinda vimtex's version of treesitter I think.
+" Empty when we are not in any environment. Also empty for text in Itemize 
+" environment.
+function IsText() abort
+    if vimtex#syntax#in_mathzone()
+        return 0
+    endif
+    let l:env = vimtex#delim#get_surrounding('env_tex')[1]
+    if empty(l:env)
+        return 1
+    endif
+    let l:name = l:env['name']
+    if l:name == 'document'
+        return 1
+    endif
+    let l:cmd = vimtex#cmd#get_current()
+    if empty(l:cmd)
+        return 0
+    endif
+    return l:cmd['name'] == "\\caption"
+    " return len(vimtex#syntax#stack()) == 0
+endfunction
+autocmd InsertCharPre *.tex if IsText() | set fo+=a | else | set fo-=a | endif
 
