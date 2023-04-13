@@ -193,7 +193,8 @@ t("}{"), i(1), t("}")},
 
 s(
 {trig="([%w\\]+)/", dscr="fraction after word", regTrig=true, snippetType="autosnippet"},
-{t"\\frac{", re(1), t"}{", i(1), t"}"}
+{t"\\frac{", re(1), t"}{", i(1), t"}"},
+{condition=in_math}
 ),
 
 s(
