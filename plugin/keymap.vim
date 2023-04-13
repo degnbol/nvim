@@ -207,3 +207,12 @@ inoremap <silent> <C-6> <C-6><C-\><C-o>:lua CmpDictUpdate()<CR>
 imap <F13> <C-space>
 imap <F14> <C-p>
 imap <F15> <C-n>
+
+" use the following two commands to enable spelling
+" setlocal spell
+" set spelllang=en_us
+" ctrl+s (in insert mode) to fix last misspelled word
+" credit: https://castel.dev/post/lecture-notes-1/
+" with git: https://github.com/gillescastel/latex-snippets
+inoremap <C-s> <c-g>u<Esc>[s1z=`]a<c-g>u
+
