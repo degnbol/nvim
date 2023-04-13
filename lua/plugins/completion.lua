@@ -144,10 +144,11 @@ return {
         -- https://youtu.be/Dn800rlPIho?t=440
         luasnip.config.set_config {
             -- don't jump back into exited snippet
-            -- history = false,
+            history = true,
             -- dynamic snippets update as you type
             updateevents = "TextChanged,TextChangedI",
             enable_autosnippets = true,
+            store_selection_keys = "<Tab>",
         }
         
     vim.keymap.set({ "i", "s" }, "<c-k>", function ()
@@ -162,7 +163,12 @@ return {
         end
     end, { silent = true })
 
-
+    vim.keymap.set({ "i", "s" }, "<c-l>", function ()
+        if luasnip.choice_active() then
+            luasnip.change_choice(1)
+        end
+    end)
+    
     end }, -- alts: hrsh7th/vim-vsnip, SirVer/ultisnips, ...
     -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
     {'uga-rosa/cmp-dictionary', config=function()

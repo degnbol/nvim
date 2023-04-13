@@ -40,6 +40,7 @@ return {
                 enable = true,
                 disable = {
                     "vim", -- not perfect
+                    "latex", -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$
                     -- "help", -- removes useful colors from :h group-name
                 }, 
                 additional_vim_regex_highlighting = {
@@ -207,7 +208,5 @@ return {
             },
         }
     end},
-    -- provide :TSHighlightCapturesUnderCursor to see highlight groups for a word under the cursor, TSPlaygroundToggle. "a" for hidden, "o" for scratch edit scheme.
-    "nvim-treesitter/playground",
 }
 

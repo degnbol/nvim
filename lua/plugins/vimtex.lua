@@ -24,6 +24,8 @@ return {
         g.vimtex_syntax_conceal = {
             sections = true, -- all other conceals are enabled by default
         }
+        
+        g.vimtex_format_enabled = true
     end
 }
 
