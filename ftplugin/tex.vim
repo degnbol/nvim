@@ -2,12 +2,6 @@
 setlocal noexpandtab
 " there was some annoying issue with indents inserted in regular text
 set nosmartindent
-" let's try autoformat, and if it messes with code, environments or indented code, 
-" then we should find a plugin or something to limit it to simple text.
-" If there are problems then look into
-" https://www.vim.org/scripts/script.php?script_id=2307
-" https://www.vim.org/scripts/script.php?script_id=2187
-set fo+=a
 " lists doesn't start with number on first column but uses \item
 set fo-=n
 " we will often be writing prose that wraps at textwidth columns but not code.
@@ -17,3 +11,9 @@ set sidescrolloff=0
 
 " vimtex has a lot of nice default conceals, e.g. greek in maths, \textbf, etc.
 set conceallevel=2
+
+" save on calls to this with event InsertEnter but if we sometimes move to and 
+" from math mode without going in and out of normal mode then use CursorMovedI
+" as well.
+autocmd InsertEnter *.tex if vimtex#syntax#in_mathzone() | set fo-=a | else | set fo+=a | endif
+

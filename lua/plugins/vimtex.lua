@@ -25,6 +25,11 @@ return {
             sections = true, -- all other conceals are enabled by default
         }
         
+        -- formatter when calling gq, but note that autoformatting calls the 
+        -- builtin vim formatter which you can call with gw.
+        -- In order to not autoformat in math mode I made an autocmd to 
+        -- disable/enable auto formatoption based on vimtex's detection in_mathzone.
+        -- See ftplugin/tex.vim
         g.vimtex_format_enabled = true
     end
 }
