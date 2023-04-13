@@ -258,4 +258,18 @@ s({trig="!>", descr="maps to", snippetType="autosnippet"},
 t"\\mapsto",
 {condition=in_math}),
 
+s({trig="sr", descr="squared", wordTrig=false, snippetType="autosnippet"},
+t"^2",
+{condition=in_math}),
+
+s({trig="cb", descr="cubed", wordTrig=false, snippetType="autosnippet"},
+t"^3",
+{condition=in_math}),
+
+s({trig="td", descr="to the power", wordTrig=false, snippetType="autosnippet"},
+{t"^{", i(1), t"}"},
+{condition=in_math}),
+
+
+
 }
