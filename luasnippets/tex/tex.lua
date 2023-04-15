@@ -112,6 +112,7 @@ fmta([[
 \usepackage{mathtools} % loads amsmath, plus e.g. \coloneqq,\mathclap,\substack
 \usepackage{amssymb}
 \usepackage{siunitx} % provides \SI and column type S (align decimal)
+\usepackage{unicode-math} % experimental support for unicode in math
 
 \usepackage{graphicx}
 % Subfigures. "skip" == spacing between subfigures.
@@ -133,7 +134,7 @@ fmta([[
 
 \usepackage{xcolor} % define colors
 \usepackage{hyperref}
-\usepackage[capitalise]{cleverref} % \cref which auto adds e.g. "Table " to \ref
+% \usepackage[capitalise]{cleverref} % \cref which auto adds e.g. "Table " to \ref
 % Auto define acronyms on first use. https://www.overleaf.com/learn/latex/Glossaries
 \usepackage[acronym]{glossaries-extra}
 \setabbreviationstyle[acronym]{long-short}
@@ -496,8 +497,8 @@ s({trig="!=", descr="not equal", wordTrig=false, snippetType="autosnippet"},
 t"\\neq",
 {condition=in_math}),
 
-s({trig="notin", descr="not in", wordTrig=false, snippetType="autosnippet"},
-t"\\not\\in",
+s({trig="([^\\])notin", regTrig=true, wordTrig=false, descr="not in", snippetType="autosnippet"},
+{re(1), t"\\notin"},
 {condition=in_math}),
 
 s({trig=[[\\\]], descr="set minus", wordTrig=false, snippetType="autosnippet"},
@@ -509,6 +510,10 @@ t"\\exists",
 {condition=in_math}),
 s({trig="AA", descr="A (set)", wordTrig=false, snippetType="autosnippet"},
 t"\\forall",
+{condition=in_math}),
+
+s({trig="cc", descr="subset", wordTrig=true, snippetType="autosnippet"},
+t"\\subset",
 {condition=in_math}),
 
 s({trig="UU", descr="union", wordTrig=false, snippetType="autosnippet"},

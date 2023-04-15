@@ -1,6 +1,12 @@
 -- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
 return {
-    "lervag/vimtex", config=function() 
+    -- more aggressive conceal
+    {"KeitaNakamura/tex-conceal.vim", config=function ()
+        g = vim.g
+        -- https://github.com/gillescastel/latex-snippets
+        g.tex_conceal='abdmg'
+    end},
+    {"lervag/vimtex", config=function() 
         g = vim.g
 
         g.vimtex_view_method = 'skim'
@@ -31,6 +37,6 @@ return {
         -- disable/enable auto formatoption based on vimtex's detection in_mathzone.
         -- See ftplugin/tex.vim
         g.vimtex_format_enabled = true
-    end
+    end}
 }
 

@@ -76,6 +76,8 @@ mamba install -y ripgrep
 # for editing jupyter notebooks
 pip install jupytext
 
+0:h/tex/install.sh
+
 # when compiling latex with vimtex, we can use skim instead of default pdf 
 # viewer, so that we are at the same location in the document whenever it gets 
 # changed. It also auto opens the pdf, and auto updates without having to focus the app first.

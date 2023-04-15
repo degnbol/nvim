@@ -26,3 +26,5 @@ seems fine to update manually with copy paste with
 word count: g then ctrl+g
 
 multiline search with :S in-place of / (see plugin/search.vim)
+
+Last macro can be repeated with @@

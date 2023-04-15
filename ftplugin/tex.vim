@@ -38,3 +38,7 @@ function IsText() abort
 endfunction
 autocmd InsertCharPre *.tex if IsText() | set fo+=a | else | set fo-=a | endif
 
+nmap <plug>FormatNextMath <plug>(vimtex-]n)gq<plug>(vimtex-a$)`>
+" works with counts but not with dot
+silent! call repeat#set("\<Plug>FormatNextMath", v:count)
+
