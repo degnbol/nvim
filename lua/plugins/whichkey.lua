@@ -158,10 +158,8 @@ wk.register({
             s = "toggle main",
             t = "TOC open",
             T = "TOC toggle",
-            u = {":set formatexpr=|:set formatprg=$XDG_CONFIG_HOME/nvim/tex/latex2unicode.sh<CR>", "Format latex2unicode"},
-            U = {":set formatexpr=|:set formatprg=$XDG_CONFIG_HOME/nvim/tex/unicode2latex.sh<CR>", "Format unicode2latex"},
-            -- to avoid subtle changes from the unicode formatter, only run it on math envs
-            ['$'] = {"<Plug>FormatNextMath", "format next math"}, -- defined in ftplugin/tex.vim
+            u = {"<plug>Latex2Unicode", "latex2unicode"},
+            U = {"<plug>Unicode2Latex", "unicode2latex"},
             v = "view",
             x = "reload",
             X = "reload state",
@@ -335,8 +333,10 @@ wk.register({
         h = "hunk (gitsigns)",
         y = "Change paste (Yoink)",
         x = "conflict (Diffview)",
-        ['$'] = {"<Plug>(vimtex-[n)", "equation (vimtex)"},
         ['4'] = {"<Plug>(vimtex-[n)", "equation (vimtex)"}, -- without shift
+        ['$'] = {"<Plug>(vimtex-[N)", "equation (vimtex)"},
+        m = {"<Plug>(vimtex-[n)", "equation (vimtex)"}, -- without shift
+        M = {"<Plug>(vimtex-[N)", "equation (vimtex)"},
     },
     [']'] = {
         name = "Next...",
@@ -344,8 +344,10 @@ wk.register({
         h = "hunk (gitsigns)",
         y = "Change paste (Yoink)",
         x = "conflict (Diffview)",
-        ['$'] = {"<Plug>(vimtex-]n)", "equation (vimtex)"},
         ['4'] = {"<Plug>(vimtex-]n)", "equation (vimtex)"}, -- without shift
+        ['$'] = {"<Plug>(vimtex-]N)", "equation (vimtex)"},
+        m = {"<Plug>(vimtex-]n)", "equation (vimtex)"}, -- without shift
+        M = {"<Plug>(vimtex-]N)", "equation (vimtex)"},
     },
 }, {mode='n'})
 

@@ -38,7 +38,16 @@ function IsText() abort
 endfunction
 autocmd InsertCharPre *.tex if IsText() | set fo+=a | else | set fo-=a | endif
 
-nmap <plug>FormatNextMath <plug>(vimtex-]n)gq<plug>(vimtex-a$)`>
-" works with counts but not with dot
-silent! call repeat#set("\<Plug>FormatNextMath", v:count)
+
+nmap <plug>Latex2Unicode v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/latex/unicode/latex2unicode.sh<CR>
+nmap <plug>Unicode2Latex v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/latex/unicode/unicode2latex.sh<CR>
+" doesn't seem to work
+" silent! call repeat#set("\<Plug>Latex2Unicode", v:count)
+" silent! call repeat#set("\<Plug>Unicode2Latex", v:count)
+" convenient macros stored to registers u and l that goes to next math then 
+" converts. Can be repeated with a count, and recalled quickly with @@ to 
+" quickly convert each math env in a file.
+" ']4' and '<leader>lu' are defined in whichkey.lua
+let @u=']4 lu'
+let @l=']4 lU'
 

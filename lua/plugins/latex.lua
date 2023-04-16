@@ -37,6 +37,6 @@ return {
         -- disable/enable auto formatoption based on vimtex's detection in_mathzone.
         -- See ftplugin/tex.vim
         g.vimtex_format_enabled = true
-    end}
+    end},
 }
 
