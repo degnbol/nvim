@@ -1,0 +1,235 @@
+local lsu = require"luasnip_util"
+local in_math = lsu.in_math
+local re = lsu.re
+local get_visual = lsu.get_visual
+
+return {
+-- all snippets here are expected to be called within a math env
+
+s({trig=";q", snippetType="autosnippet", wordTrig=false}, { t"θ" }),
+s({trig=";w", snippetType="autosnippet", wordTrig=false}, { t"ω" }),
+s({trig=";e", snippetType="autosnippet", wordTrig=false}, { t"ε" }), -- using \varepsilon over ϵ
+s({trig=";r", snippetType="autosnippet", wordTrig=false}, { t"ρ" }),
+s({trig=";t", snippetType="autosnippet", wordTrig=false}, { t"τ" }),
+s({trig=";y", snippetType="autosnippet", wordTrig=false}, { t"ψ" }),
+s({trig=";u", snippetType="autosnippet", wordTrig=false}, { t"υ" }),
+s({trig=";i", snippetType="autosnippet", wordTrig=false}, { t"ι" }),
+s({trig=";p", snippetType="autosnippet", wordTrig=false}, { t"π" }),
+s({trig=";a", snippetType="autosnippet", wordTrig=false}, { t"α" }),
+s({trig=";s", snippetType="autosnippet", wordTrig=false}, { t"σ" }),
+s({trig=";d", snippetType="autosnippet", wordTrig=false}, { t"δ" }),
+s({trig=";f", snippetType="autosnippet", wordTrig=false}, { t"ϕ" }),
+s({trig=";g", snippetType="autosnippet", wordTrig=false}, { t"γ" }),
+s({trig=";h", snippetType="autosnippet", wordTrig=false}, { t"η" }),
+s({trig=";k", snippetType="autosnippet", wordTrig=false}, { t"κ" }),
+s({trig=";l", snippetType="autosnippet", wordTrig=false}, { t"λ" }),
+s({trig=";z", snippetType="autosnippet", wordTrig=false}, { t"ζ" }),
+s({trig=";x", snippetType="autosnippet", wordTrig=false}, { t"ξ" }),
+s({trig=";c", snippetType="autosnippet", wordTrig=false}, { t"χ" }),
+s({trig=";v", snippetType="autosnippet", wordTrig=false}, { t"\\sqrt{",i(1), t"}" }),
+s({trig=";b", snippetType="autosnippet", wordTrig=false}, { t"β" }),
+s({trig=";n", snippetType="autosnippet", wordTrig=false}, { t"ν" }),
+s({trig=";m", snippetType="autosnippet", wordTrig=false}, { t"μ" }),
+
+s({trig=";Q", snippetType="autosnippet", wordTrig=false}, { t"Θ", }),
+s({trig=";W", snippetType="autosnippet", wordTrig=false}, { t"Ω", }),
+s({trig=";Y", snippetType="autosnippet", wordTrig=false}, { t"Ψ", }),
+s({trig=";U", snippetType="autosnippet", wordTrig=false}, { t"Υ", }),
+s({trig=";P", snippetType="autosnippet", wordTrig=false}, { t"Π", }), -- product doesn't have a unicode equivalent
+s({trig=";S", snippetType="autosnippet", wordTrig=false}, { t"Σ", }), -- note: currently not the sum sigma
+s({trig=";D", snippetType="autosnippet", wordTrig=false}, { t"Δ", }),
+s({trig=";F", snippetType="autosnippet", wordTrig=false}, { t"Φ", }),
+s({trig=";G", snippetType="autosnippet", wordTrig=false}, { t"Γ", }),
+s({trig=";L", snippetType="autosnippet", wordTrig=false}, { t"Λ", }),
+s({trig=";X", snippetType="autosnippet", wordTrig=false}, { t"Ξ", }),
+
+s({trig="\\nabla", snippetType="autosnippet", wordTrig=false}, { t"∇", }),
+
+s({trig="*", dscr="cdot", wordTrig=false, snippetType="autosnippet"},
+t"⋅",
+{condition=in_math}),
+s({trig="xx", dscr="cross", wordTrig=false, snippetType="autosnippet"},
+t"×",
+{condition=in_math}),
+s({trig="\\pm", dscr="plus/minus", wordTrig=false, snippetType="autosnippet"},
+t"±",
+{condition=in_math}),
+s({trig="\\mp", dscr="plus/minus", wordTrig=false, snippetType="autosnippet"},
+t"∓",
+{condition=in_math}),
+s({trig="+-", dscr="plus/minus", wordTrig=false, snippetType="autosnippet"},
+t"±",
+{condition=in_math}),
+s({trig="-+", dscr="plus/minus", wordTrig=false, snippetType="autosnippet"},
+t"∓",
+{condition=in_math}),
+
+s({trig="\\dots", descr="ellipses", wordTrig=false, snippetType="autosnippet"},
+t"…",
+{condition=in_math}),
+-- \dots, not \ldots is technically the equivalent of …
+s({trig="\\ldots", descr="ellipses", wordTrig=false, snippetType="autosnippet"},
+t"…",
+{condition=in_math}),
+s({trig="\\cdots", descr="center dots", wordTrig=false, snippetType="autosnippet"},
+t"⋯",
+{condition=in_math}),
+s({trig="\\vdots", descr="vertical dots", wordTrig=false, snippetType="autosnippet"},
+t"⋮",
+{condition=in_math}),
+-- lower priority so c... and v... takes precedence
+s({trig="...", descr="ellipses", wordTrig=false, snippetType="autosnippet", priority=100},
+t"…",
+{condition=in_math}),
+s({trig="c...", descr="center dots", wordTrig=true, snippetType="autosnippet"},
+t"⋯",
+{condition=in_math}),
+s({trig="v...", descr="vertical dots", wordTrig=true, snippetType="autosnippet"},
+t"⋮",
+{condition=in_math}),
+
+-- √ unfortunately doesn't work like \sqrt so we have to replace it.
+-- The reason is there is redundancy, since \surd is a separate command for a √ 
+-- by itself.
+-- Still a useful trigger, since it is bound to alt+v.
+s(
+{trig="√", dscr="invalid square root", snippetType="autosnippet"},
+{t"\\sqrt{", d(1, get_visual), t"}"},
+{condition=in_math}
+),
+
+-- lower priority so we can replace \oo first
+s({trig="oo", descr="infinity", snippetType="autosnippet", priority=100},
+t"∞",
+{condition=in_math}),
+s({trig="\\oo", descr="infinity", wordTrig=false, snippetType="autosnippet"},
+t"∞",
+{condition=in_math}),
+s({trig="\\infty", descr="infinity", snippetType="autosnippet"},
+t"∞",
+{condition=in_math}),
+
+s({trig="lim", descr="limit", snippetType="autosnippet"},
+-- {t"\\lim_{", i(1, "n"), t"\\to\\infty}"},
+-- space after \to since a vimtex "to" snippet completes on ls.expand_or_jump
+-- other solutions than leaving the space would be removing the default "to" snippet somehow,
+-- or having separate keys for expand and jump
+{t"\\lim_{", i(1, "n"), t"→", i(2, "∞"), t"}"},
+{condition=in_math}),
+
+s({trig="sum", descr="sum", snippetType="autosnippet"},
+{t"∑_{", i(1, "n=1"), t"}^{", i(2,"∞"), t"}"},
+{condition=in_math}),
+
+s({trig="part", dscr="d/dx"},
+{t"\\frac{∂ ", i(1,"V"), t"}{∂ ", i(2,"x"), t"}"},
+{condition=in_math}),
+s({trig="partial", snippetType="autosnippet"},
+t"∂",
+{condition=in_math}),
+
+s({trig="->", descr="to/right arrow", snippetType="autosnippet"},
+t"→", -- \to and \rightarrow are synonymous
+{condition=in_math}),
+s({trig="<-", descr="left arrow", snippetType="autosnippet"},
+t"←",
+{condition=in_math}),
+-- Currently using \implies instead which is longer with more whitespace
+-- s({trig="=>", descr="Double right arrow", snippetType="autosnippet"},
+-- t"⇒",
+-- {condition=in_math}),
+-- Currently using \impliedby instead which is longer with more whitespace
+-- s({trig="=<", descr="Double left arrow", snippetType="autosnippet"},
+-- t"⇐",
+-- {condition=in_math}),
+s({trig="!>", descr="maps to", snippetType="autosnippet"},
+t"↦",
+{condition=in_math}),
+s({trig="\\mapsto", descr="maps to", snippetType="autosnippet"},
+t"↦",
+{condition=in_math}),
+
+s({trig="!=", descr="not equal", wordTrig=false, snippetType="autosnippet"},
+t"≠",
+{condition=in_math}),
+-- can't be used when we have '==' -> '&= ' which is more important
+-- s({trig="===", dscr="equivalent", snippetType="autosnippet"},
+-- t"≡",
+-- {condition=in_math}),
+s({trig="\\?equiv", dscr="equivalent", regTrig=true, snippetType="autosnippet"},
+t"≡",
+{condition=in_math}),
+s({trig="<=", descr="less than or equal", wordTrig=false, snippetType="autosnippet"},
+{t"≤"}),
+s({trig=">=", descr="greater than or equal", wordTrig=false, snippetType="autosnippet"},
+{t"≥"}),
+s({trig="\\propto", descr="proportional to", snippetType="autosnippet"},
+{t"∝"}),
+s({trig="~", descr="tilde", snippetType="autosnippet"},
+{t"\\sim"}),
+
+-- logic
+s({trig="EE", descr="E (set)", wordTrig=false, snippetType="autosnippet"},
+t"∃",
+{condition=in_math}),
+s({trig="AA", descr="A (set)", wordTrig=false, snippetType="autosnippet"},
+t"∀",
+{condition=in_math}),
+s({trig="&&", descr="logical and", snippetType="autosnippet"},
+t"∧",
+{condition=in_math}),
+s({trig="||", descr="logical and", snippetType="autosnippet"},
+t"∨",
+{condition=in_math}),
+
+-- set theory
+s({trig="\\in ", descr="in", snippetType="autosnippet"},
+t"∈ ",
+{condition=in_math}),
+s({trig="inn", descr="in", snippetType="autosnippet"},
+t"∈",
+{condition=in_math}),
+s({trig="([^\\])notin", regTrig=true, wordTrig=false, descr="not in", snippetType="autosnippet"},
+{re(1), t"∉"},
+{condition=in_math}),
+s({trig="\\neg", descr="negate", snippetType="autosnippet"},
+t"¬",
+{condition=in_math}),
+s({trig="OO", descr="empty set", wordTrig=false, snippetType="autosnippet"},
+t"∅",
+{condition=in_math}),
+s({trig="\\?empty", descr="empty set", regTrig=true, snippetType="autosnippet"},
+t"∅",
+{condition=in_math}),
+s({trig="cc", descr="subset", wordTrig=true, snippetType="autosnippet"},
+t"⊂",
+{condition=in_math}),
+s({trig="\\cup", descr="union", snippetType="autosnippet"},
+t"∪",
+{condition=in_math}),
+s({trig="\\cap", descr="intersection", snippetType="autosnippet"},
+t"∩",
+{condition=in_math}),
+s({trig="union", descr="union", snippetType="autosnippet"},
+t"∪",
+{condition=in_math}),
+s({trig="intersect", descr="intersection", snippetType="autosnippet"},
+t"∩",
+{condition=in_math}),
+s({trig="UU", descr="union", wordTrig=false, snippetType="autosnippet"},
+t"∪",
+{condition=in_math}),
+s({trig="NN", descr="intersection", wordTrig=false, snippetType="autosnippet"},
+t"∩",
+{condition=in_math}),
+
+s({trig="dint", descr="integral", snippetType="autosnippet", priority=300},
+{t"∫_{", i(1, "-∞"), t"}^{", i(2,"∞"), t"}", d(3, get_visual)},
+{condition=in_math}),
+
+s({trig="\\int", descr="integral", snippetType="autosnippet"},
+t"∫",
+{condition=in_math}),
+
+
+}
