@@ -34,4 +34,9 @@ end
 function M.regGroup(_, snip, i) return snip.captures[i] end
 function M.re(i) return f(M.regGroup, nil, {user_args={i}}) end
 
+-- usage example: c(1, {t("", virt("^l for alt choice")), t"alt choice"})
+function M.virt(text)
+    return {node_ext_opts={passive={virt_text={{text, "@comment"}}}}}
+end
+
 return M
