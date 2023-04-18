@@ -128,11 +128,11 @@ s({trig="norm", wordTrig=false, snippetType="autosnippet"},
 {t"\\|", i(1), t"\\|"},
 {condition=in_math}),
 
-s({trig="sq", dscr="sqrt", wordTrig=false, snippetType="autosnippet"},
+s({trig="sr", dscr="sqrt", wordTrig=false, snippetType="autosnippet"},
 {t"\\sqrt{", d(1, get_visual), t"}"},
 {condition=in_math}
 ),
-s({trig="sr", descr="squared", wordTrig=false, snippetType="autosnippet"},
+s({trig="sq", descr="squared", wordTrig=false, snippetType="autosnippet"},
 t"^2",
 {condition=in_math}),
 
