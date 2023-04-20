@@ -15,6 +15,7 @@ s("template",
 -- \usepackage[utf8]{inputenc} is no longer required since 2018 https://www.overleaf.com/learn/latex/Greek
 -- \usepackage[T1]{fontenc} specifies output encoding and should also no longer 
 -- be needed, especially with modern lualatex or xelatex.
+-- \usepackage{textcomp} also seems redundant now.
 fmta([[
 % !TEX program = LuaLaTeX
 \documentclass[a4paper,10pt]{article}
@@ -22,7 +23,6 @@ fmta([[
 \usepackage{xspace} % \xspace at end of newcommand allows "\CUSTOM " instead of "\CUSTOM\ "
 
 \usepackage{csquotes}
-\usepackage{textcomp}
 \usepackage{fontspec}
 % don't \usepackage{lmodern}, see latex/fonts.tex for details.
 \setmainfont{New Computer Modern 10}
