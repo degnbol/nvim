@@ -5,23 +5,27 @@
 
 local lsu = require"luasnip_util"
 local get_visual = lsu.get_visual
+local virt = lsu.virt
 
 return {
 -- TODO: maybe add toggling between different templates.
 -- https://tex.stackexchange.com/questions/553/what-packages-do-people-load-by-default-in-latex
 s("template",
 -- < and > chars are escaped in fmta call by typing << and >>
+-- \usepackage[utf8]{inputenc} is no longer required since 2018 https://www.overleaf.com/learn/latex/Greek
+-- \usepackage[T1]{fontenc} specifies output encoding and should also no longer 
+-- be needed, especially with modern lualatex or xelatex.
 fmta([[
 % !TEX program = LuaLaTeX
 \documentclass[a4paper,10pt]{article}
 \usepackage[margin=2cm, top=0.5in]{geometry}
 \usepackage{xspace} % \xspace at end of newcommand allows "\CUSTOM " instead of "\CUSTOM\ "
 
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[english]{babel}
+\usepackage{csquotes}
 \usepackage{textcomp}
-\usepackage{lmodern} % improved default font
+\usepackage{fontspec}
+% don't \usepackage{lmodern}, see latex/fonts.tex for details.
+\setmainfont{New Computer Modern 10}
 
 % Improve default latex packages.
 % allowing (2%) letter stretch
@@ -78,13 +82,15 @@ fmta([[
 % \usepackage{minted} % supports julia
 
 \begin{document}
-	<>
+
+<>
+
 \end{document}
 ]], {i(1),}),
 {condition=conds.line_begin}),
 
 s({trig="pac", dscr="package", snippetType="autosnippet"},
-{t"\\usepackage[", i(1, "options"), t"]{", i(2, "package"), t"}"},
+{t"\\usepackage", c(2, {t"", {t"[", i(1,"options"), t"]"}}), t"{", i(1, "package"), t"}"},
 {condition=conds.line_begin}),
 
 s({trig="beg", snippetType="autosnippet"},
