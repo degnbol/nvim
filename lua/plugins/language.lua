@@ -1,8 +1,10 @@
 #!/usr/bin/env lua
 local g = vim.g
 return {
-    -- add keybindings to toggle comments with motions etc. Consider alt: https://github.com/numToStr/Comment.nvim
+    -- add keybindings to toggle comments with motions etc.
     {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end},
+    -- has the useful gcO and gcA extra mappings, but the basic mappings aren't working as I like from terrortylor
+    {"numToStr/Comment.nvim", opts={ mappings={ basic=false, } }},
     -- "windwp/nvim-autopairs", -- auto add second parenthesis etc.
     -- julia support, colors and unicode substitution. CANNOT use ft=julia
     {"JuliaEditorSupport/julia-vim", config=function()

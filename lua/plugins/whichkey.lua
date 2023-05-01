@@ -1,6 +1,9 @@
 -- pop-up to help with keybindings that have been started
 return {
+    {
     "folke/which-key.nvim",
+    -- doesn't dependend on legendary but we want to call it first
+    dependencies={ "mrjones2014/legendary.nvim", },
     config=function()
 
 local wk = require("which-key")
@@ -22,7 +25,7 @@ wk.setup {
             windows = true, -- default bindings on <c-w>
             nav = true, -- misc bindings to work with windows
             z = true, -- bindings for folds, spelling and others prefixed with z
-            g = true -- bindings for prefixed with g
+            g = true, -- bindings for prefixed with g
         }
     },
     -- add operators that will trigger motion and text object completion
@@ -47,18 +50,22 @@ wk.setup {
     ignore_missing = false, -- enable this to hide mappings for which you didn't specify a label
     hidden = {"<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "}, -- hide mapping boilerplate
     show_help = true, -- show help message on the command line when the popup is visible
-    triggers = "auto" -- automatically setup triggers
-    -- triggers = {"<leader>"} -- or specifiy a list manually
+    -- triggers = "auto", -- automatically setup triggers
+    triggers = {"<leader>", "c", "cr", "g"}, -- or specifiy a list manually
+    triggers_nowait = { "cr", }, -- doesn't work
 }
 
 wk.register({
+    ["<S-CR>"] = {":lua focus_repl()<CR>", "Focus REPL"},
     ["<TAB>"] = {":BufferLineCycleNext<CR>", "next buffer"},
     ["<S-TAB>"] = {":BufferLineCyclePrev<CR>", "previous buffer"},
     ["<leader>"] = {
+        ["<leader>"] = {
+            s = {"<cmd>source ~/.config/nvim/after/plugin/luasnip.lua<CR>", "reload snippets"},
+        },
         ["<up>"] = "select increment (treesitter)",
         ["<down>"] = "select decrement (treesitter)",
         ["<S-up>"] = "select scope increment (treesitter)",
-        ["/"] = {":CommentToggle<CR>", "(un)comment"}, -- see comment.lua
         ["1"] = {":BufferLineGoToBuffer 1<CR>", "buffer 1 (bufferline)"},
         ["2"] = {":BufferLineGoToBuffer 2<CR>", "buffer 2 (bufferline)"},
         ["3"] = {":BufferLineGoToBuffer 3<CR>", "buffer 3 (bufferline)"},
@@ -151,6 +158,8 @@ wk.register({
             s = "toggle main",
             t = "TOC open",
             T = "TOC toggle",
+            u = {"<plug>Latex2Unicode", "latex2unicode"},
+            U = {"<plug>Unicode2Latex", "unicode2latex"},
             v = "view",
             x = "reload",
             X = "reload state",
@@ -221,21 +230,72 @@ wk.register({
     },
     c = {
         name = "change...",
-        s = "surround...",
+        s = {
+            name = "surrounding...",
+            c = "command (vimtex)",
+            e = "environment (vimtex)",
+            -- e.g. change $ $ to equation environment by typing "equation" at prompt
+            ['$'] = "math (vimtex)"
+        },
+        a = {
+            name = "a(round)...",
+            -- e.g. parenthesis in math
+            d = "delimiter (vimtex)",
+            ['$'] = "math (vimtex)",
+            P = "section (vimtex)",
+            i = "item (vimtex)", -- defined in ftplugin
+            m = "math (vimtex)", -- changed in ftplugin
+        },
+        i = {
+            name = "in(side)...",
+            -- e.g. parenthesis in math
+            d = "delimiter (vimtex)",
+            ['$'] = "math (vimtex)",
+            P = "section (vimtex)",
+            i = "item (vimtex)", -- defined in ftplugin
+            m = "math (vimtex)", -- changed in ftplugin
+        },
     },
+    cr = {
+            name = "coerce (casing)",
+            c = "camelCase",
+            s = "snake_case",
+            m = "MixedCase",
+            ["<space>"] = "mixed case",
+        },
     d = {
         name = "delete...",
         -- mini package
-        s = "surround...",
+        s = {
+            name = "surrounding...",
+            -- see :h vimtex-default-mappings
+            c = "command (vimtex)",
+            -- includes \left and \right if connected to e.g. ( and )
+            d = "delimiter (vimtex)",
+            e = "environment (vimtex)",
+        },
     },
     D = {":lua vim.diagnostic.open_float()<CR>", "Diagnostic on this line"},
     g = {
         ["*"] = "search word under cursor flexibly", -- flexibly=ignore case and whole word
         ["#"] = "search word under cursor flexibly",
         ["/"] = "highlight last search",
+        a = "show char info",
         c = {
             name = "(un)comment motion",
             c = "line",
+            A = "new EOL",
+            a = {
+                name = "a(round)...",
+                c = "comment line",
+                C = "comments",
+            },
+            i = {
+                name = "in(side)...",
+                c = "comments",
+            },
+            o = "new under",
+            O = "new above",
         },
         j = {function() require"trevj".format_at_cursor() end, "unjoin (trevj)"},
         -- uses % from andymass/vim-matchup which first jumps to container start, then visual, then container end, then core vim Join.
@@ -248,13 +308,25 @@ wk.register({
             name = "format motion",
             q = "line",
         },
+        w = {
+            -- use the default vim formatter instead of whichever is set for a language.
+            name = "vim format motion",
+            w = "line",
+        },
         r = "references (LSP)",
     },
-    ['\\'] = {
-        f = "forward to (leap)",
-        F = "backward to (leap)",
-        t = "forward till (leap)",
-        T = "backward till (leap)",
+    t = {
+        name = "toggle... (vimtex)",
+        s = {
+            name = "style...",
+            c = "command", -- e.g. section
+            d = "delimiter", -- e.g. with(out) \left
+            -- same as d, but looks through g:vimtex_delim_toggle_mod_list in reverse
+            D = "delimiter reverse",
+            e = "environment",
+            f = "fraction", -- toggle / <-> \frac
+            ['$'] = "equation", -- inline vs display etc
+        },
     },
     ['['] = {
         name = "Previous...",
@@ -262,6 +334,10 @@ wk.register({
         h = "hunk (gitsigns)",
         y = "Change paste (Yoink)",
         x = "conflict (Diffview)",
+        ['4'] = {"<Plug>(vimtex-[n)", "equation (vimtex)"}, -- without shift
+        ['$'] = {"<Plug>(vimtex-[N)", "equation (vimtex)"},
+        m = {"<Plug>(vimtex-[n)", "equation (vimtex)"}, -- without shift
+        M = {"<Plug>(vimtex-[N)", "equation (vimtex)"},
     },
     [']'] = {
         name = "Next...",
@@ -269,13 +345,15 @@ wk.register({
         h = "hunk (gitsigns)",
         y = "Change paste (Yoink)",
         x = "conflict (Diffview)",
+        ['4'] = {"<Plug>(vimtex-]n)", "equation (vimtex)"}, -- without shift
+        ['$'] = {"<Plug>(vimtex-]N)", "equation (vimtex)"},
+        m = {"<Plug>(vimtex-]n)", "equation (vimtex)"}, -- without shift
+        M = {"<Plug>(vimtex-]N)", "equation (vimtex)"},
     },
 }, {mode='n'})
 
--- visual
 wk.register({
     ["<leader>"] = {
-        ["/"] = {":CommentToggle<CR>", "(un)comment"}, -- see comment.lua
         g = {
             name = "git",
             b = {":Gitsigns blame_line<CR>", "blame line (gitsigns)"},
@@ -291,12 +369,22 @@ wk.register({
     ["<ScrollWheelDown>"] = "which_key_ignore",
     ["."] = "increment",
     [","] = "decrement",
+}, {mode='v'})
+
+wk.register({
     ['\\'] = {
         f = "forward to (leap)",
         F = "backward to (leap)",
         t = "forward till (leap)",
         T = "backward till (leap)",
     },
-}, {mode='v'})
+}, {mode={'n', 'v'}})
+
+wk.register({
+    ["<C-l>"] = {":lua require'telescope.builtin'.keymaps(require('telescope.themes').get_ivy())<CR>", "Keymaps"},
+})
 
 end}
+
+
+}

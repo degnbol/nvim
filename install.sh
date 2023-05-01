@@ -71,14 +71,12 @@ fi
 # Followed by selecting the miniconda python in the menu that opens.
 
 # for telescope to perform searching of words within files
-if $mac; then
-    brew install ripgrep
-else
-    conda install -y -c conda-forge ripgrep
-fi
+mamba install -y ripgrep
 
 # for editing jupyter notebooks
 pip install jupytext
+
+0:h/tex/unicode/install.sh
 
 # when compiling latex with vimtex, we can use skim instead of default pdf 
 # viewer, so that we are at the same location in the document whenever it gets 

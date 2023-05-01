@@ -1,6 +1,12 @@
 -- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
 return {
-    "lervag/vimtex", config=function() 
+    -- more aggressive conceal
+    {"KeitaNakamura/tex-conceal.vim", config=function ()
+        g = vim.g
+        -- https://github.com/gillescastel/latex-snippets
+        g.tex_conceal='abdmg'
+    end},
+    {"lervag/vimtex", config=function() 
         g = vim.g
 
         g.vimtex_view_method = 'skim'
@@ -24,6 +30,13 @@ return {
         g.vimtex_syntax_conceal = {
             sections = true, -- all other conceals are enabled by default
         }
-    end
+        
+        -- formatter when calling gq, but note that autoformatting calls the 
+        -- builtin vim formatter which you can call with gw.
+        -- In order to not autoformat in math mode I made an autocmd to 
+        -- disable/enable auto formatoption based on vimtex's detection in_mathzone.
+        -- See ftplugin/tex.vim
+        g.vimtex_format_enabled = true
+    end},
 }
 

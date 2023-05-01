@@ -1,0 +1,88 @@
+% !TEX program = LuaLaTeX
+\documentclass[a4paper,10pt]{article}
+\usepackage[margin=2cm, top=0.5in]{geometry}
+\usepackage{xspace} % \xspace at end of newcommand allows "\CUSTOM " instead of "\CUSTOM\ "
+
+% All the fonts are rendering fine without babel
+% \usepackage[greek,danish,english]{babel}
+\usepackage{csquotes}
+\usepackage{fontspec}
+
+% Improve default latex packages.
+% allowing (2%) letter stretch
+\usepackage{microtype}
+% \raggedright -> \RaggedRight, \flushleft env -> \FlushLeft, \center -> \Center
+% https://www.overleaf.com/learn/latex/Text_alignment
+\usepackage{ragged2e}
+% \usepackage{flushend} % enable for two columns, to get equal lengths on last page.
+
+% \begin{itemize}[label={--}] instead of repeating /item[--]
+\usepackage{enumitem}
+\usepackage{fancyhdr} % header/footer control
+% paragraph space instead of indent
+\usepackage[parfill]{parskip} 
+
+% math
+\usepackage{mathtools} % loads amsmath, plus e.g. \coloneqq,\mathclap,\substack
+\usepackage{amssymb}
+\usepackage{siunitx} % provides \SI and column type S (align decimal)
+\usepackage{unicode-math} % experimental support for unicode in math
+
+\usepackage{graphicx}
+% Subfigures. "skip" == spacing between subfigures.
+\usepackage[skip=0pt]{subcaption}
+\usepackage{float}
+% makes figures and tables stay in their section
+\usepackage[section]{placeins}
+
+% Tables.
+% https://tex.stackexchange.com/questions/12672/which-tabular-packages-do-which-tasks-and-which-packages-conflict
+\usepackage{array} % flexible column formatting
+\usepackage{tabularx} % Column type X for width filling.
+\usepackage{tabulary} % Column type L,C,R,J for balanced width versions of l,c,r,j.
+\usepackage{booktabs} % Better vertical spacing. Midrule etc with varying thickness instead of \hline.
+% creates missing tabularx column type named "R" to specify right adjustment
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\usepackage{multicol, multirow} % Also see pbox.
+% \usepackage{longtable} % Multipage table. Might not support column X. Alts: xltabular, ltxtable
+
+\usepackage{xcolor} % define colors
+\usepackage{hyperref}
+% \usepackage[capitalise]{cleverref} % \cref which auto adds e.g. "Table " to \ref
+% Auto define acronyms on first use. https://www.overleaf.com/learn/latex/Glossaries
+\usepackage[acronym]{glossaries-extra}
+\setabbreviationstyle[acronym]{long-short}
+% bibliography
+\usepackage{biblatex}
+% appendix
+\usepackage[toc,page]{appendix}
+% Code blocks.
+% https://www.overleaf.com/learn/latex/Code_listing
+% https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
+% \usepackage{listings}
+% \usepackage{minted} % supports julia
+
+\begin{document}
+
+% Comparing default font to similar fonts.
+
+% https://en.wikipedia.org/wiki/Computer_Modern
+% The default choice should be New Computer Modern 10.
+% mlmodern is not standard, i.e. maybe not available.
+% Default doesn't have unicode characters included, and people argue it is 
+% uglier than lmodern:
+% https://tex.stackexchange.com/questions/1390/latin-modern-vs-cm-super/65103#65103
+% lmodern (latin modern roman or \usepackage{lmodern}) doesn't have unicode 
+% included. There is also a math version of lmodern, which does have greek, but 
+% not ligatures, see the "fi". It's greek also doesn't have the right look. New 
+% Computer Modern 10 is a nicer reworked version with the pretty ß like 
+%lmodern, does have unicode and has slightly thicker lines which is better on 
+%screen.
+
+									 fis α Méièrstraße. Øens å kan være blå.\\
+\setmainfont{latin modern roman}     fis α Méièrstraße. Øens å kan være blå.\\
+\setmainfont{latin modern math}      fis α Méièrstraße. Øens å kan være blå.\\
+\setmainfont{CMUSerif}               fis α Méièrstraße. Øens å kan være blå.\\
+\setmainfont{New Computer Modern 10} fis α Méièrstraße. Øens å kan være blå.\\
+
+\end{document}

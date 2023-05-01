@@ -75,7 +75,8 @@ opt.ruler = false
 -- hide ~ tilde at end of buffer.
 opt.fillchars = "eob: "
 -- add space symbol to whitespace chars
-opt.listchars:append('space:⋅')
+opt.listchars:append( 'space:⋅')
+opt.listchars:append( 'tab:▏ ' )
 
 -- Danglish support
 opt.keymap = "danglish"

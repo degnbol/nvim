@@ -167,6 +167,7 @@ return {
                     "vimls",
                     "rust_analyzer",
                     "tsserver", -- javascript. MasonInstall typescript-language-server
+                    "sqlls",
                 }
             }
         },
