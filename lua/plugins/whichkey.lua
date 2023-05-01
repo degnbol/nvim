@@ -228,6 +228,7 @@ wk.register({
         -- mini package
         s = "surround...",
     },
+    D = {":lua vim.diagnostic.open_float()<CR>", "Diagnostic on this line"},
     g = {
         ["*"] = "search word under cursor flexibly", -- flexibly=ignore case and whole word
         ["#"] = "search word under cursor flexibly",
