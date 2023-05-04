@@ -40,7 +40,8 @@ s({trig=";W", wordTrig=false}, { t"Ω", }),
 s({trig=";Y", wordTrig=false}, { t"Ψ", }),
 s({trig=";U", wordTrig=false}, { t"Υ", }),
 s({trig=";P", wordTrig=false}, { t"Π", }), -- product doesn't have a unicode equivalent
-s({trig=";S", wordTrig=false}, { t"Σ", }), -- note: currently not the sum sigma
+s({trig=";A", wordTrig=false}, { t"Å", }), -- using Ångström for A since greek A is identical to latin A. \AA is also Ångström in text mode.
+s({trig=";S", wordTrig=false}, { t"Σ", }), -- note: not the sum sigma. Sigma symbol is sometimes used as a variable.
 s({trig=";D", wordTrig=false}, { t"Δ", }),
 s({trig=";F", wordTrig=false}, { t"Φ", }),
 s({trig=";G", wordTrig=false}, { t"Γ", }),
@@ -65,6 +66,10 @@ s({trig="\\vdots", descr="vertical dots", wordTrig=false}, t"⋮", optm),
 s({trig="...", descr="ellipses", wordTrig=false, priority=100}, t"…", optm),
 s({trig="c...", descr="center dots", wordTrig=true}, t"⋯", optm),
 s({trig="v...", descr="vertical dots", wordTrig=true}, t"⋮", optm),
+
+s({trig="\\circ", dscr="Circle/degrees"}, t"∘", optm),
+s({trig="deg", dscr="degrees", snippetType="snippet"}, t"^∘\\text{C}", optm),
+s({trig="degc", dscr="degrees", wordTrig=false}, t"^∘\\text{C}", optm),
 
 -- √ unfortunately doesn't work like \sqrt so we have to replace it.
 -- The reason is there is redundancy, since \surd is a separate command for a √ 
@@ -108,11 +113,17 @@ s({trig="\\?equiv", dscr="equivalent", regTrig=true}, t"≡", optm),
 s({trig="<=", descr="less than or equal", wordTrig=false}, t"≤"),
 s({trig=">=", descr="greater than or equal", wordTrig=false}, t"≥"),
 s({trig="\\propto", descr="proportional to"}, t"∝", optm),
-s({trig="~", descr="tilde"}, t"\\sim", optm),
+-- lower priority than =~ (congruent) and e.g. p~ -> ~ on top of p (\tilde{p}).
+s({trig="~", descr="tilde", priority=100}, t"\\sim", optm),
+s({trig="\\sim~", descr="approximately"}, t"≈", optm),
+s({trig="\\sim=", descr="asymptotically equal to"}, t"\\simeq", optm),
+s({trig="=~", descr="congruent"}, t"\\cong", optm),
 
 -- logic
 s({trig="EE", descr="E (set)", wordTrig=false}, t"∃", optm),
-s({trig="AA", descr="A (set)", wordTrig=false}, t"∀", optm),
+-- \AA is Ångström
+s({trig="([^\\])AA", descr="A (set)", regTrig=true, wordTrig=false},
+{re(1), t"∀"}, optm),
 s({trig="&&", descr="logical and"}, t"∧", optm),
 s({trig="||", descr="logical and"}, t"∨", optm),
 

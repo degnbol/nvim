@@ -6,6 +6,7 @@
 local lsu = require"luasnip_util"
 local get_visual = lsu.get_visual
 local virt = lsu.virt
+local re = lsu.re
 
 return {
 -- TODO: maybe add toggling between different templates.
@@ -94,37 +95,25 @@ s({trig="pac", dscr="package", snippetType="autosnippet"},
 {condition=conds.line_begin}),
 
 s({trig="beg", snippetType="autosnippet"},
-  fmta(
-    [[
-      \begin{<>}
+  fmta([[\begin{<>}
           <>
       \end{<>}
-    ]],
+      ]],
     -- rep node repeats insert node i(1)
-    { i(1), i(2), rep(1), }
-  ),
+    { i(1), i(2), rep(1) }),
   { condition = conds.line_begin }
 ),
 
 s({trig="h1", dscr="Top-level section", snippetType="autosnippet"},
-  fmta(
-    [[\section{<>}]],
-    { i(1) }
-  ), 
+  fmta([[\section{<>}]], { i(1) }), 
   {condition = conds.line_begin}
 ),
 s({trig="h2", dscr="Sub-section", snippetType="autosnippet"},
-  fmta(
-    [[\subsection{<>}]],
-    { i(1) }
-  ), 
+  fmta([[\subsection{<>}]], { i(1) }), 
   {condition = conds.line_begin}
 ),
 s({trig="h3", dscr="Sub-sub-section", snippetType="autosnippet"},
-  fmta(
-    [[\subsubsection{<>}]],
-    { i(1) }
-  ), 
+  fmta([[\subsubsection{<>}]], { i(1) }), 
   {condition = conds.line_begin}
 ),
 
@@ -138,88 +127,125 @@ s({trig="href", dscr="The hyperref package's href{}{} command (for url links)"},
 
 s({trig = "tii", dscr = "Expands 'tii' into LaTeX's textit{} command."},
   fmta("\\textit{<>}",
-    { d(1, get_visual), }
+    { d(1, get_visual) }
   )
 ),
 s({trig="tbb", dscr="Expands 'tii' into LaTeX's textit{} command."},
   fmta("\\textbf{<>}",
-    { d(1, get_visual), }
+    { d(1, get_visual) }
   )
 ),
 
 s({trig="enum", dscr="enumerate", snippetType="autosnippet"},
-  fmta(
-[[
-\begin{enumerate}
+fmta([[\begin{enumerate}
 	\item <>
 \end{enumerate}
-]],
-{ i(0), }),
+]], { i(1) }),
 {condition=conds.line_begin}
 ),
 
--- TODO: add toggle for bullet or dash
 s({trig="item", dscr="itemize", snippetType="autosnippet"},
-  fmta(
-[[
-\begin{itemize}
+fmta([[\begin{itemize}<>
 	\item <>
 \end{itemize}
-]],
-{ i(0), }),
-{condition=conds.line_begin}
-),
+
+]], { c(1, {t("", virt("^l -> dash instead of bullet")), t"[label={--}]"}), i(2) }),
+{condition=conds.line_begin}),
+s({trig="- ", dscr="itemize dashed", snippetType="autosnippet", priority=100},
+fmta([[\begin{itemize}[label={--}]
+	\item <>
+\end{itemize}
+
+]], i(1)), {condition=conds.line_begin}),
+-- assumes that whitespace before "- " means we are inside an itemize env
+s({trig="(%s)- ", dscr="item", regTrig=true, snippetType="autosnippet"},
+{re(1), t"\\item "}, {condition=conds.line_begin}),
 
 s({trig="desc", dscr="description", snippetType="autosnippet"},
-  fmta(
-[[
-\begin{description}
+fmta([[\begin{description}
 	\item[<>] <>
 \end{description}
-]],
-{ i(1), i(0), }),
-{condition=conds.line_begin}
-),
 
+]], { i(1), i(2) }), {condition=conds.line_begin}),
 
--- mm regex below is cooler
--- s(
---     {trig="mk", dscr="inline math", snippetType="autosnippet"},
---     {
---         t("$"), i(1), t("$")
---     }
--- ),
-
-s({trig = "([^%a])mm", wordTrig = false, regTrig = true, snippetType="autosnippet"},
-  fmta(
-    "<>$<>$",
-    {
-      f( function(_, snip) return snip.captures[1] end ),
-      d(1, get_visual),
-    }
-  )
-),
+s({trig="mm", dscr="inline math", snippetType="autosnippet"},
+{t"$", d(1, get_visual), t"$" },
+{condition=conds.line_begin}),
+s({trig="([^%a])mm", dscr="inline math", wordTrig=false, regTrig=true, snippetType="autosnippet"},
+{re(1), t"$", d(1, get_visual), t"$" }),
 
 s({trig="dm", snippetType="autosnippet"},
-  fmta(
-    [[
-    \[
-        <>
-    \]
+fmta([[\[
+	<>
+\]
 
-    ]],
-    { i(1), }
-)),
+]], i(1))),
 
 s({trig="ali", dscr="align", snippetType="autosnippet"},
-  fmta(
-[[
-\begin{align*}
+fmta([[\begin{align*}
 	<>
 \end{align*}
-]],
-    { d(1, get_visual), }
-  )
-),
+]], d(1, get_visual))),
+
+s({trig="(%a)-", dscr="p-value, n-dimensional, ...", regTrig=true, snippetType="autosnippet"},
+{t"$", re(1), t"$-"}),
+
+s({trig="fig", dscr="fig", condition=conds.line_begin, snippetType="autosnippet"},
+fmta([[\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.95\textwidth]{figures/<>}
+	\caption{<>}
+	\label{fig:<>}
+\end{figure}
+
+]], {i(1, "FILENAME"), i(2, "\\textbf{Title.} Caption."), i(3)})),
+
+s({trig="subfig", dscr="subfig", condition=conds.line_begin, snippetType="autosnippet"},
+fmta([[\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\caption{}
+		\includegraphics[width=0.95\textwidth]{figures/<>}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+		\centering
+		\caption{}
+		\includegraphics[width=0.95\textwidth]{figures/<>}
+	\end{subfigure}
+	\caption{<>}
+	\label{fig:<>}
+\end{figure}
+
+]], {i(1), i(2), i(3, "\\textbf{Title.} Caption."), i(4)})),
+
+
+s({trig="tabx", dscr="tabularx", condition=conds.line_begin, snippetType="autosnippet"},
+-- @{} suppresses space between columns. @{.} would use "." as column separator.
+fmta([[\begin{table}[ht]
+\caption{<>}
+\begin{tabularx}{\textwidth}{@{}<>@{}}
+	\toprule
+	<> \\
+	\midrule
+	<> \\
+	\bottomrule
+\end{tabularx}
+\end{table}
+
+]], {
+    i(4, [[\textbf{Title.} Caption.]]),
+    i(1, [[lcX]]),
+    i(2, [[left & right & filling]]),
+    i(3, [[left & right & filling]])
+})),
+
+-- \cmidrule{2-4} makes a thin line covering column 2 to 4.
+s({trig="\\cmidrule", dscr="rule spanning subset of columns", snippetType="autosnippet"},
+fmta("\\cmidrule{<>-<>}", {i(1, "FROM"), i(2, "TO")})),
+
+s({trig="\\multicolumn", dscr="cell spanning multiple columns", snippetType="autosnippet"},
+fmta("\\multicolumn{<>}{<>}{<>}", {i(1, "3"), i(2, "c"), i(3, "TEXT")})),
 
 }

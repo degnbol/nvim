@@ -46,5 +46,9 @@ s({trig="vmap", snippetType="autosnippet"},
 fmta([[vim.keymap.set("v", "<>", "<>")]],
 {i(1, "from"), i(2, "to")}),
 {condition=conds.line_begin}),
+s({trig="xmap", snippetType="autosnippet"},
+fmta([[vim.keymap.set("x", "<>", "<>")]],
+{i(1, "from"), i(2, "to")}),
+{condition=conds.line_begin}),
 
 }
