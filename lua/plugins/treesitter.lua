@@ -52,10 +52,10 @@ return {
             incremental_selection = {
                 enable = true,
                 keymaps = {
-                    init_selection = "<leader><up>",
-                    node_incremental = "<leader><up>",
-                    scope_incremental = "<leader><S-up>",
-                    node_decremental = "<leader><down>",
+                    init_selection = "<c-space>",
+                    node_incremental = "<c-space>",
+                    scope_incremental = "<c-s>",
+                    node_decremental = "<c-backspace>",
                 },
             },
             -- opt-in to using treesitter for https://github.com/andymass/vim-matchup
@@ -179,8 +179,8 @@ return {
                 keymaps = {
                     -- this will do incremental expand select
                     ['.'] = 'textsubjects-smart',
-                    -- treesitter based container will be selected with v;
-                    [';'] = 'textsubjects-container-outer',
+                    -- treesitter based container will be selected with va;
+                    ['a;'] = 'textsubjects-container-outer',
                     -- inside of treesitter based container will be selected with vi;
                     ['i;'] = 'textsubjects-container-inner',
                 },
