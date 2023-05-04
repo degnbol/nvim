@@ -10,10 +10,12 @@ return {
     {
         'ibhagwan/smartyank.nvim',
         opts = {
+            -- same as
+            -- api.nvim_create_autocmd({"TextYankPost"}, { callback=function() vim.highlight.on_yank{on_visual=false} end })
             highlight = {
                 -- enabled = true,         -- highlight yanked text
                 -- higroup = "IncSearch",  -- highlight group of yanked text
-                timeout = 200,         -- timeout for clearing the highlight
+                timeout = 100,         -- timeout for clearing the highlight
             },
             -- clipboard = {
             --   enabled = true
