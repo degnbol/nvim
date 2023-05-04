@@ -74,7 +74,7 @@ fi
 mamba install -y ripgrep
 
 # for editing jupyter notebooks
-pip install jupytext
+pipx install jupytext || mamba install -y jupytext
 
 0:h/tex/unicode/install.sh
 
