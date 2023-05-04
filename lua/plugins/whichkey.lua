@@ -93,6 +93,7 @@ wk.register({
             o = "ours (diffview)",
             t = "theirs (diffview)",
         },
+        C = {"ga", "Character under cursor"}, -- set here because ga is replaced with https://github.com/junegunn/vim-easy-align 
         d = {
             name = "defintion peek (treesitter textobjects + LSP)",
             f = "function",
@@ -366,8 +367,15 @@ wk.register({
     },
     ["<ScrollWheelUp>"] = "which_key_ignore",
     ["<ScrollWheelDown>"] = "which_key_ignore",
-    ["."] = "increment",
-    [","] = "decrement",
+    ["<C-space>"] = "increment (TS)",
+    ["<C-backspace>"] = "decrement (TS)",
+    ["<C-s>"] = "increment scope (TS)",
+    -- see lua/plugin/treesitter.lua
+    -- . and , kinda works like incr, decrement but we already have c-space and c-backspace
+    ["."] = "smart (TS subj)",
+    [","] = "prev (TS subj)",
+    ["a;"] = "a container",
+    ["i;"] = "in container",
 }, {mode='v'})
 
 wk.register({
