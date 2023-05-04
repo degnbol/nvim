@@ -5,19 +5,9 @@ customized to use tabs rather than buffers
 https://github.com/kyazdani42/nvim-tree.lua
 Delete button cuts, but should just delete. Fixed for backspace now using black hole register.
 
-inspiration: https://www.reddit.com/r/neovim/comments/pmurow/why_i_prefer_neovim_over_vscode/
-Enter in commandline mode or the Ex mode is annoying. Anyway to make sure the 
-enter to  run in repl is only for normal mode while editing a file?
-tile window setup like: https://www.youtube.com/watch?v=GazrDjcdeG4
-
-convert cmd 'au ...' and cmd 'autocmd ...' to nvim autocmd
-
 inspiration:
 https://github.com/rstacruz/vim-coc-settings/blob/master/README.md
 https://www.youtube.com/c/benbrastmckie/videos
-
-insp for latex:
-https://jdhao.github.io/2019/03/26/nvim_latex_write_preview/
 
 browse search to go slightly quicker to stackoverflow or other google results for your problems:
 https://www.reddit.com/r/neovim/comments/td9uwd/plugin_browse_internet_from_neovim/
@@ -50,11 +40,7 @@ Hide last search if / or ? is used as textobj, e.g. y/\. that yanks sentence tha
 
 Telescope filter underfull overfull and warnings in latex.
 
-If possible. In latex, and maybe in general, only autoformat simple text, i.e. not code, lists, and anything indented.
-
 Very annoying: when autocompleting on the fo=a autoformats, the completion is duplicated on the new line.
-
-Syntax coloring messed up in latex probs due to conceal.
 
 markid better syntax highlighting
 
@@ -69,16 +55,26 @@ consider colortheme https://github.com/nealmckee/penumbra
 
 BUG: scrolling in nvim tree turns it into another buffer.
 
-add useful things to mouse.
+add useful things to mouse. I don't want to use it too much but maybe some 
+things that are hard to remember or where mouse movement is natural.
 
+Make writing guitar tabs easy.
 
 play with cypher syntax highlight.
 Automatically uppercase cypher keywords like a spell check word replacement call?
 Or make a command to toggle entire doc between uppercase and lowercase keywords.
 It is nice that they are uppercase if you read without syntax highlighting but 
-no need when they are colored.
-
-Enter is slow in quickfix because it waits for double enter. Fix this by e.g. only registering for normal buffers (buftype == "") or something
+no need when they are colored. This applies to other query languages as well, 
+sql for instance.
 
 Checkout https://www.reddit.com/r/neovim/comments/x53lzx/i_must_be_missing_something/
+
+make tables in latex nice to edit, similar to tsv files.
+
+make legendary listing of keybindings to also serve as help for remembering 
+e.g. m[a-zA-Z] is mark, then `[a-zA-Z] or '[a-zA-Z] to go to mark or marked 
+line.
+
+features: leader+t+p to toggle pipe notation in julia, leader+t+f toggling between inline function, regular and begin/end and other toggles could be useful.
+Maybe move toggles to g+t+... and use leader+t for term stuff?
 
