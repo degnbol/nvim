@@ -14,3 +14,7 @@ vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 -- to jump to next snippet.
 vim.keymap.set("i", "<C-S-k>", vim.lsp.buf.signature_help)
 
+-- I don't use command window much but I often press q: when I mean :q
+vim.keymap.set('n', 'q;', 'q:')
+vim.keymap.set('n', 'q:', ':q')
+
