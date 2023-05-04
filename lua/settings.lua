@@ -39,10 +39,7 @@ opt.signcolumn = "no" -- "number"
 -- opt.cmdheight = 0 -- hide cmdline when not in use. Messes with search currently, by asking for confirm after a search.
 -- http://stackoverflow.com/questions/2490227/how-does-vims-autoread-work#20418591
 -- when regaining focus, reload file if it was changed somewhere else
-api.nvim_create_autocmd({"FocusGained", "BufEnter"}, {
-    pattern="*",
-    command=':silent! !'
-})
+api.nvim_create_autocmd({"FocusGained", "BufEnter"}, { command=':silent! !' })
 opt.showmode = false
 opt.showcmd = false
 -- t=use textwidth for formatting. a=auto format. w=respect explicit newline. r=continue comment leader with newline in insert mode.
@@ -51,11 +48,6 @@ opt.formatoptions='tcqjwr'
 -- why is this not default. Persistent undo history.
 opt.undofile = true
 
--- Highlight on yank, e.g. press Y to yank line which will highlight the line for a moment
-api.nvim_create_autocmd({"TextYankPost"}, {
-    pattern="*",
-    callback=function() vim.highlight.on_yank{on_visual=false} end
-})
 -- yoink integration with cutlass
 g.yoinkIncludeDeleteOperations = 1
 -- add yanks to numbered register
