@@ -28,3 +28,11 @@ word count: g then ctrl+g
 multiline search with :S in-place of / (see plugin/search.vim)
 
 Last macro can be repeated with @@
+Last command with @: which also can take a count.
+
+vim has builtin completion of a whole line.
+Start to write a line written somewhere before in the file.
+Press <C-x><C-l> (:h i_CTRL-X_CTRL-L) and you get completion window.
+
+ctrl+] is default vim go-to-definition.
+
