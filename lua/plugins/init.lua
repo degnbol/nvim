@@ -39,6 +39,8 @@ return {
         vim.api.nvim_set_keymap("v", "g<C-x>", require("dial.map").dec_gvisual(), {noremap = true})
     end},
     
+    "lervag/file-line", -- open a file on a line with vi filepath:linenumber
+    
     "monkoose/matchparen.nvim", -- supposedly faster and less buggy version of neovim builtin (:h )matchparen which highlights matching parenthesis etc.
     
     -- jump to anywhere with \ + f or F or t or T
