@@ -149,6 +149,17 @@ inoremap <A-Up> <c-\><c-o>{
 inoremap <A-Down> <c-\><c-o>}
 inoremap <A-Left> <c-\><c-o>b
 inoremap <A-Right> <c-\><c-o>w
+" change to default behaviour: don't exit to normal mode.
+inoremap <A-h> <c-\><c-o>h
+inoremap <A-j> <c-\><c-o>j
+inoremap <A-k> <c-\><c-o>k
+inoremap <A-l> <c-\><c-o>l
+inoremap <A-b> <c-\><c-o>b
+inoremap <A-w> <c-\><c-o>w
+inoremap <A-e> <c-\><c-o>e
+inoremap <A-B> <c-\><c-o>B
+inoremap <A-W> <c-\><c-o>W
+inoremap <A-E> <c-\><c-o>E
 
 " like J(oin) but selects the current container, e.g. brackets cursor is in, 
 " and joins it all. Uses https://github.com/andymass/vim-matchup
