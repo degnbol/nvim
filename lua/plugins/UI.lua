@@ -5,7 +5,17 @@ return {
     --     vim.api.nvim_set_keymap("n", "<leader>x", [[<Cmd>Bdelete<CR>]], {silent = true})
     -- end},
     "tyru/capture.vim", -- :Capture hi to call :hi where you can search etc.
-    {dir="~/nvim/kittyREPL.nvim", config=true},
+    {
+        dir="~/nvim/kittyREPL.nvim", opts={
+            keymap={
+                line="<CR><CR>",
+                visual="<CR>",
+                operator="<CR>",
+                win="<leader><CR>",
+            },
+            exclude = {tex=true, text=true, tsv=true, markdown=true},
+        }
+    },
     -- ultra fold
     {'kevinhwang91/nvim-ufo', dependencies={'kevinhwang91/promise-async'}, config=function()
         -- https://github.com/kevinhwang91/nvim-ufo
