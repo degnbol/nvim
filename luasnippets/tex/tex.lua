@@ -95,13 +95,14 @@ s({trig="pac", dscr="package", snippetType="autosnippet"},
 {condition=conds.line_begin}),
 
 s({trig="beg", snippetType="autosnippet"},
-  fmta([[\begin{<>}
-          <>
-      \end{<>}
-      ]],
-    -- rep node repeats insert node i(1)
-    { i(1), i(2), rep(1) }),
-  { condition = conds.line_begin }
+fmta([[\begin{<>}
+	<>
+\end{<>}
+
+]],
+-- rep node repeats insert node i(1)
+{ i(1), i(2), rep(1) }),
+{ condition = conds.line_begin }
 ),
 
 s({trig="h1", dscr="Top-level section", snippetType="autosnippet"},
