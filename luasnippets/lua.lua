@@ -51,4 +51,17 @@ fmta([[vim.keymap.set("x", "<>", "<>")]],
 {i(1, "from"), i(2, "to")}),
 {condition=conds.line_begin}),
 
+
+-- api
+
+s({trig="cursor", dscr="get cursor position"},
+{t"local r, c = unpack(vim.api.nvim_win_get_cursor(0))"}),
+
+s({trig="line", dscr="get line text"},
+{t"local line = vim.api.nvim_get_current_line()"}),
+
+-- -1 since nvim_win_get_cursor is (1,0)-indexed and nvim_buf_set_text is 0-indexed.
+s({trig="char", dscr="get char under cursor"},
+{t"vim.api.nvim_buf_get_text(0, r-1, c-1, r-1, c, {})[1]"}),
+
 }

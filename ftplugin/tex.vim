@@ -51,3 +51,7 @@ nmap <plug>Unicode2Latex v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/latex/unicode
 let @u=']4 lu'
 let @l=']4 lU'
 
+
+
+
+

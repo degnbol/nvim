@@ -140,6 +140,8 @@ wk.register({
         l = {
             name = "LaTeX (vimtex || telescope-bibtex || nabla)",
             a = "context menu",
+            -- align table see ftplugin/tex.lua. ma ... `a to not move cursor.
+            A = {"ma<plug>alignTable<CR>`a", "Align table"},
             b = {":Telescope bibtex<CR>", "insert citation (bibtex)"},
             c = "clean",
             C = "clean full",

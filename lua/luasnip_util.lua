@@ -6,20 +6,6 @@ local sn = ls.snippet_node
 local i = ls.insert_node
 local f = ls.f
 
-function M.in_math()
-  -- requires the VimTeX plugin
-  return vim.fn['vimtex#syntax#in_mathzone']() == 1
-end
-function M.in_text() return not in_math() end
-function M.in_comment()
-  return vim.fn['vimtex#syntax#in_comment']() == 1
-end
-function M.in_env(name)
-    local is_inside = vim.fn['vimtex#env#is_inside'](name)
-    return (is_inside[1] > 0 and is_inside[2] > 0)
-end
-function M.in_itemize() return in_env('itemize') end
-
 -- Summary: When `SELECT_RAW` is populated with a visual selection, the function
 -- returns an insert node whose initial text is set to the visual selection.
 -- When `SELECT_RAW` is empty, the function simply returns an empty insert node.
@@ -38,5 +24,19 @@ function M.re(i) return f(M.regGroup, nil, {user_args={i}}) end
 function M.virt(text)
     return {node_ext_opts={passive={virt_text={{text, "@comment"}}}}}
 end
+
+-- VimTex related functions
+function M.in_math()
+  return vim.fn['vimtex#syntax#in_mathzone']() == 1
+end
+function M.in_text() return not in_math() end
+function M.in_comment()
+  return vim.fn['vimtex#syntax#in_comment']() == 1
+end
+function M.in_env(name)
+    local is_inside = vim.fn['vimtex#env#is_inside'](name)
+    return (is_inside[1] > 0 and is_inside[2] > 0)
+end
+function M.in_itemize() return in_env('itemize') end
 
 return M

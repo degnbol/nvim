@@ -1,0 +1,8 @@
+modifyLineBreaks:
+  textWrapOptions:
+    columns: 80
+noAdditionalIndent:
+  textit: 1
+  footnote: 1
+  item: 1
+
