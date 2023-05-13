@@ -95,9 +95,11 @@ wk.register({
         },
         C = {"ga", "Character under cursor"}, -- set here because ga is replaced with https://github.com/junegunn/vim-easy-align 
         d = {
-            name = "defintion peek (treesitter textobjects + LSP)",
+            name = "line diagnostics || definition peek",
+            -- treesitter textobjects + LSP
             f = "function",
             F = "class",
+            d = {":lua vim.diagnostic.open_float()<CR>", "Diagnostic on this line"},
         },
         D = "type defintion (LSP)",
         -- is overwritten by Diffview for its own buffer types so
@@ -279,7 +281,6 @@ wk.register({
             e = "environment (vimtex)",
         },
     },
-    D = {":lua vim.diagnostic.open_float()<CR>", "Diagnostic on this line"},
     g = {
         ["*"] = "search word under cursor flexibly", -- flexibly=ignore case and whole word
         ["#"] = "search word under cursor flexibly",
