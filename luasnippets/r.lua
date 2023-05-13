@@ -26,6 +26,13 @@ fmta([[<> = melt(<>, <>, <>, variable.name="<>", value.name="<>")]],
 {i(1, "dtm"), i(2, "dt"), i(3, "id.vars"), i(4, "measure.vars"), i(5, "variable"), i(6, "value")}),
 {condition=conds.line_begin}),
 
+-- ggplot
+
+s({trig="ggplot", dscr="ggplot", condition=conds.line_begin, snippetType="autosnippet"},
+fmta([[ggplot(<>, aes(<>)) +
+    <>
+]], { i(1, "dt"), i(2, "x=x"), i(3, "geom_point()")})),
+
 s({trig="expandy0", dscr="Remove the default empty space under y=0"},
 t"scale_y_continuous(expand=expansion(mult=c(0,.05)))", -- .05 based on ?expansion
 {condition=conds.line_begin}),
