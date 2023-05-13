@@ -157,6 +157,7 @@ wk.register({
             L = "compile selected",
             m = "imaps list",
             o = "compile output",
+            p = {":lua gotoPreTable()<CR>", "goto/from preamble (tabularx)"},
             q = "log",
             s = "toggle main",
             t = "TOC open",
