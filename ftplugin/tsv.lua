@@ -1,41 +1,31 @@
 #!/usr/bin/env lua
 -- this script sets vartabstop on file save based on longest cell in each column.
-api = vim.api
-opt_local = vim.opt_local
-require 'split'
 
-function Vartabstop()
+-- Run automatically sometimes. Maybe also run after pressing tab. 
+vim.api.nvim_create_autocmd({"BufEnter", "BufWritePost"},
+{buffer=0, callback=function()
     local vartabstop = {}
     
-    -- first take values from header, so we don't have to check for nil for every 
-    -- line.
-    local line = api.nvim_buf_get_lines(0, 0, 1, true)[1]
-    for field in line:split('\t') do
-        table.insert(vartabstop, field:len())
-    end
-    
-    -- iterate each line
-    local lines = api.nvim_buf_get_lines(0, 1, -1, true)
+    -- check at most 100 lines.
+    local lines = vim.api.nvim_buf_get_lines(0, 0, 100, false)
     for _, line in ipairs(lines) do
-        local i = 1
-        for field in line:split('\t') do
-            vartabstop[i] = math.max(vartabstop[i], field:len())
-            i=i+1
+        local fields = vim.split(line, '\t', true)
+        -- when the line is shorter than or equal in length to a line seen so far
+        for i = 1, math.min(#vartabstop, #fields) do
+            vartabstop[i] = math.max(vartabstop[i], fields[i]:len())
+        end
+        -- when the line is longer than any line seen so far
+        for i = #vartabstop+1, #fields do
+            table.insert(vartabstop, fields[i]:len())
         end
     end
-    
-    -- tab represented as minimum 2 spaces.
+
+    -- tab represented a minimum 2 spaces.
     for i, v in ipairs(vartabstop) do
         vartabstop[i] = v+2
     end
     
-    opt_local.vartabstop = vartabstop
-end
-
--- run automatically sometimes. Maybe add after making changes, e.g. leaving 
--- insert mode or TextChanged(I) event(s).
-api.nvim_create_autocmd(
-    {"BufEnter", "BufWritePost"},
-    {pattern="*.tsv", callback=Vartabstop}
-)
+    -- apply
+    vim.opt_local.vartabstop = vartabstop
+end})
 
