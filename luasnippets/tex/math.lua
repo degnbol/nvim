@@ -11,24 +11,27 @@ local optm = {condition=in_math}
 return {
 -- not autosnippet
 
+s({trig="lr", dscr="left/right", snippetType='autosnippet'},
+{t"\\left", i(1, '('), d(2, get_visual), t"\\right",
+f(function(val)
+    -- first char only since the node technically contains all the remaining 
+    -- text inside the \left and \right
+    val = val[1][1]:sub(1,1)
+    if val == "(" then
+        return ")"
+    elseif val == "|" then
+        return "|"
+    elseif val == "[" then
+        return "]"
+    elseif val == "<" then
+        return ">"
+    end
+end, {1}),
+}),
+-- doesn't work if autopairing
 s({trig="()", dscr="left( right)", wordTrig=false, snippetType="autosnippet"},
 {t"\\left(", d(1, get_visual), t"\\right)"}, optm),
-s({trig="lr", dscr="left( right)", wordTrig=false},
-{t"\\left(", d(1, get_visual), t"\\right)"}, optm),
-s({trig="lr(", dscr="left( right)", wordTrig=false},
-{t"\\left(", d(1, get_visual), t"\\right)"}, optm),
-s({trig="lr|", dscr="left| right|", wordTrig=false},
-{t"\\left|", d(1, get_visual), t"\\right|"}, optm),
-s({trig="lr{", dscr="left{ right}", wordTrig=false},
-{t"\\left{", d(1, get_visual), t"\\right}"}, optm),
-s({trig="lrb", dscr="left{ right}", wordTrig=false},
-{t"\\left{", d(1, get_visual), t"\\right}"}, optm),
-s({trig="lr[", dscr="left[ right]", wordTrig=false},
-{t"\\left[", d(1, get_visual), t"\\right]"}, optm),
-s({trig="lr<", dscr="left< right>", wordTrig=false},
-{t"\\left<", d(1, get_visual), t"\\right>"}, optm),
-s({trig="lra", dscr="left< right>", wordTrig=false},
-{t"\\left<", d(1, get_visual), t"\\right>"}, optm),
+
 },
 {
 -- autosnippet
