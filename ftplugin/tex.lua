@@ -38,6 +38,15 @@ local function in_env(name)
     local is_inside = vim.fn['vimtex#env#is_inside'](name)
     return (is_inside[1] > 0 and is_inside[2] > 0)
 end
+-- get tabular-like env start r and c
+local function get_tabular()
+    local r, c = unpack(vim.fn['vimtex#env#is_inside']("tabularx"))
+    if r > 0 or c > 0 then return r, c end
+    r, c = unpack(vim.fn['vimtex#env#is_inside']("tabulary"))
+    if r > 0 or c > 0 then return r, c end
+    r, c = unpack(vim.fn['vimtex#env#is_inside']("tabular"))
+    if r > 0 or c > 0 then return r, c end
+end
 
 -- return tex table column 0-index by counting (unescaped) ampersands (&) before cursor "column" c.
 local function getCurrentColumn(c)
@@ -53,25 +62,42 @@ local function getCurrentColumn(c)
         return nAmp
     end
 end
--- return tex table column 0-index assuming the cursor (with "column" c) is at the preamble line.
-local function getCurrentColumnPre(c)
-    local line = vim.api.nvim_get_current_line()
+
+-- get r, c, contents of preamble for a containing tabular/tabularx/tabulary env.
+local function getPreTabular()
+    local r_tabular, _ = get_tabular()
+    if r_tabular == 0 then return end
+    local line = vim.fn.getline(r_tabular)
     -- find preamble range using balanced bracket patterns.
     -- Empty () to get location (instead of an extracted substring).
+    -- example to match:
+    -- \begin{tabular}[c]{@{}lcX@{}}
     -- \begin{tabularx}{\textwidth}{@{}lcX@{}}
-    local pre_begin, pre_end = line:match('\\begin{tabularx}%b{}()%b{}()')
+    -- \begin{tabulary}{1.0\textwidth}{L|L|L|L|L|L}
+    local pre_begin, pre_end = line:match('\\begin{tabular.}%b{}()%b{}()')
+    if pre_begin == nil then -- tabular
+        pre_begin, pre_end = line:match('\\begin{tabular}%b[]()%b{}()')
+    end -- cannot test pre_begin from first if-statement in second if it is an elseif
+    if pre_begin == nil then
+        pre_begin, pre_end = line:match('\\begin{tabular}()%b{}()')
+    end
     pre_begin=pre_begin+1
     pre_end=pre_end-2
-    return math.max(0, #line:sub(pre_begin, c+1):gsub('[^%a]', '')-1)
+    return r_tabular, pre_begin, line:sub(pre_begin, pre_end)
 end
--- jump to or from the relevant column in the preamble for a tabularx table.
-function gotoPreTable()
-    local r_tabularx, c_tabularx = unpack(vim.fn['vimtex#env#is_inside']("tabularx"))
-    if r_tabularx == 0 then return end
+
+-- return tex table column 0-index assuming the cursor (with "column" c) is at the preamble line.
+local function getCurrentColumnPre(c, c_pre, pre)
+    return math.max(0, #pre:sub(1, c+1-c_pre):gsub('[^%a]', ''))
+end
+-- jump to or from the relevant column in the preamble for a tabular/tabularx/tabulary table.
+local function gotoPreTable()
+    local r_tabular, c_pre, pre = getPreTabular()
+    if r_tabular == nil then return end
     
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    if r == r_tabularx then
-        local col = getCurrentColumnPre(c)
+    if r == r_tabular then
+        local col = getCurrentColumnPre(c, c_pre, pre)
         -- goto first line with the most cells found.
         -- scan 9 lines for now. 0-indexing means r excludes preamble.
         local scan = vim.api.nvim_buf_get_lines(0, r, r+10, false)
@@ -88,7 +114,7 @@ function gotoPreTable()
         if cGoto == nil then
             -- there was no match so the line is lacking &s
             -- we go to EOL although before optional \\
-            if lGoto:sub(-2) == [[\\]] then cGoto = #lGoto-4
+            if lGoto:sub(-2) == [[\\]] then cGoto = #lGoto-2
             else cGoto = #lGoto end
         end
         -- go to first non-whitespace as long as not & (indicating the next cell)
@@ -101,15 +127,18 @@ function gotoPreTable()
     else
         local col = getCurrentColumn(c)
         -- match col number of alphanumerics
-        -- -1 due to zero-indexing.
-        local linePre = vim.api.nvim_buf_get_lines(0, r_tabularx-1, r_tabularx, true)[1]
-        -- +1 and -1 so the 0-th column will lead to the first alphanumeric 
         -- char, rather than the @{} that might precede
-        local _, cGoto = linePre:find("\\begin{tabularx}%b{}{" .. ("[^%a]*%a"):rep(col+1))
+        local _, cGoto = pre:find(("[^%a]*%a"):rep(col+1))
+        if cGoto == nil then
+            -- the preamble is lacking entries so we go to its end.
+            cGoto = c_pre + #pre
+        else
+            cGoto=cGoto+c_pre-2
+        end
         -- Mark current location for jumplist to work (e.g. <c-o> to go back in table)
         -- lua version doesn't work
         cmd "normal m`"
-        vim.api.nvim_win_set_cursor(0, {r_tabularx, cGoto-1})
+        vim.api.nvim_win_set_cursor(0, {r_tabular, cGoto})
     end
 end
 
@@ -131,6 +160,9 @@ vim.keymap.set("i", "&", function()
     
     cmd [[silent! exe "normal \<Plug>alignTable"]]
     
+    -- the alignTable call moves the cursor and modifies lines.
+    -- The cursor is now at the top of inside the table env.
+    line = vim.fn.getline(r)
     -- replace escaped ampersands with something else so they don't get counted
     _, c = line:gsub('\\&', '  '):find(('[^&]*&'):rep(column))
     vim.api.nvim_win_set_cursor(0, {r, c+1})
