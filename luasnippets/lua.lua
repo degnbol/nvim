@@ -53,6 +53,8 @@ fmta([[vim.keymap.set("x", "<>", "<>")]],
 {i(1, "from"), i(2, "to")}),
 {condition=conds.line_begin}),
 
+s({trig="root", dscr="Get neovim config root", condition=conds.line_begin, snippetType='autosnippet'},
+{t"local rtp = vim.opt.runtimepath:get()[1]"}),
 
 -- api
 
@@ -68,5 +70,7 @@ s({trig="line", dscr="get line text"},
 -- -1 since nvim_win_get_cursor is (1,0)-indexed and nvim_buf_set_text is 0-indexed.
 s({trig="char", dscr="get char under cursor"},
 {t"vim.api.nvim_buf_get_text(0, r-1, c-1, r-1, c, {})[1]"}),
+
+
 
 }
