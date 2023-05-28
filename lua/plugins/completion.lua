@@ -69,19 +69,17 @@ return {
                 end
             end, { "i", "s" }),
         }
+        
+        local types = require('cmp.types')
 
         cmp.setup {
             snippet = {
                 expand = function(args) require'luasnip'.lsp_expand(args.body) end,
             },
-            window = {
-                -- completion = cmp.config.window.bordered(),
-                -- documentation = cmp.config.window.bordered(),
-            },
             view = {
                 -- when menu is above, show best result at bottom instead of at top
                 -- https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
-                entries = {name = 'custom', selection_order = 'near_cursor' }
+                entries = {name='custom', selection_order='near_cursor' },
             },
             mapping = cmp.mapping.preset.insert(mappings),
             sources = cmp.config.sources {
@@ -90,14 +88,49 @@ return {
                 { name = 'nvim_lsp_signature_help' },
                 { name = 'luasnip' },
                 { name = 'calc' },
-                { name = 'buffer' },
+                { name = 'buffer', group_index=2 },
             },
+            -- :h cmp-config.formatting.
             formatting = {
+                -- https://github.com/onsails/lspkind.nvim
+                -- https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
                 format = lspkind.cmp_format {
-                    mode = 'symbol',
-                    maxwidth = 50,
-                }
+                    mode='symbol',
+                    maxwidth=50,
+                    ellipsis_char='…',
+                    menu = {
+                        buffer        = "",
+                        nvim_lsp      = "", -- minimal
+                        luasnip       = "", -- "", -- <> is also shown as the type, so it is redudant.
+                        nvim_lua      = "",
+                        latex_symbols = "",
+                    }
+                },
             },
+            -- :h cmp-config.sorting.comparators
+            sorting = {
+                comparators = {
+                    function (entry1, entry2)
+                        -- copy of compare.kind to simply push text entries to the bottom
+                        -- https://github.com/hrsh7th/nvim-cmp/blob/8a3d2dd7641f75c1b6291311f56454adba79a196/lua/cmp/config/compare.lua#L50
+                        local isText1 = entry1:get_kind() == types.lsp.CompletionItemKind.Text
+                        local isText2 = entry2:get_kind() == types.lsp.CompletionItemKind.Text
+                        if isText1 and not isText2 then return false end
+                        if isText2 and not isText1 then return true end
+                    end,
+                    -- default sorting functions otherwise
+                    cmp.config.compare.offset,
+                    cmp.config.compare.exact,
+                    cmp.config.compare.score,
+                    cmp.config.compare.recently_used,
+                    cmp.config.compare.locality,
+                    cmp.config.compare.kind,
+                    cmp.config.compare.sort_text,
+                    cmp.config.compare.length,
+                    cmp.config.compare.order,
+                },
+            },
+
         }
 
         cmp.setup.filetype({'markdown', 'tex'}, {
@@ -111,7 +144,7 @@ return {
                 { name = 'dictionary', keyword_length=3, max_item_count=10, group_index=2 },
             }
         })
-
+        
         cmp.setup.filetype('lua', {
             sources = {
                 { name = 'nvim_lua' },
@@ -135,6 +168,10 @@ return {
                 { name = 'buffer', group_index=2  },
             }
         })
+        
+
+        -- TODO: take inspo from https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
+        -- and link completion menu colors to equivalent things
     end},
     -- the make command is optional: https://github.com/L3MON4D3/LuaSnip
     "honza/vim-snippets",
@@ -152,21 +189,16 @@ return {
         }
         
     vim.keymap.set({ "i", "s" }, "<c-k>", function ()
-        if luasnip.expand_or_jumpable() then
-            luasnip.expand_or_jump()
-        end
+        -- including expand means ctrl+k will autocomplete the first visible snippet in completion menu
+        if luasnip.expand_or_jumpable() then luasnip.expand_or_jump() end
     end, { silent = true })
     
     vim.keymap.set({ "i", "s" }, "<c-j>", function ()
-        if luasnip.jumpable(-1) then
-            luasnip.jump(-1)
-        end
+        if luasnip.jumpable(-1) then luasnip.jump(-1) end
     end, { silent = true })
 
     vim.keymap.set({ "i", "s" }, "<c-l>", function ()
-        if luasnip.choice_active() then
-            luasnip.change_choice(1)
-        end
+        if luasnip.choice_active() then luasnip.change_choice(1) end
     end)
     
     end }, -- alts: hrsh7th/vim-vsnip, SirVer/ultisnips, ...
@@ -214,5 +246,5 @@ return {
         require("luasnip.loaders.from_vscode").lazy_load()
         -- load https://github.com/honza/vim-snippets
         require("luasnip.loaders.from_snipmate").lazy_load()
-    end}
+    end},
 }
