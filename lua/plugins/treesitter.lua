@@ -197,7 +197,7 @@ return {
         -- }
     -- end},
     -- tree sitter based rainbow color parenthesis to easily see the matching
-    {"p00f/nvim-ts-rainbow", dependencies='nvim-treesitter/nvim-treesitter', config=function()
+    {"mrjones2014/nvim-ts-rainbow", dependencies='nvim-treesitter/nvim-treesitter', config=function()
         require("nvim-treesitter.configs").setup {
             -- for the p00f/nvim-ts-rainbow plugin
             rainbow = {
@@ -205,6 +205,20 @@ return {
                 -- disable = {"julia"},
                 extended_mode = true, -- Highlight also non-parentheses delimiters, boolean or table: lang -> boolean
                 max_file_lines = 1000, -- Do not enable for files with more than 1000 lines, int
+            },
+        }
+    end},
+    -- alt that might be better maintained.
+    -- I prefer the other for now, since it rainbows "\begin" and "\end" in latex, where this version also colors the following "{...}"
+    {"HiPhish/nvim-ts-rainbow2", enabled=false, dependencies='nvim-treesitter/nvim-treesitter', config=function()
+        require("nvim-treesitter.configs").setup {
+            rainbow = {
+                enable = true,
+                -- disable = {"julia"},
+                -- Which query to use for finding delimiters
+                query = {'rainbow-parens', html='rainbow-tags', latex='rainbow-blocks',},
+                -- Highlight the entire buffer all at once
+                strategy = require('ts-rainbow').strategy.global,
             },
         }
     end},
