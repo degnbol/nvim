@@ -173,21 +173,38 @@ return {
         -- TODO: take inspo from https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
         -- and link completion menu colors to equivalent things
     end},
-    -- the make command is optional: https://github.com/L3MON4D3/LuaSnip
-    "honza/vim-snippets",
-    {'L3MON4D3/LuaSnip', build="make install_jsregexp"},
-    {'saadparwaiz1/cmp_luasnip', dependencies={'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp"}, config=function() 
-        local luasnip = require "luasnip"
+    -- alts: hrsh7th/vim-vsnip, SirVer/ultisnips, ...
+    {'L3MON4D3/LuaSnip', dependencies="nvim-treesitter/nvim-treesitter",
+    build="make install_jsregexp", -- the make command is optional: https://github.com/L3MON4D3/LuaSnip
+    -- can also be set thru cmp_luasnip with luasnip.config.set_config{}
+    opts={
         -- https://youtu.be/Dn800rlPIho?t=440
-        luasnip.config.set_config {
-            -- don't jump back into exited snippet
-            history = true,
-            -- dynamic snippets update as you type
-            updateevents = "TextChanged,TextChangedI",
-            enable_autosnippets = true,
-            store_selection_keys = "<Tab>",
-        }
-        
+        -- don't jump back into exited snippet
+        history = true,
+        -- dynamic snippets update as you type
+        updateevents = "TextChanged,TextChangedI",
+        enable_autosnippets = true,
+        store_selection_keys = "<Tab>",
+        -- https://github.com/L3MON4D3/LuaSnip/blob/master/Examples/snippets.lua
+        -- Snippets aren't automatically removed if their text is deleted.
+        -- `delete_check_events` determines on which events (:h events) a check for
+        -- deleted snippets is performed.
+        -- This can be especially useful when `history` is enabled.
+        delete_check_events = "TextChanged",
+        -- treesitter-hl has 100, use something higher (default is 200).
+        ext_base_prio = 300,
+        -- minimal increase in priority.
+        ext_prio_increase = 1,
+    }},
+{'saadparwaiz1/cmp_luasnip', dependencies={'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp"}, config=function() 
+    local luasnip = require "luasnip"
+    luasnip.config.set_config {
+        -- get filetype with treesitter instead of default from buffer filetype, to detect filetype in markdown code blocks.
+        -- get error if attempting to set from LuaSnip opts config above.
+        -- https://github.com/L3MON4D3/LuaSnip/blob/master/lua/luasnip/extras/filetype_functions.lua
+        ft_func = require("luasnip.extras.filetype_functions").from_cursor_pos
+    }
+
     vim.keymap.set({ "i", "s" }, "<c-k>", function ()
         -- including expand means ctrl+k will autocomplete the first visible snippet in completion menu
         if luasnip.expand_or_jumpable() then luasnip.expand_or_jump() end
@@ -200,14 +217,8 @@ return {
     vim.keymap.set({ "i", "s" }, "<c-l>", function ()
         if luasnip.choice_active() then luasnip.change_choice(1) end
     end)
-    
-    end }, -- alts: hrsh7th/vim-vsnip, SirVer/ultisnips, ...
-    -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
-    {'uga-rosa/cmp-dictionary', config=function()
-        local cmpd = require "cmp_dictionary"
-        local rtp = vim.opt.runtimepath:get()[1]
 
-        cmpd.setup {
+end },
             dic = {
                 -- dicts generated with ./spell.sh
                 ["*"] = {
@@ -240,11 +251,12 @@ return {
         -- Anyways, it works.
         vim.defer_fn(CmpDictUpdate, 1000)
 
-    end},
-    {"rafamadriz/friendly-snippets", dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
-        -- load friendly-snippets with luasnip
-        require("luasnip.loaders.from_vscode").lazy_load()
-        -- load https://github.com/honza/vim-snippets
-        require("luasnip.loaders.from_snipmate").lazy_load()
-    end},
+end},
+-- these default snippets can be replaced with my custom snippets when I have enough
+{"honza/vim-snippets", dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
+    require("luasnip.loaders.from_snipmate").lazy_load()
+end},
+{"rafamadriz/friendly-snippets", dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
+    require("luasnip.loaders.from_vscode").lazy_load()
+end},
 }
