@@ -21,6 +21,14 @@ t"condition=conds.line_begin"),
 
 -- config snippets
 
+s({trig="req", dscr="require", condition=conds.line_begin, snippetType='autosnippet'},
+{c(2, {
+    f(function (import_name)
+        local parts = vim.split(import_name[1][1], '.', true)
+        return "local " .. (parts[#parts] or "") .. " = " end, {1}),
+    t""
+}), t'require "', i(1), t'"'}),
+
 s({trig="aucmd", snippetType="autosnippet" },
 fmta([[
 vim.api.nvim_create_autocmd(<>, {

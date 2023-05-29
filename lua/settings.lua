@@ -3,6 +3,8 @@ local opt = vim.opt
 local g = vim.g
 local api = vim.api
 
+local rtp = vim.opt.runtimepath:get()[1]
+
 g.mapleader = ' '
 g.maplocalleader = ' '
 
@@ -81,7 +83,7 @@ vim.opt.spelllang = { 'en', 'da' }
 -- never complain about sentence starting with lowercase word
 vim.opt.spellcapcheck = ""
 -- synonyms <C-xt>
-vim.opt.thesaurus = "$XDG_CONFIG_HOME/nvim/thesaurus/english.txt"
+vim.opt.thesaurus = rtp .. "/thesaurus/english.txt"
 -- complete word spelling <C-xk>
-vim.opt.dictionary = "$XDG_CONFIG_HOME/nvim/spell/en.dic"
+vim.opt.dictionary = rtp .. "/spell/en.dic"
 

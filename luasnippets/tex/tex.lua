@@ -90,6 +90,9 @@ fmta([[
 ]], {i(1),}),
 {condition=conds.line_begin}),
 
+s({trig="pdflatex", dscr="Use PdfLaTeX", condition=conds.line_begin},
+t{"% !TEX program = PdfLaTeX", ""}),
+
 s({trig="pac", dscr="package", snippetType="autosnippet"},
 {t"\\usepackage", c(2, {t"", {t"[", i(1,"options"), t"]"}}), t"{", i(1, "package"), t"}"},
 {condition=conds.line_begin}),
