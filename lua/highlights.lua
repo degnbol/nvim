@@ -136,3 +136,7 @@ hi("Search", {reverse=true, fg=nil, bg=nil})
 
 -- @variable seemed to start being linked to @identifier after update?
 hi("@variable", {gui=nil})
+
+-- dim the source of completion item.
+-- This column won't be visible if they are all "", see lua/plugins/completion.lua
+fg("CmpItemMenu", light_grey)
