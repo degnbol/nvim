@@ -10,6 +10,8 @@ end
 function M.get_visual_range()
     local r1, c1 = unpack(vim.api.nvim_buf_get_mark(0, "<"))
     local r2, c2 = unpack(vim.api.nvim_buf_get_mark(0, ">"))
+    -- don't allow selection beyond line
+    c2 = math.min(c2, #vim.fn.getline(r2))
     -- handle edge-case where final char is unicode or other multibyte char
     local char = vim.api.nvim_buf_get_text(0, r2-1, c2, r2-1, c2+1, {})[1]
     -- if multibyte then char is only half the symbol and won't match a broad pattern like:

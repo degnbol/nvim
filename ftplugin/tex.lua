@@ -69,8 +69,6 @@ end
 local function surround_visual(name)
     end_visual()
     local r1, c1, r2, c2 = get_visual_range()
-
-    c2 = math.min(c2, #vim.fn.getline(r2))
     c1, c2 = c1+1, c2+1 -- use vimtex (1,1)-index
     -- find cmds already present
     local cmds = vtu.inside_cmd_range(name, r1, c1, r2, c2)
