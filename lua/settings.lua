@@ -86,4 +86,8 @@ vim.opt.spellcapcheck = ""
 vim.opt.thesaurus = rtp .. "/thesaurus/english.txt"
 -- complete word spelling <C-xk>
 vim.opt.dictionary = rtp .. "/spell/en.dic"
+-- custom words. add under cursor: zg, remove: zw. temp: z{G,W}. undo: zu{g,w,G,W}
+-- visual mode also works.
+-- It's possible to have multiple spellfiles and use a preceding count.
+vim.opt.spellfile = rtp .. "/spell/custom.utf8.add"
 
