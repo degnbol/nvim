@@ -31,18 +31,6 @@ local before_cmd = function (r, c)
     end
     return c
 end
--- vimtex version (smarter). (1,1)-indexed.
-local before_cmd_vimtex = function (r, c)
-    local cmd = vim.fn['vimtex#cmd#get_at'](r, c)
-    if vim.tbl_isempty(cmd) then return r, c end
-    return cmd["pos_start"]['lnum'], cmd["pos_start"]['cnum']
-end
-local after_cmd_vimtex = function (r, c)
-    local cmd = vim.fn['vimtex#cmd#get_at'](r, c)
-    if vim.tbl_isempty(cmd) then return r, c end
-    return cmd["pos_end"]['lnum'], cmd["pos_end"]['cnum']
-end
-
 
 local insert_or_del_cmd = function(name)
     local cmd = vtu.inside_cmd(name)
@@ -87,15 +75,37 @@ local insert_or_del_cmd = function(name)
     end
 end
 
+local function cmd_same(cmd1, cmd2)
+    return cmd1["pos_start"]['lnum']==cmd2["pos_start"]['lnum'] and
+           cmd1["pos_start"]['cnum']==cmd2["pos_start"]['cnum']
+end
+local function cmd_contained(cmd, r1, c1, r2, c2)
+    local args = cmd["args"]
+    -- args is empty for simple commands without {}
+    if vim.tbl_isempty(args) then return false end
+    args = args[1] -- always one element?
+    local ro, co = args["open"]["lnum"], args["open"]["cnum"]
+    local rc, cc = args["close"]["lnum"], args["close"]["cnum"]
+    return before(ro, co, r1, c1) and before(r2, c2, rc, cc)
+end
+
 -- surround a selection with a cmd that is joined if overlapping, e.g. textbf 
 -- where it isn't meaningful to bold text twice.
 local function surround_visual(name)
     end_visual()
     local r1, c1, r2, c2 = get_visual_range()
+    -- (1,1)-indexed.
+    c1,c2=c1+1,c2+1
     -- extend start of selection if it is in the middle of a (any) cmd
-    -- +1s to use vimtex (1,1)-index
-    r1, c1 = before_cmd_vimtex(r1, c1+1)
-    r2, c2 = after_cmd_vimtex(r2, c2+1)
+    -- EXCEPT if it is fully contained
+    local cmd1 = vim.fn['vimtex#cmd#get_at'](r1, c1)
+    if not vim.tbl_isempty(cmd1) and not cmd_contained(cmd1, r1, c1, r2, c2) then
+        r1, c1 = cmd1["pos_start"]['lnum'], cmd1["pos_start"]['cnum']
+    end
+    local cmd2 = vim.fn['vimtex#cmd#get_at'](r2, c2)
+    if not vim.tbl_isempty(cmd2) and not cmd_contained(cmd2, r1, c1, r2, c2) then
+        r2, c2 = cmd2["pos_end"]['lnum'], cmd2["pos_end"]['cnum']
+    end
     
     -- find cmds already present.
     -- We expand the "search" by 1 so that we consume (merge with) adjacent cmds as well.
