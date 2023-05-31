@@ -45,20 +45,45 @@ end
 
 
 local insert_or_del_cmd = function(name)
-    cmd = vtu.inside_cmd(name)
+    local cmd = vtu.inside_cmd(name)
     if cmd ~= nil then
-        vim.fn['vimtex#cmd#delete'](cmd[1], cmd[2])
-    else
-        -- are we inside a cmd?
-        local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-        local cCurs = c
-        -- we specically DON'T want to use the vimtex version
-        local c = before_cmd(r, c)
-        vim.api.nvim_buf_set_text(0, r-1, c, r-1, c, {'\\' .. name .. '{'})
-        if c == cCurs then
-            -- move cursor to after the insertion
-            vim.api.nvim_win_set_cursor(0, {r, c+ #name + 2})
+        return vim.fn['vimtex#cmd#delete'](cmd[1], cmd[2])
+    end
+
+    name = '\\' .. name
+
+    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+
+    -- if the cmd is just opened, it will not be detected by vimtex
+    local iDel, jDel = nil, nil
+    -- look at current line and then a few lines before
+    for rDel = r, r-20, -1 do
+        local line = vim.fn.getline(rDel)
+        if rDel == r then line = line:sub(1, c + #name + 1) end
+        for i,j in line:gmatch('()' .. name .. '{?()') do
+            local cmd = vim.fn['vimtex#cmd#get_at'](rDel, i)
+            if vim.tbl_isempty(cmd) or cmd["name"] ~= name then
+                iDel, jDel = i, j
+                -- keep looping so the last match is the one that gets replaced in 
+                -- the edge-case where there are multiple
+            end
         end
+        if iDel ~= nil then
+            -- -1 for 0-index
+            vim.api.nvim_buf_set_text(0, rDel-1, iDel-1, rDel-1, jDel-1, {})
+            if r == rDel then vim.api.nvim_win_set_cursor(0, {r, c-(jDel-iDel)}) end
+            return
+        end
+    end
+
+    -- are we inside a (any) cmd?
+    local cCurs = c
+    -- we specically DON'T want to use the vimtex version
+    local c = before_cmd(r, c)
+    vim.api.nvim_buf_set_text(0, r-1, c, r-1, c, {name .. '{'})
+    if c == cCurs then
+        -- move cursor to after the insertion
+        vim.api.nvim_win_set_cursor(0, {r, c+ #name + 1})
     end
 end
 
