@@ -52,6 +52,7 @@ local insert_or_del_cmd = function(name)
         -- are we inside a cmd?
         local r, c = unpack(vim.api.nvim_win_get_cursor(0))
         local cCurs = c
+        -- we specically DON'T want to use the vimtex version
         local c = before_cmd(r, c)
         vim.api.nvim_buf_set_text(0, r-1, c, r-1, c, {'\\' .. name .. '{'})
         if c == cCurs then
@@ -61,32 +62,16 @@ local insert_or_del_cmd = function(name)
     end
 end
 
--- TODO: if range start or end in any command, expand the range to include the command. Just like above
 -- surround a selection with a cmd that is joined if overlapping, e.g. textbf 
 -- where it isn't meaningful to bold text twice.
 local function surround_visual(name)
     end_visual()
     local r1, c1, r2, c2 = get_visual_range()
     -- extend start of selection if it is in the middle of a (any) cmd
-    -- c1 = before_cmd(r1, c1)
+    -- +1s to use vimtex (1,1)-index
     r1, c1 = before_cmd_vimtex(r1, c1+1)
-    -- same for end, although more complicated so we use vimtex
     r2, c2 = after_cmd_vimtex(r2, c2+1)
     
-    c1=c1-1
-    c2=c2-1
-    -- if there are unbalanced {} then we will break things
-    local text = table.concat(vim.api.nvim_buf_get_text(0, r1-1, c1, r2-1, c2+1, {}), '\n')
-    text = text:gsub('%b{}', '')
-    text = text:gsub('\\' .. name .. '{', '') -- not a problem if it is the surround cmd
-    local _, brs = text:gsub("[{}]", "") -- count
-    if brs > 0 then
-        -- TODO: add not implemented warning
-        cmd "normal gv" -- un-cancel select
-        return
-    end
-    
-    c1, c2 = c1+1, c2+1 -- use vimtex (1,1)-index
     -- find cmds already present.
     -- We expand the "search" by 1 so that we consume (merge with) adjacent cmds as well.
     -- the max on c1 is needed. It would be easy enough to search wrapping lines as well, e.g. if c1==1 then r1-=1, c1=EOL end
