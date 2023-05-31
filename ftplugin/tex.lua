@@ -15,7 +15,7 @@ vim.keymap.set({"o", "x"}, "i4", "<Plug>(vimtex-i$)")
 
 local rtp = vim.opt.runtimepath:get()[1]
 local rtp = rtp .. "/tex/"
-require(rtp .. "overleaf")
-require(rtp .. "tables")
-require(rtp .. "cmds")
+dofile(rtp .. "overleaf.lua")
+dofile(rtp .. "tables.lua")
+dofile(rtp .. "cmds.lua")
 

@@ -19,19 +19,42 @@ local mathbf = "symbf"
 -- choice.
 local mathit = "symrm"
 
+-- adjust a c(olumn) to before a cmd if it is inside it.
+-- Implication is we don't split a cmd.
+-- indexing is (1,0)
+local before_cmd = function (r, c)
+    local line = vim.fn.getline(r)
+    -- +1 to include the char right after cursor bar
+    local cmdStart = line:sub(1, c+1):match('\\%a+$')
+    if cmdStart ~= nil then
+        return c-#cmdStart+1 -- +1 to undo the +1
+    end
+    return c
+end
+-- vimtex version (smarter). (1,1)-indexed.
+local before_cmd_vimtex = function (r, c)
+    local cmd = vim.fn['vimtex#cmd#get_at'](r, c)
+    if vim.tbl_isempty(cmd) then return r, c end
+    return cmd["pos_start"]['lnum'], cmd["pos_start"]['cnum']
+end
+local after_cmd_vimtex = function (r, c)
+    local cmd = vim.fn['vimtex#cmd#get_at'](r, c)
+    if vim.tbl_isempty(cmd) then return r, c end
+    return cmd["pos_end"]['lnum'], cmd["pos_end"]['cnum']
+end
+
+
 local insert_or_del_cmd = function(name)
     cmd = vtu.inside_cmd(name)
     if cmd ~= nil then
         vim.fn['vimtex#cmd#delete'](cmd[1], cmd[2])
     else
         -- are we inside a cmd?
-        local line = vim.api.nvim_get_current_line()
         local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-        -- +1 to include the char right after cursor bar
-        local cmdStart = line:sub(1, c+1):match('\\%a+$')
-        if cmdStart ~= nil then c=c-#cmdStart+1 end -- +1 to undo the +1
+        local cCurs = c
+        local c = before_cmd(r, c)
         vim.api.nvim_buf_set_text(0, r-1, c, r-1, c, {'\\' .. name .. '{'})
-        if cmdStart == nil then
+        if c == cCurs then
             -- move cursor to after the insertion
             vim.api.nvim_win_set_cursor(0, {r, c+ #name + 2})
         end
@@ -44,7 +67,14 @@ end
 local function surround_visual(name)
     end_visual()
     local r1, c1, r2, c2 = get_visual_range()
+    -- extend start of selection if it is in the middle of a (any) cmd
+    -- c1 = before_cmd(r1, c1)
+    r1, c1 = before_cmd_vimtex(r1, c1+1)
+    -- same for end, although more complicated so we use vimtex
+    r2, c2 = after_cmd_vimtex(r2, c2+1)
     
+    c1=c1-1
+    c2=c2-1
     -- if there are unbalanced {} then we will break things
     local text = table.concat(vim.api.nvim_buf_get_text(0, r1-1, c1, r2-1, c2+1, {}), '\n')
     text = text:gsub('%b{}', '')
