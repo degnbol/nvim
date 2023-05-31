@@ -42,7 +42,7 @@ if string.sub(remote, 1, 25) == "https://git.overleaf.com/" then
 end
 
 
--- bold and italics
+-- bold and italics. Others could be underline, color text etc.
 local textbf = "textbf"
 local textit = "textit"
 -- unlike mathbf that only bolds latin, symbf with unicode-math works with greek.
@@ -59,19 +59,43 @@ local insert_or_del_cmd = function(name)
     if cmd ~= nil then
         vim.fn['vimtex#cmd#delete'](cmd[1], cmd[2])
     else
-        vim.api.nvim_feedkeys('\\' .. name .. '{', 't', false)
+        -- are we inside a cmd?
+        local line = vim.api.nvim_get_current_line()
+        local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+        -- +1 to include the char right after cursor bar
+        local cmdStart = line:sub(1, c+1):match('\\%a+$')
+        if cmdStart ~= nil then c=c-#cmdStart+1 end -- +1 to undo the +1
+        vim.api.nvim_buf_set_text(0, r-1, c, r-1, c, {'\\' .. name .. '{'})
+        if cmdStart == nil then
+            -- move cursor to after the insertion
+            vim.api.nvim_win_set_cursor(0, {r, c+ #name + 2})
+        end
     end
 end
 
--- TODO: if we have add them next to each other like: \textbf{ABC}\textbf{DEF} then it would nice if they merged.
--- There is also the similar vimtex#cmd#create but it is slower and doesn't 
--- support more complicated actions such as joining cmds
+-- TODO: if range start or end in any command, expand the range to include the command. Just like above
+-- surround a selection with a cmd that is joined if overlapping, e.g. textbf 
+-- where it isn't meaningful to bold text twice.
 local function surround_visual(name)
     end_visual()
     local r1, c1, r2, c2 = get_visual_range()
+    
+    -- if there are unbalanced {} then we will break things
+    local text = table.concat(vim.api.nvim_buf_get_text(0, r1-1, c1, r2-1, c2+1, {}), '\n')
+    text = text:gsub('%b{}', '')
+    text = text:gsub('\\' .. name .. '{', '') -- not a problem if it is the surround cmd
+    local _, brs = text:gsub("[{}]", "") -- count
+    if brs > 0 then
+        -- TODO: add not implemented warning
+        cmd "normal gv" -- un-cancel select
+        return
+    end
+    
     c1, c2 = c1+1, c2+1 -- use vimtex (1,1)-index
-    -- find cmds already present
-    local cmds = vtu.inside_cmd_range(name, r1, c1, r2, c2)
+    -- find cmds already present.
+    -- We expand the "search" by 1 so that we consume (merge with) adjacent cmds as well.
+    -- the max on c1 is needed. It would be easy enough to search wrapping lines as well, e.g. if c1==1 then r1-=1, c1=EOL end
+    local cmds = vtu.inside_cmd_range(name, r1, math.max(1,c1-1), r2, c2+1)
     -- if any go beyond the selection we expand the selection to merge them
     for _, cmd in ipairs(cmds) do
         _r1, _c1, _r2, _c2 = unpack(cmd)
