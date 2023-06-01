@@ -32,6 +32,9 @@ local before_cmd = function (r, c)
     return c
 end
 
+-- max number of lines to look before cursor for an un-closed cmd
+local CONTEXT = 20
+
 local insert_or_del_cmd = function(name)
     local cmd = vtu.inside_cmd(name)
     if cmd ~= nil then
@@ -45,7 +48,7 @@ local insert_or_del_cmd = function(name)
     -- if the cmd is just opened, it will not be detected by vimtex
     local iDel, jDel = nil, nil
     -- look at current line and then a few lines before
-    for rDel = r, r-20, -1 do
+    for rDel = r, math.max(1, r-CONTEXT), -1 do
         local line = vim.fn.getline(rDel)
         if rDel == r then line = line:sub(1, c + #name + 1) end
         for i,j in line:gmatch('()' .. name .. '{?()') do
@@ -75,10 +78,6 @@ local insert_or_del_cmd = function(name)
     end
 end
 
-local function cmd_same(cmd1, cmd2)
-    return cmd1["pos_start"]['lnum']==cmd2["pos_start"]['lnum'] and
-           cmd1["pos_start"]['cnum']==cmd2["pos_start"]['cnum']
-end
 local function cmd_contained(cmd, r1, c1, r2, c2)
     local args = cmd["args"]
     -- args is empty for simple commands without {}
