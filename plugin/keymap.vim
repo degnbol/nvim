@@ -151,8 +151,8 @@ inoremap <A-Left> <c-\><c-o>b
 inoremap <A-Right> <c-\><c-o>w
 " change to default behaviour: don't exit to normal mode.
 inoremap <A-h> <c-\><c-o>h
-inoremap <A-j> <c-\><c-o>j
-inoremap <A-k> <c-\><c-o>k
+inoremap <expr> <A-j> v:count == 0 ? "<c-\><c-o>gj" : "j"
+inoremap <expr> <A-k> v:count == 0 ? "<c-\><c-o>gk" : "k"
 inoremap <A-l> <c-\><c-o>l
 inoremap <A-b> <c-\><c-o>b
 inoremap <A-w> <c-\><c-o>w

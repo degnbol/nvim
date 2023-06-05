@@ -12,7 +12,9 @@ opt.expandtab = true
 opt.shiftwidth = 4
 opt.smartindent = true
 opt.breakindent = true -- when wrapping line, match indent on the wrapped line.
-opt.breakindentopt = "shift:4" -- indent to show line was wrapped.
+-- opt.breakindentopt = "shift:2" -- indent to show line was wrapped.
+-- OR show "> "
+opt.showbreak = "> "
 opt.copyindent = true
 -- indent after words in cinwords (^for,^while,...) and stuff with {}. Should def not be active for normal text docs.
 opt.smartindent = false -- has to be set to false explicitly even though it is default probs because some plugin changes it.
@@ -29,6 +31,7 @@ opt.wildmode = 'longest:full,full' -- settings for how to show completion on com
 -- opt.relativenumber = true -- should the line numbering be shown relative to current line?
 opt.clipboard = 'unnamed,unnamedplus' -- share clipboard between copy paste and yank
 opt.wrap = false -- something run before init.lua is changing the default so we change it back here.
+opt.smoothscroll = true -- if we wrap lines, then show partial start
 opt.linebreak = true -- if I sometimes were to wrap lines, do it at whitespaces and other characters indicated in breakat
 opt.numberwidth = 2 -- reduce default numbering from starting as 3 characters wide to 2
 opt.mouse = "a" -- activate the mouse, i.e. click to move cursor, drag to visual select and scroll to scroll window instead of cursor

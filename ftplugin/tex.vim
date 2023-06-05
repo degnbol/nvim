@@ -36,8 +36,9 @@ function IsText() abort
     return l:cmd['name'] == "\\caption"
     " return len(vimtex#syntax#stack()) == 0
 endfunction
-autocmd InsertCharPre *.tex if IsText() | set fo+=a | else | set fo-=a | endif
-
+augroup foHack
+    autocmd InsertCharPre *.tex if IsText() | set fo+=a | else | set fo-=a | endif
+augroup end
 
 nmap <plug>Latex2Unicode v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/latex/unicode/latex2unicode.sh<CR>
 nmap <plug>Unicode2Latex v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/latex/unicode/unicode2latex.sh<CR>
@@ -53,5 +54,9 @@ let @l=']4 lU'
 
 
 
-
-
+" VIMTEX
+" vimtex defines hi groups subscript and superscript on \textsubscript and \textsuperscript
+" they are uncolored by default.
+" Maybe color them like function since it is the same color as their conceals.
+hi link subscript function
+hi link superscript function
