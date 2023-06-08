@@ -7,9 +7,12 @@ local lsu = require"luasnip_util"
 local get_visual = lsu.get_visual
 local virt = lsu.virt
 local re = lsu.re
+local vtu = require"vimtex_util"
+local in_text = vtu.in_text
 
 return {
 -- TODO: maybe add toggling between different templates.
+-- E.g. for PdfLaTeX relevant to journal old-fashioned requirements maybe use package textgreek
 -- https://tex.stackexchange.com/questions/553/what-packages-do-people-load-by-default-in-latex
 s("template",
 -- < and > chars are escaped in fmta call by typing << and >>
@@ -121,6 +124,11 @@ s({trig="h3", dscr="Sub-sub-section", snippetType="autosnippet"},
   {condition = conds.line_begin}
 ),
 
+s({trig="__", descr="subscript",   condition=in_text, wordTrig=false, snippetType="autosnippet"},
+{t"\\textsubscript{", i(1), t"}"}),
+s({trig="^^", descr="superscript", condition=in_text, snippetType="autosnippet", wordTrig=false},
+{t"\\textsuperscript{", i(1), t"}"}),
+
 
 s({trig="href", dscr="The hyperref package's href{}{} command (for url links)"},
   fmta(
@@ -129,13 +137,18 @@ s({trig="href", dscr="The hyperref package's href{}{} command (for url links)"},
   )
 ),
 
-s({trig = "tii", dscr = "Expands 'tii' into LaTeX's textit{} command."},
+s({trig = "tii", dscr = "Italic", wordTrig=false, snippetType="autosnippet"},
   fmta("\\textit{<>}",
     { d(1, get_visual) }
   )
 ),
-s({trig="tbb", dscr="Expands 'tii' into LaTeX's textit{} command."},
+s({trig="tbb", dscr="Bold", wordTrig=false, snippetType="autosnippet"},
   fmta("\\textbf{<>}",
+    { d(1, get_visual) }
+  )
+),
+s({trig="ttt", dscr="typewriter", wordTrig=false, snippetType="autosnippet"},
+  fmta("\\texttt{<>}",
     { d(1, get_visual) }
   )
 ),

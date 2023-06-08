@@ -7,9 +7,14 @@ local vtu = require "vimtex_util"
 local in_math = vtu.in_math
 local cmd = vim.cmd
 
--- bold and italics. Others could be underline, color text etc.
+-- bold and italics.
+-- TODO: underline and color text, where color text should probs be <C-something>r for red, and so on.
+-- <c-c> is already for cancel and <c-u> for delete to start of line. These are uncommon so maybe just uppercase U and C?
 local textbf = "textbf"
 local textit = "textit"
+local texttt = "texttt"
+local textul = "underline"
+local textcl = "textcolor"
 -- unlike mathbf that only bolds latin, symbf with unicode-math works with greek.
 local mathbf = "symbf"
 -- math text is italic by default, so we toggle roman instead.
@@ -18,6 +23,11 @@ local mathbf = "symbf"
 -- also makes text a bit less strong, so it should maybe be an explicit 
 -- choice.
 local mathit = "symrm"
+local mathtt = "texttt"
+local mathul = "underline"
+-- There may be a need to redefine the textcolor cmd in math, see
+-- https://tex.stackexchange.com/questions/21598/how-to-color-math-symbols
+local mathcl = "textcolor"
 
 -- adjust a c(olumn) to before a cmd if it is inside it.
 -- Implication is we don't split a cmd.
@@ -153,6 +163,8 @@ local function surround_visual(name)
     vim.api.nvim_buf_set_lines(0, r1-1, r2, true, lines)
 end
 
+-- set keymaps
+
 vim.keymap.set("i", "<C-b>", function ()
     if in_math() then
         insert_or_del_cmd(mathbf)
@@ -167,6 +179,20 @@ vim.keymap.set("i", "<C-i>", function ()
         insert_or_del_cmd(textit)
     end
 end)
+vim.keymap.set("i", "<C-t>", function ()
+    if in_math() then
+        insert_or_del_cmd(mathtt)
+    else
+        insert_or_del_cmd(texttt)
+    end
+end)
+vim.keymap.set("i", "<C-S-u>", function ()
+    if in_math() then
+        insert_or_del_cmd(mathul)
+    else
+        insert_or_del_cmd(textul)
+    end
+end)
 vim.keymap.set("x", "<C-b>", function () 
     if in_math() then
         surround_visual(mathbf)
@@ -179,6 +205,20 @@ vim.keymap.set("x", "<C-i>", function ()
         surround_visual(mathit)
     else
         surround_visual(textit)
+    end
+end)
+vim.keymap.set("x", "<C-t>", function ()
+    if in_math() then
+        surround_visual(mathtt)
+    else
+        surround_visual(texttt)
+    end
+end)
+vim.keymap.set("x", "<C-S-u>", function ()
+    if in_math() then
+        surround_visual(mathul)
+    else
+        surround_visual(textul)
     end
 end)
 
