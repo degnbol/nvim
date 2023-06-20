@@ -18,4 +18,5 @@ local rtp = rtp .. "/tex/"
 dofile(rtp .. "overleaf.lua")
 dofile(rtp .. "tables.lua")
 dofile(rtp .. "cmds.lua")
+dofile(rtp .. "textcolor.lua")
 
