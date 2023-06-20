@@ -11,3 +11,14 @@ hi link superscript texTypeStyle
 " underline was also un-highlighted for some reason
 hi link texTypeStyle texCmdStyle
 
+syn match textgreek /\\textalpha/ conceal cchar=α
+syn match textgreek /\\textbeta/ conceal cchar=β
+syn match textgreek /\\textgamma/ conceal cchar=γ
+syn match textgreek /\\textrho/ conceal cchar=ρ
+syn match textgreek /\\textpi/ conceal cchar=π
+syn match textgreek /\\textpsi/ conceal cchar=ψ
+syn match textgreek /\\texttau/ conceal cchar=τ
+" and so on...
+
+" same as e.g. \AA angstrom
+hi link textgreek SpecialChar
