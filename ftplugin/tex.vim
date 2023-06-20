@@ -40,8 +40,10 @@ augroup foHack
     autocmd InsertCharPre *.tex if IsText() | set fo+=a | else | set fo-=a | endif
 augroup end
 
-nmap <plug>Latex2Unicode v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/latex/unicode/latex2unicode.sh<CR>
-nmap <plug>Unicode2Latex v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/latex/unicode/unicode2latex.sh<CR>
+nmap <plug>Latex2Unicode v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/tex/unicode/latex2unicode.sh<CR>
+nmap <plug>Unicode2Latex v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/tex/unicode/unicode2latex.sh<CR>
+xmap <plug>Latex2Unicode_visual :!$XDG_CONFIG_HOME/nvim/tex/unicode/latex2unicode.sh<CR>
+xmap <plug>Unicode2Latex_visual :!$XDG_CONFIG_HOME/nvim/tex/unicode/unicode2latex.sh<CR>
 " doesn't seem to work
 " silent! call repeat#set("\<Plug>Latex2Unicode", v:count)
 " silent! call repeat#set("\<Plug>Unicode2Latex", v:count)
@@ -52,11 +54,3 @@ nmap <plug>Unicode2Latex v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/latex/unicode
 let @u=']4 lu'
 let @l=']4 lU'
 
-
-
-" VIMTEX
-" vimtex defines hi groups subscript and superscript on \textsubscript and \textsuperscript
-" they are uncolored by default.
-" Maybe color them like function since it is the same color as their conceals.
-hi link subscript function
-hi link superscript function
