@@ -9,6 +9,8 @@ local virt = lsu.virt
 local re = lsu.re
 local vtu = require"vimtex_util"
 local in_text = vtu.in_text
+local in_itemize = vtu.in_itemize
+local in_description = vtu.in_description
 
 return {
 -- TODO: maybe add toggling between different templates.
@@ -124,7 +126,12 @@ s({trig="h3", dscr="Sub-sub-section", snippetType="autosnippet"},
   {condition = conds.line_begin}
 ),
 
-s({trig="__", descr="subscript",   condition=in_text, wordTrig=false, snippetType="autosnippet"},
+-- single _ should never be found in regular text.
+-- TODO: narrow the condition by considering things like verbatim text blocks.
+s({trig="[^_]_", dscr="single _ outside math", condition=in_text, regTrig=true, wordTrig=false, snippetType='autosnippet'},
+{t"\\_"}),
+
+s({trig="\\?__", descr="subscript",   condition=in_text, regTrig=true, wordTrig=false, snippetType="autosnippet"},
 {t"\\textsubscript{", i(1), t"}"}),
 s({trig="^^", descr="superscript", condition=in_text, snippetType="autosnippet", wordTrig=false},
 {t"\\textsuperscript{", i(1), t"}"}),
@@ -168,15 +175,6 @@ fmta([[\begin{itemize}<>
 
 ]], { c(1, {t("", virt("^l -> dash instead of bullet")), t"[label={--}]"}), i(2) }),
 {condition=conds.line_begin}),
-s({trig="- ", dscr="itemize dashed", snippetType="autosnippet", priority=100},
-fmta([[\begin{itemize}[label={--}]
-	\item <>
-\end{itemize}
-
-]], i(1)), {condition=conds.line_begin}),
--- assumes that whitespace before "- " means we are inside an itemize env
-s({trig="(%s)- ", dscr="item", regTrig=true, snippetType="autosnippet"},
-{re(1), t"\\item "}, {condition=conds.line_begin}),
 
 s({trig="desc", dscr="description", snippetType="autosnippet"},
 fmta([[\begin{description}
@@ -184,6 +182,21 @@ fmta([[\begin{description}
 \end{description}
 
 ]], { i(1), i(2) }), {condition=conds.line_begin}),
+
+-- lower priority so the item snippets right below gets called
+s({trig="- ", dscr="itemize dashed", snippetType="autosnippet", priority=100},
+fmta([[\begin{itemize}[label={--}]
+	\item <>
+\end{itemize}
+
+]], i(1)), {condition=conds.line_begin}),
+-- in itemize
+s({trig="- ", dscr="item", snippetType="autosnippet"},
+t"\\item ", {condition=conds.line_begin and in_itemize}),
+-- in description
+s({trig="- ", dscr="item", snippetType="autosnippet"},
+{t"\\item[", i(1), t"]"}, {condition=conds.line_begin and in_description}),
+
 
 s({trig="mm", dscr="inline math", snippetType="autosnippet"},
 {t"$", d(1, get_visual), t"$" },
