@@ -195,7 +195,7 @@ s({trig="- ", dscr="item", snippetType="autosnippet"},
 t"\\item ", {condition=conds.line_begin and in_itemize}),
 -- in description
 s({trig="- ", dscr="item", snippetType="autosnippet"},
-{t"\\item[", i(1), t"]"}, {condition=conds.line_begin and in_description}),
+{t"\\item[", i(1), t"] "}, {condition=conds.line_begin and in_description}),
 
 
 s({trig="mm", dscr="inline math", snippetType="autosnippet"},
