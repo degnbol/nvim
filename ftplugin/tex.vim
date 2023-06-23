@@ -37,7 +37,7 @@ function IsText() abort
     " return len(vimtex#syntax#stack()) == 0
 endfunction
 augroup foHack
-    autocmd InsertCharPre *.tex if IsText() | set fo+=a | else | set fo-=a | endif
+    autocmd InsertCharPre <buffer> if IsText() | set fo+=a | else | set fo-=a | endif
 augroup end
 
 nmap <plug>Latex2Unicode v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/tex/unicode/latex2unicode.sh<CR>
