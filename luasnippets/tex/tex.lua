@@ -61,7 +61,7 @@ fmta([[
 % (Per default \thesubfigure is defined as \alph{subfigure}, i.e. lowercase letters)
 \renewcommand\thesubfigure{\Alph{subfigure}}
 \renewcommand\thesubtable{\Alph{subtable}}
-% singlelinecheck=on -> if only single line caption, then ignore raggedright (center).
+% singlelinecheck=on means if only single line caption, then ignore raggedright (center).
 \captionsetup[subfigure]{singlelinecheck=off,justification=raggedright}
 % remove () around subfig numbering
 \captionsetup[sub]{format=plain,position=top,font+=Large,labelformat=simple}
@@ -135,10 +135,11 @@ s({trig="h3", dscr="Sub-sub-section", snippetType="autosnippet"},
   {condition = conds.line_begin}
 ),
 
--- single _ should never be found in regular text.
--- TODO: narrow the condition by considering things like verbatim text blocks.
-s({trig="([^_])_", dscr="single _ outside math", condition=in_text, regTrig=true, wordTrig=false, snippetType='autosnippet'},
-{re(1), t"\\_"}),
+-- single _ should never be found in regular text, however it is fine in e.g. \includegraphics filepaths so we need to condition better.
+-- TODO: narrow the condition by considering things like comments, verbatim text blocks, and filepaths.
+-- Similarly % isn't allowed (since it's a comment), and it sometimes appears when pasting a link into \href{url}{display} so it could be nice to either highlight that as error or auto-replace
+-- s({trig="([^_])_", dscr="single _ outside math", condition=in_text, regTrig=true, wordTrig=false, snippetType='autosnippet'},
+-- {re(1), t"\\_"}),
 
 s({trig="\\?__", descr="subscript",   condition=in_text, regTrig=true, wordTrig=false, snippetType="autosnippet"},
 {t"\\textsubscript{", i(1), t"}"}),
