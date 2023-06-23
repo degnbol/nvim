@@ -128,8 +128,8 @@ s({trig="h3", dscr="Sub-sub-section", snippetType="autosnippet"},
 
 -- single _ should never be found in regular text.
 -- TODO: narrow the condition by considering things like verbatim text blocks.
-s({trig="[^_]_", dscr="single _ outside math", condition=in_text, regTrig=true, wordTrig=false, snippetType='autosnippet'},
-{t"\\_"}),
+s({trig="([^_])_", dscr="single _ outside math", condition=in_text, regTrig=true, wordTrig=false, snippetType='autosnippet'},
+{re(1), t"\\_"}),
 
 s({trig="\\?__", descr="subscript",   condition=in_text, regTrig=true, wordTrig=false, snippetType="autosnippet"},
 {t"\\textsubscript{", i(1), t"}"}),
