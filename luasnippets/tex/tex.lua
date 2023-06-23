@@ -54,8 +54,17 @@ fmta([[
 \usepackage{unicode-math} % experimental support for unicode in math
 
 \usepackage{graphicx}
+
 % Subfigures. "skip" == spacing between subfigures.
 \usepackage[skip=0pt]{subcaption}
+% Use uppercase instead of lowercase letters for sub-figure numbering
+% (Per default \thesubfigure is defined as \alph{subfigure}, i.e. lowercase letters)
+\renewcommand\thesubfigure{\Alph{subfigure}}
+\renewcommand\thesubtable{\Alph{subtable}}
+% singlelinecheck=on -> if only single line caption, then ignore raggedright (center).
+\captionsetup[subfigure]{singlelinecheck=off,justification=raggedright}
+% remove () around subfig numbering
+\captionsetup[sub]{format=plain,position=top,font+=Large,labelformat=simple}
 \usepackage{float}
 % makes figures and tables stay in their section
 \usepackage[section]{placeins}
