@@ -1,80 +1,33 @@
 #!/usr/bin/env zsh
-if [ `uname` = "Darwin" ]; then
-    mac=true
-else
-    mac=false
-fi
+ln -s ~/dotfiles/config/nvim ~/nvim
 
-if $mac; then
-    # --HEAD for development version instead of stable necessary for some lua config
-    brew install --HEAD luajit
-    brew install --HEAD neovim
-    brew install npm # install npm for :LspInstall python that install python support for Lsp. 
-    npm install -g neovim # if I do :checkhealth it makes a warning recommending to install this so I did
+$0:h/install-neovim.sh
+
+if [ `uname` = "Darwin" ]; then
     brew install aspell
     ./spell.sh
 else
-    cd ~/bin
-    wget https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
-    tar xzvf nvim-linux64.tar.gz
-    ln -s ~/bin/nvim-linux64/bin/nvim ~/bin/nvim
-    rm nvim-linux64.tar.gz
     echo "install aspell then run ./spell.sh"
 fi
 
 # https://tree-sitter.github.io/tree-sitter/creating-parsers#installation
 cargo install tree-sitter-cli
 
+# ripgrep for telescope to perform searching of words within files
+mamba install -yc conda-forge ripgrep pynvim
 
-# Install packer
-git clone https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
-nvim +PackerSync
+# consider universal ctags
+# brew uninstall ctags
+# brew install universal-ctags
 
-# coc.nvim requires node.js: https://github.com/neoclide/coc.nvim
-# if it fails then install to $HOME/bin
-curl -sL install-node.vercel.app/lts | bash ||
-curl -sL install-node.vercel.app/lts | bash -s -- --prefix=$HOME
-# coc needs pynvim
-conda install -y pynvim -c conda-forge
-
-# language server currently jedi-language-server for its simplicity and lack of annoying wrong error detection
-# installed with pipx
-brew install pipx
-pipx install jedi-language-server
-# then maybe install some of the optional dependencies listed on their git https://github.com/pappasam/jedi-language-server
-brew install yarn
-yarn global add diagnostic-languageserver
-
-# index files for LSP, see https://github.com/ms-jpq/coq_nvim
-brew uninstall ctags
-brew install universal-ctags
-pipx install virtualenv
-
-# scala
-if $mac; then
-    brew install coursier/formulas/coursier
-    cs setup
-    echo 'export PATH="$PATH:$HOME/Library/Application\ Support/Coursier/bin"' >> ~/.zshrc
-else
-    curl -fL "https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-pc-linux.gz" | gzip -d > cs
-    chmod +x ./cs
-    ./cs setup
-    echo 'export PATH="$PATH:$HOME/.local/share/coursier/bin"' >> ~/.zshrc
-    rm ./cs
-fi
-
-
-# If using coc then after it is installed it should automatically install julia support due to the coc-config.json but otherwise run
-# :CocInstall coc-julia coc-python coc-sh coc-r-lsp
-# NOTE: Set the python intepreter to conda python with command
-# :CocCommand python.setInterpreter
-# Followed by selecting the miniconda python in the menu that opens.
-
-# for telescope to perform searching of words within files
-mamba install -y ripgrep
+# $0:h/install-scala.sh
 
 # for editing jupyter notebooks
-pipx install jupytext || mamba install -y jupytext
+if which pipx > /dev/null; then
+    pipx install jupytext
+else
+    mamba install -yc conda-forge jupytext
+fi
 
 0:h/tex/unicode/install.sh
 
@@ -88,6 +41,11 @@ echo "Go to sync settings and put"
 echo "Preset -> Custom"
 echo "Command -> nvim"
 echo "Arguments -> --headless -c \"VimtexInverseSearch %line '%file'\""
-echo "Shift+Cmd+click now moves cursor in neovim."
+echo "Shift+Cmd+click now moves cursor in neovim (if skim was started by neovim)."
 
+# julia LSP
+# julia LSP doesn't load info about packages, maybe because it takes too long 
+# and a timeout is reached somewhere.
+# The hacky solution is to use a precompiled system image as the julia env so everything is already loaded.
+# https://discourse.julialang.org/t/neovim-languageserver-jl/37286/83
 
