@@ -1,13 +1,14 @@
 #!/usr/bin/env lua
--- mini.surround
-return {
+return {{
     'echasnovski/mini.nvim',
     version=false,
+    priority = 100, -- higher than default 50 to allow mini parts loaded in other files.
     config=function()
 
 require('mini.bracketed').setup {
-    -- compliment with using [[, ]], [], ][ to jump to less indented region and to next region
+    -- ]i to go to more indented region.
     indent = { suffix = 'i', options = { change_type="more" } },
+    -- compliment with using [[, ]], [], ][ to jump to less indented region and to next region
 }
 
 -- mini_indentscope = require('mini.indentscope')
@@ -42,6 +43,11 @@ require'mini.surround'.setup {
         input = { '%[%[().-()%]%]' },
         output = { left = '[[', right = ']]' },
       },
+      -- for latex ``...'', ~ is chosen since it is shift+`
+      ['~'] = {
+        input = { "``().-()''" },
+        output = { left = '``', right = "''" },
+      },
    },
    -- Number of lines within which surrounding is searched
   n_lines = 100,
@@ -54,7 +60,5 @@ vim.api.nvim_set_keymap('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], 
 -- Make special mapping for "add surrounding for line"
 vim.api.nvim_set_keymap('n', 'yss', 'ys_', { noremap = false })
 
-
-
-
-end}
+end},
+}
