@@ -11,9 +11,48 @@ return {
     -- "mg979/vim-visual-multi", -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
     "farmergreg/vim-lastplace", -- open file in last edited location
     "haya14busa/vim-asterisk", -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
-    -- "kana/vim-textobj-user", -- easily define custom textobjects such as i( and a( to select in/an \left( \right) block in latex
-    -- TODO add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
+    "kana/vim-textobj-user", -- easily define custom textobjects such as i( and a( to select in/an \left( \right) block in latex
+    -- TODO: add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
     {"glts/vim-textobj-comment", dependencies={"kana/vim-textobj-user"}}, -- not working?
+    {
+        -- https://github.com/chrisgrieser/nvim-various-textobjs
+        "chrisgrieser/nvim-various-textobjs",
+        -- opts = { useDefaultKeymaps = true },
+        config = function ()
+            
+            require("various-textobjs").setup {
+                useDefaultKeymaps = true,
+            }
+            
+            local open = require("utils/init").open
+            
+            vim.keymap.set("n", "gx", function()
+                -- go to github for plugin easily.
+                -- First check if we are editing a file read by lazy.nvim
+                if vim.api.nvim_buf_get_name(0):find('nvim/lua/plugins/') then
+                    -- get first string on the line, assumes we don't list multiple plugins on one line.
+                    local line = vim.api.nvim_get_current_line()
+                    local repo = line:match([["([%w%p]+/[%w%p]+)"]])
+                    repo = repo or line:match([['([%w%p]+/[%w%p]+)']])
+                    if repo then
+                        return open("https://github.com/" .. repo)
+                    end
+                end
+                
+                -- visually select URL
+                require("various-textobjs").url()
+
+                -- plugin only switches to visual mode when textobj found
+                local foundURL = vim.fn.mode():find("v")
+
+                -- retrieve URL with the z-register as intermediary
+                vim.cmd.normal { '"zy', bang = true }
+                local url = vim.fn.getreg("z")
+                open(url)
+
+            end, { desc = "Smart URL Opener" })
+        end
+    },
     -- increment and decrement numbers, dates, color hex, even bool
     -- https://github.com/monaqa/dial.nvim
     {"monaqa/dial.nvim", config=function()
