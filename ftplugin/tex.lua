@@ -27,3 +27,12 @@ require'mini.surround'.config.custom_surroundings['`'] = {
     output = { left = '``', right = "''" },
 }
 
+-- requires kana/vim-textobj-user, see lua/plugins/init.lua
+vim.fn["textobj#user#plugin"]("tex", {
+    ['latex-ticks'] = {
+        pattern = {'``', "''"},
+        ['select-a'] = '<buffer> a`',
+        ['select-i'] = '<buffer> i`',
+    },
+})
+

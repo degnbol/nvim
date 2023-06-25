@@ -11,7 +11,11 @@ return {
     -- "mg979/vim-visual-multi", -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
     "farmergreg/vim-lastplace", -- open file in last edited location
     "haya14busa/vim-asterisk", -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
-    "kana/vim-textobj-user", -- easily define custom textobjects such as i( and a( to select in/an \left( \right) block in latex
+    -- easily define custom textobjects
+    {
+        "kana/vim-textobj-user", 
+        -- some config in ftplugin/tex.lua
+    },
     -- TODO: add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
     {"glts/vim-textobj-comment", dependencies={"kana/vim-textobj-user"}}, -- not working?
     {
@@ -97,7 +101,7 @@ return {
         vim.keymap.set({'n', 'x', 'o'}, '\\t', '<Plug>(leap-forward-till)')
         vim.keymap.set({'n', 'x', 'o'}, '\\T', '<Plug>(leap-backward-till)')
     end},
-
+    
     -- color
     -- when a hex or other color is defined, highlight the text with its color
     {"NvChad/nvim-colorizer.lua", opts={
@@ -106,7 +110,7 @@ return {
             julia = { RGB = false, }
         }
     }}, 
-    {"norcalli/nvim-base16.lua", dependencies={"norcalli/nvim.lua"}, config=function ()
+    {"norcalli/nvim-base16.lua", enabled=false, dependencies={"norcalli/nvim.lua"}, config=function ()
         base16 = require'base16'
         theme = base16.theme_from_array(require("themes/gigavoltArray"))
         -- theme = base16.themes["unikitty-dark"]
@@ -118,14 +122,10 @@ return {
         -- Trigger a highlight in the appropriate direction when pressing these keys:
         vim.g.qs_highlight_on_keys = {'f', 'F', 't', 'T'}
     end},
-
+    
     "sakshamgupta05/vim-todo-highlight", -- highlight todos
     -- {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end}, -- dim code that isn't currently being edited with :Twilight.
-
-    {
-        "chrisgrieser/nvim-various-textobjs",
-        opts = { useDefaultKeymaps = true },
-    },
-
+    
+    "ThePrimeagen/vim-be-good",
 }
 
