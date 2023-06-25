@@ -17,16 +17,17 @@ return {
         -- change focus to skim after command `:VimtexView` is given
         g.vimtex_view_skim_activate = true
         
-        -- don't show log for every compilation.
-        g.vimtex_quickfix_mode = false
         g.vimtex_log_ignore = { "Underfull", "Overfull" }
+        g.vimtex_quickfix_open_on_warning = false
 
         -- :h vimtex-af-enhanced-matchparen
         -- wrong matching for some {} with this on:
         -- vim.g.matchup_override_vimtex = true
 
         -- defaults at :h vimtex_compiler_latexmk
-        g.vimtex_compiler_latexmk = { build_dir = "build", }
+        g.vimtex_compiler_latexmk = {
+            build_dir = "build",
+        }
         -- set default latex engine to the modern lualatex over pdflatex
         g.vimtex_compiler_latexmk_engines = { _="-lualatex" }
 
