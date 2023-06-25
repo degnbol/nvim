@@ -2,7 +2,7 @@
 return {
 -- meta. snippet to write snippets.
 
-s({trig="util", dscr="req utils", snippetType="autosnippet"},
+s({trig="util", dscr="req utils", condition=conds.line_begin},
 {t[[local lsu = require"luasnip_util"]]}),
 
 s({trig="snip", snippetType="autosnippet"},
@@ -29,21 +29,6 @@ s({trig="req", dscr="require", condition=conds.line_begin, snippetType='autosnip
     t""
 }), t'require "', i(1), t'"'}),
 
-s({trig="aucmd", snippetType="autosnippet" },
-fmta([[
-vim.api.nvim_create_autocmd(<>, {
-    pattern = <>,
-    callback = <>
-})
-]],
-{i(1, "Event(s)"), i(2, '"*.EXT"'), i(3, '"string cmd or lua func"')}),
-{condition=conds.line_begin}),
-s({trig="augroup", snippetType="autosnippet" },
--- clear=true is the default. You need to supply at least empty {}.
-fmta('local <> = vim.api.nvim_create_augroup("<>", {clear=true})',
-{rep(1), i(1, "name")}),
-{condition=conds.line_begin}),
-
 s({trig="nmap", snippetType="autosnippet"},
 fmta([[vim.keymap.set("n", "<>", "<>")]],
 {i(1, "from"), i(2, "to")}),
@@ -66,19 +51,41 @@ s({trig="root", dscr="Get neovim config root", condition=conds.line_begin, snipp
 
 -- api
 
+s({trig="aucmd", snippetType="autosnippet" },
+fmta([[
+vim.api.nvim_create_autocmd(<>, {
+    pattern = <>,
+    callback = <>
+})
+]],
+{i(1, "Event(s)"), i(2, '"*.EXT"'), i(3, '"string cmd or lua func"')}),
+{condition=conds.line_begin}),
+s({trig="augroup", snippetType="autosnippet" },
+-- clear=true is the default. You need to supply at least empty {}.
+fmta('local <> = vim.api.nvim_create_augroup("<>", {clear=true})',
+{rep(1), i(1, "name")}),
+{condition=conds.line_begin}),
+
 s({trig="cursor", dscr="get cursor position", condition=conds.line_begin},
 {t"local r, c = unpack(vim.api.nvim_win_get_cursor(0))"}),
 
 s({trig="[%a._]*set_cursor", dscr="set cursor", regTrig=true, snippetType="autosnippet", condition=conds.line_begin},
 {t"vim.api.nvim_win_set_cursor(0, {", i(1, "r, c"), t"})"}),
 
-s({trig="line", dscr="get line text"},
+s({trig="current", dscr="get current line text"},
 {t"local line = vim.api.nvim_get_current_line()"}),
 
 -- -1 since nvim_win_get_cursor is (1,0)-indexed and nvim_buf_set_text is 0-indexed.
 s({trig="char", dscr="get char under cursor"},
 {t"vim.api.nvim_buf_get_text(0, r-1, c-1, r-1, c, {})[1]"}),
 
+s({trig="get_mark", dscr="get buffer mark", condition=conds.line_begin, snippetType="autosnippet"},
+{t[[local r_mark, c_mark = unpack(vim.api.nvim_buf_get_mark(0, "]], i(1), t'"))'}),
+
+s({trig="buftype", dscr="buffer type"},
+t"vim.bo.buftype"),
+s({trig="filetype", dscr="file type"},
+t"vim.bo.filetype"),
 
 
 }
