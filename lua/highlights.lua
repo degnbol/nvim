@@ -37,6 +37,14 @@ hi("@variable", {gui=nil})
 -- remove bg on concealchars
 bg("Conceal", nil)
 
+fg("LineNr", "grey")
+fg("CursorLineNr", nil)
+---- git signs
+bg("DiffAddNr", "green")
+bg("DiffChangeNr", "blue")
+hi("DiffDeleteNr", {underline=true, special="red"}) -- special decides the color for the underline
+bg("DiffTopDeleteNr", "red") -- edge-case where first line(s) of file is deleted
+bg("DiffChangeDeleteNr", "purple")
 
 ---- bufferline
 -- bold instead of italic+bold selected
