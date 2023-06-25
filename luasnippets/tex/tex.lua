@@ -3,11 +3,12 @@
 -- https://www.ejmastnak.com/tutorials/vim-latex/luasnip
 -- https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets
 
-local lsu = require"luasnip_util"
+local lsu = require "utils/luasnip"
+local vtu = require "utils/vimtex"
+
 local get_visual = lsu.get_visual
 local virt = lsu.virt
 local re = lsu.re
-local vtu = require"vimtex_util"
 local in_text = vtu.in_text
 local in_itemize = vtu.in_itemize
 local in_description = vtu.in_description

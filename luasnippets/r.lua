@@ -1,5 +1,5 @@
 #!/usr/bin/env lua
-local lsu = require"luasnip_util"
+local lsu = require "utils/luasnip"
 local virt = lsu.virt
 
 return {

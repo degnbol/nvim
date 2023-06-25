@@ -1,4 +1,4 @@
-local lsu = require"luasnip_util"
+local lsu = require "utils/luasnip"
 local in_math = lsu.in_math
 
 return {

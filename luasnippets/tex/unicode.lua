@@ -1,5 +1,5 @@
-local lsu = require"luasnip_util"
-local vtu = require"vimtex_util"
+local lsu = require "utils/luasnip"
+local vtu = require "utils/vimtex"
 local in_math = vtu.in_math
 local re = lsu.re
 local get_visual = lsu.get_visual

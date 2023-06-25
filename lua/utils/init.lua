@@ -1,16 +1,27 @@
-local utils = { }
+#!/usr/bin/env lua
+M = {}
 
-local scopes = {o = vim.o, b = vim.bo, w = vim.wo}
-
-function utils.opt(scope, key, value)
-    scopes[scope][key] = value
-    if scope ~= 'o' then scopes['o'][key] = value end
+function M.end_visual()
+    -- magic from
+    -- https://github.com/neovim/neovim/issues/19770
+    vim.api.nvim_feedkeys('\027', 'xt', false)
 end
 
-function utils.map(mode, lhs, rhs, opts)
-  local options = {noremap = true}
-  if opts then options = vim.tbl_extend('force', options, opts) end
-  vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+function M.get_visual_range()
+    local r1, c1 = unpack(vim.api.nvim_buf_get_mark(0, "<"))
+    local r2, c2 = unpack(vim.api.nvim_buf_get_mark(0, ">"))
+    -- don't allow selection beyond line
+    c2 = math.min(c2, #vim.fn.getline(r2))
+    -- handle edge-case where final char is unicode or other multibyte char
+    local char = vim.api.nvim_buf_get_text(0, r2-1, c2, r2-1, c2+1, {})[1]
+    -- if multibyte then char is only half the symbol and won't match a broad pattern like:
+    if not char:match('[%w%p%s]') then c2=c2+1 end
+    return r1, c1, r2, c2
 end
 
-return utils 
+-- return whether r1, c1 is before r2, c2
+function M.before(r1, c1, r2, c2)
+    return r1 < r2 or (r1 == r2 and c1 < c2)
+end
+
+return M

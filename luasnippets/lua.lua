@@ -3,7 +3,7 @@ return {
 -- meta. snippet to write snippets.
 
 s({trig="util", dscr="req utils", condition=conds.line_begin},
-{t[[local lsu = require"luasnip_util"]]}),
+{t[[local lsu = require "utils/luasnip"]]}),
 
 s({trig="snip", snippetType="autosnippet"},
 fmta([[s({trig="<>", dscr="<>", <>},

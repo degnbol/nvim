@@ -1,15 +1,17 @@
 #!/usr/bin/env lua
-local util = require "util"
+local util = require "utils/init"
+local vtu = require "utils/vimtex"
+
 local before = util.before
 local end_visual = util.end_visual
 local get_visual_range = util.get_visual_range
-local vtu = require "vimtex_util"
 local in_math = vtu.in_math
 local cmd = vim.cmd
 
--- bold and italics.
--- TODO: underline and color text, where color text should probs be <C-something>r for red, and so on.
+-- bold, italics, and similar.
+-- TODO: color text, where color text should probs be <C-something>r for red, and so on.
 -- <c-c> is already for cancel and <c-u> for delete to start of line. These are uncommon so maybe just uppercase U and C?
+
 local textbf = "textbf"
 local textit = "textit"
 local texttt = "texttt"
@@ -88,6 +90,7 @@ local insert_or_del_cmd = function(name)
     end
 end
 
+-- TODO: handle square brackets, e.g. in desc env merging \item[\texttt{reps1}, \texttt{reps2}] without surrounding the \item.
 local function cmd_contained(cmd, r1, c1, r2, c2)
     local args = cmd["args"]
     -- args is empty for simple commands without {}

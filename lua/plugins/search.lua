@@ -96,9 +96,7 @@ return {
 
         -- g/ should highlight last search (using the google search plugin maybe)
         -- but it gets broken by this plugin so we mimmic its behavior:
-        local utils = require('utils')
-        utils.map("n", "g/", "//<CR>`'", {noremap=true, silent=true})
-
+        vim.keymap.set("n", "g/", "//<CR>`'", {noremap=true, silent=true})
 
         -- integrate with haya14busa/vim-asterisk
         vim.api.nvim_set_keymap('n', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {})

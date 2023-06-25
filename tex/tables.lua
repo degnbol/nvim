@@ -1,5 +1,5 @@
 #!/usr/bin/env lua
-local vtu = require "vimtex_util"
+local vtu = require "utils/vimtex"
 local is_inside = vtu.is_inside
 local in_env = vtu.in_env
 local cmd = vim.cmd
@@ -59,6 +59,8 @@ end
 local function getCurrentColumnPre(c, c_pre, pre)
     return math.max(0, #pre:sub(1, c+1-c_pre):gsub('[^%a]', ''))
 end
+
+-- TODO: when jumping to 0-th that is empty we go to 0-th column instead of cell indent.
 -- jump to or from the relevant column in the preamble for a tabular/tabularx/tabulary table.
 vim.keymap.set("n", "<plug>TexJumpPre", function()
     local r_tabular, c_pre, pre = getPreTabular()
@@ -88,7 +90,18 @@ vim.keymap.set("n", "<plug>TexJumpPre", function()
         end
         -- go to first non-whitespace as long as not & (indicating the next cell)
         local _, firstNonW = lGoto:sub(cGoto+1):find("^%s*[^%s&]")
-        cGoto = cGoto + (firstNonW or 1)-1
+        if firstNonW == nil then -- the cell is empty
+            if cGoto == 0 then -- the very first cell
+                -- we want to go to indentation.
+                -- Take indentation from previous line.
+                -- ERRORs if we are jumping to first line in table.
+                -- Maybe rethink the scan 10 lines logic to jump to first line with >1 cell (jump over hline and without multicol)
+                firstNonW = scan[iGoto-1]:find("%S")
+            else
+                firstNonW = 1
+            end
+        end
+        cGoto = cGoto + firstNonW-1
         -- Mark current location for jumplist to work (e.g. <c-o> to go back in table)
         -- lua version doesn't work
         cmd "normal m`"
@@ -112,6 +125,8 @@ vim.keymap.set("n", "<plug>TexJumpPre", function()
 end)
 
 -- TODO: let multicolumn align to the rest but not the other way. What to do if not one row per line?
+-- TODO: have a config parameter for max cell length, so anything longer will not force other cells to be silly long.
+-- NOTE: what about when conceal is on an \textbf makes a cell look shorter than it is. Mostly relevant for header row.
 -- inspired by https://gist.github.com/tpope/287147
 vim.keymap.set("i", "&", function()
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
@@ -128,7 +143,7 @@ vim.keymap.set("i", "&", function()
     local line = vim.api.nvim_get_current_line()
     local column = #line:sub(1, c + 2):gsub('\\&', ''):gsub('[^&]', '')
     
-    cmd [[silent! exe "normal \<Plug>alignTable"]]
+    cmd [[silent! exe "normal \<Plug>AlignTable"]]
     
     -- the alignTable call moves the cursor and modifies lines.
     -- The cursor is now at the top of inside the table env.
@@ -138,9 +153,13 @@ vim.keymap.set("i", "&", function()
     vim.api.nvim_win_set_cursor(0, {r, c+1})
     -- Hacks to clear message area.
     -- Needed in combination with silent! above to not see any prints.
+    -- Another solution I saw somewhere temporarily redefines some print functions to not do anything.
     print " "
     cmd "echo ' '"
 end, {remap=false, silent=true, buffer=true})
+
+-- TODO: <leader>-a and <leader>-A could swap columns like they normally swap args.
+
 
 -- TODO: deal with \& and maybe add more tabs after multicolumn (which we will have to remove later in the inverse function.)
 -- also, is the \\ missing after toprule etc? if so, edit the snippet template.
@@ -160,7 +179,7 @@ end)
 
 vim.keymap.set("n", "<plug>PasteTable", function()
     local delim = '\t'
-    -- TODO inverse of above
+    -- TODO: inverse of above
 end)
 
 
