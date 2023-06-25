@@ -14,6 +14,7 @@ function M.in_env(name)
     return (r > 0 and c > 0)
 end
 function M.in_itemize() return M.in_env('itemize') end
+function M.in_description() return M.in_env('description') end
 
 -- Use vimtex (1,1)-indexing!
 -- only "name" is required.
