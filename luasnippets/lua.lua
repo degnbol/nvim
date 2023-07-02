@@ -87,5 +87,13 @@ t"vim.bo.buftype"),
 s({trig="filetype", dscr="file type"},
 t"vim.bo.filetype"),
 
+s({trig="filepath", dscr="get filepath for current buffer"},
+{t"vim.api.nvim_buf_get_name(0)"}),
+
+s({trig="startswith", dscr="startswith"},
+{t"vim.startswith(", i(1), t")"}),
+
+s({trig="endswith", dscr="endswith"},
+{t"vim.endswith(", i(1), t")"}),
 
 }
