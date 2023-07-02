@@ -5,6 +5,9 @@ return {
     -- doesn't dependend on legendary but we want to call it first
     dependencies={ "mrjones2014/legendary.nvim", },
     config=function()
+--
+require('legendary').setup({ which_key = { auto_register = true } })
+
 
 local wk = require("which-key")
 
@@ -117,21 +120,6 @@ wk.register({
             w = {":Telescope live_grep<CR>", "find in files (telescope)"},
             W = {":Telescope grep_string<CR>", "find word under cursor (telescope)"},
         },
-        g = {
-            name = "git",
-            b = "blame line (Gitsigns)",
-            -- hide untracked files with -uno.
-            -- hide gitsigns' file explorer with DiffviewToggleFiles (unhide with <leader>e like NvimTreeToggle)
-            -- Open during merge or rebase should show conflicts nicer automatically.
-            d = {":DiffviewOpen -uno<CR>:DiffviewToggleFiles<CR>", "open diffview"},
-            -- % for just this file, spell out the command to see history for the whole branch
-            h = {":DiffviewFileHistory %<CR>", "history (Diffview)"},
-            p = "preview hunk (Gitsigns)",
-            q = {":DiffviewClose<CR>", "quit (Diffview)"},
-            r = "reset hunk (Gitsigns)",
-            s = "stage hunk (Gitsigns)",
-            u = "undo stage hunk (Gitsigns)",
-        },
         h = {":noh<CR>", "clear highlights"},
         -- <leader>K since K is regular defintion of word under cursor.
         j = {
@@ -143,7 +131,7 @@ wk.register({
             name = "LaTeX (vimtex || telescope-bibtex || nabla)",
             a = "context menu",
             -- align table see ftplugin/tex.lua. ma ... `a to not move cursor.
-            A = {"ma<plug>alignTable<CR>`a", "Align table"},
+            A = {"ma<plug>AlignTable<CR>`a", "Align table"},
             b = {":Telescope bibtex<CR>", "insert citation (bibtex)"},
             c = "clean",
             C = "clean full",
@@ -152,6 +140,8 @@ wk.register({
             g = "status",
             G = "status all",
             i = "info",
+            -- j for jump
+            j = {"<plug>TexJumpPre", "goto/from preamble (table)"},
             I = "info full",
             k = "stop",
             K = "stop all",
@@ -159,7 +149,7 @@ wk.register({
             L = "compile selected",
             m = "imaps list",
             o = "compile output",
-            p = {":lua gotoPreTable()<CR>", "goto/from preamble (tabularx)"},
+            -- p and P will be for pasting and reformatting table
             q = "log",
             s = "toggle main",
             t = "TOC open",
@@ -169,6 +159,7 @@ wk.register({
             v = "view",
             x = "reload",
             X = "reload state",
+            y = {"<plug>YankTable", "yank table as tsv"},
         },
         m = {
             m = {":DashboardJumpMarks<CR>", "jump marks (dashboard)"}
@@ -336,7 +327,7 @@ wk.register({
     ['['] = {
         name = "Previous...",
         d = "diagnostic (LSP)",
-        h = "hunk (gitsigns)",
+        h = {"<Cmd>Gitsigns prev_hunk<CR>", "hunk (gitsigns)"},
         y = "Change paste (Yoink)",
         x = "conflict (Diffview)",
         ['4'] = {"<Plug>(vimtex-[n)", "equation (vimtex)"}, -- without shift
@@ -347,7 +338,7 @@ wk.register({
     [']'] = {
         name = "Next...",
         d = "diagnostic (LSP)",
-        h = "hunk (gitsigns)",
+        h = {"<Cmd>Gitsigns next_hunk<CR>", "hunk (gitsigns)"},
         y = "Change paste (Yoink)",
         x = "conflict (Diffview)",
         ['4'] = {"<Plug>(vimtex-]n)", "equation (vimtex)"}, -- without shift
@@ -359,15 +350,10 @@ wk.register({
 
 wk.register({
     ["<leader>"] = {
-        g = {
-            name = "git",
-            b = {":Gitsigns blame_line<CR>", "blame line (gitsigns)"},
-            -- pretty cool: history of a specific range of code
-            h = {":DiffviewFileHistory<CR>", "history (Diffview)"},
-            p = {":Gitsigns preview_hunk<CR>", "preview hunk (gitsigns)"},
-            r = {":Gitsigns reset_hunk<CR>", "reset hunk (gitsigns)"},
-            s = {":Gitsigns stage_hunk<CR>", "stage hunk (gitsigns)"},
-            u = {":Gitsigns undo_stage_hunk<CR>", "undo stage hunk (gitsigns)"},
+        l = {
+            name = "latex",
+            u = {"<plug>Latex2Unicode_visual", "latex2unicode"},
+            U = {"<plug>Unicode2Latex_visual", "unicode2latex"},
         },
     },
     ["<ScrollWheelUp>"] = "which_key_ignore",
@@ -384,6 +370,24 @@ wk.register({
 }, {mode='v'})
 
 wk.register({
+    ["<leader>"] = {
+        g = {
+            name = "git",
+            b = {"<Cmd>Gitsigns blame_line<CR>", "blame line (gitsigns)"},
+            -- hide untracked files with -uno.
+            -- hide gitsigns' file explorer with DiffviewToggleFiles (unhide with <leader>e like NvimTreeToggle)
+            -- Open during merge or rebase should show conflicts nicer automatically.
+            -- Isn't allowed for ranges (shows error), but keep it here to have all git stuff one place and to make it explicit if typed for whatever reason.
+            d = {"<Cmd>DiffviewOpen -uno<CR>:DiffviewToggleFiles<CR>", "open diffview"},
+            q = {"<Cmd>DiffviewClose<CR>", "quit (Diffview)"},
+            -- pretty cool: history of a specific range of code
+            h = {"<Cmd>DiffviewFileHistory<CR>", "history (Diffview)"},
+            p = {"<Cmd>Gitsigns preview_hunk<CR>", "preview hunk (gitsigns)"},
+            r = {"<Cmd>Gitsigns reset_hunk<CR>", "reset hunk (gitsigns)"},
+            s = {"<Cmd>Gitsigns stage_hunk<CR>", "stage hunk (gitsigns)"},
+            u = {"<Cmd>Gitsigns undo_stage_hunk<CR>", "undo stage hunk (gitsigns)"},
+        },
+    },
     ['\\'] = {
         f = "forward to (leap)",
         F = "backward to (leap)",
