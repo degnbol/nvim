@@ -6,7 +6,7 @@ return {
     -- end},
     "tyru/capture.vim", -- :Capture hi to call :hi where you can search etc.
     {
-        dir="~/nvim/kittyREPL.nvim", opts={
+        "degnbol/kittyREPL.nvim", opts={
             keymap={
                 line="<CR><CR>",
                 visual="<CR>",
@@ -33,4 +33,14 @@ return {
 
         require('ufo').setup()
     end},
+    -- file explorer as a buffer
+    {"stevearc/oil.nvim", config=function ()
+        local oil = require "oil"
+        oil.setup {
+            -- no prompt on rename, including folder change.
+            -- The prompt is a nice list of the performed changes.
+            -- skip_confirm_for_simple_edits = true,
+        }
+        vim.keymap.set("n", "-", oil.open, { desc = "Open parent directory" })
+    end}
 }

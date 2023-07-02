@@ -11,7 +11,14 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 require'lazy'.setup('plugins', {
-    change_detection = { notify = false, }
+    change_detection = { notify = false, },
+    dev = {
+        -- directory where you store your local plugin projects
+        path = "$XDG_CONFIG_HOME/nvim",
+        ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
+        patterns = {"degnbol"},
+        fallback = true, -- Fallback to git when local plugin doesn't exist
+    },
 })
 
 require 'highlights'
