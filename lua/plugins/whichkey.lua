@@ -262,6 +262,9 @@ wk.register({
         },
     d = {
         name = "delete...",
+        -- small hack to remove excess whitespace.
+        -- iw also captures whitespace under cursor.
+        ['i '] = {"ciw <Esc>", "delete excess whitespace"},
         -- mini package
         s = {
             name = "surrounding...",
