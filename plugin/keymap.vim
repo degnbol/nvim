@@ -214,6 +214,16 @@ xnoremap Å {
 " also switch cmp-dictionary language (cmp_dict.lua)
 inoremap <silent> <C-6> <C-6><C-\><C-o>:lua CmpDictUpdate()<CR>
 
+" When language is set to danish we can get ;:'" with alt the same way as we 
+" do in danglish keyboard input, however that is with the left alt which is 
+" deeper in the OS and the mapping below is for when esc+key (^[) is detected which 
+" is what is sent to the terminal, e.g. with kitty's setting 'macos_option_as_alt right'.
+" Note that they are also available with the ]} and \| keys.
+inoremap <A-;> ;
+inoremap <A-S-;> :
+inoremap <A-'> '
+inoremap <A-S-'> "
+
 " completion mapping for function keys available on mechanical keyboard
 imap <F13> <C-space>
 imap <F14> <C-p>
