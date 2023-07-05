@@ -223,6 +223,11 @@ inoremap <A-;> ;
 inoremap <A-S-;> :
 inoremap <A-'> '
 inoremap <A-S-'> "
+" And in case danglish keyboard is active:
+inoremap <A-æ> ;
+inoremap <A-S-æ> :
+inoremap <A-ø> '
+inoremap <A-S-ø> "
 
 " completion mapping for function keys available on mechanical keyboard
 imap <F13> <C-space>
