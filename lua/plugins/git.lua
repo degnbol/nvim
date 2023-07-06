@@ -1,7 +1,18 @@
 #!/usr/bin/env lua
 return {
-    -- :Git and similar commands
-    "tpope/vim-fugitive",
+    {
+        -- :Git and similar commands
+        "tpope/vim-fugitive", config = function ()
+            -- use vim.cmd "cnoremapabbrev LHS RHS" if they start to conflict as keymaps
+            vim.keymap.set("c", "gts", "Git status -uno<CR>")
+            vim.keymap.set("c", "gtl", 'Git pull<CR>')
+            vim.keymap.set("c", "gtp", 'Git push<CR>')
+            vim.keymap.set("c", "gta", 'Git add %<CR>')
+            vim.keymap.set("c", "gtc", 'Git commit -m "')
+        end,
+    },
+    -- TODO: do we want this? An alt plugin for it?
+    "tpope/vim-rhubarb", -- :GBrowse and some stuff for git commits.
     -- highlight git conflicts, jump with [x and ]x,
     -- resolve by keeping none (cn), theirs (ct), our (co), both (cb), or both reverse (cB)
     "rhysd/conflict-marker.vim",

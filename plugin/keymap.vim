@@ -48,7 +48,11 @@ xmap y <plug>(YoinkYankPreserveCursorPosition)
 nmap xx yydd
 xmap x ygvd
 function CutOperator(type, ...)
-    normal `[v`]ygvd
+    if a:type == 'line'
+        normal `[V`]ygvd
+    else
+        normal `[v`]ygvd
+    endif
 endfunction
 " Operator is a convenience function in plugin/operator.vim
 nnoremap <expr> x Operator('CutOperator')
