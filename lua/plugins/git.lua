@@ -3,12 +3,17 @@ return {
     {
         -- :Git and similar commands
         "tpope/vim-fugitive", config = function ()
-            -- use vim.cmd "cnoremapabbrev LHS RHS" if they start to conflict as keymaps
-            vim.keymap.set("c", "gts", "Git status -uno<CR>")
-            vim.keymap.set("c", "gtl", 'Git pull<CR>')
-            vim.keymap.set("c", "gtp", 'Git push<CR>')
-            vim.keymap.set("c", "gta", 'Git add %<CR>')
-            vim.keymap.set("c", "gtc", 'Git commit -m "')
+            -- using same naming that I have in the terminal.
+            -- abbrev since a cmd will need to start with uppercase and cannot be modified after expansion.
+            -- a "c" keymap is also possible but would expand at any mention and make typing anything with g a bit odd.
+            -- There's no abbrev lua function yet.
+            vim.cmd [[
+                cnoreabbrev gts Git status -uno
+                cnoreabbrev gtl Git pull
+                cnoreabbrev gtp Git push
+                cnoreabbrev gta Git add %
+                cnoreabbrev gtc Git commit -m
+            ]]
         end,
     },
     -- TODO: do we want this? An alt plugin for it?
