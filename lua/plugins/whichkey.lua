@@ -121,12 +121,9 @@ wk.register({
             W = {":Telescope grep_string<CR>", "find word under cursor (telescope)"},
         },
         h = {":noh<CR>", "clear highlights"},
-        -- <leader>K since K is regular defintion of word under cursor.
-        j = {
-            name = "to multiline (revj)",
-            j = "line",
-        },
-        K = {":DashWord<CR>", "Dash word"},
+        j = { "<Plug>Join", "join (see splitjoin.lua)" },
+        -- <leader>K since K is regular definition of word under cursor.
+        -- K = {":DashWord<CR>", "Dash word"},
         l = {
             name = "LaTeX (vimtex || telescope-bibtex || nabla)",
             a = "context menu",
@@ -213,10 +210,12 @@ wk.register({
             l = {":SessionLoad<CR>", "load session"},
             s = {":SessionSave<CR>", "save session"},
         },
+        s = {"<Plug>Split", "split (see splitjoin.lua)"},
         t = {
             name = "toggle || terminal",
             -- switch to/from Danish æøå and to insert mode, which is convenient.
             d = {'i<C-^>', "Danish (ctrl+^)"},
+            j = {"<Plug>JoinToggle", "splitjoin"},
             l = {':silent HlSearchLensToggle<CR>', "HlSearchLens"},
             m = {':MarkdownToggle', "markdown preview"},
             s = {':ScrollbarToggle<CR>', "scrollbar"},
@@ -296,11 +295,11 @@ wk.register({
             o = "new under",
             O = "new above",
         },
-        j = {function() require"trevj".format_at_cursor() end, "unjoin (trevj)"},
-        -- uses % from andymass/vim-matchup which first jumps to container start, then visual, then container end, then core vim Join.
-        -- Couldn't get it to work with whichkey probably since we need to remap %, so it is mapped in keymap.vim
-        J = "join container",
-        -- normally gp is p where cursor is moved at end. Since we do that by default, we can use it for whitepaste
+        j = "go down line",
+        J = "join simply",
+        k = "go up line",
+        -- normally gp is p where cursor is moved at end. Since we do that by default, we can use it for whitepaste.
+        -- the plugin uses ,p and ,P by default but that slows down using , for ,; moving between f/t searching.
         p = "whitepaste after",
         P = "whitepaste before",
         q = {
@@ -313,6 +312,8 @@ wk.register({
             w = "line",
         },
         r = "references (LSP)",
+        -- see below and in plugin/keymaps.vim for more subversive
+        ['ss'] = {"<plug>(SubversiveSubstituteWordRange)", "substitute word under cursor"}
     },
     t = {
         name = "toggle... (vimtex)",
@@ -353,6 +354,7 @@ wk.register({
 
 wk.register({
     ["<leader>"] = {
+        j = "join (revj)",
         l = {
             name = "latex",
             u = {"<plug>Latex2Unicode_visual", "latex2unicode"},
@@ -396,6 +398,15 @@ wk.register({
         F = "backward to (leap)",
         t = "forward till (leap)",
         T = "backward till (leap)",
+    },
+    g = {
+        -- substitute is an optional feature enabled from the substitute package where
+        -- I can substitute e.g. all occurrences of a word in a paragraph with some new text by writing <leader>Swip then the replacement text.
+        -- example: gsiwip to replace all instances of the current word under the cursor that exist within the paragraph under the cursor. 
+        -- example: gsl_ to replace all instances of the character under the cursor on the current line.
+        -- example: gssip to replace the word under cursor in the current paragraph. Matches complete words so is different from <leader>siwip
+        -- See normal gss mapping above.
+        s = { "<plug>(SubversiveSubstituteRange)", "substitute motion in motion" },
     },
 }, {mode={'n', 'v'}})
 

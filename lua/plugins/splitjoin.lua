@@ -19,8 +19,9 @@ return {
             vim.keymap.set("n", "<Plug>JoinToggle", "<Cmd>TSJToggle<CR>")
 
             -- use alt plugins for specific filetypes
-            local fts_split = { splitjoin = { }, trevj = { } }
-            local fts_join  = { splitjoin = {}, matchup = {}, }
+            -- it is also a possibility to define them for treesj
+            local fts_split = { splitjoin = { tex=true, }, trevj = { julia=true, } }
+            local fts_join  = { splitjoin = { tex=true, }, matchup = { julia=true,}, }
             local grp = vim.api.nvim_create_augroup("splitjoin", {clear=true})
 
             -- call nmap buffer thru vimscript since nowait isn't implemented in lua API
