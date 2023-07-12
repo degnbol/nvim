@@ -2,7 +2,9 @@
 return {
     {
         -- :Git and similar commands
-        "tpope/vim-fugitive", config = function ()
+        "tpope/vim-fugitive",
+        cmd = {"Git", "G", "Gedit", "Gsplit", "Gread", "Gwrite", "Ggrep", "GMove", "GDelete", "GRemove"},
+        init = function ()
             -- using same naming that I have in the terminal.
             -- abbrev since a cmd will need to start with uppercase and cannot be modified after expansion.
             -- a "c" keymap is also possible but would expand at any mention and make typing anything with g a bit odd.
@@ -16,13 +18,11 @@ return {
             ]]
         end,
     },
-    -- TODO: do we want this? An alt plugin for it?
-    "tpope/vim-rhubarb", -- :GBrowse and some stuff for git commits.
     -- highlight git conflicts, jump with [x and ]x,
     -- resolve by keeping none (cn), theirs (ct), our (co), both (cb), or both reverse (cB)
-    "rhysd/conflict-marker.vim",
+    {"rhysd/conflict-marker.vim", event="VeryLazy"},
     -- git decoration to the left
-    {"lewis6991/gitsigns.nvim", dependencies={'nvim-lua/plenary.nvim'}, opts={
+    {"lewis6991/gitsigns.nvim", event="VeryLazy", dependencies={'nvim-lua/plenary.nvim'}, opts={
         signs = {
             add = {hl = "DiffAdd", text = "▌", numhl = "DiffAddNr"},
             change = {hl = "DiffChange", text = "▌", numhl = "DiffChangeNr"},
@@ -37,7 +37,12 @@ return {
         sign_priority = 5,
         status_formatter = nil -- Use default
     }},
-    { 'sindrets/diffview.nvim', dependencies={'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons'}, config=function()
+    -- :DiffviewOpen (<leader>gd see whichkey) and other commands for seeing git diff and git history for files.
+    { 'sindrets/diffview.nvim', dependencies={'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons'},
+    -- cmd = {"DiffviewOpen", "DiffviewClose", "DiffviewFileHistory", "DiffviewFocusFiles", "DiffviewToggleFiles", "DiffviewLog", "DiffviewRefresh"},
+    -- only some commands are relevant before first use
+    cmd = {"DiffviewOpen", "DiffviewFileHistory"},
+    config=function()
         local actions = require("diffview.actions")
 
         -- defaults copied and changed from
@@ -140,6 +145,6 @@ return {
                 },
             },
         }
-    end }, -- :DiffviewOpen and other commands for seeing git diff and git history for files.
+    end },
 }
 
