@@ -23,10 +23,10 @@ t"condition=conds.line_begin"),
 
 s({trig="req", dscr="require", condition=conds.line_begin, snippetType='autosnippet'},
 {c(2, {
+    t"",
     f(function (import_name)
         local parts = vim.split(import_name[1][1], '.', true)
-        return "local " .. (parts[#parts] or "") .. " = " end, {1}),
-    t""
+        return "local " .. (parts[#parts] or "") .. " = " end, {1})
 }), t'require "', i(1), t'"'}),
 
 s({trig="nmap", snippetType="autosnippet"},
@@ -45,6 +45,11 @@ s({trig="xmap", snippetType="autosnippet"},
 fmta([[vim.keymap.set("x", "<>", "<>")]],
 {i(1, "from"), i(2, "to")}),
 {condition=conds.line_begin}),
+-- for cmdline, e.g. abbreviations
+s({trig="cmap", snippetType="autosnippet"},
+fmta([[vim.keymap.set("c", "<>", "<>")]],
+{i(1, "from"), i(2, "to")}),
+{condition=conds.line_begin}),
 
 s({trig="root", dscr="Get neovim config root", condition=conds.line_begin, snippetType='autosnippet'},
 {t"local rtp = vim.opt.runtimepath:get()[1]"}),
@@ -53,17 +58,19 @@ s({trig="root", dscr="Get neovim config root", condition=conds.line_begin, snipp
 
 s({trig="aucmd", snippetType="autosnippet" },
 fmta([[
-vim.api.nvim_create_autocmd(<>, {
-    pattern = <>,
+vim.api.nvim_create_autocmd("<>", {
+    pattern = "<>",
+    group = grp,
     callback = <>
 })
 ]],
-{i(1, "Event(s)"), i(2, '"*.EXT"'), i(3, '"string cmd or lua func"')}),
+{i(1, "BufEnter"), i(2, '*'), i(3, '"string cmd or lua func"')}),
 {condition=conds.line_begin}),
 s({trig="augroup", snippetType="autosnippet" },
 -- clear=true is the default. You need to supply at least empty {}.
-fmta('local <> = vim.api.nvim_create_augroup("<>", {clear=true})',
-{rep(1), i(1, "name")}),
+fmta([[local <> = vim.api.nvim_create_augroup("<>", {clear=true})
+]],
+{c(2, {t"grp", rep(1)}), i(1, "name")}),
 {condition=conds.line_begin}),
 
 s({trig="cursor", dscr="get cursor position", condition=conds.line_begin},
@@ -89,6 +96,10 @@ t"vim.bo.filetype"),
 
 s({trig="filepath", dscr="get filepath for current buffer"},
 {t"vim.api.nvim_buf_get_name(0)"}),
+
+s({trig="get_hl", dscr="get highlight group values"},
+fmta([[vim.api.nvim_get_hl(0, {name="<>", link=false})['<>']
+]], {i(1, "Comment"), i(2, "fg")})),
 
 s({trig="startswith", dscr="startswith"},
 {t"vim.startswith(", i(1), t")"}),
