@@ -1,15 +1,17 @@
 -- pop-up to help with keybindings that have been started
 return {
     {
+        "mrjones2014/legendary.nvim",
+        opts = { which_key = { auto_register = true } },
+    },
+    {
     "folke/which-key.nvim",
+    event = "VeryLazy",
     -- doesn't dependend on legendary but we want to call it first
     dependencies={ "mrjones2014/legendary.nvim", },
     config=function()
 --
-require('legendary').setup({ which_key = { auto_register = true } })
-
-
-local wk = require("which-key")
+local wk = require "which-key"
 
 wk.setup {
     plugins = {
@@ -18,11 +20,13 @@ wk.setup {
         -- the presets plugin, adds help for a bunch of default keybindings in Neovim
         -- No actual key bindings are created
         spelling = {
-            enabled = false, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
+            enabled = true, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
             suggestions = 20 -- how many suggestions should be shown in the list?
         },
         presets = {
-            operators = true, -- adds help for operators like d, y, ... and registers them for motion / text object completion
+            -- adds help for operators like d, y, ... and registers them for motion / text object completion
+            -- disabled since gU etc gives a window without wait which I don't need
+            operators = false,
             motions = true, -- adds help for motions
             text_objects = true, -- help for text objects triggered after entering an operator
             windows = true, -- default bindings on <c-w>
@@ -50,18 +54,19 @@ wk.setup {
         width = {min = 20, max = 50}, -- min and max width of the columns
         spacing = 2 -- spacing between columns
     },
-    ignore_missing = false, -- enable this to hide mappings for which you didn't specify a label
-    hidden = {"<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "}, -- hide mapping boilerplate
-    show_help = true, -- show help message on the command line when the popup is visible
+    ignore_missing = false, -- hide unlabeled?
+    -- hide boilerplate
+    hidden = {"<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "},
+    show_help = true, -- show line at bottom with whichkey keybindings
     -- triggers = "auto", -- automatically setup triggers
-    triggers = {"<leader>", "c", "cr", "g"}, -- or specifiy a list manually
-    triggers_nowait = { "cr", }, -- doesn't work
+    triggers = {"<leader>", "g", "y"}, -- or specify a list manually
+    triggers_nowait = {}, 
 }
 
 wk.register({
     ["<S-CR>"] = {":lua focus_repl()<CR>", "Focus REPL"},
-    ["<TAB>"] = {":BufferLineCycleNext<CR>", "next buffer"},
-    ["<S-TAB>"] = {":BufferLineCyclePrev<CR>", "previous buffer"},
+    ["<TAB>"] = {"<Cmd>BufferLineCycleNext<CR>", "next buffer"},
+    ["<S-TAB>"] = {"<Cmd>BufferLineCyclePrev<CR>", "previous buffer"},
     ["<leader>"] = {
         ["<leader>"] = {
             s = {"<cmd>source ~/.config/nvim/after/plugin/luasnip.lua<CR>", "reload snippets"},
@@ -96,7 +101,7 @@ wk.register({
             o = "ours (diffview)",
             t = "theirs (diffview)",
         },
-        C = {"ga", "Character under cursor"}, -- set here because ga is replaced with https://github.com/junegunn/vim-easy-align 
+        C = { "ga", "Character under cursor" }, -- set here because ga is replaced with https://github.com/junegunn/vim-easy-align 
         d = {
             name = "line diagnostics || definition peek",
             -- treesitter textobjects + LSP
@@ -107,18 +112,18 @@ wk.register({
         D = "type defintion (LSP)",
         -- is overwritten by Diffview for its own buffer types so
         -- the description is correct here even though the command only indicates NvimTree
-        e = {":NvimTreeToggle<CR>", "explorer (NvimTree || Diffview)"},
+        e = {"<Cmd>NvimTreeToggle<CR>", "explorer (NvimTree || Diffview)"},
         E = "errors (LSP diagnostics)",
         -- telescope and dashboard mappings
         f = {
             name = "file",
-            b = {":Telescope buffers<CR>", "buffers (telescope)"},
-            f = {":Telescope find_files<CR>", "find (telescope)"},
-            h = {":Telescope help_tags<CR>", "help tags (telescope)"},
-            n = {":DashboardNewFile<CR>", "new (dashboard)"},
-            o = {":Telescope oldfiles<CR>", "recent (telescope)"},
-            w = {":Telescope live_grep<CR>", "find in files (telescope)"},
-            W = {":Telescope grep_string<CR>", "find word under cursor (telescope)"},
+            b = {"<Cmd>Telescope buffers<CR>", "buffers (telescope)"},
+            f = {"<Cmd>Telescope find_files<CR>", "find (telescope)"},
+            h = {"<Cmd>Telescope help_tags<CR>", "help tags (telescope)"},
+            n = {"<Cmd>enew<CR>", "new file"},
+            o = {"<Cmd>Telescope oldfiles<CR>", "recent (telescope)"},
+            w = {"<Cmd>Telescope live_grep<CR>", "find in files (telescope)"},
+            W = {"<Cmd>Telescope grep_string<CR>", "find word under cursor (telescope)"},
         },
         h = {":noh<CR>", "clear highlights"},
         j = { "<Plug>Join", "join (see splitjoin.lua)" },
@@ -158,9 +163,6 @@ wk.register({
             X = "reload state",
             y = {"<plug>YankTable", "yank table as tsv"},
         },
-        m = {
-            m = {":DashboardJumpMarks<CR>", "jump marks (dashboard)"}
-        },
         p = {
             name = "paste after",
             ["#"] = {"<Plug>UnconditionalPasteCommentedAfter", "commented"},
@@ -181,7 +183,9 @@ wk.register({
             -- p the cursor will be at one or the other end after paste. 
             -- Default vim settings are cursor unchanged after paste. I here 
             -- assume it is moved after pasted text.
+            p = {"<Plug>UnconditionalPasteParagraphedAfter", "paragraphed"},
             q = {":set paste<CR>p:set nopaste<CR>`[gq']", "format"},
+            s = {"<Plug>UnconditionalPasteSpacedAfter", "spaced"},
             -- ... there are many more to consider https://github.com/inkarkat/vim-UnconditionalPaste
         },
         P = {
@@ -195,20 +199,14 @@ wk.register({
             j = {"<Plug>UnconditionalPasteJustJoinedBefore", "just joined"},
             l = {"<Plug>UnconditionalPasteLineBefore", "linewise"},
             n = {"<Plug>UnconditionalPasteInlinedBefore", "inlined"},
+            p = {"<Plug>UnconditionalPasteParagraphedBefore", "paragraphed"},
             q = {":set paste<CR>P:set nopaste<CR>`[gq']", "format"},
+            s = {"<Plug>UnconditionalPasteSpacedBefore", "spaced"},
             -- ... there are many more to consider https://github.com/inkarkat/vim-UnconditionalPaste
         },
         r = {
             -- as long as there is only one function under r
-            name = "rename...",
-            n = "rename",
-        },
-        s = {
-            name = "substitute || session",
-            -- substitute is an optional feature enabled from the substitute package where
-            -- I can substitute e.g. all occurrences of a word in a paragraph with some new text by writing <leader>swip then the replacement text.
-            l = {":SessionLoad<CR>", "load session"},
-            s = {":SessionSave<CR>", "save session"},
+            name = "rename...", n = "rename",
         },
         s = {"<Plug>Split", "split (see splitjoin.lua)"},
         t = {
@@ -222,7 +220,7 @@ wk.register({
             T = {':let b:repl_id = input("window id: ")<CR>', "set REPL winid"},
             t = {':lua set_repl_last()<CR>', "set last window as REPL"},
         },
-        x = {':BufDel<CR>', "delete buffer"}, -- ojroques BufDel
+        x = { ':BufDel<CR>', "delete buffer" }, -- ojroques BufDel
     },
     c = {
         name = "change...",
@@ -252,13 +250,6 @@ wk.register({
             m = "math (vimtex)", -- changed in ftplugin
         },
     },
-    cr = {
-            name = "coerce (casing)",
-            c = "camelCase",
-            s = "snake_case",
-            m = "MixedCase",
-            ["<space>"] = "mixed case",
-        },
     d = {
         name = "delete...",
         -- small hack to remove excess whitespace.
@@ -328,6 +319,19 @@ wk.register({
             ['$'] = "equation", -- inline vs display etc
         },
     },
+    y = {
+        name = "you...",
+        o = {
+            name = "toggle option (unimpaired)",
+            h = "hlsearch",
+            i = "ignorecase",
+            l = "list",
+            n = "number",
+            r = "relativenumber",
+            s = "spell",
+            w = "wrap",
+        }
+    },
     ['['] = {
         name = "Previous...",
         d = "diagnostic (LSP)",
@@ -338,6 +342,8 @@ wk.register({
         ['$'] = {"<Plug>(vimtex-[N)", "equation (vimtex)"},
         m = {"<Plug>(vimtex-[n)", "equation (vimtex)"}, -- without shift
         M = {"<Plug>(vimtex-[N)", "equation (vimtex)"},
+        p = "put above, same indent (unimpaired)",
+        P = "put above, same indent (unimpaired)",
     },
     [']'] = {
         name = "Next...",
@@ -349,6 +355,22 @@ wk.register({
         ['$'] = {"<Plug>(vimtex-]N)", "equation (vimtex)"},
         m = {"<Plug>(vimtex-]n)", "equation (vimtex)"}, -- without shift
         M = {"<Plug>(vimtex-]N)", "equation (vimtex)"},
+        p = "put below, same indent (unimpaired)",
+        P = "put below, same indent (unimpaired)",
+    },
+    ['='] = {
+        p = "paste formatted after (unimpaired)",
+        P = "paste formatted before (unimpaired)",
+        s = {
+            name = "toggle setting (unimpaired)",
+            h = "hlsearch",
+            i = "ignorecase",
+            l = "list",
+            n = "number",
+            r = "relativenumber",
+            s = "spell",
+            w = "wrap",
+        },
     },
 }, {mode='n'})
 
@@ -393,12 +415,6 @@ wk.register({
             u = {"<Cmd>Gitsigns undo_stage_hunk<CR>", "undo stage hunk (gitsigns)"},
         },
     },
-    ['\\'] = {
-        f = "forward to (leap)",
-        F = "backward to (leap)",
-        t = "forward till (leap)",
-        T = "backward till (leap)",
-    },
     g = {
         -- substitute is an optional feature enabled from the substitute package where
         -- I can substitute e.g. all occurrences of a word in a paragraph with some new text by writing <leader>Swip then the replacement text.
@@ -409,6 +425,15 @@ wk.register({
         s = { "<plug>(SubversiveSubstituteRange)", "substitute motion in motion" },
     },
 }, {mode={'n', 'v'}})
+
+wk.register({
+    ['\\'] = {
+        f = {'<Plug>(leap-forward-to)', "forward to (leap)"},
+        F = {'<Plug>(leap-backward-to)', "backward to (leap)"},
+        t = {'<Plug>(leap-forward-till)', "forward till (leap)"},
+        T = {'<Plug>(leap-backward-till)', "backward till (leap)"},
+    },
+}, {mode={'n', 'x', 'o'}})
 
 wk.register({
     ["<C-l>"] = {":lua require'telescope.builtin'.keymaps(require('telescope.themes').get_ivy())<CR>", "Keymaps"},
