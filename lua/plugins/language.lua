@@ -5,7 +5,6 @@ return {
     {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end},
     -- has the useful gcO and gcA extra mappings, but the basic mappings aren't working as I like from terrortylor
     {"numToStr/Comment.nvim", opts={ mappings={ basic=false, } }},
-    -- "windwp/nvim-autopairs", -- auto add second parenthesis etc.
     -- julia support, colors and unicode substitution. CANNOT use ft=julia
     {"JuliaEditorSupport/julia-vim", config=function()
         -- this was necessary, random lhs rhs messages was appearing 
@@ -25,29 +24,42 @@ return {
     -- {"preservim/vim-markdown", dependencies={"godlygeek/tabular"}}, -- conceal markdown expressions like _emphasis_ and folding. Overkill, see {after/,}syntax/markdown.vim
     -- :MarkdownPreview live in browser
     {"iamcco/markdown-preview.nvim", build=':call mkdp#util#install()', ft='markdown'},
-    {"habamax/vim-asciidoctor", config=function()
+    {"habamax/vim-asciidoctor", ft='asciidoctor', config=function()
         -- conceal _ and * in _italic_ and *bold*
         vim.g.asciidoctor_syntax_conceal = 1
-    end, ft='asciidoctor'},
+    end},
     -- https://quarto.org/
     {"quarto-dev/quarto-vim", dependencies={"vim-pandoc/vim-pandoc-syntax"}, ft="quarto"},
-    {"habamax/vim-rst"},
-    "jbyuki/nabla.nvim", -- show pretty math in term
+    {"habamax/vim-rst", ft="rst"},
+    {"lukas-reineke/headlines.nvim", ft = {'markdown', 'neorg', 'orgmode', 'rst', 'asciidoc', 'asciidoctor'},
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = { }, },
+    -- show pretty math in term. Lazy load on the single cmd that you would use it for (see whichkey).
+    {"jbyuki/nabla.nvim", keys = "<leader>lE",},
     -- "elzr/vim-json", -- json
     {"OmniSharp/omnisharp-vim", ft="cs"},
     
     -- autoclose pairs.
     -- "m4xshen/autoclose.nvim" is too simple.
     -- "windwp/nvim-autopairs" doesn't delete properly even with the check_ts 
-    -- (treesitter) setting on. I also tried pears.nvim.
+    -- (treesitter) setting on. I also tried pears.nvim. I haven't tried mini.pairs
     { "tmsvg/pear-tree", config=function ()
-        g.pear_tree_smart_openers = 1
-        g.pear_tree_smart_closers = 1
+        -- g.pear_tree_smart_openers = 1
+        -- g.pear_tree_smart_closers = 1 # bad in lua, type "{}" -> "{}}"
         g.pear_tree_smart_backspace = 1
         -- uncomment to not hide the closing bracket on newline at the cost of 
         -- dot-repeat only performing the last part of the edit.
         -- g.pear_tree_repeatable_expand = 0
+        g.pear_tree_ft_disabled = {
+            "TelescopePrompt", "NvimTree", "qf",
+            "tex",
+        }
     end},
+    {
+        "nvim-neorg/neorg",
+        ft = "norg",
+        opts = { },
+    },
 
 }
 
