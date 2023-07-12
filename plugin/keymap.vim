@@ -6,16 +6,9 @@ nmap S  <plug>(SubversiveSubstituteToEndOfLine)
 xmap s <plug>(SubversiveSubstitute)
 xmap p <plug>(SubversiveSubstitute)
 xmap P <plug>(SubversiveSubstitute)
-" example: <leader>siwip to replace all instances of the current word under the cursor that exist within the paragraph under the cursor. 
-" example: <leader>sl_ to replace all instances of the character under the cursor on the current line.
-" example: <leader>ssip to replace the word under cursor in the current paragraph. Matches complete words so is different from <leader>siwip
-nmap <leader>s <plug>(SubversiveSubstituteRange)
-xmap <leader>s <plug>(SubversiveSubstituteRange)
-nmap <leader>ss <plug>(SubversiveSubstituteWordRange)
+" extra subversive keymaps on g in whichkey
 
 " Yank, cut, delete behavior
-" a logical choice that was supposed to be default? https://github.com/neovim/neovim/issues/416
-map Y y$
 " back space and delete buttons delete should delete also in normal mode.
 " Delete to black hole register.
 " Maybe too dangerous sometimes with backspace, e.g. when leaving commandline
@@ -51,8 +44,12 @@ nnoremap <expr> x Operator('CutOperator')
 
 " when adding new line below or above, write something (a space) and delete it
 " so the indent aren't removed on ESC.
-nmap o o<c-\><c-o> <BS>
-nmap O O<c-\><c-o> <BS>
+" Commented out since you can just use cc to go to indent, and it is confusing 
+" when it is inconsistent since something like completing `else` behaves 
+" differently. It is possible to keep the blank indents in both cases if cmp's 
+" <CR> behaviour is extended to do something similar to here.
+" nmap o o<c-\><c-o> <BS>
+" nmap O O<c-\><c-o> <BS>
 
 " one scroll signal is one line change instead of 3
 map <ScrollWheelUp>   <c-y>
@@ -156,36 +153,15 @@ inoremap <A-e> <c-\><c-o>e
 inoremap <A-B> <c-\><c-o>B
 inoremap <A-W> <c-\><c-o>W
 inoremap <A-E> <c-\><c-o>E
-
-" like J(oin) but selects the current container, e.g. brackets cursor is in, 
-" and joins it all. Uses https://github.com/andymass/vim-matchup
-nmap gJ va%J
-
-" completion popup keys. <C-e> == reject and close pum. <C-y> == accept.
-" seems unnecessary with cmp
-" inoremap <silent><expr> <Esc>   pumvisible() ? "\<C-y><Esc>" : "\<Esc>"
-" inoremap <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
-" inoremap <silent><expr> <BS>    pumvisible() ? "\<C-y><BS>"  : "\<BS>"
-" Enter makes newline unless pum is visible AND an item has been selected
-" https://vi.stackexchange.com/questions/15092/auto-complete-popup-menu-make-enter-trigger-newline-if-no-item-was-selected
-" Also fix unindenting blankline by writing something (a space) and deleting
-" it again.
-" NOTE: very important, the <c-\><c-o> is needed. I removed it at some point 
-" because I thought it was redudant but it makes sure that when typing 
-" newline, followed by e.g. else (from indentkeys) that indentexpr is called. 
-" If <c-\><c-o> is removed, then indent will no longer be called 
-" automatically. <c-\><c-o> goes to normal mode temporarily, <ESC> is to do 
-" nothing there, but somehow that means that something has been done so the 
-" whitespace line is not reduced to empty line.
-" inoremap <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "<C-y><CR><c-\><c-o><ESC>" : "<C-y>") : "<CR><c-\><c-o><ESC>"
-" above version seems unnecessary with cmp
-inoremap <silent><expr> <CR>    "<CR><c-\><c-o><ESC>"
-" inoremap <silent><expr> <TAB>   pumvisible() ? "\<C-n>" : "\<Tab>"
-" inoremap <silent><expr> <S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-" move up/down on display lines instead of logical lines with arrows in insert mode
-" inoremap <Up> <c-\><c-o>gk
-" inoremap <Down> <c-\><c-o>gj
+" delete back word (insert/cmdmode)
+noremap! <A-backspace> <c-w>
+inoremap <A-Left> <c-\><c-o>b
+" a little movement in cmdmode
+cnoremap <C-a> <Home>
+cnoremap <expr> <A-left> husk#left()
+cnoremap <expr> <A-right> husk#right()
+cnoremap <expr> <A-b> husk#left()
+cnoremap <expr> <A-w> husk#right()
 
 " Danglish support. For when Danglish keyboard is selected, 
 " generally you should instead stay in code keyboard and use iminsert=2
