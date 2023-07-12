@@ -38,9 +38,9 @@ s({trig="dependencies", dscr="A list of plugin names or plugin specs that should
 {t'dependencies = { "', i(1, "USER/REPO"), t'" },'}),
 
 s({trig="init", dscr="`init` functions are always executed during startup."},
-fmta([[init = function () {
+fmta([[init = function ()
     <>
-},]], {i(1)})),
+end,]], {i(1)})),
 
 s({trig="opts", dscr="`opts` should be a table (will be merged with parent specs), return a table (replaces parent specs) or should change a table. The table will be passed to the `Plugin.config()` function. Setting this value will imply `Plugin.config()`."},
 fmta([[opts = {
@@ -77,7 +77,7 @@ s({trig="submodules", dscr="When `false`, git submodules will not be fetched. De
 {t"submodules = false,"}),
 
 s({trig="event", dscr="Lazy-load on event. Events can be specified as `BufEnter` or with a pattern like `BufEnter *.lua`."},
-{t'event = "', i(1), t'",'}),
+{t'event = "', i(1, "VeryLazy"), t'",'}),
 
 s({trig="cmd", dscr="Lazy-load on command."},
 {t'cmd = "', i(1), t'",'}),
