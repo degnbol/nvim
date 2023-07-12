@@ -1,10 +1,11 @@
 #!/usr/bin/env lua
 return {
     -- let's search result box show number of matches when there's >99 matches
-    "google/vim-searchindex",
+    {"google/vim-searchindex", keys={"/", "g/"}},
     -- show a scrollbar, mostly in order to show search results far away in file
     -- requires hlslens to show search results in scrollbar
-    {"petertriho/nvim-scrollbar", dependencies={"kevinhwang91/nvim-hlslens"}, opts = {
+    {"petertriho/nvim-scrollbar", cmd={"ScrollbarToggle", "ScrollbarShow"},
+    dependencies={"kevinhwang91/nvim-hlslens"}, opts = {
         show = false, -- enable with :ScrollbarToggle etc.
         marks = { Search = { color = "yellow" } },
         handlers = {
@@ -14,7 +15,8 @@ return {
     }},
     -- show counter for how many n or N's a search result is away from cursor
     -- also lots of other search highlight customizations possible
-    {"kevinhwang91/nvim-hlslens", config=function()
+    -- currently only used for highlighting next/main search result
+    {"kevinhwang91/nvim-hlslens", keys={"/", "g/"}, config=function()
         local api = vim.api
 
         local config = require('hlslens.config')
