@@ -1,4 +1,5 @@
 #!/usr/bin/env lua
+-- popular alt: lualine
 -- disabled since we don't really need the info visible all the time
 return {"glepnir/galaxyline.nvim", enabled=false, config=function()
     local gl = require("galaxyline")
