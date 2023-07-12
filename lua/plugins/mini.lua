@@ -1,9 +1,9 @@
 #!/usr/bin/env lua
 return {{
     'echasnovski/mini.nvim',
-    version=false,
+    version = false,
     priority = 100, -- higher than default 50 to allow mini parts loaded in other files.
-    config=function()
+    config = function ()
 
 require('mini.bracketed').setup {
     -- ]i to go to more indented region.

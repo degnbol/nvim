@@ -3,6 +3,7 @@
 -- https://github.com/j-hui/fidget.nvim/blob/main/doc/fidget.md
 return {
     "j-hui/fidget.nvim",
+    event = "VeryLazy",
     tag = "legacy",
     opts = {
         text = {

@@ -4,18 +4,23 @@ return {
     "tpope/vim-repeat", -- change . to repeat last native command to last "full" command, which feels more natural.
     -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
     -- "tpope/vim-sensible",
-    "tpope/vim-unimpaired", -- [e, ]e exchange line with above/below, ]<space> add newlines, more: https://github.com/tpope/
-    "tpope/vim-characterize", -- unicode shown for ga
+    -- TODO: list these with whichkey?
+    "tpope/vim-unimpaired", -- [e, ]e exchange line with above/below, ]<space> add newlines, and more
+    {
+        -- unicode shown for ga, we have go-align on that so have to use gA
+        "tpope/vim-characterize",
+        keys="gA",
+        init = function () vim.keymap.set("n", "gA", "ga") end
+    },
     -- add substitution functions to e.g. replace a word with clipboard content by writing siw
     "svermeulen/vim-subversive",
     -- "mg979/vim-visual-multi", -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
     "farmergreg/vim-lastplace", -- open file in last edited location
     "haya14busa/vim-asterisk", -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
+    -- "gioele/vim-autoswap",
     -- easily define custom textobjects
-    {
-        "kana/vim-textobj-user", 
-        -- some config in ftplugin/tex.lua
-    },
+    -- some config in ftplugin/tex.lua
+    "kana/vim-textobj-user", 
     -- TODO: add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
     {"glts/vim-textobj-comment", dependencies={"kana/vim-textobj-user"}}, -- not working?
     {
@@ -26,6 +31,8 @@ return {
             
             require("various-textobjs").setup {
                 useDefaultKeymaps = true,
+                -- disable some default keymaps, e.g. { "ai", "ii" }
+                disabledKeymaps = {"ak", "ik", "av", "iv"},
             }
             
             local open = require("utils/init").open
@@ -58,8 +65,9 @@ return {
         end
     },
     -- increment and decrement numbers, dates, color hex, even bool
-    -- https://github.com/monaqa/dial.nvim
-    {"monaqa/dial.nvim", config=function()
+    {"monaqa/dial.nvim",
+    keys = {"<C-a>", "<C-x>", "g<C-a>", "g<C-x>"},
+    config=function()
         local augend = require("dial.augend")
         require("dial.config").augends:register_group {
             default = {
@@ -74,58 +82,50 @@ return {
             },
         }
 
-        vim.api.nvim_set_keymap("n", "<C-a>", require("dial.map").inc_normal(), {noremap = true})
-        vim.api.nvim_set_keymap("n", "<C-x>", require("dial.map").dec_normal(), {noremap = true})
-        vim.api.nvim_set_keymap("v", "<C-a>", require("dial.map").inc_visual(), {noremap = true})
-        vim.api.nvim_set_keymap("v", "<C-x>", require("dial.map").dec_visual(), {noremap = true})
-        vim.api.nvim_set_keymap("v", "g<C-a>", require("dial.map").inc_gvisual(), {noremap = true})
-        vim.api.nvim_set_keymap("v", "g<C-x>", require("dial.map").dec_gvisual(), {noremap = true})
+        vim.api.nvim_set_keymap("n", "<C-a>",  require("dial.map").inc_normal(), {})
+        vim.api.nvim_set_keymap("n", "<C-x>",  require("dial.map").dec_normal(), {})
+        vim.api.nvim_set_keymap("v", "<C-a>",  require("dial.map").inc_visual(), {})
+        vim.api.nvim_set_keymap("v", "<C-x>",  require("dial.map").dec_visual(), {})
+        vim.api.nvim_set_keymap("v", "g<C-a>", require("dial.map").inc_gvisual(), {})
+        vim.api.nvim_set_keymap("v", "g<C-x>", require("dial.map").dec_gvisual(), {})
     end},
     
     "lervag/file-line", -- open a file on a line with vi filepath:linenumber
-    
-    "monkoose/matchparen.nvim", -- supposedly faster and less buggy version of neovim builtin (:h )matchparen which highlights matching parenthesis etc.
-    
-    -- jump to anywhere with \ + f or F or t or T
-    {'ggandor/leap.nvim', config=function()
-        leap = require 'leap'
 
+    -- supposedly faster and less buggy version of neovim builtin (:h )matchparen which highlights matching parenthesis etc.
+    "monkoose/matchparen.nvim",
+
+    -- jump to anywhere with \ + f or F or t or T (set in whichkey)
+    {'ggandor/leap.nvim',
+    keys = "\\",
+    config=function()
         -- make s and S "unsafe", i.e. available immediately as a command
         -- add ' and ` as safe since it would be unlikely that I would want to jump to a mark right after a leap
         -- add [] as safe since it would be unlikely that I would want to jump with those after a leap
-        leap.opts.safe_labels = {'f','n','u','t','/','`',"'",'[',']','F','N','L','H','M','U','G','T','?','Z'}
+        require'leap'.opts.safe_labels = {'f','n','u','t','/','`',"'",'[',']','F','N','L','H','M','U','G','T','?','Z'}
+    end},
 
-        -- mentioned in whichkey
-        vim.keymap.set({'n', 'x', 'o'}, '\\f', '<Plug>(leap-forward-to)')
-        vim.keymap.set({'n', 'x', 'o'}, '\\F', '<Plug>(leap-backward-to)')
-        vim.keymap.set({'n', 'x', 'o'}, '\\t', '<Plug>(leap-forward-till)')
-        vim.keymap.set({'n', 'x', 'o'}, '\\T', '<Plug>(leap-backward-till)')
-    end},
-    
-    -- color
-    -- when a hex or other color is defined, highlight the text with its color
-    {"NvChad/nvim-colorizer.lua", opts={
-        filetypes = {
-            -- #RGB hex codes are too simple and may show up in julia in rare cases unnamed variables
-            julia = { RGB = false, }
-        }
-    }}, 
-    {"norcalli/nvim-base16.lua", enabled=false, dependencies={"norcalli/nvim.lua"}, config=function ()
-        base16 = require'base16'
-        theme = base16.theme_from_array(require("themes/gigavoltArray"))
-        -- theme = base16.themes["unikitty-dark"]
-        base16(theme, true)
-    end},
-    
     -- highlight letters for jumping with f/F/t/T
     {"unblevable/quick-scope", enabled=false, config=function()
         -- Trigger a highlight in the appropriate direction when pressing these keys:
         vim.g.qs_highlight_on_keys = {'f', 'F', 't', 'T'}
     end},
+
+    -- when a hex or other color is defined, highlight the text with its color
+    {"NvChad/nvim-colorizer.lua", event = "VeryLazy", opts={
+        -- write filetype to auto-attach to its buffer
+        filetypes = {
+            'lua',
+            'R',
+            'python',
+            -- #RGB hex codes are too simple and may show up in julia in rare cases unnamed variables
+            julia = { RGB = false, }
+        }
+    }},
+
+    -- dim code that isn't currently being edited with :Twilight.
+    {"folke/twilight.nvim", cmd={"Twilight", "TwilightEnable"}, opts = {dimming={alpha=0.5}, context=20}},
     
-    "sakshamgupta05/vim-todo-highlight", -- highlight todos
-    -- {"folke/twilight.nvim", config=function() require'twilight'.setup{dimming={alpha=0.5}, context=30} end}, -- dim code that isn't currently being edited with :Twilight.
-    
-    "ThePrimeagen/vim-be-good",
+    {"ThePrimeagen/vim-be-good", cmd="VimBeGood"},
 }
 
