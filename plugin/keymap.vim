@@ -214,3 +214,9 @@ imap <F15> <C-n>
 " with git: https://github.com/gillescastel/latex-snippets
 inoremap <C-s> <c-g>u<Esc>[s1z=`]a<c-g>u
 
+" typo help
+command Q q
+command X x
+command WQ wq
+command Wq wq
+
