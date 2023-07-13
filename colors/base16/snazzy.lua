@@ -1,5 +1,5 @@
 -- author: "Chawye Hsu (https://github.com/chawyehsu) based on Hyper Snazzy Theme (https://github.com/sindresorhus/hyper-snazzy)"
-return {
+require "base16"({
     base00 = "282a36";
     base01 = "34353e";
     base02 = "43454f";
@@ -16,4 +16,4 @@ return {
     base0D = "57c7ff";
     base0E = "ff6ac1";
     base0F = "b2643c";
-}
+}, true)

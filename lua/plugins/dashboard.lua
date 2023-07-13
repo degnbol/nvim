@@ -1,6 +1,7 @@
 -- open to a dashboard for vi without a file selection, requires telescope or an alternative installed.
 return {
-    "nvimdev/dashboard-nvim", event = 'VimEnter', dependencies = {'nvim-tree/nvim-web-devicons'},
+    "nvimdev/dashboard-nvim", event = 'VimEnter',
+    dependencies = {'nvim-tree/nvim-web-devicons'},
     opts = {
         change_to_vcs_root = true,
         config = {

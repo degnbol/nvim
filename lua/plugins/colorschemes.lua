@@ -2,21 +2,15 @@
 return {
     {
         "norcalli/nvim-base16.lua",
-        -- TODO: find a way to set these schemes with a cmd, ideally the colorscheme cmd
+        -- TODO: find way to use each of the builtin ones from this with colorscheme cmd
         lazy = true,
+        -- event = "User ColorSchemeLoad", -- see whichkey
         dependencies={"norcalli/nvim.lua"},
-        config = function ()
-            base16 = require'base16'
-            base16.themes["gigavolt"] = require("base16/gigavolt")
-            base16.themes["decaf"] = require("base16/decaf")
-            -- local theme_names = base16.theme_names()
-            -- base16(base16.themes.decaf)
-        end,
     },
 
     {
         "NTBBloodbath/sweetie.nvim",
-        cmd = "Colorscheme",
+        event = "User ColorSchemeLoad", -- see whichkey
         opts = {
             overrides = {
                 Comment = { italic = false },
@@ -27,42 +21,40 @@ return {
 
     {
         'maxmx03/fluoromachine.nvim',
-        lazy=true,
-        opts = {
-            glow = true,
-            -- theme = 'fluoromachine',
-            -- theme = 'retrowave',
-            theme = 'delta',
-            overrides = {
-                 ['Comment'] = { italic = false },
-             }
-        }
+        -- simply loading this will set it. We define code in colors/ instead of the event.
+        -- event = "User ColorSchemeLoad", -- see whichkey
+        -- lazy = true,
+        priority = 1000,
+        config = function ()
+            vim.cmd "colorscheme delta"
+        end
     },
 
     {
         "rebelot/kanagawa.nvim",
-        lazy=false,
-        priority = 1000,
+        event = "User ColorSchemeLoad", -- see whichkey
         config = function ()
             require'kanagawa'.setup {
                 commentStyle = { italic = false },
             }
-            vim.cmd "colorscheme kanagawa"
         end
     },
 
     {
         'rose-pine/neovim',
-        lazy=true,
+        event = "User ColorSchemeLoad", -- see whichkey
         name = 'rose-pine',
         opts = { }
     },
 
-    {"xero/miasma.nvim", lazy=true},
+    {
+        "xero/miasma.nvim",
+        event = "User ColorSchemeLoad", -- see whichkey
+    },
 
     {
         "ribru17/bamboo.nvim",
-        lazy = true,
+        event = "User ColorSchemeLoad", -- see whichkey
         opts = {
             code_style = {
                 comments = 'none',
@@ -73,7 +65,7 @@ return {
 
     {
         "EdenEast/nightfox.nvim",
-        lazy = true,
+        event = "User ColorSchemeLoad", -- see whichkey
         opts = {
             options = { styles = { keywords = "italic" } }
         }
@@ -81,7 +73,7 @@ return {
 
     {
         "projekt0n/github-nvim-theme",
-        lazy = true,
+        event = "User ColorSchemeLoad", -- see whichkey
         config = function()
             require'github-theme'.setup { }
         end
@@ -89,7 +81,7 @@ return {
 
     {
         "catppuccin/nvim",
-        lazy = true,
+        event = "User ColorSchemeLoad", -- see whichkey
         name = "catppuccin",
     }
 }

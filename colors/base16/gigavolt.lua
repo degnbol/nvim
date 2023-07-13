@@ -1,5 +1,5 @@
 -- author: "Aidan Swope (http://github.com/Whillikers)"
-return {
+require "base16"({
     base00 = "000000";
     base01 = "2d303d";
     base02 = "5a576e";
@@ -16,4 +16,4 @@ return {
     base0D = "40bfff";
     base0E = "ae94f9";
     base0F = "6187ff";
-}
+}, true)

@@ -1,4 +1,4 @@
-return {
+require "base16"({
     base00 = "2d2d2d";
     base01 = "393939";
     base02 = "515151";
@@ -15,4 +15,4 @@ return {
     base0D = "6c99bb";
     base0E = "d197d9";
     base0F = "f97394";
-}
+}, true)

@@ -1,5 +1,5 @@
 -- author = "Alex Mirrington (https://github.com/alexmirrington)"
-return {
+require "base16"({
     base00 = "000000";
     base01 = "393939";
     base02 = "515151";
@@ -16,4 +16,5 @@ return {
     base0D = "90bee1";
     base0E = "efb3f7";
     base0F = "ff93b3";
-}
+}, true)
+

@@ -1,9 +1,9 @@
 -- author: "Thomas Leon Highbaugh thighbaugh@zoho.com"
-return {
+require "base16"({
     base00 = "000000";
-    base01 = "22262d";
+    base01 = "262a31";
     base02 = "3c3f4c";
-    base03 = "383a47";
+    base03 = "454754";
     base04 = "555e70";
     base05 = "8b9cbe";
     base06 = "B2BFD9";
@@ -16,4 +16,7 @@ return {
     base0D = "00eaff";
     base0E = "00ffcc";
     base0F = "ff3d81";
-}
+}, true)
+-- increased some grays.
+-- Also just making comment brighter
+vim.api.nvim_set_hl(0, "Comment", {fg="gray"})
