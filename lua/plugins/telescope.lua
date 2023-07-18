@@ -2,7 +2,9 @@
 return {
     -- recommended compiled fuzzy finder for telescope. Cannot be opt=true when needed by tzachar/cmp-fuzzy-path
     {
-        "nvim-telescope/telescope-fzf-native.nvim", build='make', config=function ()
+        "nvim-telescope/telescope-fzf-native.nvim", build='make',
+        lazy = true, -- load as (fake) dependency of telescope
+        config=function ()
             -- load the native fzf as recommended
             -- require'telescope'.load_extension('fzf')
             -- pcall is protected call, i.e. doesn't make a big deal out of errors
@@ -11,7 +13,9 @@ return {
         end
     },
     {
-        "nvim-telescope/telescope.nvim", dependencies={"nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim"},
+        "nvim-telescope/telescope.nvim",
+        cmd = "Telescope",
+        dependencies={"nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim"},
         opts={
             defaults = {
                 layout_strategy = "vertical",
@@ -19,6 +23,12 @@ return {
                 selection_caret = '',
                 entry_prefix = '',
                 multi_icon = '',
+            },
+            pickers = {
+                colorscheme = {
+                    -- window has to be big enough to show the preview window
+                    enable_preview = true,
+                }
             },
             extensions = {
                 dash = {
@@ -29,17 +39,18 @@ return {
             }
         }
     },
-    {'sudormrfbin/cheatsheet.nvim', dependencies={'nvim-telescope/telescope.nvim'}}, -- <leader>? to give cheatsheet popup. 
-    {"lalitmee/browse.nvim", dependencies={"nvim-telescope/telescope.nvim"}}, -- search stackoverflow quicker
-    {"nvim-telescope/telescope-bibtex.nvim", dependencies={'nvim-telescope/telescope.nvim'}, config=function()
+    {'sudormrfbin/cheatsheet.nvim', cmd="Cheatsheet", dependencies={'nvim-telescope/telescope.nvim'}}, -- <leader>? to give cheatsheet popup. 
+    -- TODO we don't actually use this yet
+    {"lalitmee/browse.nvim", enabled = false, dependencies={"nvim-telescope/telescope.nvim"}}, -- search stackoverflow quicker
+    {"nvim-telescope/telescope-bibtex.nvim",
+    dependencies={'nvim-telescope/telescope.nvim'}, ft="tex",
+    config=function()
         -- https://github.com/nvim-telescope/telescope-bibtex.nvim
         telescope = require "telescope"
         telescope.load_extension("bibtex")
         -- the following is used to detect *.bib file used
         -- by looking for \bibliography and \addbibresource.
-        telescope.setup {
-            context = true,
-        }
+        telescope.setup { context = true, }
     end},
     -- consider papis as well.
     -- bibliography references, mostly relevant for citations in .tex documents.
