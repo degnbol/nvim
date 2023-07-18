@@ -5,10 +5,9 @@ return {"akinsho/nvim-bufferline.lua", dependencies={"DaikyXendo/nvim-material-i
         numbers = function(opts) return string.format('%s', opts.raise(opts.ordinal)) end,
         offsets = {{filetype = "NvimTree"}}, -- moves bufferline to the right when tree view is open
         indicator = {style="none"}, -- no line or other indicator in front of selected tab
-        separator_style = {"", ""}, -- remove separators
-        buffer_close_icon = "",
+        -- separator_style = {"", ""}, -- remove separators
+        separator_style = "slant",
         modified_icon = "",
-        close_icon = "",
         left_trunc_marker = "",
         right_trunc_marker = "",
         max_name_length = 20,
