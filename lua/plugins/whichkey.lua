@@ -50,8 +50,8 @@ wk.setup {
         padding = {0, 0, 0, 0}
     },
     layout = {
-        height = {min = 4, max = 25}, -- min and max height of the columns
-        width = {min = 20, max = 50}, -- min and max width of the columns
+        height = {min = 3, max = 18}, -- min and max height of the columns
+        width = {min = 15, max = 60}, -- min and max width of the columns
         spacing = 2 -- spacing between columns
     },
     ignore_missing = false, -- hide unlabeled?
@@ -77,7 +77,7 @@ wk.register({
         ["1"] = {":BufferLineGoToBuffer 1<CR>", "buffer 1 (bufferline)"},
         ["2"] = {":BufferLineGoToBuffer 2<CR>", "buffer 2 (bufferline)"},
         ["3"] = {":BufferLineGoToBuffer 3<CR>", "buffer 3 (bufferline)"},
-        ["4"] = {":BufferLineGoToBuffer 4<CR>", "..."},
+        ["4"] = {":BufferLineGoToBuffer 4<CR>", "…"},
         ["5"] = {":BufferLineGoToBuffer 5<CR>", "which_key_ignore"},
         ["6"] = {":BufferLineGoToBuffer 6<CR>", "which_key_ignore"},
         ["7"] = {":BufferLineGoToBuffer 7<CR>", "which_key_ignore"},
@@ -94,16 +94,23 @@ wk.register({
         c = {
             -- works with both since Diffview only overwrites keybindings for their own buffer types
             -- For choosing none, use dx (delete conflict)
-            name = "code (LSP) || choose (Diffview)...",
-            a = "code action (LSP)... || all (diffview)",
+            -- TODO: maybe only list Diffview options for diffview types?
+            name = "code (LSP)…|choose (Diffview)…|color…",
+            a = "code action (LSP)…|all (diffview)",
             b = "base (diffview)",
             d = {"dx", "none/delete (diffview). Use dx"},
             o = "ours (diffview)",
+            s = {function()
+                -- Load colorschemes. Using lazy keys didn't work
+                -- https://www.reddit.com/r/neovim/comments/12tcx0b/attempt_at_adding_color_schemes_to_list_of/
+                vim.api.nvim_exec_autocmds("User", { pattern = "ColorSchemeLoad" })
+                require("telescope.builtin").colorscheme()
+            end, "colorscheme"},
             t = "theirs (diffview)",
         },
         C = { "ga", "Character under cursor" }, -- set here because ga is replaced with https://github.com/junegunn/vim-easy-align 
         d = {
-            name = "line diagnostics || definition peek",
+            name = "line diagnostics|definition peek",
             -- treesitter textobjects + LSP
             f = "function",
             F = "class",
@@ -112,7 +119,7 @@ wk.register({
         D = "type defintion (LSP)",
         -- is overwritten by Diffview for its own buffer types so
         -- the description is correct here even though the command only indicates NvimTree
-        e = {"<Cmd>NvimTreeToggle<CR>", "explorer (NvimTree || Diffview)"},
+        e = {"<Cmd>NvimTreeToggle<CR>", "explorer (NvimTree|Diffview)"},
         E = "errors (LSP diagnostics)",
         -- telescope and dashboard mappings
         f = {
@@ -130,7 +137,7 @@ wk.register({
         -- <leader>K since K is regular definition of word under cursor.
         -- K = {":DashWord<CR>", "Dash word"},
         l = {
-            name = "LaTeX (vimtex || telescope-bibtex || nabla)",
+            name = "LaTeX (vimtex|telescope-bibtex|nabla)",
             a = "context menu",
             -- align table see ftplugin/tex.lua. ma ... `a to not move cursor.
             A = {"ma<plug>AlignTable<CR>`a", "Align table"},
@@ -206,11 +213,11 @@ wk.register({
         },
         r = {
             -- as long as there is only one function under r
-            name = "rename...", n = "rename",
+            name = "rename…", n = "rename",
         },
         s = {"<Plug>Split", "split (see splitjoin.lua)"},
         t = {
-            name = "toggle || terminal",
+            name = "toggle|terminal",
             -- switch to/from Danish æøå and to insert mode, which is convenient.
             d = {'i<C-^>', "Danish (ctrl+^)"},
             j = {"<Plug>JoinToggle", "splitjoin"},
@@ -223,16 +230,16 @@ wk.register({
         x = { ':BufDel<CR>', "delete buffer" }, -- ojroques BufDel
     },
     c = {
-        name = "change...",
+        name = "change…",
         s = {
-            name = "surrounding...",
+            name = "surrounding…",
             c = "command (vimtex)",
             e = "environment (vimtex)",
             -- e.g. change $ $ to equation environment by typing "equation" at prompt
             ['$'] = "math (vimtex)"
         },
         a = {
-            name = "a(round)...",
+            name = "a(round)…",
             -- e.g. parenthesis in math
             d = "delimiter (vimtex)",
             ['$'] = "math (vimtex)",
@@ -241,7 +248,7 @@ wk.register({
             m = "math (vimtex)", -- changed in ftplugin
         },
         i = {
-            name = "in(side)...",
+            name = "in(side)…",
             -- e.g. parenthesis in math
             d = "delimiter (vimtex)",
             ['$'] = "math (vimtex)",
@@ -251,13 +258,13 @@ wk.register({
         },
     },
     d = {
-        name = "delete...",
+        name = "delete…",
         -- small hack to remove excess whitespace.
         -- iw also captures whitespace under cursor.
         ['i '] = {"ciw <Esc>", "delete excess whitespace"},
         -- mini package
         s = {
-            name = "surrounding...",
+            name = "surrounding…",
             -- see :h vimtex-default-mappings
             c = "command (vimtex)",
             -- includes \left and \right if connected to e.g. ( and )
@@ -275,12 +282,12 @@ wk.register({
             c = "line",
             A = "new EOL",
             a = {
-                name = "a(round)...",
+                name = "a(round)…",
                 c = "comment line",
                 C = "comments",
             },
             i = {
-                name = "in(side)...",
+                name = "in(side)…",
                 c = "comments",
             },
             o = "new under",
@@ -307,9 +314,9 @@ wk.register({
         ['ss'] = {"<plug>(SubversiveSubstituteWordRange)", "substitute word under cursor"}
     },
     t = {
-        name = "toggle... (vimtex)",
+        name = "toggle… (vimtex)",
         s = {
-            name = "style...",
+            name = "style…",
             c = "command", -- e.g. section
             d = "delimiter", -- e.g. with(out) \left
             -- same as d, but looks through g:vimtex_delim_toggle_mod_list in reverse
@@ -320,7 +327,7 @@ wk.register({
         },
     },
     y = {
-        name = "you...",
+        name = "you…",
         o = {
             name = "toggle option (unimpaired)",
             h = "hlsearch",
@@ -333,7 +340,7 @@ wk.register({
         }
     },
     ['['] = {
-        name = "Previous...",
+        name = "Previous…",
         d = "diagnostic (LSP)",
         h = {"<Cmd>Gitsigns prev_hunk<CR>", "hunk (gitsigns)"},
         y = "Change paste (Yoink)",
@@ -346,7 +353,7 @@ wk.register({
         P = "put above, same indent (unimpaired)",
     },
     [']'] = {
-        name = "Next...",
+        name = "Next…",
         d = "diagnostic (LSP)",
         h = {"<Cmd>Gitsigns next_hunk<CR>", "hunk (gitsigns)"},
         y = "Change paste (Yoink)",
