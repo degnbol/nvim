@@ -45,19 +45,15 @@ fg("CursorLineNr", nil)
 -- @variable seemed to start being linked to @identifier after update?
 hl("@variable", {gui=nil})
 
----- git signs link to Gitsigns equivalent which gets defined
-link("DiffAddNr", "GitsignsAddLn")
-link("DiffChangeNr", "GitsignsChangeLn")
--- DiffDeleteNr is set in afterColorscheme since it needs to know a 
--- color defined by Gitsigns and can't just link
-link("DiffTopDeleteNr", "GitsignsDeleteVirtLn") -- edge-case where first line(s) of file is deleted
-link("DiffChangeDeleteNr", "GitsignsChangedeleteLn")
-
-
 local function afterColorscheme()
     -- fix issue where colorscheme change removes all telescope highlight groups
     vim.cmd 'silent Lazy reload telescope.nvim'
 
+    ---- git signs link to Gitsigns equivalent which gets defined
+    link("DiffAddNr", "GitsignsAddLn")
+    link("DiffChangeNr", "GitsignsChangeLn")
+    link("DiffTopDeleteNr", "GitsignsDeleteVirtLn") -- edge-case where first line(s) of file is deleted
+    link("DiffChangeDeleteNr", "GitsignsChangedeleteLn")
     -- special decides the color for the underline
     hl("DiffDeleteNr", {underline=true, special=gethl("DiffDelete")["fg"], fg=nil})
 
