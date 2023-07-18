@@ -1,7 +1,27 @@
+Then have ability to make theme persist. we probs won't change often, except for dark vs light.
+Auto switch away from dark theme if we select light theme?
+Would also be cool to only list dark or light themes in treesitter.
+
+splitjoin shouldn't have issue splitting when there is a comment in a lua block for instance.
+
+consider something like auto indent pasted text as more default or more accessible since we fix it so often.
+Maybe too much to have it as default but we could use shift+= (+, I never use it) as alone `[ to `] 
+and something in insert mode which may already exists, just like I already had =p for formatted paste from unimpaired.
+
+color theme according to terminal color theme but with an option to use the 
+hardcoded tested color theme so we don't end up with a broken theme.
+
+BUG: scrolling in nvim tree turns it into another buffer.
+Alt tree browsers: https://github.com/miversen33/netman.nvim
+https://github.com/nvim-neo-tree/neo-tree.nvim/
+
+tex cmd trying to ctrl+t \texttt the whole text within an \href surrounds the whole \href cmd. It shouldnt.
+
+
+
 If you get LSP diagnostics to become good then you can add toggling with WhoIsSethDaniel/toggle-lsp-diagnostics.nvim
-Consider https://github.com/jalvesaq/Nvim-R and https://github.com/jalvesaq/vimcmdline
 Consider https://github.com/seblj/nvim-tabline and 
-customized to use tabs rather than buffers 
+customized to use tabs rather than buffers
 https://github.com/kyazdani42/nvim-tree.lua
 Delete button cuts, but should just delete. Fixed for backspace now using black hole register.
 
@@ -21,12 +41,6 @@ https://github.com/gerw/vim-HiLinkTrace
 inspiration:
 https://github.com/rockerBOO/awesome-neovim
 
-# text objectsssss
-https://github.com/kana/vim-textobj-user/wiki
-
-color theme according to terminal color theme but with an option to use the 
-hardcoded tested color theme so we don't end up with a broken theme.
-
 see video again from kitty main page and implement super useful things, e.g. the thing that let's you edit remote files locally.
 https://sw.kovidgoyal.net/kitty/
 
@@ -40,20 +54,9 @@ Hide last search if / or ? is used as textobj, e.g. y/\. that yanks sentence tha
 
 Telescope filter underfull overfull and warnings in latex.
 
-Very annoying: when autocompleting on the fo=a autoformats, the completion is duplicated on the new line.
-
 markid better syntax highlighting
 
-Write lua function to add a line with word under cursor to spell/custom.dic
-then maybe update cmp to understand the word has been added.
-Then you can add unknown (lots of scientific) words to your dictionary.
-Add a keybinding in whichkey
-
-GOTTA fix autocomplete from using enter for insertion when I haven't selected any item.
-
 consider colortheme https://github.com/nealmckee/penumbra
-
-BUG: scrolling in nvim tree turns it into another buffer.
 
 add useful things to mouse. I don't want to use it too much but maybe some 
 things that are hard to remember or where mouse movement is natural.
@@ -77,4 +80,49 @@ line.
 
 features: leader+t+p to toggle pipe notation in julia, leader+t+f toggling between inline function, regular and begin/end and other toggles could be useful.
 Maybe move toggles to g+t+... and use leader+t for term stuff?
+
+look more into editing remote files with nvim from local without using kitten for it.
+Purpose:
+1) browse the actual remote folder instead of a local temp folder.
+2) indenpendence from kitty so we can use any terminal.
+
+there seem to be some nice util functions you can use at https://gitlab.com/jrop/dotfiles/-/blob/master/.config/nvim/lua/my/utils.lua#L27
+
+consider if x and d should be swapped, since d's natural role is cut, so then only x will be non-standard.
+
+Still not happy with autopairs. E.g. { at end of line where I have something on next line that I intend to put inside {}.
+Or finishing an unclosed quote in lua seems like an obvious case not to introduce a new pair of "".
+
+Would be cool if viv and vik could understand when = is inside arg and then do intersect of itself and via.
+I downloaded the key/value text objs as a starting point in lua/textobjects/keyvalue.lua.
+
+Custom completion sources, e.g. valid string values for ggplot, e.g. annotate and guide="none" or direction="vertical"
+inspiration from youtuber showing custom cmp source:
+https://github.com/wincent/wincent/blob/2d926177773f/aspects/nvim/files/.config/nvim/lua/wincent/cmp/handles.lua
+
+conceal \textcolor in tex and show the contained color in the chosen color.
+
+highlight _ that is outside math env with ERROR color in tex.
+
+https://neovimcraft.com/plugin/folke/noice.nvim/index.html
+
+Consider cmdline completion for e.g. search:
+https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
+https://github.com/hrsh7th/cmp-cmdline
+https://github.com/dmitmel/cmp-cmdline-history
+Consider cmdline completion search:
+https://github.com/hrsh7th/cmp-nvim-lsp-document-symbol/blob/main/README.md
+Also:
+https://github.com/kristijanhusak/vim-dadbod-completion
+https://github.com/uga-rosa/cmp-dynamic
+https://github.com/aspeddro/cmp-pandoc.nvim
+https://github.com/jc-doyle/cmp-pandoc-references
+Check if tex completion is lacking:
+https://github.com/amarakon/nvim-cmp-lua-latex-symbols
+OR https://github.com/kdheepak/cmp-latex-symbols
+
+
+figure out better system for join and reverse join, we have 3 different plugins or more for it.
+
+autoswap for kitty? or just allow editing file in multiple windows.
 
