@@ -9,7 +9,7 @@ end
 
 -- TODO: use maybe vim.api.nvim_buf_clear_namespace to clear highlights if we change textcolor in a textcolor cmd
 local function textcolorRange(buf, linestart, lineend)
-    local lines = vim.api.nvim_buf_get_lines(buf, linestart, lineend, true)
+    local lines = vim.api.nvim_buf_get_lines(buf, linestart, lineend, false) -- true errors on new empty file
     if table.concat(lines):match('\\textcolor') then
         -- only works if the whole command is on the same line when first completed
         for iLine, line in ipairs(lines) do
