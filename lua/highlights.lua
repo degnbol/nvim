@@ -25,9 +25,7 @@ function gethl(name)
 end
 -- update subset of settings for a highlight group instead of replacing them all
 function modhl(name, val)
-    local hls = gethl(name)
-    hls = vim.tbl_extend("force", hls, val)
-    hl(name, hls)
+    hl(name, vim.tbl_extend("force", gethl(name), val))
 end
 
 -- Italic highlight group doesn't actually make terminal text italic by default.
@@ -44,16 +42,6 @@ rev("PmenuSel")
 fg("LineNr", "grey")
 fg("CursorLineNr", nil)
 
--- hide weird error highlights on cmp menu popup for docs for functions.
--- When checking the buftype (normal KK:echo &buftype) it says "nofile" so I 
--- guess that is set after running this file.
--- This means, if you have any problems with lacking error highlight in a real 
--- file it means you have to replace this if with an aucmd that is called when 
--- a buffer is set as nofile.
-if vim.bo.buftype == "" and vim.bo.filetype == "" then
-    link("Error", "Ignore")
-end
-
 -- @variable seemed to start being linked to @identifier after update?
 hl("@variable", {gui=nil})
 
@@ -64,10 +52,6 @@ link("DiffChangeNr", "GitsignsChangeLn")
 -- color defined by Gitsigns and can't just link
 link("DiffTopDeleteNr", "GitsignsDeleteVirtLn") -- edge-case where first line(s) of file is deleted
 link("DiffChangeDeleteNr", "GitsignsChangedeleteLn")
-
----- bufferline
--- bold instead of italic+bold selected
-hl("BufferLineBufferSelected", {bold=true})
 
 
 local function afterColorscheme()
@@ -92,6 +76,11 @@ local function afterColorscheme()
     -- green.
     rev("Search")
     modhl("IncSearch", {reverse=true})
+
+    ---- bufferline
+    -- bold instead of italic+bold selected
+    hl("BufferLineBufferSelected", {bold=true, italic=false})
+    hl("BufferLineNumbersSelected", {bold=true, italic=false})
 
     -- never italic comments but italize builtin stuff
     -- :h group-name
@@ -131,9 +120,21 @@ vim.api.nvim_create_autocmd("Colorscheme", {
     pattern = "*", group = grp,
     callback = afterColorscheme,
 })
--- Not sure why it needs a 0 ms delay
 vim.api.nvim_create_autocmd("VimEnter", {
     pattern = "*", group = grp,
-    callback = function () vim.defer_fn(afterColorscheme, 0) end
+    callback = function ()
+
+        vim.defer_fn(function ()
+            -- call twice for the bufferline backgrounds to be set for some reason.
+            if vim.o.background == "dark" then
+                vim.cmd 'colorscheme fluoromachine'
+                vim.cmd 'colorscheme fluoromachine'
+            else
+                require "kanagawa"
+                vim.cmd 'colorscheme kanagawa-lotus'
+                vim.cmd 'colorscheme kanagawa-lotus'
+            end
+        end, 0) -- Not sure why it needs a 0 ms delay
+    end
 })
 
