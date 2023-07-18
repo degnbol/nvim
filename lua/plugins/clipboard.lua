@@ -33,16 +33,20 @@ return {
             -- }
         }
     },
-    -- lots of ways to paste using g{c,C,l,b}{,i}{p,P} and many others
-    {"inkarkat/vim-UnconditionalPaste", dependencies={'inkarkat/vim-ingo-library'}, config=function()
+    -- lots of ways to paste
+    {"inkarkat/vim-UnconditionalPaste",
+    event = "VeryLazy",
+    dependencies={'inkarkat/vim-ingo-library'}, init=function()
         -- set keybindings myself in whichkey.lua
         vim.g.UnconditionalPaste_no_mappings = true
     end},
-    -- paste without empty newlines
-    {"AndrewRadev/whitespaste.vim", config=function()
-        -- so p and P will paste whatever is in register, while gp and gP will paste 
-        -- with fewer empty lines.
-        vim.g.whitespaste_after_mapping  = 'gp'
-        vim.g.whitespaste_before_mapping = 'gP'
-    end},
+    -- paste with multiple empty lines around contents reduced to single empty lines.
+    -- TODO: the cmd isn't slow, it's just that there is a wait since other keys may be pressed.
+    {"AndrewRadev/whitespaste.vim", init = function ()
+        vim.cmd [[
+        let g:whitespaste_before_mapping = 'gP'
+        let g:whitespaste_after_mapping  = 'gp'
+        ]]
+    end,},
 }
+
