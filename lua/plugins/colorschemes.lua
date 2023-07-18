@@ -21,13 +21,8 @@ return {
 
     {
         'maxmx03/fluoromachine.nvim',
-        -- simply loading this will set it. We define code in colors/ instead of the event.
-        -- event = "User ColorSchemeLoad", -- see whichkey
-        -- lazy = true,
-        priority = 1000,
-        config = function ()
-            vim.cmd "colorscheme delta"
-        end
+        -- simply loading this will set it. We define code in colors/ instead of the config here.
+        event = "User ColorSchemeLoad", -- see whichkey
     },
 
     {
