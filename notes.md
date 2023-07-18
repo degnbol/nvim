@@ -36,3 +36,13 @@ Press <C-x><C-l> (:h i_CTRL-X_CTRL-L) and you get completion window.
 
 ctrl+] is default vim go-to-definition.
 
+enter replace mode with R in normal mode or Ins in insert mode.
+Useful for when text is aligned with excess whitespace.
+
+```verbatim
+unjump with ``, go to last edit with `.,
+go to last insert mode location with `^.
+Jump along change list with g; and g,
+```
+
+ZZ to quit.
