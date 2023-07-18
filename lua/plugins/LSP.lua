@@ -1,13 +1,17 @@
 #!/usr/bin/env lua
 return {
-    "folke/neodev.nvim", -- signature on nvim lua calls which helps in messing with plugins etc
     -- scala (not yet in Mason)
-    {"scalameta/nvim-metals", dependencies = {"nvim-lua/plenary.nvim"}},
-    -- LSP. For a given file, either complete with cmp (builtin recommended, but e.g. jedi language servers is slow), coc (old, not using builtin LSP), or coq (hacks builtin LSP)
-    {"neovim/nvim-lspconfig", config=function()
+    {"scalameta/nvim-metals", ft="scala",
+    dependencies = {"nvim-lua/plenary.nvim"}},
+    {"neovim/nvim-lspconfig",
+    dependencies="folke/neodev.nvim", -- signature on nvim lua calls which helps in messing with plugins etc
+    config=function()
         -- default config copied from https://github.com/neovim/nvim-lspconfig
         -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
-
+        
+        -- call before rest of lspconfig
+        require"neodev".setup {}
+        
         -- hide diagnostics for hints and information.
         vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
         vim.lsp.diagnostic.on_publish_diagnostics, {
@@ -24,10 +28,10 @@ return {
         )
 
         -- replace the default lsp diagnostic letters with prettier symbols
-        vim.fn.sign_define("LspDiagnosticsSignError", {text = "", numhl = "LspDiagnosticsDefaultError"})
+        vim.fn.sign_define("LspDiagnosticsSignError", {text = "", numhl = "LspDiagnosticsDefaultError"})
         vim.fn.sign_define("LspDiagnosticsSignWarning", {text = "", numhl = "LspDiagnosticsDefaultWarning"})
-        vim.fn.sign_define("LspDiagnosticsSignInformation", {text = "", numhl = "LspDiagnosticsDefaultInformation"})
-        vim.fn.sign_define("LspDiagnosticsSignHint", {text = "", numhl = "LspDiagnosticsDefaultHint"})
+        vim.fn.sign_define("LspDiagnosticsSignInformation", {text = "", numhl = "LspDiagnosticsDefaultInformation"})
+        vim.fn.sign_define("LspDiagnosticsSignHint", {text = "", numhl = "LspDiagnosticsDefaultHint"})
 
         -- color kinds
         vim.api.nvim_set_hl(0, 'CmpItemAbbrDeprecated', {fg="#808080", strikethrough=true})
@@ -64,7 +68,7 @@ return {
             vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
             vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
             vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-            vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+            vim.keymap.set('n', 'gI', vim.lsp.buf.implementation, bufopts) -- gi is for goto last insert and switch to insert mode
             vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
             vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
             vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
@@ -98,10 +102,36 @@ return {
         -- lsp.pyright.setup { }
         -- lsp.pylsp.setup { }
         lsp.jedi_language_server.setup {}
-        lsp.julials.setup {}
+        lsp.julials.setup {
+            on_new_config = function(new_config, _)
+                local julia = vim.fn.expand("~/.julia/environments/nvim-lspconfig/bin/julia")
+                -- check if we have made the dedicated julia env which should have a custom system image
+                if require'lspconfig'.util.path.is_file(julia) then
+                    new_config.cmd[1] = julia
+                end
+            end
+        }
         lsp.r_language_server.setup {}
         lsp.vimls.setup {}
-        lsp.lua_ls.setup {}
+        lsp.lua_ls.setup {
+            settings = {
+                Lua = {
+                    diagnostics = {
+                        -- https://www.reddit.com/r/neovim/comments/11mdxex/lspconfig_cannot_access_configuration_for_lua_ls/
+                        -- Get the language server to recognize the `vim` global
+                        globals = { 'vim' },
+                    },
+                    workspace = {
+                        -- https://www.reddit.com/r/neovim/comments/11mdxex/lspconfig_cannot_access_configuration_for_lua_ls/
+                        -- Make the server aware of Neovim runtime files
+                        library = vim.api.nvim_get_runtime_file("", true),
+                        -- stopped a prompt at startup asking to configure project as luv.
+                        checkThirdParty = false
+                    },
+                    completion = { callSnippet = "Replace" },
+                }
+            }
+        }
         lsp.marksman.setup {filetypes={"markdown"}}
         -- seems ltex has more text description for functions but texlab has more functions so I use both in combination
         lsp.ltex.setup {
@@ -132,8 +162,8 @@ return {
             -- Autocmd that will actually be in charging of starting the whole thing.
             -- Create a .sc file, then reopen it. There should be a MetalsInstall warning.
             -- Run MetalsInstall, wait patiently until it gives a new message and restart.
-            local nvim_metals_group = api.nvim_create_augroup("nvim-metals", { clear = true })
-            api.nvim_create_autocmd("FileType", {
+            local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
+            vim.api.nvim_create_autocmd("FileType", {
                 pattern = { "scala", "sbt" },
                 callback = function()
                     require("metals").initialize_or_attach(metals_config)
@@ -143,11 +173,13 @@ return {
 
         end},
         -- add :LspInstall <language> and :Mason for conveniently installing LSP language specific servers
-        {"williamboman/mason.nvim", config=true},
+        {"williamboman/mason.nvim", build = ":MasonUpdate", lazy=true, -- load as mason-lspconfig dep
+        config=true},
         {
             "williamboman/mason-lspconfig.nvim",
+            -- NOTE: can't be lazy for some lsp servers to work, e.g. lua
+            -- cmd = {"Mason", "MasonUpdate", "MasonInstall", "MasonLog", "MasonUninstall", "MasonUninstallAll"},
             dependencies={"neovim/nvim-lspconfig", "williamboman/mason.nvim"},
-            -- https://github.com/williamboman/mason-lspconfig.nvim
             -- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
             -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
             -- also see lsp.lua
@@ -168,6 +200,9 @@ return {
                     "rust_analyzer",
                     "tsserver", -- javascript. MasonInstall typescript-language-server
                     "sqlls",
+                    -- "latexindent",
+                    -- "matlab-language-server",
+                    -- "kotlin-language-server",
                 }
             }
         },
