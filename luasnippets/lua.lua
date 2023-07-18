@@ -97,6 +97,10 @@ t"vim.bo.filetype"),
 s({trig="filepath", dscr="get filepath for current buffer"},
 {t"vim.api.nvim_buf_get_name(0)"}),
 
+s({trig="set_hl", dscr="set highlight group values"},
+fmta('vim.api.nvim_set_hl(0, "<>", {<>})',
+{i(1, "Comment"), i(2, 'fg="gray"')})),
+
 s({trig="get_hl", dscr="get highlight group values"},
 fmta([[vim.api.nvim_get_hl(0, {name="<>", link=false})['<>']
 ]], {i(1, "Comment"), i(2, "fg")})),
