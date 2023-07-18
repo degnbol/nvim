@@ -111,6 +111,8 @@ return {
         vim.g.qs_highlight_on_keys = {'f', 'F', 't', 'T'}
     end},
 
+    "mg979/vim-visual-multi",
+
     -- when a hex or other color is defined, highlight the text with its color
     {"NvChad/nvim-colorizer.lua", event = "VeryLazy", opts={
         -- write filetype to auto-attach to its buffer
@@ -127,5 +129,6 @@ return {
     {"folke/twilight.nvim", cmd={"Twilight", "TwilightEnable"}, opts = {dimming={alpha=0.5}, context=20}},
     
     {"ThePrimeagen/vim-be-good", cmd="VimBeGood"},
+
 }
 
