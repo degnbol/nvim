@@ -86,7 +86,7 @@ s({trig="ft", dscr="Lazy-load on filetype."},
 {t'ft = "', i(1, "lua"), t'",'}),
 
 s({trig="keys", dscr="Lazy-load on key mapping."},
-{t'keys = "', i(1), t'",'}),
+{t'keys = "', i(1, "DOESN'T WORK"), t'",'}),
 
 s({trig="module", dscr="Do not automatically load this module when it's required somewhere."},
 {t"module = false,"}),
