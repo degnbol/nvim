@@ -28,11 +28,25 @@ return {
     {
         "rebelot/kanagawa.nvim",
         event = "User ColorSchemeLoad", -- see whichkey
-        config = function ()
-            require'kanagawa'.setup {
-                commentStyle = { italic = false },
+        opts = {
+            commentStyle = { italic = false },
+            colors = {
+                theme = {
+                    lotus = {
+                        -- too similar to comments
+                        ui = { nontext = "#acc295", },
+                    }
+                }
             }
-        end
+        }
+
+    },
+
+    {
+        -- kanagawa-bones is from here and currently is the default dark theme for kitty
+        "mcchrish/zenbones.nvim",
+        dependencies = { "rktjmp/lush.nvim" },
+        event = "User ColorSchemeLoad", -- see whichkey
     },
 
     {
@@ -68,15 +82,13 @@ return {
 
     {
         "projekt0n/github-nvim-theme",
+        name = "github-theme",
         event = "User ColorSchemeLoad", -- see whichkey
-        config = function()
-            require'github-theme'.setup { }
-        end
     },
 
     {
         "catppuccin/nvim",
         event = "User ColorSchemeLoad", -- see whichkey
         name = "catppuccin",
-    }
+    },
 }
