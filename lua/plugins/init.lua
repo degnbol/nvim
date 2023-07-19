@@ -114,12 +114,11 @@ return {
     "mg979/vim-visual-multi",
 
     -- when a hex or other color is defined, highlight the text with its color
-    {"NvChad/nvim-colorizer.lua", event = "VeryLazy", opts={
+    -- trying out mini hipatterns instead.
+    {"NvChad/nvim-colorizer.lua", enabled = false, event = "VeryLazy", opts={
         -- write filetype to auto-attach to its buffer
         filetypes = {
-            'lua',
-            'R',
-            'python',
+            'lua', 'R', 'python',
             -- #RGB hex codes are too simple and may show up in julia in rare cases unnamed variables
             julia = { RGB = false, }
         }
