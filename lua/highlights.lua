@@ -111,6 +111,9 @@ local function afterColorscheme()
     end
 end
 
+local defaultDark = 'fluoromachine'
+local defaultLight = 'kanagawa-lotus'
+
 local grp = vim.api.nvim_create_augroup("afterColorscheme", {clear=true})
 vim.api.nvim_create_autocmd("Colorscheme", {
     pattern = "*", group = grp,
@@ -123,14 +126,23 @@ vim.api.nvim_create_autocmd("VimEnter", {
         vim.defer_fn(function ()
             -- call twice for the bufferline backgrounds to be set for some reason.
             if vim.o.background == "dark" then
-                vim.cmd 'colorscheme fluoromachine'
-                vim.cmd 'colorscheme fluoromachine'
+                vim.cmd('colorscheme ' .. defaultDark)
+                vim.cmd('colorscheme ' .. defaultDark)
             else
-                require "kanagawa"
-                vim.cmd 'colorscheme kanagawa-lotus'
-                vim.cmd 'colorscheme kanagawa-lotus'
+                vim.cmd('colorscheme ' .. defaultLight)
+                vim.cmd('colorscheme ' .. defaultLight)
             end
-        end, 0) -- Not sure why it needs a 0 ms delay
+        end, 0) -- Not sure why it needs a 0 ms delay.
     end
 })
+
+-- commands :Light and :Dark
+vim.api.nvim_create_user_command("Dark", function ()
+    vim.fn.system("~/dotfiles/dark.sh")
+    vim.cmd('colorscheme ' .. defaultDark)
+end, {})
+vim.api.nvim_create_user_command("Light", function ()
+    vim.fn.system("~/dotfiles/light.sh")
+    vim.cmd('colorscheme ' .. defaultLight)
+end, {})
 
