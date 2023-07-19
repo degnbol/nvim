@@ -111,4 +111,30 @@ s({trig="startswith", dscr="startswith"},
 s({trig="endswith", dscr="endswith"},
 {t"vim.endswith(", i(1), t")"}),
 
+s({trig="cmd", dscr="set new command for neovim's cmdline."},
+fmta([[vim.api.nvim_create_user_command("<>", function ()
+    <>
+end, {})
+]], {i(1, "NAME"), i(2)})),
+
+-- help text says to prefer vim.system for both, but it doesn't seem to exist.
+-- returns stdout
+
+s({
+    trig="sync",
+    dscr="call external cmd synchronously",
+    snippetType='autosnippet',
+    condition=conds.line_begin,
+},
+{t'vim.fn.system("', i(1, "ls"), t'")'}),
+-- Returns a code (not exit code).
+-- Use e.g. vim.fn.jobstart("cmd", {on_stdout=...})
+s({
+    trig="async",
+    dscr="call external cmd asynchronously",
+    snippetType='autosnippet',
+    condition=conds.line_begin,
+},
+{t'vim.fn.jobstart("', i(1, "ls"), t'")'}),
+
 }
