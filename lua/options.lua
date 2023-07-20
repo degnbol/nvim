@@ -28,6 +28,7 @@ opt.sidescrolloff = 12 -- number of blocks to keep to sides of cursor
 opt.splitbelow = true
 opt.splitright = true
 opt.wildmode = 'longest:full,full' -- settings for how to show completion on command line
+-- opt.number = true -- show line numbering by default. yon toggles
 -- opt.relativenumber = true -- should the line numbering be shown relative to current line?
 opt.clipboard = 'unnamed,unnamedplus' -- share clipboard between copy paste and yank
 opt.wrap = false -- something run before init.lua is changing the default so we change it back here.
@@ -52,6 +53,11 @@ opt.showcmd = false
 opt.formatoptions='tcqjwr'
 -- why is this not default. Persistent undo history.
 opt.undofile = true
+-- set term title based on file being edited.
+opt.title = true
+-- ms of wait before keybinding times out, default 1000
+-- with 500 I'm sometimes too slow
+opt.timeoutlen = 750
 
 -- yoink integration with cutlass
 g.yoinkIncludeDeleteOperations = 1
@@ -93,4 +99,5 @@ vim.opt.dictionary = rtp .. "/spell/en.dic"
 -- visual mode also works.
 -- It's possible to have multiple spellfiles and use a preceding count.
 vim.opt.spellfile = rtp .. "/spell/custom.utf8.add"
+
 
