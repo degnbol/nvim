@@ -107,7 +107,8 @@ return {
                 local julia = vim.fn.expand("~/.julia/environments/nvim-lspconfig/bin/julia")
                 -- check if we have made the dedicated julia env which should have a custom system image
                 if require'lspconfig'.util.path.is_file(julia) then
-                    new_config.cmd[1] = julia
+                    -- regular julia seem to work
+                    -- new_config.cmd[1] = julia
                 end
             end
         }

@@ -48,4 +48,10 @@ echo "Shift+Cmd+click now moves cursor in neovim (if skim was started by neovim)
 # and a timeout is reached somewhere.
 # The hacky solution is to use a precompiled system image as the julia env so everything is already loaded.
 # https://discourse.julialang.org/t/neovim-languageserver-jl/37286/83
+# first just try to make the regular julia work
+$0:h/install.jl
+
+# python LSP "pylsp"
+# https://github.com/python-lsp/python-lsp-server
+pip install python-lsp-server
 
