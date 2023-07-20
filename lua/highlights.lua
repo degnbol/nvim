@@ -1,6 +1,4 @@
 #!/usr/bin/env lua
--- some sane defaults that a colorscheme may overwrite
-
 local function hl(name, val)
     vim.api.nvim_set_hl(0, name, val)
 end
@@ -19,7 +17,6 @@ end
 local function rev(name)
     hl(name, {reverse=true})
 end
-
 function gethl(name)
     return vim.api.nvim_get_hl(0, {name=name, link=false})
 end
@@ -27,6 +24,8 @@ end
 function modhl(name, val)
     hl(name, vim.tbl_extend("force", gethl(name), val))
 end
+
+---- some sane defaults that a colorscheme may overwrite
 
 -- Italic highlight group doesn't actually make terminal text italic by default.
 hl("Italic", {italic=true})
@@ -44,6 +43,7 @@ fg("CursorLineNr", nil)
 
 -- @variable seemed to start being linked to @identifier after update?
 hl("@variable", {gui=nil})
+
 
 local function afterColorscheme()
     -- fix issue where colorscheme change removes all telescope highlight groups
@@ -104,11 +104,14 @@ local function afterColorscheme()
     modhl("@keyword.return", {italic=true})
     modhl("@keyword.operator", {italic=true})
     modhl("@parameter", {italic=false})
+    modhl("@function", {italic=false})
 
     -- NonText shouldn't be exactly like comments
     if gethl("Comment")['fg'] == gethl("NonText")['fg'] then
-        fg("NonText", "gray")
+        modhl("NonText", {fg="gray"})
     end
+    -- it seems pretty good if they're bold even if the color is similar.
+    modhl("NonText", {bold=true})
 end
 
 local defaultDark = 'fluoromachine'
