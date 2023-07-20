@@ -22,7 +22,7 @@ return {
     {
         'maxmx03/fluoromachine.nvim',
         -- simply loading this will set it. We define code in colors/ instead of the config here.
-        event = "User ColorSchemeLoad", -- see whichkey
+        event = "User ColorSchemeLoadDark", -- see whichkey
     },
 
     {
@@ -43,6 +43,10 @@ return {
     },
 
     {
+        -- minimal colors
+        -- zenwritten, neobones, vimbones, rosebones, forestbones, nordbones, 
+        -- tokyobones, seoulbones, duckbones, zenburned, kanagawabones, 
+        -- randombones
         -- kanagawa-bones is from here and currently is the default dark theme for kitty
         "mcchrish/zenbones.nvim",
         dependencies = { "rktjmp/lush.nvim" },
@@ -50,6 +54,7 @@ return {
     },
 
     {
+        -- rose-pine, rose-pine-main, rose-pine-moon, rose-pine-dawn
         'rose-pine/neovim',
         event = "User ColorSchemeLoad", -- see whichkey
         name = 'rose-pine',
@@ -58,12 +63,12 @@ return {
 
     {
         "xero/miasma.nvim",
-        event = "User ColorSchemeLoad", -- see whichkey
+        event = "User ColorSchemeLoadDark", -- see whichkey
     },
 
     {
         "ribru17/bamboo.nvim",
-        event = "User ColorSchemeLoad", -- see whichkey
+        event = "User ColorSchemeLoadDark", -- see whichkey
         opts = {
             code_style = {
                 comments = 'none',
@@ -73,6 +78,7 @@ return {
     },
 
     {
+        -- nightfox, dayfox, dawnfox, duskfox, nordfox, terafox, carbonfox
         "EdenEast/nightfox.nvim",
         event = "User ColorSchemeLoad", -- see whichkey
         opts = {

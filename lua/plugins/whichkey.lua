@@ -104,6 +104,10 @@ wk.register({
                 -- Load colorschemes. Using lazy keys didn't work
                 -- https://www.reddit.com/r/neovim/comments/12tcx0b/attempt_at_adding_color_schemes_to_list_of/
                 vim.api.nvim_exec_autocmds("User", { pattern = "ColorSchemeLoad" })
+                -- simple attempt at only showing dark themes if we are in dark-mode
+                if vim.o.background == "dark" then
+                    vim.api.nvim_exec_autocmds("User", { pattern = "ColorSchemeLoadDark" })
+                end
                 require("telescope.builtin").colorscheme()
             end, "colorscheme"},
             t = "theirs (diffview)",
