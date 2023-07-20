@@ -72,7 +72,8 @@ return {
         vim.wo.foldexpr = 'nvim_treesitter#foldexpr()'
 
         -- use bash treesitter for zsh since zsh is very basic
-        vim.treesitter.language.register("bash", "zsh")
+        -- it doesn't work well enough so just disable TS for zsh.
+        -- vim.treesitter.language.register("bash", "zsh")
 
         -- TODO: add
         -- https://github.com/nvim-treesitter/nvim-treesitter/#adding-parsers
