@@ -146,7 +146,8 @@ inoremap <A-Right> <c-\><c-o>w
 inoremap <A-h> <c-\><c-o>h
 inoremap <expr> <A-j> v:count == 0 ? "<c-\><c-o>gj" : "j"
 inoremap <expr> <A-k> v:count == 0 ? "<c-\><c-o>gk" : "k"
-inoremap <A-l> <c-\><c-o>l
+" instead of <c-\><c-o>l since then we can't go to the last char of the line
+inoremap <A-l> <right>
 inoremap <A-b> <c-\><c-o>b
 inoremap <A-w> <c-\><c-o>w
 inoremap <A-e> <c-\><c-o>e
