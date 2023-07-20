@@ -31,7 +31,8 @@ return {
     -- https://quarto.org/
     {"quarto-dev/quarto-vim", dependencies={"vim-pandoc/vim-pandoc-syntax"}, ft="quarto"},
     {"habamax/vim-rst", ft="rst"},
-    {"lukas-reineke/headlines.nvim", ft = {'markdown', 'neorg', 'orgmode', 'rst', 'asciidoc', 'asciidoctor'},
+    -- flashing for code blocks
+    {"lukas-reineke/headlines.nvim", enabled = false, ft = {'markdown', 'neorg', 'orgmode', 'rst', 'asciidoc', 'asciidoctor'},
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     opts = { }, },
     -- show pretty math in term. Lazy load on the single cmd that you would use it for (see whichkey).
@@ -43,7 +44,7 @@ return {
     -- "m4xshen/autoclose.nvim" is too simple.
     -- "windwp/nvim-autopairs" doesn't delete properly even with the check_ts 
     -- (treesitter) setting on. I also tried pears.nvim. I haven't tried mini.pairs
-    { "tmsvg/pear-tree", config=function ()
+    { "tmsvg/pear-tree", enabled = false, config=function ()
         -- g.pear_tree_smart_openers = 1
         -- g.pear_tree_smart_closers = 1 # bad in lua, type "{}" -> "{}}"
         g.pear_tree_smart_backspace = 1
