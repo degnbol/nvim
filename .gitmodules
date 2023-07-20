@@ -1,3 +1,6 @@
 [submodule "kittyREPL.nvim"]
 	path = kittyREPL.nvim
 	url = https://github.com/degnbol/kittyREPL.nvim
+[submodule "nvim-revJ.lua"]
+	path = nvim-revJ.lua
+	url = https://github.com/degnbol/nvim-revJ.lua

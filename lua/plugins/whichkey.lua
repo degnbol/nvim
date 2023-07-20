@@ -13,6 +13,9 @@ return {
 --
 local wk = require "which-key"
 
+-- keep track of it's nonzero value for toggling
+local nzConcealLvl
+
 wk.setup {
     plugins = {
         marks = true, -- shows a list of your marks on ' and `
@@ -334,6 +337,25 @@ wk.register({
         name = "you…",
         o = {
             name = "toggle option (unimpaired)",
+            -- https://github.com/tpope/vim-unimpaired/blob/master/plugin/unimpaired.vim
+            ['-'] = "cursorline",
+            ['_'] = "cursorline",
+            -- default is another binding for cursorline which is a lot less useful than conceal
+            c = {function ()
+                if vim.opt.conceallevel:get() > 0 then
+                    nzConcealLvl = vim.opt.conceallevel:get()
+                    vim.opt.conceallevel = 0
+                else
+                    vim.opt.conceallevel = nzConcealLvl
+                end
+            end, "conceal"},
+            C = {function ()
+                if vim.opt.concealcursor:get():match('n') then
+                    vim.cmd 'setlocal concealcursor-=n' -- lua version not simple
+                else
+                    vim.opt.concealcursor:append('n')
+                end
+            end, "concealcursor"},
             h = "hlsearch",
             i = "ignorecase",
             l = "list",

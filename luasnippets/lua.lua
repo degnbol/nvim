@@ -9,7 +9,7 @@ s({trig="snip", snippetType="autosnippet"},
 fmta([[s({trig="<>", dscr="<>"<>},
 {t"<>"}),
 ]], {i(1, "TRIGGER"), i(2, "DESCRIPTION"),
-c(3, {t"", t", snippetType='autosnippet'", t", wordTrig=true, regTrig=false, snippetType='snippet'"}),
+c(3, {t"", t", snippetType='autosnippet'", t", wordTrig=true, trigEngine='pattern', snippetType='snippet'"}),
 i(4, "EXPANSION")}),
 {condition=conds.line_begin}),
 
@@ -76,7 +76,7 @@ fmta([[local <> = vim.api.nvim_create_augroup("<>", {clear=true})
 s({trig="cursor", dscr="get cursor position", condition=conds.line_begin},
 {t"local r, c = unpack(vim.api.nvim_win_get_cursor(0))"}),
 
-s({trig="[%a._]*set_cursor", dscr="set cursor", regTrig=true, snippetType="autosnippet", condition=conds.line_begin},
+s({trig="[%a._]*set_cursor", dscr="set cursor", trigEngine='pattern', snippetType="autosnippet", condition=conds.line_begin},
 {t"vim.api.nvim_win_set_cursor(0, {", i(1, "r, c"), t"})"}),
 
 s({trig="current", dscr="get current line text"},
