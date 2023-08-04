@@ -6,21 +6,29 @@ return {
             'nvim-treesitter/nvim-treesitter',
             -- make sure is loaded for the init to work
             'AckslD/nvim-trevJ.lua',
-            'AckslD/nvim-revJ.lua',
             'AndrewRadev/splitjoin.vim',
             'andymass/vim-matchup',
         },
-        opts = {
-            -- set only for supported filetypes
-            use_default_keymaps = false
-        },
+        -- opts = {
+        --     -- set only for supported filetypes
+        --     use_default_keymaps = false,
+        -- },
+        config = function ()
+            local treesj = require"treesj"
+            -- local default_preset = require"treesj.langs.default_preset"
+            -- default_preset['both']['no_format_with'] = {}
+            -- require"treesj.langs".default_preset = default_preset
+            treesj.setup {
+                use_default_keymaps = false, langs = { lua =  { both = {no_format_with = nil}}},
+            }
+        end,
         init = function ()
             -- but always map toggle since the other plugins doesn't implement it
             vim.keymap.set("n", "<Plug>JoinToggle", "<Cmd>TSJToggle<CR>")
 
             -- use alt plugins for specific filetypes
             -- it is also a possibility to define them for treesj
-            local fts_split = { splitjoin = { tex=true, }, trevj = { julia=true, } }
+            local fts_split = { splitjoin = { tex=true, }, trevj = { julia=true, lua=true, } }
             local fts_join  = { splitjoin = { tex=true, }, matchup = { julia=true,}, }
             local grp = vim.api.nvim_create_augroup("splitjoin", {clear=true})
 
@@ -59,7 +67,12 @@ return {
     lazy = true,
     config=function()
         local make_default_opts = function()
-            return { final_separator = ",", final_end_line = true, skip = { } }
+            return {
+                -- was using "," but it gets added to a final comment as well
+                final_separator = "",
+                final_end_line = true,
+                skip = { },
+            }
         end
 
         local make_no_final_sep_opts = function()
@@ -91,18 +104,23 @@ return {
             vim.g.splitjoin_join_mapping = ''
         end
     },
-    -- still using it since it's the only one with visual version and motion
-    {"AckslD/nvim-revJ.lua", lazy = true, dependencies={'kana/vim-textobj-user', 'sgur/vim-textobj-parameter'}, opts={
-        brackets = {first = '([{<', last = ')]}>'}, -- brackets to consider surrounding arguments
-        new_line_before_last_bracket = true, -- add new line between last argument and last bracket (only if no last seperator)
-        add_seperator_for_last_parameter = true, -- if a seperator should be added if not present after last parameter
-        enable_default_keymaps = false,
-        keymaps = {
-            operator = 'gS', -- for operator (+motion)
-            line = 'gSS', -- for formatting current line
-            visual = '<leader>s', -- for formatting visual selection
+    -- unmaintained but using it (my fork fixing linewise visual) since it's the only one with visual and motion
+    {
+        "degnbol/nvim-revJ.lua",
+        dependencies={'kana/vim-textobj-user', 'sgur/vim-textobj-parameter'},
+        opts={
+            brackets = {first = '([{<', last = ')]}>'}, -- brackets to consider surrounding arguments
+            new_line_before_last_bracket = true, -- add new line between last argument and last bracket (only if no last seperator)
+            add_seperator_for_last_parameter = true, -- if a seperator should be added if not present after last parameter
+            enable_default_keymaps = false,
+            keymaps = {
+                operator = 'gS', -- for operator (+motion)
+                line = 'gSS', -- for formatting current line
+                -- only works for visual char mode not line, fix it in init keymap
+                visual = '<leader>s', -- for formatting visual selection
+            },
+            parameter_mapping = ',', -- specifies what text object selects an arguments (ie a, and i, by default)
+            -- if you're using `vim-textobj-parameter` you can also set this to `vim.g.vim_textobj_parameter_mapping`
         },
-        parameter_mapping = ',', -- specifies what text object selects an arguments (ie a, and i, by default)
-        -- if you're using `vim-textobj-parameter` you can also set this to `vim.g.vim_textobj_parameter_mapping`
-    }},
+    },
 }
