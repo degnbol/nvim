@@ -3,12 +3,6 @@ return {
     -- popular plugin to take advantage of some exposed UI hooks
     -- doesn't seem to apply changes
     { "stevearc/dressing.nvim", enabled = false, event = "VeryLazy", opts = {} },
-    -- :BufDel that deletes a buffer better than built-in :bdelete and 
-    -- :bwipeout, by preserving layout and closing terminal buffers better.
-    {"ojroques/nvim-bufdel", cmd="BufDel"},
-    -- {"moll/vim-bbye", config=function()
-    --     vim.api.nvim_set_keymap("n", "<leader>x", [[<Cmd>Bdelete<CR>]], {silent = true})
-    -- end},
     -- :Capture hi to call :hi where you can search etc.
     {"tyru/capture.vim", cmd="Capture"},
     {

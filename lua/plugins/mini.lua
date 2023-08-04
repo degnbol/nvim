@@ -77,5 +77,72 @@ hipatterns.setup {
 }
 
 
+local clue = require'mini.clue'
+
+clue.setup({
+  triggers = {
+    { mode = 'n', keys = '<Leader>' },
+    { mode = 'x', keys = '<Leader>' },
+    { mode = 'n', keys = 'g' },
+    { mode = 'x', keys = 'g' },
+    { mode = 'n', keys = 'y' },
+    { mode = 'x', keys = 'y' },
+    { mode = 'n', keys = 'z' },
+    { mode = 'x', keys = 'z' },
+    { mode = 'n', keys = ']' },
+    { mode = 'n', keys = '[' },
+    -- Built-in completion
+    { mode = 'i', keys = '<C-x>' },
+    -- Marks
+    { mode = 'n', keys = "'" },
+    { mode = 'n', keys = '`' },
+    { mode = 'x', keys = "'" },
+    { mode = 'x', keys = '`' },
+    -- Registers
+    { mode = 'n', keys = '"' },
+    { mode = 'x', keys = '"' },
+    { mode = 'i', keys = '<C-r>' },
+    { mode = 'c', keys = '<C-r>' },
+    -- Window
+    { mode = 'n', keys = '<C-w>' },
+  },
+
+  clues = {
+    -- use e.g. postkeys='<C-w>' to make a submode. 
+    { mode = 'n', keys = '<leader>c', desc = "Choose|Color|Code" },
+    { mode = 'n', keys = '<leader>d', desc = "Diagnostics|Def peek" },
+    { mode = 'n', keys = '<leader>f', desc = "Find|File" },
+    { mode = 'n', keys = '<leader>g', desc = "Git" },
+    { mode = 'n', keys = '<leader>l', desc = "LaTeX" },
+    { mode = 'n', keys = '<leader>p', desc = "Paste" },
+    { mode = 'n', keys = '<leader>P', desc = "Paste before" },
+    { mode = 'n', keys = '<leader>r', desc = "Rename" },
+    { mode = 'n', keys = '<leader>t', desc = "Toggle|Term" },
+    { mode = 'n', keys = '<leader>w', desc = "Workspace" },
+    { mode = 'n', keys = '<leader>wl', desc = "List" },
+    { mode = 'n', keys = 'gc', desc = "Comment" },
+    { mode = 'n', keys = 'gcc', desc = "Line" },
+    -- Enhance this by adding descriptions for <Leader> mapping groups
+    clue.gen_clues.builtin_completion(),
+    clue.gen_clues.g(),
+    clue.gen_clues.marks(),
+    clue.gen_clues.registers(),
+    clue.gen_clues.windows{
+        -- making submodes of the window stuff means we can increase hight with <C-w>++ instead of <C-w>+<C-w>+
+        submode_move = true,
+        submode_navigate = true,
+        submode_resize = true,
+    },
+    clue.gen_clues.z(),
+  },
+
+  window = {
+      config = {
+          width = "auto",
+      },
+  },
+})
+
+
 end},
 }

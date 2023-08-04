@@ -2,10 +2,12 @@
 return {
     {
         "mrjones2014/legendary.nvim",
-        opts = { which_key = { auto_register = true } },
+        priority = 1000,
+        -- opts = { which_key = { auto_register = true } },
     },
     {
     "folke/which-key.nvim",
+    -- enabled = false,
     event = "VeryLazy",
     -- doesn't dependend on legendary but we want to call it first
     dependencies={ "mrjones2014/legendary.nvim", },
@@ -86,7 +88,7 @@ wk.register({
         ["7"] = {":BufferLineGoToBuffer 7<CR>", "which_key_ignore"},
         ["8"] = {":BufferLineGoToBuffer 8<CR>", "which_key_ignore"},
         ["9"] = {":BufferLineGoToBuffer 9<CR>", "which_key_ignore"},
-        ["?"] = "cheatsheet",
+        ["?"] = {"<Cmd>Cheatsheet<CR>", "cheatsheet"},
         ["<CR>"] = "kitty REPL",
         a = "swap arg (treesitter textobjects)",
         A = "swap arg back (treesitter textobjects)",
@@ -121,7 +123,7 @@ wk.register({
             -- treesitter textobjects + LSP
             f = "function",
             F = "class",
-            d = {":lua vim.diagnostic.open_float()<CR>", "Diagnostic on this line"},
+            d = {":lua vim.diagnostic.open_float()<CR>", "Diagnostics for line"},
         },
         D = "type defintion (LSP)",
         -- is overwritten by Diffview for its own buffer types so
@@ -130,7 +132,7 @@ wk.register({
         E = "errors (LSP diagnostics)",
         -- telescope and dashboard mappings
         f = {
-            name = "file",
+            name = "find/file",
             b = {"<Cmd>Telescope buffers<CR>", "buffers (telescope)"},
             f = {"<Cmd>Telescope find_files<CR>", "find (telescope)"},
             h = {"<Cmd>Telescope help_tags<CR>", "help tags (telescope)"},
@@ -234,7 +236,6 @@ wk.register({
             T = {':let b:repl_id = input("window id: ")<CR>', "set REPL winid"},
             t = {':lua set_repl_last()<CR>', "set last window as REPL"},
         },
-        x = { ':BufDel<CR>', "delete buffer" }, -- ojroques BufDel
     },
     c = {
         name = "change…",
