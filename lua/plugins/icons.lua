@@ -26,7 +26,7 @@ return {
                 name = "CommaSeparatedValues"
             },
             mat = {
-                icon = "",
+                icon = "󰘨",
                 color = "#89e051",
                 cterm_color = "113",
                 name = "Matrix"
