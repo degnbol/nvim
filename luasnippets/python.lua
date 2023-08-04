@@ -18,7 +18,7 @@ s({
     snippetType='autosnippet',
     trigEngine=function (trigger) return util.match_oneAhead end,
 },
--- NOTE: there are only two final backticks since one is left over from end of trigger.
+-- NOTE: there are only two final quotes since one is left over from end of trigger.
 fmta([["""
 <>
 ""
