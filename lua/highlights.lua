@@ -105,6 +105,7 @@ local function afterColorscheme()
     modhl("@keyword.operator", {italic=true})
     modhl("@parameter", {italic=false})
     modhl("@function", {italic=false})
+    modhl("@boolean", {italic=true})
 
     -- NonText shouldn't be exactly like comments
     if gethl("Comment")['fg'] == gethl("NonText")['fg'] then
