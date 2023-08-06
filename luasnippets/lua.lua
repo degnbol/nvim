@@ -1,9 +1,17 @@
 #!/usr/bin/env lua
+local util = require "utils/luasnip"
+
 return {
+-- core lang snippets similar to other bracket related ones found in all.lua
+s({trig="[[[", dscr="Double square brackets", snippetType='autosnippet'},
+{t"[[", i(1), t"]]"}),
+-- TODO: make a version for pressing [[[[ that adds newline or make pressing 
+-- enter like pressing escape then O
+
 -- meta. snippet to write snippets.
 
 s({trig="util", dscr="req utils", condition=conds.line_begin},
-{t[[local lsu = require "utils/luasnip"]]}),
+{t[[local lsu = require "utils/]], i(1, "luasnip"), t'"'}),
 
 s({trig="snip", snippetType="autosnippet"},
 fmta([[s({trig="<>", dscr="<>"<>},
@@ -30,25 +38,25 @@ s({trig="req", dscr="require", condition=conds.line_begin, snippetType='autosnip
 }), t'require "', i(1), t'"'}),
 
 s({trig="nmap", snippetType="autosnippet"},
-fmta([[vim.keymap.set("n", "<>", "<>")]],
-{i(1, "from"), i(2, "to")}),
+fmta([[vim.keymap.set("n", "<>", "<<Cmd>><><<CR>>", { desc="<>" })]],
+{i(1, "<leader>"), i(2), i(3)}),
 {condition=conds.line_begin}),
 s({trig="imap", snippetType="autosnippet"},
-fmta([[vim.keymap.set("i", "<>", "<>")]],
-{i(1, "from"), i(2, "to")}),
+fmta([[vim.keymap.set("i", "<>", "<<Cmd>><><<CR>>", { desc="<>" })]],
+{i(1, "<leader>"), i(2), i(3)}),
 {condition=conds.line_begin}),
 s({trig="vmap", snippetType="autosnippet"},
-fmta([[vim.keymap.set("v", "<>", "<>")]],
-{i(1, "from"), i(2, "to")}),
+fmta([[vim.keymap.set("v", "<>", "<<Cmd>><><<CR>>", { desc="<>" })]],
+{i(1, "<leader>"), i(2), i(3)}),
 {condition=conds.line_begin}),
 s({trig="xmap", snippetType="autosnippet"},
-fmta([[vim.keymap.set("x", "<>", "<>")]],
-{i(1, "from"), i(2, "to")}),
+fmta([[vim.keymap.set("x", "<>", "<<Cmd>><><<CR>>", { desc="<>" })]],
+{i(1, "<leader>"), i(2), i(3)}),
 {condition=conds.line_begin}),
 -- for cmdline, e.g. abbreviations
 s({trig="cmap", snippetType="autosnippet"},
-fmta([[vim.keymap.set("c", "<>", "<>")]],
-{i(1, "from"), i(2, "to")}),
+fmta([[vim.keymap.set("c", "<>", "<<Cmd>><><<CR>>", { desc="<>" })]],
+{i(1, "<leader>"), i(2), i(3)}),
 {condition=conds.line_begin}),
 
 s({trig="root", dscr="Get neovim config root", condition=conds.line_begin, snippetType='autosnippet'},
@@ -105,6 +113,9 @@ s({trig="get_hl", dscr="get highlight group values"},
 fmta([[vim.api.nvim_get_hl(0, {name="<>", link=false})['<>']
 ]], {i(1, "Comment"), i(2, "fg")})),
 
+s({trig="g:", dscr="Set global variable.", condition=conds.line_begin, snippetType='autosnippet'},
+{t'vim.api.nvim_set_var("', i(1), t'", ', i(2), t')'}),
+
 s({trig="startswith", dscr="startswith"},
 {t"vim.startswith(", i(1), t")"}),
 
@@ -136,5 +147,11 @@ s({
     condition=conds.line_begin,
 },
 {t'vim.fn.jobstart("', i(1, "ls"), t'")'}),
+
+s({trig="defer", dscr="Defer call", condition=conds.line_begin},
+fmta([[vim.defer_fn(function ()
+    <>
+end, <>)
+]], {i(1), i(2, "500")})),
 
 }

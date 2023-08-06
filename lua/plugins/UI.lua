@@ -6,12 +6,14 @@ return {
     -- :Capture hi to call :hi where you can search etc.
     {"tyru/capture.vim", cmd="Capture"},
     {
-        "degnbol/kittyREPL.nvim", opts={
+        dir = "$XDG_CONFIG_HOME/nvim/kittyREPL.nvim", dev=true, opts={
             keymap={
                 line="<CR><CR>",
                 visual="<CR>",
                 operator="<CR>",
                 win="<leader><CR>",
+                focus="<S-CR>",
+                setlast="<leader>tt",
             },
             exclude = {tex=true, text=true, tsv=true, markdown=true},
         }
@@ -28,8 +30,8 @@ return {
         -- vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
         -- vim.o.fillchars = [[eob: ,fold: ,foldopen:-,foldsep: ,foldclose:+]]
 
-        vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
-        vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+        vim.keymap.set('n', 'zR', require('ufo').openAllFolds, {desc="Open all folds"})
+        vim.keymap.set('n', 'zM', require('ufo').closeAllFolds, {desc="Close all folds"})
 
         require('ufo').setup()
     end},

@@ -6,4 +6,4 @@ iabbrev lets let's
 iabbrev wasnt wasn't
 iabbrev isnt isn't
 iabbrev hasnt hasn't
-
+iabbrev theyre they're

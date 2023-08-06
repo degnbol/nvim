@@ -19,12 +19,13 @@ return {
             -- default_preset['both']['no_format_with'] = {}
             -- require"treesj.langs".default_preset = default_preset
             treesj.setup {
-                use_default_keymaps = false, langs = { lua =  { both = {no_format_with = nil}}},
+                use_default_keymaps = false, langs = { lua =  { both = { no_format_with = nil }}},
             }
         end,
         init = function ()
             -- but always map toggle since the other plugins doesn't implement it
-            vim.keymap.set("n", "<Plug>JoinToggle", "<Cmd>TSJToggle<CR>")
+            -- alt use "<Plug>JoinToggle" if you want to make binding somewhere else
+            vim.keymap.set("n", "<leader>tj", "<Cmd>TSJToggle<CR>", { desc="Split/join" })
 
             -- use alt plugins for specific filetypes
             -- it is also a possibility to define them for treesj
@@ -33,31 +34,46 @@ return {
             local grp = vim.api.nvim_create_augroup("splitjoin", {clear=true})
 
             -- call nmap buffer thru vimscript since nowait isn't implemented in lua API
+            -- keep here for a momemt too see if there is any issues without 
+            -- nowait, which would be better to avoid since we can then use the 
+            -- lua mapping with desc field.
             function nowait(lhs, rhs)
                 vim.cmd('nnoremap <buffer><nowait> ' .. lhs .. ' ' .. rhs)
             end
             function nowaitre(lhs, rhs)
                 vim.cmd('nmap <buffer><nowait> ' .. lhs .. ' ' .. rhs)
             end
+
+            -- alt use "<Plug>Split" if you wish to choose in another file
+            local key_join = "<leader>j"
+            local key_split = "<leader>s"
             
             vim.api.nvim_create_autocmd("Filetype", {
                 pattern = "*", group = grp,
                 callback = function ()
                     if fts_split['splitjoin'][vim.bo.filetype] then
-                        nowait("<Plug>Split", "<Cmd>SplitjoinSplit<CR>")
+                        -- nowait(key_join, "<Cmd>SplitjoinSplit<CR>")
+                        vim.keymap.set("n", key_join, "<Cmd>SplitjoinSplit<CR>", { desc="Join" })
                     elseif fts_split['trevj'][vim.bo.filetype] then
-                        nowait("<Plug>Split", ":lua require'trevj'.format_at_cursor()<CR>")
+                        -- nowait(key_split, ":lua require'trevj'.format_at_cursor()<CR>")
+                        vim.keymap.set("n", key_split, function ()
+                            return require"trevj".format_at_cursor()
+                        end, { desc="Split" })
                     else
-                        nowait("<Plug>Split", "<Cmd>TSJSplit<CR>")
+                        -- nowait(key_split, "<Cmd>TSJSplit<CR>")
+                        vim.keymap.set("n", key_split, "<Cmd>TSJSplit<CR>", { desc="Split" })
                     end
                     
                     if fts_join['splitjoin'][vim.bo.filetype] then
-                        nowait("<Plug>Join", "<Cmd>SplitjoinJoin<CR>")
+                        -- nowait(key_join, "<Cmd>SplitjoinJoin<CR>")
+                        vim.keymap.set("n", key_join, "<Cmd>SplitjoinJoin<CR>", { desc="Join" })
                     elseif fts_join['matchup'][vim.bo.filetype] then
                         -- Uses a% from https://github.com/andymass/vim-matchup which first jumps to container 
-                        nowaitre("<Plug>Join", "va%J")
+                        -- nowaitre(key_join, "va%J")
+                        vim.keymap.set("n", key_join, "va%J", { desc="Join" })
                     else
-                        nowait("<Plug>Join", "<Cmd>TSJJoin<CR>")
+                        -- nowait(key_join, "<Cmd>TSJJoin<CR>")
+                        vim.keymap.set("n", key_join, "<Cmd>TSJJoin<CR>", { desc="Join" })
                     end
                 end
             })
@@ -76,7 +92,7 @@ return {
         end
 
         local make_no_final_sep_opts = function()
-            return { final_separator = false, final_end_line = true, }
+            return { final_separator = false, final_end_line = true }
         end
 
         require'trevj'.setup {
@@ -106,7 +122,8 @@ return {
     },
     -- unmaintained but using it (my fork fixing linewise visual) since it's the only one with visual and motion
     {
-        "degnbol/nvim-revJ.lua",
+        dir = "$XDG_CONFIG_HOME/nvim/nvim-revJ.lua",
+        dev = true,
         dependencies={'kana/vim-textobj-user', 'sgur/vim-textobj-parameter'},
         opts={
             brackets = {first = '([{<', last = ')]}>'}, -- brackets to consider surrounding arguments

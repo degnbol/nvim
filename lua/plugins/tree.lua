@@ -8,7 +8,7 @@ return {
     -- a version of nvim-tree/nvim-tree with material icons:
     -- or consider a lua version: https://github.com/miversen33/netman.nvim
     {
-        "nvim-tree/nvim-tree.lua", cmd="NvimTreeToggle", enabled=true,
+        "nvim-tree/nvim-tree.lua", cmd="NvimTreeToggle",
         dependencies={'nvim-tree/nvim-web-devicons'},
         init=function()
             -- disable netrw
@@ -19,6 +19,7 @@ return {
             -- vim.g.nvim_tree_highlight_opened_files = 1
             vim.g.nvim_tree_allow_resize = 0
 
+            vim.keymap.set("n", "<leader>e", "<Cmd>NvimTreeToggle<CR>", {desc="Explorer"})
         end,
         opts = {
             actions = {open_file = {quit_on_open = true}},
@@ -63,9 +64,8 @@ return {
                 local api = require('nvim-tree.api')
 
                 local function opts(desc)
-                    return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+                    return { desc = desc, buffer = bufnr, nowait = true }
                 end
-
 
                 -- Default mappings. Feel free to modify or remove as you wish.
                 --

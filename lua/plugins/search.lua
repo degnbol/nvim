@@ -1,11 +1,18 @@
 #!/usr/bin/env lua
 return {
     -- let's search result box show number of matches when there's >99 matches
-    {"google/vim-searchindex", keys={"/", "g/"}},
+    {
+        "google/vim-searchindex",
+        -- keys={"/", "g/"} -- keys doesn't seem to work
+    },
     -- show a scrollbar, mostly in order to show search results far away in file
     -- requires hlslens to show search results in scrollbar
     {"petertriho/nvim-scrollbar", cmd={"ScrollbarToggle", "ScrollbarShow"},
-    dependencies={"kevinhwang91/nvim-hlslens"}, opts = {
+    dependencies={"kevinhwang91/nvim-hlslens"},
+    init = function ()
+        vim.keymap.set("n", "<leader>ts", "<Cmd>ScrollbarToggle<CR>", { desc="Scrollbar" })
+    end,
+    opts = {
         show = false, -- enable with :ScrollbarToggle etc.
         marks = { Search = { color = "yellow" } },
         handlers = {
@@ -16,7 +23,8 @@ return {
     -- show counter for how many n or N's a search result is away from cursor
     -- also lots of other search highlight customizations possible
     -- currently only used for highlighting next/main search result
-    {"kevinhwang91/nvim-hlslens", keys={"/", "g/"}, config=function()
+    {"kevinhwang91/nvim-hlslens", event = "VeryLazy", config=function()
+
         local api = vim.api
 
         local config = require('hlslens.config')
@@ -96,27 +104,17 @@ return {
 
         end
 
-        -- g/ should highlight last search (using the google search plugin maybe)
-        -- but it gets broken by this plugin so we mimmic its behavior:
-        vim.keymap.set("n", "g/", "//<CR>`'", {noremap=true, silent=true})
+        vim.keymap.set("n", "<leader>tl", "<Cmd>HlSearchLensToggle<CR>", { desc="HlSearchLens", silent=true })
 
         -- integrate with haya14busa/vim-asterisk
-        vim.api.nvim_set_keymap('n', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {})
-        vim.api.nvim_set_keymap('n', '#', [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {})
-        vim.api.nvim_set_keymap('n', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {})
-        vim.api.nvim_set_keymap('n', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {})
-        vim.api.nvim_set_keymap('x', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {})
-        vim.api.nvim_set_keymap('x', '#', [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {})
-        vim.api.nvim_set_keymap('x', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {})
-        vim.api.nvim_set_keymap('x', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {})
+        vim.api.nvim_set_keymap('n', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
+        vim.api.nvim_set_keymap('n', '#', [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
+        vim.api.nvim_set_keymap('n', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
+        vim.api.nvim_set_keymap('n', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
+        vim.api.nvim_set_keymap('x', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
+        vim.api.nvim_set_keymap('x', '#', [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
+        vim.api.nvim_set_keymap('x', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
+        vim.api.nvim_set_keymap('x', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
 
-        -- integreate with mg979/vim-visual-multi which is probably my intention to add later
-        vim.cmd([[
-        aug VMlens
-        au!
-        au User visual_multi_start lua require('vmlens').start()
-        au User visual_multi_exit lua require('vmlens').exit()
-        aug END
-        ]])
     end},
 }

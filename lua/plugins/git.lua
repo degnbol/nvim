@@ -22,12 +22,24 @@ return {
     -- resolve by keeping none (cn), theirs (ct), our (co), both (cb), or both reverse (cB)
     {"rhysd/conflict-marker.vim", event="VeryLazy"},
     -- git decoration to the left
-    {"lewis6991/gitsigns.nvim", event="VeryLazy", dependencies={'nvim-lua/plenary.nvim'}, opts={
+    {"lewis6991/gitsigns.nvim", event="VeryLazy", dependencies={'nvim-lua/plenary.nvim'},
+    init = function ()
+        local gitsigns = require "gitsigns"
+
+        vim.keymap.set("n", "<leader>gb", gitsigns.blame_line     , { desc = "Blame line" })
+        vim.keymap.set("n", "<leader>gp", gitsigns.preview_hunk   , { desc = "Preview hunk" })
+        vim.keymap.set("n", "<leader>gr", gitsigns.reset_hunk     , { desc = "Reset hunk" })
+        vim.keymap.set("n", "<leader>gs", gitsigns.stage_hunk     , { desc = "Stage hunk" })
+        vim.keymap.set("n", "<leader>gu", gitsigns.undo_stage_hunk, { desc = "Undo stage hunk" })
+        vim.keymap.set("n", "[h",         gitsigns.prev_hunk,       { desc = "Previous hunk" })
+        vim.keymap.set("n", "]h",         gitsigns.next_hunk,       { desc = "Next hunk" })
+    end,
+    opts={
         signs = {
-            add = {hl = "DiffAdd", text = "▌", numhl = "DiffAddNr"},
-            change = {hl = "DiffChange", text = "▌", numhl = "DiffChangeNr"},
-            delete = {hl = "DiffDelete", text = "_", numhl = "DiffDeleteNr"},
-            topdelete = {hl = "DiffDelete", text = "‾", numhl = "DiffTopDeleteNr"},
+            add          = {hl = "DiffAdd",    text = "▌", numhl = "DiffAddNr"},
+            change       = {hl = "DiffChange", text = "▌", numhl = "DiffChangeNr"},
+            delete       = {hl = "DiffDelete", text = "_", numhl = "DiffDeleteNr"},
+            topdelete    = {hl = "DiffDelete", text = "‾", numhl = "DiffTopDeleteNr"},
             changedelete = {hl = "DiffChange", text = "~", numhl = "DiffChangeDeleteNr"}
         },
         -- highlight in signcolumn to the left of numbers, although :set signcolumn=no means this is suppressed.
@@ -42,17 +54,28 @@ return {
     -- cmd = {"DiffviewOpen", "DiffviewClose", "DiffviewFileHistory", "DiffviewFocusFiles", "DiffviewToggleFiles", "DiffviewLog", "DiffviewRefresh"},
     -- only some commands are relevant before first use
     cmd = {"DiffviewOpen", "DiffviewFileHistory"},
+    init = function ()
+        -- hide untracked files with -uno.
+        -- hide gitsigns' file explorer with DiffviewToggleFiles (unhide with <leader>e like NvimTreeToggle)
+        -- Open during merge or rebase should show conflicts nicer automatically.
+        vim.keymap.set("n", "<leader>gd", "<Cmd>DiffviewOpen -uno<CR>:DiffviewToggleFiles<CR>", { desc="Diffview open" })
+        -- pretty cool: works on ranges
+        vim.keymap.set({"n", "x"}, "<leader>gh", "<Cmd>DiffviewFileHistory<CR>", { desc="History" })
+    end,
     config=function()
-        local actions = require("diffview.actions")
-
+        local diffview = require "diffview"
+        local actions = require "diffview.actions"
         -- defaults copied and changed from
         -- https://github.com/sindrets/diffview.nvim
-
-        require("diffview").setup {
+        diffview.setup {
             -- more subtle coloring knowing the context is git diff between old and new and not just file diff
-            enhanced_diff_hl = true, -- See ':h diffview-config-enhanced_diff_hl'
+            -- See ':h diffview-config-enhanced_diff_hl'
+            enhanced_diff_hl = true,
             keymaps = {
-                disable_defaults = true, -- Set them here instead. Small change for <leader>e and <leader>b
+                -- Customise them here:
+                -- - small change for <leader>e and <leader>b
+                -- - only set the <leader>gq here
+                disable_defaults = true,
                 view = {
                     -- The `view` bindings are active in the diff buffers, only when the current
                     -- tabpage is a Diffview.
@@ -71,6 +94,7 @@ return {
                     ["<leader>cb"] = actions.conflict_choose("base"),   -- Choose the BASE version of a conflict
                     ["<leader>ca"] = actions.conflict_choose("all"),    -- Choose all the versions of a conflict
                     ["dx"]         = actions.conflict_choose("none"),   -- Delete the conflict region
+                    ["<leader>gq"] = actions.close,                     -- Use :tabclose instead
                 },
                 diff1 = { --[[ Mappings in single window diff layouts ]] },
                 diff2 = { --[[ Mappings in 2-way diff layouts ]] },

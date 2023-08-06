@@ -4,17 +4,83 @@ return {
     "tpope/vim-repeat", -- change . to repeat last native command to last "full" command, which feels more natural.
     -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
     -- "tpope/vim-sensible",
-    -- TODO: list these with whichkey?
-    "tpope/vim-unimpaired", -- [e, ]e exchange line with above/below, ]<space> add newlines, and more
+    {
+        "tpope/vim-unimpaired",
+        config = function ()
+            require "utils/keymap"
+            set_keymap_desc('n', 'yo', "Option toggle")
+            -- duplicate mappings
+            set_keymap_desc('n', '=s', "Setting toggle | Substitute+reindent")
+            set_keymap_desc('n', '<s', "Setting enable")
+            set_keymap_desc('n', '>s', "Setting disable")
+            set_keymap_desc('n', '[a', ":previous")
+            set_keymap_desc('n', ']a', ":next")
+            set_keymap_desc('n', '[f', "File prev")
+            set_keymap_desc('n', ']f', "File next")
+            set_keymap_desc('n', '[e', "Exchange line before")
+            set_keymap_desc('n', ']e', "Exchange line after")
+            set_keymap_desc('n', ']n', "Conflict")
+            set_keymap_desc('n', ']n', "Conflict")
+            set_keymap_desc('n', '[y', "C style escape motion")
+            set_keymap_desc('n', ']y', "C style unescape motion")
+            set_keymap_desc('n', '[ ', "Add empty before")
+            set_keymap_desc('n', '] ', "Add empty after")
+            set_keymap_desc('n', '[p', "Put above, same indent")
+            set_keymap_desc('n', '[P', "Put above, same indent")
+            set_keymap_desc('n', ']p', "Put below, same indent")
+            set_keymap_desc('n', ']P', "Put below, same indent")
+            set_keymap_desc('n', '>P', "Put above, incr indent")
+            set_keymap_desc('n', '>p', "Put below, incr indent")
+            set_keymap_desc('n', '<P', "Put above, decr indent")
+            set_keymap_desc('n', '<p', "Put below, decr indent")
+            set_keymap_desc('n', '=P', "Put above, reindent")
+            set_keymap_desc('n', '=p', "Put below, reindent")
+            -- default for yoc is another binding for cursorline which is a lot 
+            -- less useful than conceal
+            vim.keymap.set("n", "yoc", function ()
+                if vim.opt.conceallevel:get() > 0 then
+                    nzConcealLvl = vim.opt.conceallevel:get()
+                    vim.opt.conceallevel = 0
+                else
+                    vim.opt.conceallevel = nzConcealLvl
+                end
+            end, { desc="conceal" })
+            vim.keymap.set("n", "yoC", function ()
+                if vim.opt.concealcursor:get():match('n') then
+                    vim.cmd 'setlocal concealcursor-=n' -- lua version not simple
+                else
+                    vim.opt.concealcursor:append('n')
+                end
+            end, { desc="concealcursor" })
+        end,
+    },
     {
         -- unicode shown for ga, we have go-align on that so have to use gA
         "tpope/vim-characterize",
         keys="gA",
-        init = function () vim.keymap.set("n", "gA", "ga") end
+        init = function ()
+            vim.keymap.set("n", "gA", "ga", { desc="Char info" })
+        end
     },
     -- add substitution functions to e.g. replace a word with clipboard content by writing siw
-    "svermeulen/vim-subversive",
-    -- "mg979/vim-visual-multi", -- multi cursor TODO https://github.com/mg979/vim-visual-multi/wiki/Quick-start
+    {
+        "svermeulen/vim-subversive",
+        init = function ()
+            -- replace default useless "Sleep"
+            -- substitute is an optional feature enabled from the substitute package where
+            -- I can substitute e.g. all occurrences of a word in a paragraph with some new text by writing <leader>Swip then the replacement text.
+            -- example: gsiwip to replace all instances of the current word under the cursor that exist within the paragraph under the cursor. 
+            -- example: gsl_ to replace all instances of the character under the cursor on the current line.
+            -- example: gssip to replace the word under cursor in the current paragraph. Matches complete words so is different from <leader>siwip
+            -- See normal gss mapping above.
+            vim.keymap.set({"n", "x"}, "gs", "<plug>SubversiveSubstituteRange", { desc="Substitute motion in motion" })
+            vim.keymap.set({"n", "x"}, "gss", "<plug>SubversiveSubstituteWordRange", { desc="Substitute word under cursor" })
+        end,
+    },
+    -- multi cursor
+    -- TODO: figure out what to do about mappings, i.e. C-n is supposed to be 
+    -- for this but also used by yoink.
+    "mg979/vim-visual-multi",
     "farmergreg/vim-lastplace", -- open file in last edited location
     "haya14busa/vim-asterisk", -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
     -- "gioele/vim-autoswap",
@@ -82,12 +148,12 @@ return {
             },
         }
 
-        vim.api.nvim_set_keymap("n", "<C-a>",  require("dial.map").inc_normal(), {})
-        vim.api.nvim_set_keymap("n", "<C-x>",  require("dial.map").dec_normal(), {})
-        vim.api.nvim_set_keymap("v", "<C-a>",  require("dial.map").inc_visual(), {})
-        vim.api.nvim_set_keymap("v", "<C-x>",  require("dial.map").dec_visual(), {})
-        vim.api.nvim_set_keymap("v", "g<C-a>", require("dial.map").inc_gvisual(), {})
-        vim.api.nvim_set_keymap("v", "g<C-x>", require("dial.map").dec_gvisual(), {})
+        vim.api.nvim_set_keymap("n", "<C-a>",  require("dial.map").inc_normal(),  {desc="Value incr"})
+        vim.api.nvim_set_keymap("n", "<C-x>",  require("dial.map").dec_normal(),  {desc="Value decr"})
+        vim.api.nvim_set_keymap("v", "<C-a>",  require("dial.map").inc_visual(),  {desc="Value incr"})
+        vim.api.nvim_set_keymap("v", "<C-x>",  require("dial.map").dec_visual(),  {desc="Value decr"})
+        vim.api.nvim_set_keymap("v", "g<C-a>", require("dial.map").inc_gvisual(), {desc="Value incr"})
+        vim.api.nvim_set_keymap("v", "g<C-x>", require("dial.map").dec_gvisual(), {desc="Value decr"})
     end},
     
     "lervag/file-line", -- open a file on a line with vi filepath:linenumber
@@ -95,23 +161,25 @@ return {
     -- supposedly faster and less buggy version of neovim builtin (:h )matchparen which highlights matching parenthesis etc.
     "monkoose/matchparen.nvim",
 
-    -- jump to anywhere with \ + f or F or t or T (set in whichkey)
-    {'ggandor/leap.nvim',
-    keys = "\\",
-    config=function()
-        -- make s and S "unsafe", i.e. available immediately as a command
-        -- add ' and ` as safe since it would be unlikely that I would want to jump to a mark right after a leap
-        -- add [] as safe since it would be unlikely that I would want to jump with those after a leap
-        require'leap'.opts.safe_labels = {'f','n','u','t','/','`',"'",'[',']','F','N','L','H','M','U','G','T','?','Z'}
-    end},
+    {
+        'ggandor/leap.nvim',
+        keys = {'\\', '|'},
+        config=function()
+            -- make s and S "unsafe", i.e. available immediately as a command
+            -- add ' and ` as safe since it would be unlikely that I would want to jump to a mark right after a leap
+            -- add [] as safe since it would be unlikely that I would want to jump with those after a leap
+            require'leap'.opts.safe_labels = {'f','n','u','t','/','`',"'",'[',']','F','N','L','H','M','U','G','T','?','Z'}
+
+            vim.keymap.set({'n', 'x', 'o'}, "\\", '<Plug>(leap-forward-to)', { desc="forward to (leap)" })
+            vim.keymap.set({'n', 'x', 'o'}, "|", '<Plug>(leap-backward-to)', { desc="backward to (leap)" })
+        end
+    },
 
     -- highlight letters for jumping with f/F/t/T
     {"unblevable/quick-scope", enabled=false, config=function()
         -- Trigger a highlight in the appropriate direction when pressing these keys:
         vim.g.qs_highlight_on_keys = {'f', 'F', 't', 'T'}
     end},
-
-    "mg979/vim-visual-multi",
 
     -- when a hex or other color is defined, highlight the text with its color
     -- trying out mini hipatterns instead.
@@ -126,7 +194,7 @@ return {
 
     -- dim code that isn't currently being edited with :Twilight.
     {"folke/twilight.nvim", cmd={"Twilight", "TwilightEnable"}, opts = {dimming={alpha=0.5}, context=20}},
-    
+
     {"ThePrimeagen/vim-be-good", cmd="VimBeGood"},
 
 }

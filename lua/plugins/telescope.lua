@@ -16,6 +16,18 @@ return {
         "nvim-telescope/telescope.nvim",
         cmd = "Telescope",
         dependencies={"nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim"},
+        init = function ()
+            vim.keymap.set("n", "<leader>fb", "<Cmd>Telescope buffers<CR>", { desc="Buffer" })
+            vim.keymap.set("n", "<leader>ff", "<Cmd>Telescope find_files<CR>", { desc="File" })
+            vim.keymap.set("n", "<leader>fh", "<Cmd>Telescope help_tags<CR>", { desc="Help tags" })
+            vim.keymap.set("n", "<leader>fo", "<Cmd>Telescope oldfiles<CR>", { desc="Recent" })
+            vim.keymap.set("n", "<leader>fw", "<Cmd>Telescope live_grep<CR>", { desc="Grep" })
+            vim.keymap.set("n", "<leader>fW", "<Cmd>Telescope grep_string<CR>", { desc="Grep under cursor" })
+            vim.keymap.set("n", "<leader>fn", "<Cmd>enew<CR>", { desc="New file" })
+            vim.keymap.set("n", "<C-l>", function ()
+                require'telescope.builtin'.keymaps(require'telescope.themes'.get_ivy())
+            end, { desc="Keymaps" })
+        end,
         opts={
             defaults = {
                 layout_strategy = "vertical",
@@ -39,7 +51,9 @@ return {
             }
         }
     },
-    {'sudormrfbin/cheatsheet.nvim', cmd="Cheatsheet", dependencies={'nvim-telescope/telescope.nvim'}}, -- <leader>? to give cheatsheet popup. 
+    {'sudormrfbin/cheatsheet.nvim', init = function ()
+        vim.keymap.set("n", "<leader>?", "<Cmd>Cheatsheet<CR>", {desc="Cheatsheet"})
+    end, cmd="Cheatsheet", dependencies={'nvim-telescope/telescope.nvim'}},
     -- TODO we don't actually use this yet
     {"lalitmee/browse.nvim", enabled = false, dependencies={"nvim-telescope/telescope.nvim"}}, -- search stackoverflow quicker
     {"nvim-telescope/telescope-bibtex.nvim",

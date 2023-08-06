@@ -5,7 +5,7 @@ local in_env = vtu.in_env
 local cmd = vim.cmd
 
 
-vim.keymap.set("n", "<plug>AlignTable", "gaie<C-f>v/\\multicol<CR>*&", {silent=true, remap=true})
+vim.keymap.set("n", "<plug>AlignTable", "gaie<C-f>v/\\multicol<CR>*&", {silent=true, remap=true, desc="Align table"})
 
 -- get tabular-like env start r and c
 local function get_tabular()
@@ -122,7 +122,7 @@ vim.keymap.set("n", "<plug>TexJumpPre", function()
         cmd "normal m`"
         vim.api.nvim_win_set_cursor(0, {r_tabular, cGoto})
     end
-end)
+end, {desc="Goto preamble"})
 
 -- TODO: let multicolumn align to the rest but not the other way. What to do if not one row per line?
 -- TODO: have a config parameter for max cell length, so anything longer will not force other cells to be silly long.
@@ -175,12 +175,12 @@ vim.keymap.set("n", "<plug>YankTable", function()
     	gsub('[ \t]*&[ \t]*', delim) -- can't replace %s since it also removes \n
     -- set system clipboard
     vim.fn.setreg('+', content)
-end)
+end, {desc="Yank table"})
 
 vim.keymap.set("n", "<plug>PasteTable", function()
     local delim = '\t'
     -- TODO: inverse of above
-end)
+end, {desc="Paste table"})
 
 
 

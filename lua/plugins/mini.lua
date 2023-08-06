@@ -54,11 +54,10 @@ require'mini.surround'.setup {
 }
 
 -- Remap adding surrounding to Visual mode selection
-vim.api.nvim_del_keymap('x', 'ys')
-vim.api.nvim_set_keymap('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { noremap = true })
-
+vim.api.nvim_del_keymap('x', 'ys') -- del to avoid y(ank) waiting
+vim.api.nvim_set_keymap('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { noremap = true, desc="Surround" })
 -- Make special mapping for "add surrounding for line"
-vim.api.nvim_set_keymap('n', 'yss', 'ys_', { noremap = false })
+vim.api.nvim_set_keymap('n', 'yss', 'ys_', { noremap = false, desc="Surround line" })
 
 -- highlight hex colors and todos, notes etc
 -- consider this or https://github.com/folke/paint.nvim if you want to highlight custom things.
@@ -91,6 +90,9 @@ clue.setup({
     { mode = 'x', keys = 'z' },
     { mode = 'n', keys = ']' },
     { mode = 'n', keys = '[' },
+    { mode = 'n', keys = '=' },
+    { mode = 'n', keys = '>' },
+    { mode = 'n', keys = '<' },
     -- Built-in completion
     { mode = 'i', keys = '<C-x>' },
     -- Marks
@@ -105,23 +107,57 @@ clue.setup({
     { mode = 'c', keys = '<C-r>' },
     -- Window
     { mode = 'n', keys = '<C-w>' },
+    -- vimtex default map
+    { mode = 'n', keys = 'ts' },
   },
 
   clues = {
     -- use e.g. postkeys='<C-w>' to make a submode. 
     { mode = 'n', keys = '<leader>c', desc = "Choose|Color|Code" },
-    { mode = 'n', keys = '<leader>d', desc = "Diagnostics|Def peek" },
+    { mode = 'n', keys = '<leader>d', desc = "Diagnostic|Definition" },
     { mode = 'n', keys = '<leader>f', desc = "Find|File" },
     { mode = 'n', keys = '<leader>g', desc = "Git" },
     { mode = 'n', keys = '<leader>l', desc = "LaTeX" },
-    { mode = 'n', keys = '<leader>p', desc = "Paste" },
+    -- UnconditionalPaste
+    { mode = 'n', keys = '<leader>p', desc = "Paste after" },
     { mode = 'n', keys = '<leader>P', desc = "Paste before" },
-    { mode = 'n', keys = '<leader>r', desc = "Rename" },
+
+    { mode = 'n', keys = '<leader>r', desc = "Re" },
     { mode = 'n', keys = '<leader>t', desc = "Toggle|Term" },
     { mode = 'n', keys = '<leader>w', desc = "Workspace" },
-    { mode = 'n', keys = '<leader>wl', desc = "List" },
-    { mode = 'n', keys = 'gc', desc = "Comment" },
-    { mode = 'n', keys = 'gcc', desc = "Line" },
+    { mode = 'n', keys = ']s', desc = "Spell" },
+    { mode = 'n', keys = '[s', desc = "Spell" },
+    -- vim unimpaired
+    { mode = 'n', keys = 'yob', desc = "background" },
+    { mode = 'n', keys = 'yoh', desc = "hlsearch" },
+    { mode = 'n', keys = 'yoi', desc = "ignorecase" },
+    { mode = 'n', keys = 'yol', desc = "list" },
+    { mode = 'n', keys = 'yon', desc = "number" },
+    { mode = 'n', keys = 'yor', desc = "relativenumber" },
+    { mode = 'n', keys = 'yos', desc = "spell" },
+    { mode = 'n', keys = 'yow', desc = "wrap" },
+    { mode = 'n', keys = 'yo-', desc = "cursorline" },
+    { mode = 'n', keys = 'yo_', desc = "cursorline" },
+    { mode = 'n', keys = 'yox', desc = "cursorcolumn" },
+    { mode = 'n', keys = '=sh', desc = "hlsearch" },
+    { mode = 'n', keys = '=si', desc = "ignorecase" },
+    { mode = 'n', keys = '=sl', desc = "list" },
+    { mode = 'n', keys = '=sn', desc = "number" },
+    { mode = 'n', keys = '=sr', desc = "relativenumber" },
+    -- replaced by Substitute+reindent. 
+    -- Other motion could also be candidates for being replaced.
+    -- { mode = 'n', keys = '=ss', desc = "spell" },
+    { mode = 'n', keys = '=sw', desc = "wrap" },
+    { mode = 'n', keys = '<sl', desc = "list" },
+    { mode = 'n', keys = '>sl', desc = "nolist" },
+    { mode = 'n', keys = '<sn', desc = "number" },
+    { mode = 'n', keys = '>sn', desc = "nonumber" },
+    { mode = 'n', keys = '<sr', desc = "relativenumber" },
+    { mode = 'n', keys = '>sr', desc = "norelativenumber" },
+    { mode = 'n', keys = '<ss', desc = "spell" },
+    { mode = 'n', keys = '>ss', desc = "nospell" },
+    { mode = 'n', keys = '<sw', desc = "wrap" },
+    { mode = 'n', keys = '>sw', desc = "nowrap" },
     -- Enhance this by adding descriptions for <Leader> mapping groups
     clue.gen_clues.builtin_completion(),
     clue.gen_clues.g(),
@@ -143,6 +179,14 @@ clue.setup({
   },
 })
 
+vim.defer_fn(function ()
+    require "utils/keymap"
+    set_keymap_desc('n', 'gc', "Comment")
+    set_keymap_desc('n', 'gcc', "Line")
+    set_keymap_desc('n', 'g/', "Last search")
+    set_keymap_desc('n', '>>', "Indent line")
+    set_keymap_desc('n', '<<', "Unindent line")
+end, 0)
 
 end},
 }

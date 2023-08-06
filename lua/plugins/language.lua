@@ -1,5 +1,4 @@
 #!/usr/bin/env lua
-local g = vim.g
 return {
     -- add keybindings to toggle comments with motions etc.
     {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end},
@@ -8,9 +7,9 @@ return {
     -- julia support, colors and unicode substitution. CANNOT use ft=julia
     {"JuliaEditorSupport/julia-vim", config=function()
         -- this was necessary, random lhs rhs messages was appearing 
-        g.latex_to_unicode_tab = "off"
+        vim.g.latex_to_unicode_tab = "off"
         -- auto insert latex if moving on with e.g. space or other writing that is not part of a unicode char
-        -- g.latex_to_unicode_auto = true
+        -- vim.g.latex_to_unicode_auto = true
     end},
     {"jeetsukumaran/vim-pythonsense", ft='python'}, -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
     -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
@@ -45,13 +44,13 @@ return {
     -- "windwp/nvim-autopairs" doesn't delete properly even with the check_ts 
     -- (treesitter) setting on. I also tried pears.nvim. I haven't tried mini.pairs
     { "tmsvg/pear-tree", enabled = false, config=function ()
-        -- g.pear_tree_smart_openers = 1
-        -- g.pear_tree_smart_closers = 1 # bad in lua, type "{}" -> "{}}"
-        g.pear_tree_smart_backspace = 1
+        -- vim.g.pear_tree_smart_openers = 1
+        -- vim.g.pear_tree_smart_closers = 1 # bad in lua, type "{}" -> "{}}"
+        vim.g.pear_tree_smart_backspace = 1
         -- uncomment to not hide the closing bracket on newline at the cost of 
         -- dot-repeat only performing the last part of the edit.
-        -- g.pear_tree_repeatable_expand = 0
-        g.pear_tree_ft_disabled = {
+        -- vim.g.pear_tree_repeatable_expand = 0
+        vim.g.pear_tree_ft_disabled = {
             "TelescopePrompt", "NvimTree", "qf",
             "tex",
         }
