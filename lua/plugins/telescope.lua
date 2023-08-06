@@ -24,8 +24,10 @@ return {
             vim.keymap.set("n", "<leader>fw", "<Cmd>Telescope live_grep<CR>", { desc="Grep" })
             vim.keymap.set("n", "<leader>fW", "<Cmd>Telescope grep_string<CR>", { desc="Grep under cursor" })
             vim.keymap.set("n", "<leader>fn", "<Cmd>enew<CR>", { desc="New file" })
-            vim.keymap.set("n", "<C-l>", function ()
-                require'telescope.builtin'.keymaps(require'telescope.themes'.get_ivy())
+            vim.keymap.set("n", "<C-/>", function ()
+                require'telescope.builtin'.keymaps(require'telescope.themes'.get_ivy {
+                    show_plug = false, -- simple solution to reduce width of the lhs column
+                })
             end, { desc="Keymaps" })
         end,
         opts={

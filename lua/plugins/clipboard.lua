@@ -1,7 +1,39 @@
 return {
+    -- add substitution functions to e.g. replace a word with clipboard content by writing siw
+    {
+        "svermeulen/vim-subversive",
+        init = function ()
+            vim.keymap.set({"n", "x"}, "s", "<Plug>(SubversiveSubstitute)", { desc="Substitute" })
+            vim.keymap.set("n", "ss", "<Plug>(SubversiveSubstituteLine)", { desc="Substitute line" })
+            vim.keymap.set("n", "S", "<Plug>(SubversiveSubstituteToEndOfLine)", { desc="Substitute to EOL" })
+            -- replace default useless "Sleep"
+            -- substitute is an optional feature enabled from the substitute package where
+            -- I can substitute e.g. all occurrences of a word in a paragraph with some new text by writing <leader>Swip then the replacement text.
+            -- example: gsiwip to replace all instances of the current word under the cursor that exist within the paragraph under the cursor. 
+            -- example: gsl_ to replace all instances of the character under the cursor on the current line.
+            -- example: gssip to replace the word under cursor in the current paragraph. Matches complete words so is different from <leader>siwip
+            -- See normal gss mapping above.
+            vim.keymap.set({"n", "x"}, "gs", "<Plug>(SubversiveSubstituteRange)", { desc="Substitute motion in motion" })
+            vim.keymap.set({"n", "x"}, "gss", "<Plug>(SubversiveSubstituteWordRange)", { desc="Substitute word under cursor" })
+            -- Is integrated with yoink to track clipboard history
+            vim.keymap.set("x", "p", "<plug>(SubversiveSubstitute)", { desc="Substitute" })
+            vim.keymap.set("x", "P", "<plug>(SubversiveSubstitute)", { desc="Substitute" })
+        end,
+    },
     -- yank history that you can cycle with c-n and c-p
     {
         "svermeulen/vim-yoink",
+        config = function ()
+            vim.keymap.set('n', 'p', "<plug>(YoinkPaste_p)", { desc="Paste below with history" })
+            vim.keymap.set('n', 'P', "<plug>(YoinkPaste_P)", { desc="Paste above with history" })
+            -- whitepaste gets preference
+            -- vim.keymap.set('n', 'gp', "<plug>(YoinkPaste_gp)", { desc="Paste below with history" })
+            -- vim.keymap.set('n', 'gP', "<plug>(YoinkPaste_gP)", { desc="Paste above with history" })
+            vim.keymap.set({'n', 'x'}, 'y', "<plug>(YoinkYankPreserveCursorPosition)", { desc="Yoink" })
+            vim.keymap.set("n", "[p", "<Plug>(YoinkPostPasteSwapBack)", { desc="Swap paste" })
+            vim.keymap.set("n", "]p", "<Plug>(YoinkPostPasteSwapForward)", { desc="Swap paste forward" })
+            vim.keymap.set("n", "<C-=>", "<Plug>(YoinkPostPasteToggleFormat)", { desc="Toggle pasted indent" })
+        end,
     },
     -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
     {"gbprod/cutlass.nvim", opts={

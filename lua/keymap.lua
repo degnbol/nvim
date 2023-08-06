@@ -21,7 +21,8 @@ vim.keymap.set('n', 'q;', 'q:')
 vim.keymap.set('n', 'q:', ':q')
 
 -- switch to/from Danish æøå and to insert mode, which is convenient.
-vim.keymap.set("n", "<leader>td", "i<C-^>", { desc="Danish (<C-^>)" })
+-- remap in order to utilise the remapped <C-^> which updates the cmp dictionary
+vim.keymap.set("n", "<leader>td", "i<C-^>", { remap=true, desc="Danish (<C-^>)" })
 
 -- small hack to remove excess whitespace possible since iw also captures 
 -- whitespace under cursor.
@@ -36,3 +37,12 @@ vim.keymap.set("n", "<leader>rs", "<cmd>source $XDG_CONFIG_HOME/nvim/after/plugi
 -- fast) or bibliography things e.g. with papis but this is not added yet and 
 -- could also just fit under latex (<leader>l) since I don't really use it in 
 -- markdown.
+
+-- use the following two commands to enable spelling
+-- setlocal spell
+-- set spelllang=en_us
+-- ctrl+s (in insert mode) to fix last misspelled word
+-- credit: https://castel.dev/post/lecture-notes-1/
+-- with git: https://github.com/gillescastel/latex-snippets
+vim.keymap.set('i', '<C-s>', [[<c-g>u<Esc>[s1z=`]a<c-g>u]], { desc="Spell correct closest" })
+

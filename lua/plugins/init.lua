@@ -62,21 +62,6 @@ return {
             vim.keymap.set("n", "gA", "ga", { desc="Char info" })
         end
     },
-    -- add substitution functions to e.g. replace a word with clipboard content by writing siw
-    {
-        "svermeulen/vim-subversive",
-        init = function ()
-            -- replace default useless "Sleep"
-            -- substitute is an optional feature enabled from the substitute package where
-            -- I can substitute e.g. all occurrences of a word in a paragraph with some new text by writing <leader>Swip then the replacement text.
-            -- example: gsiwip to replace all instances of the current word under the cursor that exist within the paragraph under the cursor. 
-            -- example: gsl_ to replace all instances of the character under the cursor on the current line.
-            -- example: gssip to replace the word under cursor in the current paragraph. Matches complete words so is different from <leader>siwip
-            -- See normal gss mapping above.
-            vim.keymap.set({"n", "x"}, "gs", "<plug>SubversiveSubstituteRange", { desc="Substitute motion in motion" })
-            vim.keymap.set({"n", "x"}, "gss", "<plug>SubversiveSubstituteWordRange", { desc="Substitute word under cursor" })
-        end,
-    },
     -- multi cursor
     -- TODO: figure out what to do about mappings, i.e. C-n is supposed to be 
     -- for this but also used by yoink.

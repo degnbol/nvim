@@ -294,11 +294,10 @@ return {
                         vim.bo.spelllang = spelllang
                     end
                 end
-
-                -- was needed with 0 ms even without async=true.
-                -- 1000 ms should be a second but it seems it is called instantly after everything else?
-                -- Anyways, it works.
-                vim.defer_fn(CmpDictUpdate, 1000)
+                vim.defer_fn(CmpDictUpdate, 500)
+                -- When changing to and from danglish with ctrl+6,
+                -- also switch cmp-dictionary language
+                vim.keymap.set('i', '<C-6>', [[<C-6><C-\><C-o>:lua CmpDictUpdate()<CR>]], { silent=true, desc="Cmp dictionary update" })
 
             end},
             -- these default snippets can be replaced with my custom snippets when I have enough

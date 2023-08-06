@@ -1,32 +1,3 @@
-" substitute motion with clipboard content with https://github.com/svermeulen/vim-subversive
-nmap s  <plug>(SubversiveSubstitute)
-nmap ss <plug>(SubversiveSubstituteLine)
-nmap S  <plug>(SubversiveSubstituteToEndOfLine)
-" Integration with yoink
-xmap s <plug>(SubversiveSubstitute)
-xmap p <plug>(SubversiveSubstitute)
-xmap P <plug>(SubversiveSubstitute)
-" extra subversive keymaps on g in whichkey
-
-" Yank, cut, delete behavior
-" back space and delete buttons delete should delete also in normal mode.
-" Delete to black hole register.
-" Maybe too dangerous sometimes with backspace, e.g. when leaving commandline
-" nnoremap <BS> "_X
-" Yoink:
-nmap <c-n> <plug>(YoinkPostPasteSwapBack)
-nmap <c-p> <plug>(YoinkPostPasteSwapForward)
-nmap p <plug>(YoinkPaste_p)
-nmap P <plug>(YoinkPaste_P)
-nmap gp <plug>(YoinkPaste_gp)
-nmap gP <plug>(YoinkPaste_gP)
-nmap [y <plug>(YoinkRotateBack)
-nmap ]y <plug>(YoinkRotateForward)
-" toggle if pasting with == formatting or not
-nmap <c-=> <plug>(YoinkPostPasteToggleFormat)
-nmap y <plug>(YoinkYankPreserveCursorPosition)
-xmap y <plug>(YoinkYankPreserveCursorPosition)
-
 " For remote with problematic clipboard we replace the cutlass x that works 
 " locally with a mapping where we call y (which is mapped to smartyank) then 
 " d.
@@ -41,15 +12,6 @@ function CutOperator(type, ...)
 endfunction
 " Operator is a convenience function in plugin/operator.vim
 nnoremap <expr> x Operator('CutOperator')
-
-" when adding new line below or above, write something (a space) and delete it
-" so the indent aren't removed on ESC.
-" Commented out since you can just use cc to go to indent, and it is confusing 
-" when it is inconsistent since something like completing `else` behaves 
-" differently. It is possible to keep the blank indents in both cases if cmp's 
-" <CR> behaviour is extended to do something similar to here.
-" nmap o o<c-\><c-o> <BS>
-" nmap O O<c-\><c-o> <BS>
 
 " one scroll signal is one line change instead of 3
 map <ScrollWheelUp>   <c-y>
@@ -183,10 +145,6 @@ xnoremap Å {
 " In Danglish I moved : and ; to the }] button
 " But this messes with things when I'm not in Danglish.
 
-" when changing to and from danglish with ctrl+6,
-" also switch cmp-dictionary language (cmp_dict.lua)
-inoremap <silent> <C-6> <C-6><C-\><C-o>:lua CmpDictUpdate()<CR>
-
 " When language is set to danish we can get ;:'" with alt the same way as we 
 " do in danglish keyboard input, however that is with the left alt which is 
 " deeper in the OS and the mapping below is for when esc+key (^[) is detected which 
@@ -206,14 +164,6 @@ inoremap <A-S-ø> "
 imap <F13> <C-space>
 imap <F14> <C-p>
 imap <F15> <C-n>
-
-" use the following two commands to enable spelling
-" setlocal spell
-" set spelllang=en_us
-" ctrl+s (in insert mode) to fix last misspelled word
-" credit: https://castel.dev/post/lecture-notes-1/
-" with git: https://github.com/gillescastel/latex-snippets
-inoremap <C-s> <c-g>u<Esc>[s1z=`]a<c-g>u
 
 " typo help
 command Q q
