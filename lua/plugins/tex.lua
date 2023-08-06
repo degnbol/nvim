@@ -67,7 +67,6 @@ return {
             set_keymap_desc('n', '<leader>lc', "Clean")
             set_keymap_desc('n', '<leader>lC', "Clean all")
             set_keymap_desc('n', '<leader>le', "Errors")
-            vim.keymap.set('n', '<leader>lE', function() require'nabla'.popup() end, { desc="Show eq"} )
             set_keymap_desc('n', '<leader>lg', "Status")
             set_keymap_desc('n', '<leader>lG', "Status all")
             set_keymap_desc('n', '<leader>li', "Info")

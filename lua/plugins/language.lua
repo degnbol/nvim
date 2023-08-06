@@ -34,8 +34,6 @@ return {
     {"lukas-reineke/headlines.nvim", enabled = false, ft = {'markdown', 'neorg', 'orgmode', 'rst', 'asciidoc', 'asciidoctor'},
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     opts = { }, },
-    -- show pretty math in term. Lazy load on the single cmd that you would use it for (see whichkey).
-    {"jbyuki/nabla.nvim", keys = "<leader>lE",},
     -- "elzr/vim-json", -- json
     {"OmniSharp/omnisharp-vim", ft="cs"},
     
