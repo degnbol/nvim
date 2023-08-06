@@ -46,3 +46,8 @@ Jump along change list with g; and g,
 ```
 
 ZZ to quit.
+
+Select mode. In-between visual and regular text editor selection.
+It replaces the text and goes to insert mode if you press e.g. backspace.
+Access it with gh (charwise) or gH (linewise).
+
