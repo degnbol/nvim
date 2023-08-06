@@ -104,6 +104,8 @@ return {
 
         end
 
+        require'hlslens'.setup()
+
         vim.keymap.set("n", "<leader>tl", "<Cmd>HlSearchLensToggle<CR>", { desc="HlSearchLens", silent=true })
 
         -- integrate with haya14busa/vim-asterisk

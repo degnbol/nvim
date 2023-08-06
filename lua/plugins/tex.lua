@@ -106,7 +106,6 @@ return {
             set_keymap_desc('n', 'cse', "Env")
             set_keymap_desc('n', 'csm', "Math")
             -- in/around ...
-            -- TODO: P is currently conflicting with paste from unimpaired
             set_keymap_desc({'o', 'x'}, 'id', "Delim")
             set_keymap_desc({'o', 'x'}, 'iP', "Section")
             vim.keymap.set("n", "ts$", "<Plug>(vimtex-env-toggle-math)", { desc="Inline <-> display" })
@@ -125,7 +124,6 @@ return {
             vim.keymap.set({"o", "x"}, "a4", "<Plug>(vimtex-a$)", {desc="An eq"})
             vim.keymap.set({"o", "x"}, "i4", "<Plug>(vimtex-i$)", {desc="In eq"})
             -- next/prev start/end of ...
-            -- TODO: the m ones are conflicting with something
             vim.keymap.set("n", "[m", "<Plug>(vimtex-[n)", { desc="Math start" })
             vim.keymap.set("n", "[M", "<Plug>(vimtex-[N)", { desc="Math end" })
             vim.keymap.set("n", "[4", "<Plug>(vimtex-[n)", { desc="Math start" })

@@ -158,6 +158,7 @@ clue.setup({
     { mode = 'n', keys = '>ss', desc = "nospell" },
     { mode = 'n', keys = '<sw', desc = "wrap" },
     { mode = 'n', keys = '>sw', desc = "nowrap" },
+
     -- Enhance this by adding descriptions for <Leader> mapping groups
     clue.gen_clues.builtin_completion(),
     clue.gen_clues.g(),

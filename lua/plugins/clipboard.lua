@@ -20,7 +20,7 @@ return {
             vim.keymap.set("x", "P", "<plug>(SubversiveSubstitute)", { desc="Substitute" })
         end,
     },
-    -- yank history that you can cycle with c-n and c-p
+    -- yank history that you can cycle. I chose non-default [p (and ]p)
     {
         "svermeulen/vim-yoink",
         config = function ()
@@ -33,6 +33,12 @@ return {
             vim.keymap.set("n", "[p", "<Plug>(YoinkPostPasteSwapBack)", { desc="Swap paste" })
             vim.keymap.set("n", "]p", "<Plug>(YoinkPostPasteSwapForward)", { desc="Swap paste forward" })
             vim.keymap.set("n", "<C-=>", "<Plug>(YoinkPostPasteToggleFormat)", { desc="Toggle pasted indent" })
+            -- esc, reindent back til start of paste, jump back to where we 
+            -- just jumped from (`] has been changed by the reindent), then 
+            -- insert mode, then <C-F> to reindent current line without leaving 
+            -- insert mode (F for flush with line above). This should mean we 
+            -- can handle both a charwise and a linewise paste.
+            vim.keymap.set("i", "<C-=>", [=[<Esc>=`[``a<C-f>]=], { desc="Toggle pasted indent" })
         end,
     },
     -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior

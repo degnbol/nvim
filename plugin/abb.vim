@@ -1,4 +1,5 @@
 iabbrev THere There
+iabbrev THen Then
 iabbrev doesnt doesn't
 iabbrev dont don't
 iabbrev cant can't

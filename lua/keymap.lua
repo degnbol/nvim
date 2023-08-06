@@ -46,3 +46,18 @@ vim.keymap.set("n", "<leader>rs", "<cmd>source $XDG_CONFIG_HOME/nvim/after/plugi
 -- with git: https://github.com/gillescastel/latex-snippets
 vim.keymap.set('i', '<C-s>', [[<c-g>u<Esc>[s1z=`]a<c-g>u]], { desc="Spell correct closest" })
 
+-- not the most elegant but it works.
+-- LeftMouse to move cursor to pressed location.
+-- Then set @/ to the current word (\< and \> are to search strictly).
+-- Then enable hlsearch. This is all a way to search without going to the next 
+-- match (if we just pressed * for instance)
+vim.keymap.set('n', '<RightMouse>',
+    [[<LeftMouse>:let @/='\<'.expand('<cword>').'\>'|set hlsearch<CR>]],
+    { silent=true, desc="Search pressed word" }
+)
+
+-- fallback search replace if both treesitter and LSP are not attached.
+vim.keymap.set('n', '<leader>rn', [[:%s/<C-r><C-w>/]], { desc="Search/replace cword" })
+-- use a selection that isn't a perfect cword, or just to use the simple search/replace when LSP is attached etc.
+vim.keymap.set('x', '<leader>rn', [["ry:%s/<C-r>r/]], { desc="Search/replace" })
+

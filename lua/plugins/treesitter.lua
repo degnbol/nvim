@@ -99,14 +99,16 @@ return {
                     smart_rename = {
                         enable = true,
                         keymaps = {
+                            -- same as LSP which replaces the mapping if attached.
                             smart_rename = "<leader>rn",
                         },
                     },
                     navigation = {
                         enable = true,
                         keymaps = {
-                            goto_definition = "gnd",
-                            list_definitions = "gnD",
+                            -- gets replaced if LSP is attached to buffer
+                            goto_definition = "gd",
+                            list_definitions = "gD",
                             list_definitions_toc = "gO",
                             goto_next_usage = "<a-*>",
                             goto_previous_usage = "<a-#>",
@@ -153,19 +155,19 @@ return {
                         enable = true,
                         set_jumps = true, -- whether to set jumps in the jumplist
                         goto_next_start = {
-                            ["]m"] = "@function.outer",
+                            ["]f"] = "@function.outer",
                             ["]o"] = "@loop.outer",
                         },
                         goto_next_end = {
-                            ["]M"] = "@function.outer",
+                            ["]F"] = "@function.outer",
                             ["]O"] = "@loop.outer",
                         },
                         goto_previous_start = {
-                            ["[m"] = "@function.outer",
+                            ["[f"] = "@function.outer",
                             ["[o"] = "@loop.outer",
                         },
                         goto_previous_end = {
-                            ["[M"] = "@function.outer",
+                            ["[F"] = "@function.outer",
                             ["[O"] = "@loop.outer",
                         }
                     },

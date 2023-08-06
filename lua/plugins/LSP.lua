@@ -37,23 +37,9 @@ return {
             vim.fn.sign_define("LspDiagnosticsSignInformation", { text = "", numhl = "LspDiagnosticsDefaultInformation" })
             vim.fn.sign_define("LspDiagnosticsSignHint", { text = "", numhl = "LspDiagnosticsDefaultHint" })
 
-            -- color kinds
-            -- TODO: these should probs not be hard-coded
-            vim.api.nvim_set_hl(0, 'CmpItemAbbrDeprecated', { fg = "#808080", strikethrough = true })
-            vim.api.nvim_set_hl(0, 'CmpItemAbbrMatch', { fg = "#569CD6" })
-            vim.api.nvim_set_hl(0, 'CmpItemAbbrMatchFuzzy', { fg = "#569CD6" })
-            vim.api.nvim_set_hl(0, 'CmpItemKindVariable', { fg = "#9CDCFE" })
-            vim.api.nvim_set_hl(0, 'CmpItemKindInterface', { fg = "#9CDCFE" })
-            vim.api.nvim_set_hl(0, 'CmpItemKindText', { fg = "#9CDCFE" })
-            vim.api.nvim_set_hl(0, 'CmpItemKindFunction', { fg = "#C586C0" })
-            vim.api.nvim_set_hl(0, 'CmpItemKindMethod', { fg = "#C586C0" })
-            vim.api.nvim_set_hl(0, 'CmpItemKindKeyword', { fg = "#D4D4D4" })
-            vim.api.nvim_set_hl(0, 'CmpItemKindProperty', { fg = "#D4D4D4" })
-            vim.api.nvim_set_hl(0, 'CmpItemKindUnit', { fg = "#D4D4D4" })
-
-
             -- now for adding the language servers
             local lsp = require "lspconfig"
+
 
             -- See `:help vim.diagnostic.*` for documentation on any of the below functions
             vim.keymap.set('n', '<space>dd', vim.diagnostic.open_float, {desc = "Line diagnostic"})

@@ -15,6 +15,9 @@ return {
             set_keymap_desc('n', '>s', "Setting disable")
             set_keymap_desc('n', '[a', ":previous")
             set_keymap_desc('n', ']a', ":next")
+            -- next/prev file in the same dir. Not that useful so we replace it 
+            -- with function by treesitter (which defaults to m but we want 
+            -- that for math in latex)
             set_keymap_desc('n', '[f', "File prev")
             set_keymap_desc('n', ']f', "File next")
             set_keymap_desc('n', '[e', "Exchange line before")
@@ -63,8 +66,6 @@ return {
         end
     },
     -- multi cursor
-    -- TODO: figure out what to do about mappings, i.e. C-n is supposed to be 
-    -- for this but also used by yoink.
     "mg979/vim-visual-multi",
     "farmergreg/vim-lastplace", -- open file in last edited location
     "haya14busa/vim-asterisk", -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
