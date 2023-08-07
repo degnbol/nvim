@@ -13,8 +13,13 @@ return {
             set_keymap_desc('n', '=s', "Setting toggle | Substitute+reindent")
             set_keymap_desc('n', '<s', "Setting enable")
             set_keymap_desc('n', '>s', "Setting disable")
+            -- argument list, i.e. the original list of files given to the nvim cmd.
+            -- Seems more intuitive to just use ]b for buffers.
+            -- We replace it with moving to next argument instead.
             set_keymap_desc('n', '[a', ":previous")
             set_keymap_desc('n', ']a', ":next")
+            set_keymap_desc('n', '[A', ":first")
+            set_keymap_desc('n', ']A', ":last")
             -- next/prev file in the same dir. Not that useful so we replace it 
             -- with function by treesitter (which defaults to m but we want 
             -- that for math in latex)

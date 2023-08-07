@@ -109,10 +109,14 @@ clue.setup({
     { mode = 'n', keys = '<C-w>' },
     -- vimtex default map
     { mode = 'n', keys = 'ts' },
+    -- list text objects
+    { mode = 'x', keys = 'i' },
+    { mode = 'x', keys = 'a' },
   },
 
   clues = {
     -- use e.g. postkeys='<C-w>' to make a submode. 
+    { mode = 'n', keys = '<leader>a', desc = "Argument" },
     { mode = 'n', keys = '<leader>c', desc = "Choose|Color|Code" },
     { mode = 'n', keys = '<leader>d', desc = "Diagnostic|Definition" },
     { mode = 'n', keys = '<leader>f', desc = "Find|File" },

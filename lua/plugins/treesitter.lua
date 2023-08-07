@@ -1,4 +1,5 @@
 #!/usr/bin/env lua
+
 return {
     -- treesitter
     -- language coloring and ensuring of installation
@@ -136,37 +137,54 @@ return {
                             ["af"] = "@function.outer",
                             ["if"] = "@function.inner",
                             ["ac"] = "@comment.outer",
-                            -- ["ic"] = "@comment.inner", -- doesn't exist
-                            -- these are so cool:
+                            ["ic"] = "@comment.inner",
                             ["aa"] = "@parameter.outer",
                             ["ia"] = "@parameter.inner",
+                            ["ik"] = "@assignment.lhs",
+                            ["ik"] = "@assignment.lhs",
+                            ["iv"] = "@assignment.rhs",
                         }
                     },
                     swap = {
                         enable = true,
                         swap_next = {
-                            ["<leader>a"] = "@parameter.inner",
+                            ["<leader>a]"]       = {query="@parameter.inner", desc="Swap next arg"},
+                            ["<leader>a<Right>"] = {query="@parameter.inner", desc="Swap next arg"},
+                            ["<leader>al"]       = {query="@parameter.inner", desc="Swap next arg"},
                         },
                         swap_previous = {
-                            ["<leader>A"] = "@parameter.inner",
+                            ["<leader>a["]       = {query="@parameter.inner", desc="Swap prev arg"},
+                            ["<leader>a<Left>"]  = {query="@parameter.inner", desc="Swap prev arg"},
+                            ["<leader>ah"]       = {query="@parameter.inner", desc="Swap prev arg"},
                         }
                     },
                     move = {
                         enable = true,
                         set_jumps = true, -- whether to set jumps in the jumplist
                         goto_next_start = {
+                            -- We want to go to next arg at the same level, 
+                            -- e.g. skip over args that are in a nested 
+                            -- function. This means we use <C-a> for the 
+                            -- textobj and define a more messy keybind further 
+                            -- down.
+                            ["]<C-a>"] = "@parameter.inner",
                             ["]f"] = "@function.outer",
                             ["]o"] = "@loop.outer",
+                            ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
                         },
                         goto_next_end = {
+                            ["]<C-S-a>"] = "@parameter.inner",
                             ["]F"] = "@function.outer",
                             ["]O"] = "@loop.outer",
                         },
                         goto_previous_start = {
+                            ["[<C-a>"] = "@parameter.inner",
                             ["[f"] = "@function.outer",
                             ["[o"] = "@loop.outer",
+                            ["[z"] = { query = "@fold", query_group = "folds", desc = "Prev fold" },
                         },
                         goto_previous_end = {
+                            ["[<C-S-a>"] = "@parameter.inner",
                             ["[F"] = "@function.outer",
                             ["[O"] = "@loop.outer",
                         }
@@ -175,19 +193,21 @@ return {
                         enable = true,
                         border = 'none',
                         peek_definition_code = {
-                            ["<leader>df"] = "@function.outer",
-                            ["<leader>dF"] = "@class.outer",
+                            ["<leader>df"] = {query="@function.outer", desc="Peek function"},
+                            ["<leader>dF"] = {query="@class.outer", desc="Peek class"},
                         }
                     },
                 },
             }
 
-            -- shorter names for peek definitions
-            vim.defer_fn(function ()
-                require "utils/keymap"
-                set_keymap_desc('n', '<leader>df', "Peek function")
-                set_keymap_desc('n', '<leader>dF', "Peek class")
-            end, 0)
+            -- TODO: if we are not yet inside an arg, it should behave like ]<C-a>
+            -- It would also be nice to write this in a cleaner way using lua 
+            -- by taking inspo from the functions being called here maybe.
+            -- Low priority since it does the main thing we want.
+            vim.keymap.set('n', ']a', "via]<C-a><Esc>", { remap=true, desc="Next arg start" })
+            vim.keymap.set('n', ']A', "via]<C-a>ia<Esc>", { remap=true, desc="Next arg end" })
+            vim.keymap.set('n', '[a', "viao[<C-S-a>iao<Esc>", { remap=true, desc="Prev arg start" })
+            vim.keymap.set('n', '[A', "viao[<C-S-a><Esc>", { remap=true, desc="Prev arg end" })
         end
     },
     -- in vis mode use . , ; i; to select based on treesitter 
