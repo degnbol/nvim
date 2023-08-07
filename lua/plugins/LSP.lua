@@ -59,7 +59,7 @@ return {
                 vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = bufnr, desc = "Hover" })
                 -- gi is for goto last insert and switch to insert mode so we use gI
                 vim.keymap.set('n', 'gI', vim.lsp.buf.implementation, { buffer = bufnr, desc = "Goto implementation" })
-                vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, { buffer = bufnr, desc = "Signature" })
+                vim.keymap.set({'i', 'n'}, '<C-S-k>', vim.lsp.buf.signature_help, { buffer = bufnr, desc = "Signature" })
                 vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, { buffer = bufnr, desc = "Add" })
                 vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, { buffer = bufnr, desc = "Remove" })
                 vim.keymap.set('n', '<space>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, { buffer = bufnr, desc = "List" })
