@@ -4,6 +4,9 @@ return {
     "tpope/vim-repeat", -- change . to repeat last native command to last "full" command, which feels more natural.
     -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
     -- "tpope/vim-sensible",
+    -- :Abolish is iabbrev which adds beginning Uppercase, whole word UPPERCASE and with {a,b} allowed for multiple combinations
+    -- crs: snake_case, crm: MixedCase, crc: camelCase, cru: UPPER_CASE, cr-: dash-case, cr.: dot.case, cr<SPACE>: space case, crt: Title Case
+    "tpope/vim-abolish",
     {
         "tpope/vim-unimpaired",
         config = function ()

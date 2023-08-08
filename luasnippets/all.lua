@@ -3,6 +3,12 @@ local util = require "utils/luasnip"
 return {
 -- for all filetypes
 
+-- typos
+s({trig="i..e", dscr="I.e. typo", snippetType='autosnippet'},
+{t"i.e."}),
+s({trig="e..g", dscr="E.g. typo", snippetType='autosnippet'},
+{t"e.g."}),
+
 -- alt to autopairs
 s({trig='""', dscr="autopairs", snippetType='autosnippet'},
 {t'"', i(1), t'"'}),
