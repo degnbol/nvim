@@ -43,23 +43,52 @@ return {
             set_keymap_desc('n', '<p', "Put below, decr indent")
             set_keymap_desc('n', '=P', "Put above, reindent")
             set_keymap_desc('n', '=p', "Put below, reindent")
-            -- default for yoc is another binding for cursorline which is a lot 
-            -- less useful than conceal
-            vim.keymap.set("n", "yoc", function ()
+
+            -- some extra functions that I felt were missing
+            -- To conceal or not, set by changing the conceallevel between 0 
+            -- and a non-zero value.
+            local toggle_colceal = function ()
                 if vim.opt.conceallevel:get() > 0 then
                     nzConcealLvl = vim.opt.conceallevel:get()
                     vim.opt.conceallevel = 0
                 else
                     vim.opt.conceallevel = nzConcealLvl
                 end
-            end, { desc="conceal" })
-            vim.keymap.set("n", "yoC", function ()
+            end
+            local toggle_colcealcursor = function ()
                 if vim.opt.concealcursor:get():match('n') then
                     vim.cmd 'setlocal concealcursor-=n' -- lua version not simple
                 else
                     vim.opt.concealcursor:append('n')
                 end
-            end, { desc="concealcursor" })
+            end
+            local toggle_autoformat = function ()
+                if vim.opt.formatoptions:get()['a'] then
+                    vim.opt.formatoptions:remove('a')
+                    print("fo-=a")
+                else
+                    vim.opt.formatoptions:append('a')
+                    print("fo+=a")
+                end
+            end
+            local enable_autoformat = function ()
+                vim.opt.formatoptions:append('a')
+                print("fo+=a")
+            end
+            local disable_autoformat = function ()
+                vim.opt.formatoptions:remove('a')
+                print("fo-=a")
+            end
+            -- default for yoc is another binding for cursorline which is a lot 
+            -- less useful than conceal
+            vim.keymap.set('n', 'yoc', toggle_colceal, { desc="conceal" })
+            vim.keymap.set('n', '=sc', toggle_colceal, { desc="conceal" })
+            vim.keymap.set('n', 'yoC', toggle_colcealcursor, { desc="concealcursor" })
+            vim.keymap.set('n', '=sC', toggle_colcealcursor, { desc="concealcursor" })
+            vim.keymap.set('n', 'yoa', toggle_autoformat, { desc="formatoptions auto" })
+            vim.keymap.set('n', '=sa', toggle_autoformat, { desc="formatoptions auto" })
+            vim.keymap.set('n', '<sa', enable_autoformat, { desc="formatoptions auto" })
+            vim.keymap.set('n', '>sa', disable_autoformat, { desc="formatoptions auto" })
         end,
     },
     {
