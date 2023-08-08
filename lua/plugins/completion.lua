@@ -282,12 +282,15 @@ return {
                     async = true, -- from slight but noticeable startup delay to instant.
                 }
 
-                -- We want spelllang=en,da so we can underline bad spelling in both, 
-                -- but toggle completion from danish only when iminsert=1.
                 function CmpDictUpdate()
                     if vim.bo.iminsert == 1 then
                         cmpd.update()
                     else
+                        -- We want spelllang=en,da so we can underline bad 
+                        -- spelling for both english and danish words,
+                        -- but danish completion should only be shown when 
+                        -- iminsert==1.
+                        -- Save spelllang to temp var that is probably en,da
                         local spelllang = vim.bo.spelllang
                         vim.bo.spelllang = "en"
                         cmpd.update()
@@ -295,10 +298,11 @@ return {
                     end
                 end
                 vim.defer_fn(CmpDictUpdate, 500)
-                -- When changing to and from danglish with ctrl+6,
-                -- also switch cmp-dictionary language
-                vim.keymap.set('i', '<C-6>', [[<C-6><C-\><C-o>:lua CmpDictUpdate()<CR>]], { silent=true, desc="Cmp dictionary update" })
-
+                -- also trigger it when language is changed. See lua/keymap
+                vim.api.nvim_create_autocmd("User", {
+                    pattern = "ToggleDansk",
+                    callback = CmpDictUpdate
+                })
             end},
             -- these default snippets can be replaced with my custom snippets when I have enough
             {"honza/vim-snippets", lazy = true, -- load as cmp dependency

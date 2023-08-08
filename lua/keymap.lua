@@ -56,3 +56,8 @@ vim.keymap.set('n', '<leader>rn', [[:%s/<C-r><C-w>/]], { desc="Search/replace cw
 -- use a selection that isn't a perfect cword, or just to use the simple search/replace when LSP is attached etc.
 vim.keymap.set('x', '<leader>rn', [["ry:%s/<C-r>r/]], { desc="Search/replace" })
 
+vim.keymap.set('i', '<C-6>',
+    [[<C-^><C-\><C-o>:doautocmd User ToggleDansk<CR>]],
+    { silent=true, desc="Toggle dansk" }
+)
+
