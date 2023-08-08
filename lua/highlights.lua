@@ -78,6 +78,10 @@ local function afterColorscheme()
     hl("BufferLineBufferSelected", {bold=true, italic=false})
     hl("BufferLineNumbersSelected", {bold=true, italic=false})
 
+    ---- Completion. Some links to IncSearch which is too distracting
+    hl("CmpItemAbbrMatch", {bold=true})
+    hl("CmpItemAbbrMatchFuzzy", {bold=true})
+
     -- never italic comments but italize builtin stuff
     -- :h group-name
     -- Italics are not default since terms aren't assumed to support it,
