@@ -44,6 +44,7 @@ unjump with ``, go to last edit with `.,
 go to last insert mode location with `^.
 Jump along change list with g; and g,
 ```
+In visual: o to go to opposite of selection with cursor.
 
 ZZ to quit.
 
