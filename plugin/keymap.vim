@@ -126,22 +126,23 @@ cnoremap <expr> <A-right> husk#right()
 cnoremap <expr> <A-b> husk#left()
 cnoremap <expr> <A-w> husk#right()
 
-" Danglish support. For when Danglish keyboard is selected, 
-" generally you should instead stay in code keyboard and use iminsert=2
+" Danglish support. For when Danglish keyboard is selected.
+" Generally you should instead stay in code keyboard and use iminsert=2
 " This can also be done with langmap but since these are 
-" never used in normal mode then it doesn't hurt.
-nnoremap æ ;
-nnoremap Æ :
-nnoremap ø '
-nnoremap Ø "
-nnoremap å [
-nnoremap Å {
-xnoremap æ ;
-xnoremap Æ :
-xnoremap ø '
-xnoremap Ø "
-xnoremap å [
-xnoremap Å {
+" never used in normal mode then it doesn't hurt, and I tried and it didn't 
+" seem to map to [ with remapping even though langremap was on so I don't know
+nmap æ ;
+nmap Æ :
+nmap ø '
+nmap Ø "
+nmap å [
+nmap Å {
+xmap æ ;
+xmap Æ :
+xmap ø '
+xmap Ø "
+xmap å [
+xmap Å {
 " In Danglish I moved : and ; to the }] button
 " But this messes with things when I'm not in Danglish.
 
