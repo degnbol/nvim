@@ -11,9 +11,9 @@ return {
                 line="<CR><CR>",
                 visual="<CR>",
                 operator="<CR>",
-                win="<leader><CR>",
-                focus="<S-CR>",
+                focus="<C-CR>",
                 setlast="<leader>tt",
+                win="<leader>tT",
             },
             exclude = {tex=true, text=true, tsv=true, markdown=true},
         }
