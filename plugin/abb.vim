@@ -11,8 +11,10 @@ Abolish theyre they're
 " flipped letters
 Abolish ahve have
 Abolish sohw show
+Abolish blaance balance
 " spelling mistakes
 Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or} {despe,sepa}rat{}
+Abolish eucledian Euclidean
 " short forms
 Abolish algo{,s} algorithm{}
 Abolish tho though
