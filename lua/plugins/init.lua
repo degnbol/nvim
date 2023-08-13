@@ -65,22 +65,29 @@ return {
                     vim.opt.concealcursor:append('n')
                 end
             end
-            local toggle_autoformat = function ()
-                if vim.opt.formatoptions:get()['a'] then
-                    vim.opt.formatoptions:remove('a')
-                    print("fo-=a")
-                else
-                    vim.opt.formatoptions:append('a')
-                    print("fo+=a")
-                end
-            end
             local enable_autoformat = function ()
                 vim.opt.formatoptions:append('a')
-                print("fo+=a")
+                -- also remove sidescroll offset since there should be enough space on the screen
+                -- Keep record of the original value
+                sidescrolloff = vim.opt.sidescrolloff:get()
+                vim.opt.sidescrolloff = 0
+                -- notify
+                print("fo+=a | set sidescrolloff=0")
             end
             local disable_autoformat = function ()
                 vim.opt.formatoptions:remove('a')
-                print("fo-=a")
+                -- reset sidescrolloff, assuming the var 'sidescrolloff' has 
+                -- been defined in a call to enable_autoformat
+                vim.opt.sidescrolloff = sidescrolloff
+                -- notify
+                print("fo-=a | set sidescrolloff=" .. sidescrolloff)
+            end
+            local toggle_autoformat = function ()
+                if vim.opt.formatoptions:get()['a'] then
+                    disable_autoformat()
+                else
+                    enable_autoformat()
+                end
             end
             -- default for yoc is another binding for cursorline which is a lot 
             -- less useful than conceal
