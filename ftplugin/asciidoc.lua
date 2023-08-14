@@ -18,12 +18,17 @@ local function get_xref_id()
         end
     end
 end
-
 -- Goto tag that xref points to under cursor
 function goto_xref_tag()
     local tag = get_xref_id()
     if tag then
-        vim.cmd('tag ' .. tag)
+        if not pcall(vim.cmd, "tag " .. tag) then
+            -- assuming we have not changed default ctags call that stores tags by 
+            -- natural naming rather than the ids, we can simply modify the search 
+            -- here to work for both natural naming and id naming (:tag is 
+            -- case-insensitive)
+            vim.cmd("silent! tag " .. tag:gsub("_", " "))
+        end
     end
 end
 
