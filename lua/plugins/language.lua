@@ -22,10 +22,41 @@ return {
     -- {"preservim/vim-markdown", dependencies={"godlygeek/tabular"}}, -- conceal markdown expressions like _emphasis_ and folding. Overkill, see {after/,}syntax/markdown.vim
     -- :MarkdownPreview live in browser
     {"iamcco/markdown-preview.nvim", build=':call mkdp#util#install()', ft='markdown'},
-    {"habamax/vim-asciidoctor", ft='asciidoctor', config=function()
-        -- conceal _ and * in _italic_ and *bold*
-        vim.g.asciidoctor_syntax_conceal = 1
-    end},
+    -- for asciidoctor filetype use ".adoc"
+    -- adoc argues to be a better replacement for markdown in general
+    -- https://docs.asciidoctor.org/asciidoc/latest/asciidoc-vs-markdown/
+    -- rst seems instead to be all about technical documentation.
+    {
+        -- a fork with rename asciidoctor -> asciidoc
+        "mkschreder/vim-asciidoc",
+        branch = "bugfix/asciidoctor",
+        -- doesn't seem there is any asciidoc plugin that helps with goto definition
+        ft='asciidoc',
+        config=function()
+                -- conceal _ and * in _italic_ and *bold*
+                vim.g.asciidoctor_syntax_conceal = 1
+                -- somehow setting colorscheme in way that resets some highlight groups, 
+                -- so we set them again here:
+                local grp = vim.api.nvim_create_augroup("adoc", {clear=true})
+                vim.api.nvim_create_autocmd("Colorscheme", {
+                    buffer = 0,
+                    group = grp,
+                    callback = function ()
+                        hl.set("asciidoctorBold", {bold=true})
+                        hl.set("asciidoctorItalic", {italic=true})
+                        hl.set("asciidoctorBoldItalic", {bold=true, italic=true})
+                        hl.link("asciidoctorTitleDelimiter", "Comment")
+                        for i = 1, 6 do
+                            hl.link("asciidoctorH"..i.."Delimiter", "Comment")
+                        end
+                        -- there are more hi groups that might be unset
+                        -- ...
+                        -- hide comment delim (hl group set in syntax file).
+                        hl.fg("commentDelimiter", hl.get("Normal")["bg"])
+                    end
+                })
+            end,
+    },
     -- https://quarto.org/
     {"quarto-dev/quarto-vim", dependencies={"vim-pandoc/vim-pandoc-syntax"}, ft="quarto"},
     {"habamax/vim-rst", ft="rst"},
@@ -35,7 +66,7 @@ return {
     opts = { }, },
     -- "elzr/vim-json", -- json
     {"OmniSharp/omnisharp-vim", ft="cs"},
-    
+
     -- autoclose pairs.
     -- "m4xshen/autoclose.nvim" is too simple.
     -- "windwp/nvim-autopairs" doesn't delete properly even with the check_ts 
