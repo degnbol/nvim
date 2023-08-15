@@ -37,7 +37,7 @@ fi
 brew install skim
 echo "Open skim and customize bar to your liking, e.g. hide text and show toggle pane buttons."
 # https://dr563105.github.io/blog/skim-vimtex-setup/
-echo "Go to sync settings and put"
+echo "Go to sync settings. Enable the reload tickboxes. Put"
 echo "Preset -> Custom"
 echo "Command -> nvim"
 echo "Arguments -> --headless -c \"VimtexInverseSearch %line '%file'\""
@@ -54,4 +54,8 @@ $0:h/install.jl
 # python LSP "pylsp"
 # https://github.com/python-lsp/python-lsp-server
 pip install python-lsp-server
+
+# for asciidoc editing.
+# tags is to goto definition for xrefs, since there is no LSP, treesitter or similar.
+brew install asciidoctor universal-ctags
 
