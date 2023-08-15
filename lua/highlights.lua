@@ -1,48 +1,24 @@
 #!/usr/bin/env lua
-local function hl(name, val)
-    vim.api.nvim_set_hl(0, name, val)
-end
-local function fg(name, color)
-    hl(name, {fg=color})
-end
-local function bg(name, color)
-    hl(name, {bg=color})
-end
-local function fgbg(name, fgcol, bgcol)
-    hl(name, {fg=fgcol, bg=bgcol})
-end
-local function link(name, linkto)
-    hl(name, {link=linkto})
-end
-local function rev(name)
-    hl(name, {reverse=true})
-end
-function gethl(name)
-    return vim.api.nvim_get_hl(0, {name=name, link=false})
-end
--- update subset of settings for a highlight group instead of replacing them all
-function modhl(name, val)
-    hl(name, vim.tbl_extend("force", gethl(name), val))
-end
+local hl = require "utils/highlights"
 
 ---- some sane defaults that a colorscheme may overwrite
 
 -- Italic highlight group doesn't actually make terminal text italic by default.
-hl("Italic", {italic=true})
+hl.set("Italic", {italic=true})
 
 -- remove bg on concealchars
-bg("Conceal", nil)
+hl.bg("Conceal", nil)
 
 -- set completion menu bg to main bg and make scrollbar minimal
-bg("Pmenu", nil)
-bg("PmenuSbar", nil)
-rev("PmenuSel")
+hl.bg("Pmenu", nil)
+hl.bg("PmenuSbar", nil)
+hl.rev("PmenuSel")
 
-fg("LineNr", "grey")
-fg("CursorLineNr", nil)
+hl.fg("LineNr", "grey")
+hl.fg("CursorLineNr", nil)
 
 -- @variable seemed to start being linked to @identifier after update?
-hl("@variable", {gui=nil})
+hl.set("@variable", {gui=nil})
 
 
 local function afterColorscheme()
@@ -50,14 +26,14 @@ local function afterColorscheme()
     vim.cmd 'silent Lazy reload telescope.nvim'
 
     ---- git signs link to Gitsigns equivalent which gets defined
-    link("DiffAddNr", "GitsignsAddLn")
-    link("DiffChangeNr", "GitsignsChangeLn")
-    link("DiffTopDeleteNr", "GitsignsDeleteVirtLn") -- edge-case where first line(s) of file is deleted
-    link("DiffChangeDeleteNr", "GitsignsChangedeleteLn")
+    hl.link("DiffAddNr", "GitsignsAddLn")
+    hl.link("DiffChangeNr", "GitsignsChangeLn")
+    hl.link("DiffTopDeleteNr", "GitsignsDeleteVirtLn") -- edge-case where first line(s) of file is deleted
+    hl.link("DiffChangeDeleteNr", "GitsignsChangedeleteLn")
     -- special decides the color for the underline
-    hl("DiffDeleteNr", {underline=true, special=gethl("DiffDelete")["fg"], fg=nil})
+    hl.set("DiffDeleteNr", {underline=true, special=hl.get("DiffDelete")["fg"], fg=nil})
 
-    local spellBad = gethl("spellBad")
+    local spellBad = hl.get("spellBad")
     -- the default already has red undercurl so we don't wanna mess with that but 
     -- other themes sets the fg instead
     if spellBad["special"] then
@@ -65,22 +41,22 @@ local function afterColorscheme()
     else
         spellBad = spellBad["fg"]
     end
-    hl("SpellBad", {undercurl=true, special=spellBad})
+    hl.set("SpellBad", {undercurl=true, special=spellBad})
 
     -- replace whatever search was doing completely but only modify IncSearch's 
     -- reverse setting so it remains a different color from Search, probably 
     -- green.
-    rev("Search")
-    modhl("IncSearch", {reverse=true})
+    hl.rev("Search")
+    hl.mod("IncSearch", {reverse=true})
 
     ---- bufferline
     -- bold instead of italic+bold selected
-    hl("BufferLineBufferSelected", {bold=true, italic=false})
-    hl("BufferLineNumbersSelected", {bold=true, italic=false})
+    hl.set("BufferLineBufferSelected", {bold=true, italic=false})
+    hl.set("BufferLineNumbersSelected", {bold=true, italic=false})
 
     ---- Completion. Some links to IncSearch which is too distracting
-    hl("CmpItemAbbrMatch", {bold=true})
-    hl("CmpItemAbbrMatchFuzzy", {bold=true})
+    hl.set("CmpItemAbbrMatch", {bold=true})
+    hl.set("CmpItemAbbrMatchFuzzy", {bold=true})
 
     -- never italic comments but italize builtin stuff
     -- :h group-name
@@ -94,29 +70,29 @@ local function afterColorscheme()
     -- will combine the color with the italic, while editing the other may replace 
     -- the color with italic. Before making changes look at test files in 
     -- testfiles/
-    modhl("Comment", {italic=false})
-    modhl("Operator", {bold=true})
-    modhl("Include", {italic=true})
-    modhl("Repeat", {italic=true})
-    modhl("Label", {italic=true})
-    modhl("Conditional", {italic=true})
-    modhl("Exception", {italic=true})
-    modhl("@include", {italic=true})
-    modhl("Keyword", {italic=true, bold=false})
-    modhl("@keyword", {italic=true, bold=false})
-    modhl("@keyword.function", {italic=true})
-    modhl("@keyword.return", {italic=true})
-    modhl("@keyword.operator", {italic=true})
-    modhl("@parameter", {italic=false})
-    modhl("@function", {italic=false})
-    modhl("@boolean", {italic=true})
+    hl.mod("Comment", {italic=false})
+    hl.mod("Operator", {bold=true})
+    hl.mod("Include", {italic=true})
+    hl.mod("Repeat", {italic=true})
+    hl.mod("Label", {italic=true})
+    hl.mod("Conditional", {italic=true})
+    hl.mod("Exception", {italic=true})
+    hl.mod("@include", {italic=true})
+    hl.mod("Keyword", {italic=true, bold=false})
+    hl.mod("@keyword", {italic=true, bold=false})
+    hl.mod("@keyword.function", {italic=true})
+    hl.mod("@keyword.return", {italic=true})
+    hl.mod("@keyword.operator", {italic=true})
+    hl.mod("@parameter", {italic=false})
+    hl.mod("@function", {italic=false})
+    hl.mod("@boolean", {italic=true})
 
     -- NonText shouldn't be exactly like comments
-    if gethl("Comment")['fg'] == gethl("NonText")['fg'] then
-        modhl("NonText", {fg="gray"})
+    if hl.get("Comment")['fg'] == hl.get("NonText")['fg'] then
+        hl.mod("NonText", {fg="gray"})
     end
     -- it seems pretty good if they're bold even if the color is similar.
-    modhl("NonText", {bold=true})
+    hl.mod("NonText", {bold=true})
 end
 
 local defaultDark = 'fluoromachine'

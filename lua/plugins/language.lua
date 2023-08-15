@@ -1,4 +1,6 @@
 #!/usr/bin/env lua
+local hl = require "utils/highlights"
+
 return {
     -- add keybindings to toggle comments with motions etc.
     {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end},
@@ -33,35 +35,50 @@ return {
         -- doesn't seem there is any asciidoc plugin that helps with goto definition
         ft='asciidoc',
         config=function()
-                -- conceal _ and * in _italic_ and *bold*
-                vim.g.asciidoctor_syntax_conceal = 1
-                -- somehow setting colorscheme in way that resets some highlight groups, 
-                -- so we set them again here:
-                local grp = vim.api.nvim_create_augroup("adoc", {clear=true})
-                vim.api.nvim_create_autocmd("Colorscheme", {
-                    buffer = 0,
-                    group = grp,
-                    callback = function ()
-                        hl.set("asciidoctorBold", {bold=true})
-                        hl.set("asciidoctorItalic", {italic=true})
-                        hl.set("asciidoctorBoldItalic", {bold=true, italic=true})
-                        hl.link("asciidoctorTitleDelimiter", "Comment")
-                        for i = 1, 6 do
-                            hl.link("asciidoctorH"..i.."Delimiter", "Comment")
-                        end
-                        -- there are more hi groups that might be unset
-                        -- ...
-                        -- hide comment delim (hl group set in syntax file).
-                        hl.fg("commentDelimiter", hl.get("Normal")["bg"])
+            -- conceal _ and * in _italic_ and *bold*
+            vim.g.asciidoctor_syntax_conceal = 1
+            -- If attribute `:pdf-theme: book` is written then with the 
+            -- following setting it will look for "book-theme.yml" in the same 
+            -- directory. Default is some themes folder buried in the 
+            -- installation for asciidoctor.
+            vim.g.asciidoctor_pdf_themes_path = '.'
+            -- somehow setting colorscheme in way that resets some highlight groups, 
+            -- so we set them again here:
+            local grp = vim.api.nvim_create_augroup("adoc", {clear=true})
+            vim.api.nvim_create_autocmd("Colorscheme", {
+                buffer = 0,
+                group = grp,
+                callback = function ()
+                    hl.set("asciidoctorBold", {bold=true})
+                    hl.set("asciidoctorItalic", {italic=true})
+                    hl.set("asciidoctorBoldItalic", {bold=true, italic=true})
+                    hl.set("asciidoctorBoldComment", {bold=true, fg=hl.get("Comment")['fg']})
+                    hl.set("asciidoctorItalicComment", {italic=true, fg=hl.get("Comment")['fg']})
+                    hl.set("asciidoctorBoldItalicComment", {bold=true, italic=true, fg=hl.get("Comment")['fg']})
+                    hl.link("asciidoctorTitleDelimiter", "Comment")
+                    for i = 1, 6 do
+                        hl.link("asciidoctorH"..i.."Delimiter", "Comment")
                     end
-                })
-            end,
+                    -- there are more hi groups that might be unset
+                    -- ...
+                    -- hide comment delim (hl group set in syntax file).
+                    hl.fg("commentDelimiter", hl.get("Normal")["bg"])
+                    hl.link("filenameCommentNoSpell", "Comment")
+                    hl.link("UrlCommentNoSpell", "Comment")
+                end
+            })
+            -- use conversion to PDF as default for :make
+            vim.cmd [[compiler asciidoctor2pdf]]
+            -- double <CR> to auto-close after successful compilation.
+            -- If this is not desired then use :make.
+            vim.keymap.set('n', '<leader>cc', "<Cmd>Asciidoctor2PDF<CR><CR>", { desc="Compile to PDF" })
+            vim.keymap.set('n', '<leader>oo', "<Cmd>AsciidoctorOpenPDF<CR><CR>", { desc="Open compiled PDF" })
+        end,
     },
     -- https://quarto.org/
     {"quarto-dev/quarto-vim", dependencies={"vim-pandoc/vim-pandoc-syntax"}, ft="quarto"},
-    {"habamax/vim-rst", ft="rst"},
     -- flashing for code blocks
-    {"lukas-reineke/headlines.nvim", enabled = false, ft = {'markdown', 'neorg', 'orgmode', 'rst', 'asciidoc', 'asciidoctor'},
+    {"lukas-reineke/headlines.nvim", enabled = false, ft = {'markdown', 'norg', 'orgmode', 'rst', 'asciidoc', 'asciidoctor'},
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     opts = { }, },
     -- "elzr/vim-json", -- json
@@ -85,8 +102,30 @@ return {
     end},
     {
         "nvim-neorg/neorg",
+        -- Seems to throw errors at random times and I don't see pandoc 
+        -- conversion support so I think asciidoctor might cover the use 
+        -- case better.
         ft = "norg",
-        opts = { },
+        opts = {
+            load = {
+                ["core.defaults"] = {},
+                ["core.dirman"] = {
+                    config = {
+                        workspaces = {
+                            bio = "~/Documents/Bio/",
+                            writing = "~/Documents/Writing/",
+                        }
+                    }
+                },
+                ["core.concealer"] = {},
+                ["core.completion"] = {config={
+                    engine="nvim-cmp",
+                    -- a notebook icon to indicate neorg as completion source
+                    name="",
+                }},
+                ["core.export"] = {},
+            }
+        },
     },
 
 }
