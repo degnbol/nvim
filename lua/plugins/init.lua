@@ -72,7 +72,7 @@ return {
                 sidescrolloff = vim.opt.sidescrolloff:get()
                 vim.opt.sidescrolloff = 0
                 -- notify
-                print("fo+=a | set sidescrolloff=0")
+                print("fo+=a | sidescrolloff=0")
             end
             local disable_autoformat = function ()
                 vim.opt.formatoptions:remove('a')
@@ -80,7 +80,7 @@ return {
                 -- been defined in a call to enable_autoformat
                 vim.opt.sidescrolloff = sidescrolloff
                 -- notify
-                print("fo-=a | set sidescrolloff=" .. sidescrolloff)
+                print("fo-=a | sidescrolloff=" .. sidescrolloff)
             end
             local toggle_autoformat = function ()
                 if vim.opt.formatoptions:get()['a'] then
@@ -187,6 +187,38 @@ return {
     end},
     
     "lervag/file-line", -- open a file on a line with vi filepath:linenumber
+
+    {
+        "ludovicchabant/vim-gutentags",
+        -- NOTE: can't use ft filter with this plugin
+        init = function ()
+            -- hide tag files where logs and other caches for nvim are stored
+            vim.g.gutentags_cache_dir = "~/.local/state/nvim/tags/"
+            -- exclude filetypes as default in order to opt-in.
+            -- I added all that I use from `ctags --list-languages`, especially 
+            -- those that has LSP and/or treesitter
+            vim.g.gutentags_exclude_filetypes = {
+                "python",
+                "matlab",
+                "julia",
+                "vim",
+                "lua",
+                "markdown",
+                "quarto",
+                "r",
+                "rust",
+                "sql",
+                "tex",
+                "zsh",
+                "sh",
+                "json",
+                "bibtex",
+            }
+            -- to be extra explicit I specify a comma separated list of case 
+            -- insensitive enabled languages
+            vim.g.gutentags_ctags_extra_args = {"--languages=asciidoc"}
+        end,
+    },
 
     -- supposedly faster and less buggy version of neovim builtin (:h )matchparen which highlights matching parenthesis etc.
     "monkoose/matchparen.nvim",

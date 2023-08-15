@@ -132,7 +132,7 @@ return {
                     -- hacky. VimtexErrors puts errors found by Vimtex in quickfix (should be
                     -- running, use <leader>Lb) then cclose closes quickfix, and then Telescope
                     -- opens the quickfix in a nicer view.
-                    vim.keymap.set('n', '<space>E', "<cmd>VimtexErrors<cr>|:cclose|<cmd>Telescope quickfix<cr>", opts)
+                    vim.keymap.set('n', '<space>E', "<Cmd>VimtexErrors<CR>|:cclose|<Cmd>Telescope quickfix<CR>", opts)
                 end }
             lsp.texlab.setup {}
 

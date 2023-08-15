@@ -20,12 +20,14 @@ return {
                     -- "kotlin",
                     "help", -- vim help files https://github.com/neovim/tree-sitter-vimdoc
                     "r",
-                    "markdown", -- for block code
-                    "markdown_inline", -- for inline code
+                    -- some error
+                    -- "markdown", -- for block code
+                    -- "markdown_inline", -- for inline code
                     "toml",
                     "vim",
                     "regex",
                     "make",
+                    -- "norg",
                     "cmake",
                     "cpp",
                     "bibtex",

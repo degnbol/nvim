@@ -168,7 +168,7 @@ clue.setup({
     clue.gen_clues.g(),
     clue.gen_clues.marks(),
     clue.gen_clues.registers(),
-    clue.gen_clues.windows{
+    clue.gen_clues.windows {
         -- making submodes of the window stuff means we can increase hight with <C-w>++ instead of <C-w>+<C-w>+
         submode_move = true,
         submode_navigate = true,
@@ -192,6 +192,7 @@ vim.defer_fn(function ()
     set_keymap_desc('n', '>>', "Indent line")
     set_keymap_desc('n', '<<', "Unindent line")
 end, 0)
+
 
 end},
 }
