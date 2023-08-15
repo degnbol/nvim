@@ -16,4 +16,10 @@ fi
 ]], {i(1, "pipx"), rep(1), i(2, "PACKAGE"), i(3, "mamba install -yc conda-forge"), rep(2)})),
 
 
+s({trig="ifmac", dscr="If MacOS"},
+fmta([[if [ `uname` = "Darwin" ]; then
+    <>
+fi
+]], {i(1)})),
+
 }
