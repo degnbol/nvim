@@ -1,8 +1,8 @@
 " insert real tab by default.
 setlocal noexpandtab
 
-set conceallevel=1
-set concealcursor=nvc
+setlocal conceallevel=1
+setlocal concealcursor=nvc
 
 " show tabs by default
-set list
+setlocal list

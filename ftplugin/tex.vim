@@ -1,16 +1,16 @@
 " insert real tab by default
 setlocal noexpandtab
 " there was some annoying issue with indents inserted in regular text
-set nosmartindent
+setlocal nosmartindent
 " lists doesn't start with number on first column but uses \item
-set fo-=n
+setlocal fo-=n
 " we will often be writing prose that wraps at textwidth columns but not code.
 " Let's try with sidescrolloff so the window doesn't scroll when we get close 
 " to the edge.
-set sidescrolloff=0
+setlocal sidescrolloff=0
 
 " vimtex has a lot of nice default conceals, e.g. greek in maths, \textbf, etc.
-set conceallevel=2
+setlocal conceallevel=2
 
 " in_mathzone and others call stack under the hood:
 " https://github.com/lervag/vimtex/blob/c2f38c25375e6fb06654c3de945995c925b286e6/autoload/vimtex/syntax.vim
