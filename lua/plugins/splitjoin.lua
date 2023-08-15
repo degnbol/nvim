@@ -1,5 +1,13 @@
 return {
     -- more languages supported but sometimes does nothing when trevj does the split
+    -- there is also
+    -- https://github.com/CKolkey/ts-node-action/
+    -- and mini splitjoin which doesn't use treesitter
+    -- https://www.reddit.com/r/neovim/comments/11mtm3m/minisplitjoin_split_and_join_arguments/
+    -- I tried it out and it joins comments by uncommenting them. It has 
+    -- ability to be customized with hooks, e.g. potentially to turn line 
+    -- comments into comment regions, but I think we will never actually want 
+    -- to do this.
     {
         "Wansmer/treesj",
         dependencies = {
@@ -19,7 +27,8 @@ return {
             -- default_preset['both']['no_format_with'] = {}
             -- require"treesj.langs".default_preset = default_preset
             treesj.setup {
-                use_default_keymaps = false, langs = { lua =  { both = { no_format_with = nil }}},
+                use_default_keymaps = false,
+                langs = { lua =  { both = { no_format_with = nil }}},
             }
         end,
         init = function ()
@@ -29,8 +38,14 @@ return {
 
             -- use alt plugins for specific filetypes
             -- it is also a possibility to define them for treesj
-            local fts_split = { splitjoin = { tex=true, }, trevj = { julia=true, lua=true, } }
-            local fts_join  = { splitjoin = { tex=true, }, matchup = { julia=true,}, }
+            local fts_split = {
+                splitjoin = { tex=true, },
+                trevj = { julia=true, lua=true, },
+            }
+            local fts_join  = {
+                splitjoin = { tex=true, },
+                matchup = { julia=true,},
+            }
             local grp = vim.api.nvim_create_augroup("splitjoin", {clear=true})
 
             -- call nmap buffer thru vimscript since nowait isn't implemented in lua API
@@ -52,28 +67,22 @@ return {
                 pattern = "*", group = grp,
                 callback = function ()
                     if fts_split['splitjoin'][vim.bo.filetype] then
-                        -- nowait(key_join, "<Cmd>SplitjoinSplit<CR>")
-                        vim.keymap.set("n", key_join, "<Cmd>SplitjoinSplit<CR>", { desc="Join" })
+                        vim.keymap.set("n", key_split, "<Cmd>SplitjoinSplit<CR>", { buffer=true, desc="Split (splitjoin)" })
                     elseif fts_split['trevj'][vim.bo.filetype] then
-                        -- nowait(key_split, ":lua require'trevj'.format_at_cursor()<CR>")
                         vim.keymap.set("n", key_split, function ()
                             return require"trevj".format_at_cursor()
-                        end, { desc="Split" })
+                        end, { buffer=true, desc="Split (trevj)" })
                     else
-                        -- nowait(key_split, "<Cmd>TSJSplit<CR>")
-                        vim.keymap.set("n", key_split, "<Cmd>TSJSplit<CR>", { desc="Split" })
+                        vim.keymap.set("n", key_split, "<Cmd>TSJSplit<CR>", { buffer=true, desc="Split (TSJ)" })
                     end
                     
                     if fts_join['splitjoin'][vim.bo.filetype] then
-                        -- nowait(key_join, "<Cmd>SplitjoinJoin<CR>")
-                        vim.keymap.set("n", key_join, "<Cmd>SplitjoinJoin<CR>", { desc="Join" })
+                        vim.keymap.set("n", key_join, "<Cmd>SplitjoinJoin<CR>", {buffer=true, desc="Join (splitjoin)" })
                     elseif fts_join['matchup'][vim.bo.filetype] then
                         -- Uses a% from https://github.com/andymass/vim-matchup which first jumps to container 
-                        -- nowaitre(key_join, "va%J")
-                        vim.keymap.set("n", key_join, "va%J", { desc="Join" })
+                        vim.keymap.set("n", key_join, "va%J", { buffer=true, desc="Join (matchup)" })
                     else
-                        -- nowait(key_join, "<Cmd>TSJJoin<CR>")
-                        vim.keymap.set("n", key_join, "<Cmd>TSJJoin<CR>", { desc="Join" })
+                        vim.keymap.set("n", key_join, "<Cmd>TSJJoin<CR>", { buffer=true, desc="Join (TSJ)" })
                     end
                 end
             })
