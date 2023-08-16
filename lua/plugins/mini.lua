@@ -29,12 +29,12 @@ require'mini.surround'.setup {
     update_n_lines = '', -- Update `n_lines`
   },
   custom_surroundings = {
-      -- [d]elete
+      -- [d]elete, e.g. only as cstd to delete surround """
       ['d'] = { output = { left = '', right = '' } },
       -- normally used for tags such as <div> </div> which is cool but I don't use them so t for triple
       ['t'] = {
           -- figured out these patterns from the [[ ]] example in :h MiniSurround.config
-          input = { find = '%"%"%".-%"%"%"', extract = '^(...).*(...)$' },
+          input = { '%"%"%"().-()%"%"%"' },
           output = { left = '"""', right = '"""' }
       },
       -- Taken from `:h MiniSurround.config` for use in lua.
