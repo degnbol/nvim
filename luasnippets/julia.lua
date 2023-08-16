@@ -1,5 +1,11 @@
 #!/usr/bin/env lua
 return {
+-- not auto
+
+-- replace dumb pr -> print("<>") from one of the snippet bundles
+s({trig="pr", dscr="println"},
+{t"println(", i(1), t")"}),
+
 }, {
 -- auto
 

@@ -15,6 +15,7 @@ return {
                     "json",
                     "python",
                     "julia",
+                    "matlab",
                     "latex",
                     -- "java",
                     -- "kotlin",

@@ -13,7 +13,8 @@ return {
         -- auto insert latex if moving on with e.g. space or other writing that is not part of a unicode char
         -- vim.g.latex_to_unicode_auto = true
     end},
-    {"jeetsukumaran/vim-pythonsense", ft='python'}, -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
+    -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
+    {"jeetsukumaran/vim-pythonsense", ft='python'},
     -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
     {"RishabhRD/nvim-cheat.sh", config=function()
         -- default is float i.e. a floating window
