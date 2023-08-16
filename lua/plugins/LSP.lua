@@ -123,6 +123,7 @@ return {
                     }
                 }
             }
+            lsp.matlab_ls.setup {}
             lsp.marksman.setup { filetypes = { "markdown" } }
             -- seems ltex has more text description for functions but texlab has more functions so I use both in combination
             lsp.ltex.setup {
@@ -196,7 +197,7 @@ return {
                 "tsserver",     -- javascript. MasonInstall typescript-language-server
                 "sqlls",
                 -- "latexindent",
-                -- "matlab-language-server",
+                "matlab_ls",
                 -- "kotlin-language-server",
             }
         }
