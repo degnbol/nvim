@@ -2,4 +2,5 @@
 " Has to be in after/ since we want to override the call loading the file 
 " linked above.
 setlocal commentstring=#%s
-
+" fo+=o shouldn't get set in the first place.
+setlocal fo-=o
