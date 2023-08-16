@@ -49,10 +49,12 @@ Abolish ie i.e.
 function s:ToggleDanskAbbrev() abort
     if &iminsert
         " Dansk
-        iabbrev feks f.eks.
-        iunabbrev eg
-        iunabbrev Eg
-        iunabbrev ti
+        abbrev feks f.eks.
+        silent! unabbrev eg
+        silent! unabbrev Eg
+        silent! unabbrev ti
+        " only works with <buffer>
+        silent! iunabbrev <buffer> i
     else
         " English
         " danish unabbrevs has to be silent! since they might not have been 
@@ -61,11 +63,17 @@ function s:ToggleDanskAbbrev() abort
         iabbrev eg e.g.
         iabbrev Eg e.g.
         iabbrev ti it
+        if &ft == "asciidoc"
+            " for regular text where we wouldn't be talking about a variable i 
+            " or in Danish where i is a word.
+            iabbrev <buffer> i I
+        endif
     endif
 endfunction
 call s:ToggleDanskAbbrev()
 augroup ToggleDanskAbbrev
   autocmd User ToggleDansk :call s:ToggleDanskAbbrev()
+  autocmd FileType * :call s:ToggleDanskAbbrev()
 augroup END
 
 " project specific
