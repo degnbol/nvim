@@ -1,7 +1,7 @@
 " extra capitalization
 Abolish TH{ere,en,e,is} Th{}
 " lazy apostrophe
-Abolish {ca,is,are,do,does,did,has,have,was,were,would,should,could}nt {}n't
+Abolish {ca,is,are,do,does,did,has,have,was,were,would,should,could,wo}nt {}n't
 Abolish {let,there,here,who}s {}'s
 iabbrev THeres There's
 " I by itself is useful in regular text but i can be a variable, and also 
@@ -10,9 +10,11 @@ iabbrev im I'm
 iabbrev Im I'm
 iabbrev IM I'm
 iabbrev ive I've
+iabbrev Ill I'll
+iabbrev youll you'll
 " id is a word but I would never spell it Id by itself
 iabbrev Id I'd
-Abolish theyre they're
+Abolish {they,you}re {}'re
 Abolish yall y'all
 " flipped letters
 Abolish ahve have
@@ -20,24 +22,30 @@ Abolish sohw show
 Abolish blaance balance
 Abolish sohuld should
 Abolish tihnk think
+Abolish shoudl should
+Abolish udnerstand understand
 " spelling mistakes
 Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or} {despe,sepa}rat{}
+Abolish flourescent{,ly} fluorescent{}
 Abolish eucledian Euclidean
+Abolish lifes lives
 " short forms
 Abolish algo{,s} algorithm{}
 Abolish tho though
 Abolish altho although
+Abolish eventho even though
+Abolish inspite in spite
 Abolish thru through
 Abolish probs probably
 Abolish ppl people
 Abolish dialog dialogue
 Abolish avail available
 Abolish bc because
+Abolish melb Melbourne
 " auto-capitalization
 iabbrev english English
 iabbrev danish Danish
 " This one might be annoying for writing dialogue?
-Abolish kinda kind of
 Abolish combo{,s} combination{}
 Abolish hi{,e}ra{,r}ch{y,ical} hi{e}{r}arch{}
 Abolish noone no one
