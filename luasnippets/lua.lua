@@ -140,6 +140,16 @@ fmta([[vim.api.nvim_create_user_command("<>", function ()
 end, {})
 ]], {i(1, "NAME"), i(2)})),
 
+-- https://www.reddit.com/r/neovim/comments/104lc26/how_can_i_press_escape_key_using_lua/
+s({
+    trig="press",
+    condition=conds.line_begin,
+    dscr="Press key where codes such as <right> are converted to some coded version first.",
+},
+fmta([[local keys = vim.api.nvim_replace_termcodes('<<<>>>', true,false,true)
+vim.api.nvim_feedkeys(keys, 'm', false)
+]], {i(1, "right")})),
+
 -- help text says to prefer vim.system for both, but it doesn't seem to exist.
 -- returns stdout
 

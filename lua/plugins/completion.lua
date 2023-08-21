@@ -247,17 +247,23 @@ return {
                     -- ft_func = require("luasnip.extras.filetype_functions").from_cursor_pos
                 }
 
-                vim.keymap.set({ "i", "s" }, "<c-k>", function ()
+                vim.keymap.set({ "i", "s" }, "<C-k>", function ()
                     -- including expand means ctrl+k will autocomplete the first visible snippet in completion menu
                     if luasnip.expand_or_jumpable() then luasnip.expand_or_jump() end
                 end, { silent = true })
 
-                vim.keymap.set({ "i", "s" }, "<c-j>", function ()
+                vim.keymap.set({ "i", "s" }, "<C-j>", function ()
                     if luasnip.jumpable(-1) then luasnip.jump(-1) end
                 end, { silent = true })
 
-                vim.keymap.set({ "i", "s" }, "<c-l>", function ()
-                    if luasnip.choice_active() then luasnip.change_choice(1) end
+                vim.keymap.set({ "i", "s" }, "<C-l>", function ()
+                    if luasnip.choice_active() then
+                        luasnip.change_choice(1)
+                    else
+                        -- fallback to moving right, useful for writing "..."
+                        local keys = vim.api.nvim_replace_termcodes('<right>', true,false,true)
+                        vim.api.nvim_feedkeys(keys, 'm', false)
+                    end
                 end)
 
             end },
