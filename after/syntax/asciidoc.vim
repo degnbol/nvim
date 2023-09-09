@@ -31,3 +31,8 @@ syn match formatDelim '\*' conceal contained containedin=asciidoctorBoldComment,
 " disable syntax highlight for filenames and URLs inside comments
 syn match filenameCommentNoSpell '[A-Za-z0-9-_]\+\.[a-z0-9]\+' contains=@NoSpell containedin=asciidoctorComment contained
 syn match UrlCommentNoSpell '\w\+:\/\/[^[:space:]]\+' contains=@NoSpell containedin=asciidoctorComment contained
+
+" Recognise hard line break
+" https://docs.asciidoctor.org/asciidoc/latest/blocks/hard-line-breaks/
+syn match linebreak ' +$'
+

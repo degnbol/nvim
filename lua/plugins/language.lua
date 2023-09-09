@@ -66,6 +66,7 @@ return {
                     hl.fg("commentDelimiter", hl.get("Normal")["bg"])
                     hl.link("filenameCommentNoSpell", "Comment")
                     hl.link("UrlCommentNoSpell", "Comment")
+                    hl.link("linebreak", "Comment")
                 end
             })
             -- use conversion to PDF as default for :make

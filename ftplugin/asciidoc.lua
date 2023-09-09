@@ -34,3 +34,11 @@ end
 
 vim.keymap.set('n', 'gd', goto_xref_tag, { desc="Goto tag definition" })
 
+vim.keymap.set('i', '<S-CR>', " +<CR>", {
+    desc=[[Hard line break, similar to \\ in tex.
+    Can also be achieved with paragraph option [%hardbreaks] or document option :hardbreaks-option:]]
+}
+)
+
+require"completion/asciidoc".setup()
+
