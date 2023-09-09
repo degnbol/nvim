@@ -27,6 +27,9 @@ t[[snippetType="autosnippet"]]),
 s({trig="condb", snippetType="autosnippet"},
 t"condition=conds.line_begin"),
 
+s({trig="wordTrig", dscr="Word trigger?"},
+{t"wordTrig=false"}),
+
 s({trig="fmta", dscr="Convenience function for formatting snippets, especially multi line snippets."},
 fmta([=[fmta([[<>
 ]], {<>})]=], {i(1, "<>"), i(2, "i(1)")})),
