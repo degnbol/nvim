@@ -24,6 +24,7 @@ Abolish sohuld should
 Abolish tihnk think
 Abolish shoudl should
 Abolish udnerstand understand
+Abolish palce place
 " spelling mistakes
 Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or} {despe,sepa}rat{}
 Abolish flourescent{,ly} fluorescent{}
