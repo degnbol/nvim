@@ -110,7 +110,46 @@ return {
         end
     },
     -- multi cursor
-    "mg979/vim-visual-multi",
+    {
+        "mg979/vim-visual-multi",
+        config = function ()
+            -- use alt instead of ctrl since ctrl arrows moves mac os windows.
+            -- Other keybindings (e.g. [] and y) cannot be set by multicursor since they are set elsewhere, hence startup warnings.
+            -- Ignore for now since we can live without them.
+            vim.keymap.set('n', '<A-Down>', "<C-Down>", { remap=true, desc="Multi cursor down" })
+            vim.keymap.set('n', '<A-Up>', "<C-Up>", { remap=true, desc="Multi cursor up" })
+        end,
+    },
+    {
+        "smoka7/multicursors.nvim",
+        event = "VeryLazy",
+        dependencies = {
+            'nvim-treesitter/nvim-treesitter',
+            'smoka7/hydra.nvim',
+        },
+        opts = {
+            generate_hints = {
+                normal = true,
+                insert = true,
+                extend = true,
+            },
+        },
+        cmd = { 'MCstart', 'MCvisual', 'MCclear', 'MCpattern', 'MCvisualPattern', 'MCunderCursor' },
+        keys = {
+            {
+                mode = { 'v', 'n' },
+                '<Leader>m',
+                '<Cmd>MCstart<CR>',
+                desc = 'Create a selection for selected text or word under the cursor',
+            },
+            {
+                mode = { 'v', 'n' },
+                '<Leader>M',
+                '<Cmd>MCunderCursor<CR>',
+                desc = 'Select the char under the cursor and start listening for the actions.',
+            },
+        },
+    },
     "farmergreg/vim-lastplace", -- open file in last edited location
     "haya14busa/vim-asterisk", -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
     -- "gioele/vim-autoswap",

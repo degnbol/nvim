@@ -90,16 +90,6 @@ imap <S-4-ScrollWheelRight> <NOP>
 " typical modifier to arrow key behavior. 
 " TODO decide what to do with shift: select things like outside vim, move 
 " further than alt, etc.
-nnoremap <A-Up> {
-nnoremap <A-Down> }
-nnoremap <A-Left> b
-nnoremap <A-Right> w
-
-xnoremap <A-Up> {
-xnoremap <A-Down> }
-xnoremap <A-Left> b
-xnoremap <A-Right> w
-
 inoremap <A-Up> <c-\><c-o>{
 inoremap <A-Down> <c-\><c-o>}
 inoremap <A-Left> <c-\><c-o>b
