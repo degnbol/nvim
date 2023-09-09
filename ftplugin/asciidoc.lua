@@ -49,6 +49,7 @@ for _, line in ipairs(lines) do
     if line == ":hardbreaks-option:" then
         vim.opt_local.formatoptions:remove('a')
         vim.opt_local.wrap = true
+        break
     end
 end
 
