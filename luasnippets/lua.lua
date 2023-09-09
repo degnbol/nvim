@@ -104,6 +104,8 @@ s({trig="[%a._]*set_cursor", dscr="set cursor", trigEngine='pattern', snippetTyp
 
 s({trig="current", dscr="get current line text"},
 {t"local line = vim.api.nvim_get_current_line()"}),
+s({trig="get_lines", dscr="get all lines as list of strings"},
+{t"local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)"}),
 
 -- -1 since nvim_win_get_cursor is (1,0)-indexed and nvim_buf_set_text is 0-indexed.
 s({trig="char", dscr="get char under cursor"},
