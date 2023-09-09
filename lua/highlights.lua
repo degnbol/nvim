@@ -86,7 +86,7 @@ local function afterColorscheme()
     hl.mod("@keyword.operator", {italic=true})
     hl.mod("@parameter", {italic=false})
     hl.mod("@function", {italic=false})
-    hl.mod("@boolean", {italic=true})
+    hl.mod("@boolean", {italic=true, bold=false})
 
     -- NonText shouldn't be exactly like comments
     if hl.get("Comment")['fg'] == hl.get("NonText")['fg'] then
