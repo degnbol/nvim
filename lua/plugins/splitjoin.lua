@@ -149,4 +149,18 @@ return {
             -- if you're using `vim-textobj-parameter` you can also set this to `vim.g.vim_textobj_parameter_mapping`
         },
     },
+    -- delete continuation characters.
+    -- Just like formatoptions+=j will remove leading comment chars, conjoin will remove trailing continuation markers.
+    {
+        'flwyd/vim-conjoin',
+        -- depend on splitjoin so splitjoin is loaded first, which makes conjoin work with it.
+        -- https://www.reddit.com/r/vim/comments/g71wyq/delete_continuation_characters_when_joining_lines/
+        dependencies = { "AndrewRadev/splitjoin.vim" },
+        init = function ()
+            -- add custom language support
+            vim.g.conjoin_filetypes = {
+                asciidoc = {trailing='+$'},
+            }
+        end,
+    },
 }
