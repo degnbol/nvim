@@ -57,6 +57,8 @@ return {
                     hl.set("asciidoctorItalicComment", {italic=true, fg=hl.get("Comment")['fg']})
                     hl.set("asciidoctorBoldItalicComment", {bold=true, italic=true, fg=hl.get("Comment")['fg']})
                     hl.link("asciidoctorTitleDelimiter", "Comment")
+                    hl.link("asciidocPassthrough", "Constant") -- same as asciidoctorCode
+                    hl.rev("asciidocHighlight")
                     for i = 1, 6 do
                         hl.link("asciidoctorH"..i.."Delimiter", "Comment")
                     end

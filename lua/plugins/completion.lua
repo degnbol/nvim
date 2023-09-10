@@ -138,6 +138,7 @@ return {
             -- :h cmp-config.sorting.comparators
             sorting = {
                 comparators = {
+                    -- default sorting functions except for down prioritize text kind
                     function (entry1, entry2)
                         -- copy of compare.kind to simply push text entries to the bottom
                         -- https://github.com/hrsh7th/nvim-cmp/blob/8a3d2dd7641f75c1b6291311f56454adba79a196/lua/cmp/config/compare.lua#L50
@@ -146,7 +147,6 @@ return {
                         if isText1 and not isText2 then return false end
                         if isText2 and not isText1 then return true end
                     end,
-                    -- default sorting functions otherwise
                     cmp.config.compare.offset,
                     cmp.config.compare.exact,
                     cmp.config.compare.score,
@@ -201,11 +201,11 @@ return {
             }
         })
 
-        -- cmp.setup.cmdline(':', {
-            --     sources = {
-                --         -- { name = 'colorschemes' },
-                --     }
-                -- })
+        cmp.setup.cmdline(':', {
+            sources = {
+                { name = 'colorschemes' },
+            }
+        })
 
                 -- TODO: take inspo from https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
                 -- and link completion menu colors to equivalent things
