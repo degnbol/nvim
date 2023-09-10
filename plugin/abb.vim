@@ -37,6 +37,7 @@ Abolish altho although
 Abolish eventho even though
 Abolish inspite in spite
 Abolish thru through
+Abolish passthru passthrough
 Abolish probs probably
 Abolish ppl people
 Abolish dialog dialogue
