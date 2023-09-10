@@ -10,6 +10,9 @@ queries/
 
 *.log
 
+# vim binaries
+*.spl
+
 # common temp file names
 temp.*
 tmp.*
