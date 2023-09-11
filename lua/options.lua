@@ -9,7 +9,8 @@ g.mapleader = ' '
 g.maplocalleader = ' '
 
 opt.expandtab = true
-opt.shiftwidth = 4
+opt.tabstop = 4 -- how many spaces does a tab correspond to?
+opt.shiftwidth = 0 -- use tabstop number of spaces for indentation
 opt.smartindent = true
 opt.breakindent = true -- when wrapping line, match indent on the wrapped line.
 -- opt.breakindentopt = "shift:2" -- indent to show line was wrapped.
@@ -18,7 +19,6 @@ opt.showbreak = "> "
 opt.copyindent = true
 -- indent after words in cinwords (^for,^while,...) and stuff with {}. Should def not be active for normal text docs.
 opt.smartindent = false -- has to be set to false explicitly even though it is default probs because some plugin changes it.
-opt.tabstop = 4 -- how many spaces does a tab correspond to?
 -- Has to be set for bufferline to work by hiding an open buffer when switching to another
 opt.hidden = true 
 opt.ignorecase = true -- search ignoring case. use \c \C anywhere in search pattern to force case-sensitivity.

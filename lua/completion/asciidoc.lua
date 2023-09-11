@@ -96,12 +96,20 @@ M.setup = function()
         {label="highlightjsdir",         insertText="highlightjsdir: ",        detail="Location of the highlight.js source code highlighter library. Default=CDN URL. Header only."},
         {label="prettifydir",            insertText="prettifydir: ",           detail="Location of non-CDN prettify source code highlighter library. Default=CDN URL. Header only."},
         {label="stylesdir",              insertText="stylesdir: ",             detail="Location of CSS stylesheets. Header only."},
-        {label="toc-class",              insertText="toc-class: ",             detail="CSS class on the table of contents container. Header only."},
+        {label="toc-class",              insertText="toc-class: ",             detail="CSS class on the table of contents container. HTML only. Header only."},
         {label="figure-caption",         insertText="figure-caption:",         detail="Enable figure captions. Enabled by default."},
         {label="table-caption",          insertText="table-chaption:",         detail='Enable table captions. Enabled by default. If a title is given (.Title) then it will still show but there will be no label, i.e. "Table A.".'},
+        -- https://docs.asciidoctor.org/pdf-converter/latest/theme/apply-theme/
+        {label="pdf-theme",              insertText="pdf-theme: ",             detail='The name or file path of the theme to load. Can be set using the --theme CLI option. When using JRuby, the file path may begin with uri:classloader: to reference a location on the classpath.'},
+        {label="pdf-themesdir",          insertText="pdf-themesdir: ",         detail='The directory path where the theme file is located. When using JRuby, the directory path may begin with uri:classloader: to reference a location on the classpath.'},
+        {label="pdf-fontsdir",           insertText="pdf-fontsdir: ",          detail='The directory path or paths where the fonts used by your theme, if any, are located. When using JRuby, each path may begin with uri:classloader: to reference a location on the classpath.'},
     }
     local options = {
-        {label="source",                                                       detail='Mark open block as source code (verbatim).'},
+        {label="discrete",                                                     detail='A discrete heading is declared and styled in a manner similar to that of a section title, but it’s not part of the section hierarchy, it cannot have any child blocks, and it’s not included in the table of contents.'},
+        {label="options",                insertText="options=",                detail='Comma-separated list of options in double quotes, e.g. "unbreakable" to disallow table span across page break.'},
+        {label="source",                                                       detail='Set block style as source code (verbatim).'},
+        {label="comment",                                                      detail='Comment out the block.'},
+        {label="quote",                                                        detail='Set block as quote. Optionally follow by arguments attribution, then citation title and information.'},
         {label="pass",                                                         detail='The pass style and delimited passthrough block exclude the block’s content from all substitutions unless the subs attribute is set.'},
         {label="python",                                                       detail='Mark source code as Python.'},
         {label="julia",                                                        detail='Mark source code as Julia.'},
@@ -109,7 +117,8 @@ M.setup = function()
         {label="indent",                 insertText="indent=",                 detail='Indent text in block.'},
         -- https://docs.asciidoctor.org/asciidoc/latest/macros/image-ref/
         {label="alt",                    insertText="alt=",                    detail='Alternative text.'},
-        {label="title",                  insertText="title=",                  detail='Title text.'},
+        {label="title",                  insertText="title=",                  detail='Title text, e.g. the entire caption for a table or figure.'},
+        {label="caption",                insertText="caption=",                detail='Caption text, i.e. a table or figure caption excluding the label and numbering.'},
         {label="width",                  insertText="width=",                  detail='Image width.'},
         {label="pdfwidth",               insertText="pdfwidth=",               detail='The preferred width of the image in the PDF when converting using Asciidoctor PDF.'},
         {label="scaledwidth",            insertText="scaledwidth=",            detail='The preferred width of the image when converting to PDF using the DocBook toolchain. (Mutually exclusive with scale).'},
@@ -118,9 +127,21 @@ M.setup = function()
         {label="float",                  insertText="float=",                  detail='Float "left" or "right".'},
         {label="align",                  insertText="align=",                  detail='Align text "left", "right", or "center".'},
         {label="format",                 insertText="format=",                 detail='Image format, e.g. svg.'},
+        -- decorations
+        {label="underline",                                                    detail='Underline text with [underline]#text#. Can be combined with e.g. bold or italic by using * or _ instead of #.'},
+        {label="line-through",                                                 detail='Line through text with [line-through]#text#. Can be combined with e.g. bold or italic by using * or _ instead of #.'},
+        {label="none",                                                         detail='Clears an inherited value and no decoration is applied to the text.'},
+        {label="big",                                                          detail='Big text size.'},
+        {label="separator",              insertText="separator=",              detail='Set a custom separator character for a table. Default=| for top-level tables and ! for nested. Also changed by setting format option, e.g. comma for CSV.'},
     }
     local shorthands = {
         {label="header",                                                       detail='Set first row of table as a header row. Implicitly set when first row is written on one line. Shorthand syntax for options="header".'},
+        {label="footer",                                                       detail='Set last row of table as a footer row.'},
+        {label="collapsible",                                                  detail='Make example collapsible (in html).'},
+        {label="linenums",                                                     detail='Show line numbers, e.g. for code.'},
+        {label="autowidth",                                                    detail='Set column widths automatically by content in a table.'},
+        {label="autowidth.stretch",                                            detail='Set column widths automatically by content in a table and stretch the table to fill the available page width.'},
+        {label="rotate",                                                       detail='Display table in landscape orientation by rotating it 90 degrees counterclockwise.'},
     }
 
     -- main pupose of this is to separate these completion items from regular text items, 

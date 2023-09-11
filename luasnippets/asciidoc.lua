@@ -8,37 +8,73 @@ end
 local isOptionLine = function (line_to_cursor)
     return vim.startswith(line_to_cursor, '[')
 end
+-- an approximate version of conds.line_begin for show_condition where we have 
+-- to allow for partially matching the completion word. We do this by assuming 
+-- there is only max 1 word found on the line, which asumes the trigger pattern 
+-- does not contain whitespace.
 local isLineBegin = function (line_to_cursor)
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    return line_to_cursor:sub(1,c+1):match('^%s*$')
+    return line_to_cursor:sub(1,c+1):match('^%s*%a*$')
 end
 
 local opta = {show_condition=isAttrLine}
 local opto = {show_condition=isOptionLine}
 local optb = {show_condition=isLineBegin}
+local optt = {show_condition=function(line_to_cursor)
+    return not (isAttrLine(line_to_cursor) or isOptionLine(line_to_cursor))
+end}
 
 return {
 -- syntax snippets
+-- https://docs.asciidoctor.org/asciidoc/latest/blocks/delimited/
 -- block comment. [comment] can also precede a paragraph or open block (-- ... --).
 s({
-    trig="////",
+    trig="comment",
     dscr='Block comment.',
-    condition=conds.line_begin, snippetType="autosnippet",
 },
-{t{"////", ""}, i(1), t{"", "////"}}),
--- https://docs.asciidoctor.org/asciidoc/latest/blocks/open-blocks/
+{t{"////", ""}, i(1), t{"", "////"}}, optb),
 s({
-    trig="--",
-    dscr='Open block. Precede by [source] to make it source code or .Title to add the title "Title".',
-    condition=conds.line_begin, snippetType="autosnippet",
+    trig="example",
+    dscr='A delimited example block, which gives the contents a visual border.',
 },
-{t{"--", ""}, i(1), t{"", "--"}}),
+{t{"====", ""}, i(1), t{"", "===="}}, optb),
 s({
-    trig="++++",
+    trig="listing",
+    dscr='A delimited listing block, which gives the contents a visual border and makes the it verbatim.',
+},
+{t{"----", ""}, i(1), t{"", "----"}}, optb),
+s({
+    trig="literal",
+    dscr='A delimited literal block, which gives the contents a visual border and makes the it verbatim.',
+},
+{t{"....", ""}, i(1), t{"", "...."}}, optb),
+s({
+    trig="open",
+    dscr='A delimited open block, which groups the contents.',
+},
+{t{"--", ""}, i(1), t{"", "--"}}, optb),
+s({
+    trig="sidebar",
+    dscr='A delimited sidebar block, which gives the content a visual background.',
+},
+{t{"****", ""}, i(1), t{"", "****"}}, optb),
+s({
+    trig="pass block", -- "pass block" since "pass" is also used for inline pass macro
     dscr='A delimited passthrough block. Excludes the block’s content from all substitutions unless the subs attribute is set.',
-    condition=conds.line_begin, snippetType="autosnippet",
 },
-{t{"++++", ""}, i(1), t{"", "++++"}}),
+{t{"++++", ""}, i(1), t{"", "++++"}}, optb),
+s({
+    trig="quote",
+    dscr='A delimited quote block. Adds a vertical line left of the content.',
+},
+{t{"____", ""}, i(1), t{"", "____"}}, optb),
+-- format
+s({trig="underline", dscr="Underline text."},
+{t"[underline]#", i(1, "TEXT"), t"#"}, optt),
+s({trig="line-through", dscr="Line-through text."},
+{t"[line-through]#", i(1, "TEXT"), t"#"}, optt),
+s({trig="strikethrough", dscr="Line-through text."},
+{t"[line-through]#", i(1, "TEXT"), t"#"}, optt),
 -- ref
 s({trig="<<", dscr="Cross reference shorthand.", snippetType="autosnippet"},
 {t"<<", i(1, "ID"), c(2, {t"", {t",", i(1, "LABEL")}}), t">>"}),
@@ -49,6 +85,7 @@ s({
     trig="inc",
     dscr="Include file.",
     snippetType='autosnippet',
+    condition=conds.line_begin,
 },
 {t"include::", i(1, "FILENAME.adoc"), t"[]"}),
 -- conditional
@@ -76,7 +113,7 @@ s(
     {
         name="backend",
         trig=":backend:",
-        dscr="The backend used to select and activate the converter that creates the output file. Usually named according to the output format (e.g., html5).",
+        dscr="The backend used to select and activate the converter that creates the output file. Usually named according to the output format (e.g., html5). Set by default. Header only.",
     },
     {t":backend: ", i(1, "html5")},
     opta
@@ -85,7 +122,7 @@ s(
     {
         name="docdate",
         trig=":docdate:",
-        dscr="Last modified date of the source document.",
+        dscr="Last modified date of the source document. Set by default. Header only.",
     },
     {t":docdate: ", i(1, "2019-01-04")},
     opta
@@ -94,7 +131,7 @@ s(
     {
         trig="docdatetime",
         trig=":docdatetime:",
-        dscr="Last modified date and time of the source document.",
+        dscr="Last modified date and time of the source document. Set by default. Header only.",
     },
     {t":docdatetime: ", i(1, "2019-01-04 19:26:06 UTC")},
     opta
@@ -103,7 +140,7 @@ s(
     {
         name="doctime",
         trig=":doctime:",
-        dscr="Last modified time of the source document.",
+        dscr="Last modified time of the source document. Set by default. Header only.",
     },
     {t":doctime: ", i(1, "19:26:06 UTC")},
     opta
@@ -112,7 +149,7 @@ s(
     {
         name="docyear",
         trig=":docyear:",
-        dscr="Year that the document was last modified.",
+        dscr="Year that the document was last modified. Set by default. Header only.",
     },
     {t":docyear: ", i(1, "2023")},
     opta
@@ -121,7 +158,7 @@ s(
     {
         name="localdate",
         trig=":localdate:",
-        dscr="Date when the document was converted.",
+        dscr="Date when the document was converted. Set by default. Header only.",
     },
     {t":localdate: ", i(1, "2019-02-17")},
     opta
@@ -130,7 +167,7 @@ s(
     {
         name="localdatetime",
         trig=":localdatetime:",
-        dscr="Date and time when the document was converted.",
+        dscr="Date and time when the document was converted. Set by default. Header only.",
     },
     {t":localdatetime: ", i(1, "2019-02-17 19:31:05 UTC")},
     opta
@@ -139,7 +176,7 @@ s(
     {
         name="localtime",
         trig=":localtime:",
-        dscr="Time when the document was converted.",
+        dscr="Time when the document was converted. Set by default. Header only.",
     },
     {t":localtime: ", i(1, "19:31:05 UTC")},
     opta
@@ -148,7 +185,7 @@ s(
     {
         name="localyear",
         trig=":localyear:",
-        dscr="Year when the document was converted.",
+        dscr="Year when the document was converted. Set by default. Header only.",
     },
     {t":localyear: ", i(1, "2023")},
     opta
@@ -695,9 +732,9 @@ s(
     {
         name="toc",
         trig=":toc:",
-        dscr="Turns on table of contents and specifies its location. Default=auto. Header only.",
+        dscr='Turns on table of contents and specifies its location. No arg=auto, which for PDF is placement after titlepage. "macro"=manual placement with `toc::[]`. Header only.',
     },
-    {t":toc: ", c(1, {t"", t"auto", t"left", t"right", t"macro", t"preamble"})},
+    {t":toc: ", c(1, {t"macro", t"", t"left", t"right", t"preamble", t"auto"})},
     opta
 ),
 s(
@@ -1114,16 +1151,50 @@ s(
     {t":title-page-background-image: ", c(1, {t"none", {t"image:", i(1, "FILENAME"), t"[", i(2), t"]"}})},
     opta
 ),
+s(
+    {
+        name="text-align",
+        trig=":text-align:",
+        dscr='Set horizontal text alignment within the text box. "inherit" only applies to the caption text of block images (image-caption) and tables (table-caption). The value inherit resolves to the alignment of the block.',
+        wordTrig=false,
+    },
+    {t":text-align: ", c(1, {t"center", t"justify", t"left", t"right", t"inherit"})},
+    opta
+),
 -- options
 s({trig="float", dscr="Float alignment, left or right."},
 {t"float=", c(1, {t"left", t"right"})},
 opto),
-s({trig="align", dscr="Text alignment, left, center, or right."},
+s({trig="align", dscr="Text or table alignment, left, center, or right."},
 {t"align=", c(1, {t"left", t"center", t"right"})},
+opto),
+s({trig="highlight", dscr="Highlight lines in block."},
+{t"highlight=", i(1, "1..3")},
+opto),
+s({trig="role", dscr="If the noborder role is present on a block image, the border is not drawn on that image even if the border-related keys are defined on the image category in the theme."},
+{t"role=", i(1, "noborder")},
+opto),
+-- https://docs.asciidoctor.org/asciidoc/latest/tables/format-column-content/
+s({trig="cols", dscr=[[Define table column widths (numbers or ~ for auto), adjustment (<^>), and other formatting (adehlms). Precede adjustment with a dot to make it control vertical rather than horizontal alignment. Repeat formatting for consecutive columns with a multiplier, e.g. 3\*.]]},
+{t'cols="', i(1, "<1e,^1,>2"), t'"'},
+opto),
+s({trig="frame", dscr=[[Which borders are drawn around the table. Default={table-frame}, which has default=all.]]},
+{t'frame=', c(1, {t"ends", t"sides", t"none", t"all"})},
+opto),
+s({trig="grid", dscr=[[Which borders are drawn within the table. Default={table-grid}, which has default=all.]]},
+{t'grid=', c(1, {t"rows", t"cols", t"none", t"all"})},
+opto),
+s({trig="stipes", dscr=[[Which rows are striped. Default={table-stripes}, which has default=none. "hover"=row under cursor (html only).]]},
+{t'stripes=', c(1, {t"even", t"odd", t"all", t"hover", t"none"})},
+opto),
+s({trig="format", dscr=[[Set table format. Useful for including external table files. Format can also be set by using ,=== for CSV and :=== for DSV.]]},
+{t'format=', c(1, {t"tsv", t"csv", t"dsv"})},
 opto),
 -- macros
 s({trig="pass", dscr="Inline passthrough macro."},
 {t"pass:[", i(1), t"]"}),
+s({trig="toc", dscr="Place table of contents here."},
+{t"toc::[", i(1), t"]"}),
 s({trig="image", dscr="Image."},
 {
     t"image::", i(1, "FILENAME"),

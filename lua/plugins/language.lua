@@ -59,6 +59,12 @@ return {
                     hl.link("asciidoctorTitleDelimiter", "Comment")
                     hl.link("asciidocPassthrough", "Constant") -- same as asciidoctorCode
                     hl.rev("asciidocHighlight")
+                    hl.set("asciidocUnderline", {underline=true})
+                    hl.set("asciidocBoldUnderline", {underline=true, bold=true})
+                    hl.set("asciidocItalicUnderline", {underline=true, italic=true})
+                    hl.set("asciidocStrikethrough", {strikethrough=true})
+                    hl.set("asciidocBoldStrikethrough", {strikethrough=true, bold=true})
+                    hl.set("asciidocItalicStrikethrough", {strikethrough=true, italic=true})
                     for i = 1, 6 do
                         hl.link("asciidoctorH"..i.."Delimiter", "Comment")
                     end

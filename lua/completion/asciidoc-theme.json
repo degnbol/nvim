@@ -1,0 +1,481 @@
+{
+  "definitions": {
+    "optionsDefinition": {
+      "type": "object",
+      "properties": {
+        "extends": {
+          "default": "default-for-print",
+          "description": "Extend a theme.",
+          "oneOf": [
+            {
+              "enum": ["base"],
+              "description": "A barebones theme that provides rudimentary styling to support AsciiDoc content. Useful as a starting point when developing a custom theme."
+            },
+            {
+              "enum": ["default"],
+              "description": "Used if no theme is specified. Optimized for screen. Uses a serif base font."
+            },
+            {
+              "enum": ["default-with-font-fallbacks"],
+              "description": "A variation of the default theme that includes fallback fonts to provide extended Unicode character support, including emoji and commonly used CJK characters."
+            },
+            {
+              "enum": ["default-for-print"],
+              "description": "A variation of the default theme that is optimized for print. Used if no theme is specified and media=print or media=prepress."
+            },
+            {
+              "enum": ["default-for-print-with-font-fallbacks"],
+              "description": "A combination of the default and default-with-font-fallback themes."
+            },
+            {
+              "enum": ["default-sans"],
+              "description": "A variation of the default theme that uses a sans base font."
+            },
+            {
+              "enum": ["default-sans-with-font-fallbacks"],
+              "description": "A variation of the default-sans theme that includes fallback fonts to provide extended Unicode character support, including emoji and commonly used CJK characters."
+            }
+          ]
+        },
+        "font": {
+          "properties": {
+            "catalog": {
+              "properties": {}
+            },
+            "fallbacks": {
+              "properties": {}
+            }
+          }
+        },
+        "page": {
+          "properties": {
+            "background-color": {
+              "default": "#FFFFFF"
+            },
+            "background-image": {
+              "default": "image:page-bg.png[]"
+            },
+            "columns": {
+              "type": "integer",
+              "default": 2
+            },
+            "column-gap": {
+              "type": "integer",
+              "default": 12
+            },
+            "layout": {
+              "default": "portrait"
+            },
+            "margin": {
+              "default": "[0.75in, 1in, 0.75in, 1in]"
+            },
+            "mode": {
+              "default": "outline"
+            },
+            "size": {
+              "default": "A4"
+            },
+            "numbering": {
+              "properties": {
+                "start-at": {
+                  "default": "body"
+                }
+              }
+            }
+          }
+        },
+        "base": {
+          "properties": {
+            "font-color": {
+              "default": "#000000",
+              "description": "Main text color."
+            },
+            "font-family": {
+              "default": "Helvetica"
+            },
+            "font-size": {
+              "type": "integer",
+              "default": 12
+            }
+          }
+        },
+        "role": {
+          "properties": {}
+        },
+        "abstract": {
+          "properties": {
+            "first-line": {
+              "properties": {}
+            },
+            "title": {
+              "properties": {}
+            },
+            "font-style": {
+              "default": "italic"
+            },
+            "padding": {
+              "default": "[0, 12, 0, 12]"
+            }
+          }
+        },
+        "admontition": {
+          "properties": {
+            "label": {
+              "properties": {
+                "caution": {
+                  "properties": {}
+                },
+                "tip": {
+                  "properties": {}
+                },
+                "warning": {
+                  "properties": {}
+                }
+              }
+            },
+            "icon": {
+              "properties": {
+                "caution": {
+                  "properties": {}
+                },
+                "tip": {
+                  "properties": {}
+                },
+                "warning": {
+                  "properties": {}
+                }
+              }
+            },
+            "background-color": { },
+            "border-color": {}
+          }
+        },
+        "block": {
+          "properties": {
+            "anchor-top": {
+              "type": "integer",
+              "default": 0
+            },
+            "margin-bottom": {
+              "type": "integer",
+              "default": 12
+            }
+          }
+        },
+        "image": {
+          "properties": {
+            "align": {
+              "default": "left"
+            },
+            "float-gap": {},
+            "alt": {
+              "properties": {
+                "content": {
+                  "default": "\"%{alt} (%{target})\""
+                }
+              }
+            },
+            "caption": {
+              "properties": {
+                "align": {}
+              }
+            }
+          }
+        },
+        "caption": {
+          "properties": {
+            "align": {},
+            "end": {}
+          }
+        },
+        "code": {
+          "properties": {
+            "border-style": {},
+            "line-height": {},
+            "highlight-background-color": {
+              "default": "#FFFFCC"
+            }
+          }
+        },
+        "codespan": {
+          "properties": { }
+        },
+        "cover": {
+          "properties": {
+            "back": {
+              "properties": {
+                "image": {}
+              }
+            },
+            "front": {
+              "properties": {
+                "image": {}
+              }
+            }
+          }
+        },
+        "description-list": {
+          "properties": {
+            "description-indent": {
+              "type": "integer",
+              "default": 30
+            }
+          }
+        },
+        "example": {
+          "properties": {
+            
+          }
+        },
+        "footnotes": {
+          "properties": {
+            
+          }
+        },
+        "heading": {
+          "properties": {
+            "part": {
+              "properties": {
+                "break-after": {},
+                "break-before": {}
+              }
+            },
+            "font-color": {
+              "default": "#262626"
+            }
+          }
+        },
+        "index": {
+          "properties": {
+            
+          }
+        },
+        "kbd": {
+          "properties": {
+            
+          }
+        },
+        "link": {
+          "properties": {
+            "font-color": {
+              "default": "#002FA7"
+            }
+          }
+        },
+        "list": {
+          "properties": {
+            "indent": {
+            },
+            "item-spacing": {
+              
+            }
+          }
+        },
+        "olist": {
+          "properties": {
+            "marker": {
+              "properties": {
+                
+              }
+            }
+          }
+        },
+        "ulist": {
+          "properties": {
+            "marker": {
+              "properties": {
+                
+              }
+            }
+          }
+        },
+        "mark": {
+          "properties": {
+            
+          }
+        },
+        "menu": {
+          "properties": {
+            
+          }
+        },
+        "prose": {
+          "properties": {
+            
+          }
+        },
+        "quote": {
+          "properties": {
+            "cite": {
+              "properties": {
+                
+              }
+            }
+          }
+        },
+        "quotes": {
+          "type": "array"
+        },
+        "header": {
+          "properties": {
+            "recto": {
+              "properties": {
+                "right": {
+                  "properties": {
+                    "content": {
+                      "default": "A recto page"
+                    }
+                  }
+                },
+                "left": {
+                  "properties": {
+                    "content": {
+                      "default": "A recto page"
+                    }
+                  }
+                }
+              }
+            },
+            "verso": {
+              "properties": {
+                "right": {
+                  "properties": {
+                    "content": {
+                      "default": "A verso page"
+                    }
+                  }
+                },
+                "left": {
+                  "properties": {
+                    "content": {
+                      "default": "A verso page"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "footer": {
+          "properties": {
+            
+          }
+        },
+        "running-content": {
+          "properties": {
+            "start-at": {
+              "default": "body"
+            }
+          }
+        },
+        "section": {
+          "properties": {
+            "indent": {}
+          }
+        },
+        "sidebar": {
+          "properties": {
+            
+          }
+        },
+        "svg": {
+          "properties": {
+            "fallback-font-family": {}
+          }
+        },
+        "table": {
+          "properties": {
+            "head": {
+              "properties": {
+                
+              }
+            },
+            "body": {
+              "properties": {
+                
+              }
+            },
+            "foot": {
+              "properties": {
+                
+              }
+            },
+            "cell": {
+              "properties": {
+                
+              }
+            },
+            "asciidoc-cell": {
+              "properties": {
+                
+              }
+            },
+            "header-cell": {
+              "properties": {
+                
+              }
+            },
+            "caption": {
+              "properties": {
+
+              }
+            }
+          }
+        },
+        "thematic-break": {
+          "properties": {
+            "border-color": {},
+            "padding": {}
+          }
+        },
+        "title-page": {
+          "properties": {
+            "title": {},
+            "subtitle": {},
+            "authors": {
+              "properties": {
+                "content": {}
+              }
+            },
+            "revision": {}
+          }
+        },
+        "toc": {
+          "properties": {
+            "break-after": {},
+            "hanging-indent": {},
+            "h3-font-color": {},
+            "title": {},
+            "dot-leader": {
+              "properties": {
+                "content": {
+                  "type": "string",
+                  "default": "\". \""
+                },
+                "levels": {}
+              }
+            }
+          }
+        },
+        "verse": {
+          "properties": {
+              "cite": {
+                "properties": {
+                  
+                }
+              }
+          }
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/definitions/optionsDefinition"
+    },
+    {
+      "type": "string"
+    }
+  ],
+  "title": "Schema for asciidoc themes."
+}

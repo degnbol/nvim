@@ -147,6 +147,12 @@ return {
             -- Used on javascript as well.
             lsp.tsserver.setup {}
 
+            lsp.yamlls.setup {
+                settings = { yaml = { schemas = {
+                    [vim.opt.runtimepath:get()[1] .. "/lua/completion/asciidoc-theme.json"] = "*.adoc.yml",
+                }}}
+            }
+
             -- scala. Linked as minimal setup from on nvim-metals git:
             -- https://github.com/scalameta/nvim-metals/discussions/39
             local metals_config = require "metals".bare_config()
@@ -199,6 +205,7 @@ return {
                 -- "latexindent",
                 "matlab_ls",
                 -- "kotlin-language-server",
+                "yamlls",
             }
         }
     },

@@ -10,11 +10,11 @@ syn match asciidoctorComment "^//.*$" contains=@Spell,commentDelimiter,asciidoct
 syn region asciidoctorComment start="^////.*$" end="^////.*$" contains=@Spell
 
 " bold and italic in comments
-syn region asciidoctorBoldComment matchgroup=Conceal start=/\m\*\*/ end=/\*\*/ contains=@Spell concealends oneline contained
+syn region asciidoctorBoldComment matchgroup=Conceal start=/\m\*\*/ end=/\*\*/ contains=@Spell concealends contained
 syn region asciidoctorBoldComment matchgroup=Conceal start=/\m\%(^\|[[:punct:][:space:]]\@<=\)\*\ze[^* ].\{-}\S/ end=/\*\%([[:punct:][:space:]]\@=\|$\)/ contains=@Spell concealends oneline contained
-syn region asciidoctorItalicComment matchgroup=Conceal start=/\m__/ end=/__/ contains=@Spell concealends oneline contained
+syn region asciidoctorItalicComment matchgroup=Conceal start=/\m__/ end=/__/ contains=@Spell concealends contained
 syn region asciidoctorItalicComment matchgroup=Conceal start=/\m\%(^\|[[:punct:][:space:]]\@<=\)_\ze[^_ ].\{-}\S/ end=/_\%([[:punct:][:space:]]\@=\|$\)/ contains=@Spell concealends oneline contained
-syn region asciidoctorBoldItalicComment matchgroup=Conceal start=/\m\*\*_/ end=/_\*\*/ contains=@Spell concealends oneline contained
+syn region asciidoctorBoldItalicComment matchgroup=Conceal start=/\m\*\*_/ end=/_\*\*/ contains=@Spell concealends contained
 syn region asciidoctorBoldItalicComment matchgroup=Conceal start=/\m\%(^\|[[:punct:][:space:]]\@<=\)\*_\ze[^*_ ].\{-}\S/ end=/_\*\%([[:punct:][:space:]]\@=\|$\)/ contains=@Spell concealends oneline contained
 
 syn region asciidoctorBold matchgroup=Conceal start=/\m\%(^\|[[:punct:][:space:]]\@<=\)\*\ze[^* ].\{-}\S/ end=/\*\%([[:punct:][:space:]]\@=\|$\)/ contains=@Spell concealends oneline
@@ -26,8 +26,25 @@ syn match filenameCommentNoSpell '[A-Za-z0-9-_]\+\.[a-z0-9]\+' contains=@NoSpell
 syn match UrlCommentNoSpell '\w\+:\/\/[^[:space:]]\+' contains=@NoSpell containedin=asciidoctorComment contained
 
 " highlight
-syn region asciidocHighlight matchgroup=Conceal start=/##/ end=/##/ contains=@Spell concealends oneline
+syn region asciidocHighlight matchgroup=Conceal start=/##/ end=/##/ contains=@Spell concealends
 syn region asciidocHighlight matchgroup=Conceal start=/\m\%(^\|[[:punct:][:space:]]\@<=\)#\ze[^# ].\{-}\S/ end=/#\%([[:punct:][:space:]]\@=\|$\)/ contains=@Spell concealends oneline
+
+" underline. Placed after highlight so it trumps it even though their patterns 
+" are very similar
+syn region asciidocUnderline matchgroup=Conceal start=/\[underline\]##/ end=/##/ contains=@Spell concealends
+syn region asciidocUnderline matchgroup=Conceal start=/\m\%(^\|[[:punct:][:space:]]\@<=\)\[underline\]#\ze[^# ].\{-}\S/ end=/#\%([[:punct:][:space:]]\@=\|$\)/ contains=@Spell concealends oneline
+syn region asciidocBoldUnderline matchgroup=Conceal start=/\[underline\]\*\*/ end=/\*\*/ contains=@Spell concealends
+syn region asciidocBoldUnderline matchgroup=Conceal start=/\m\%(^\|[[:punct:][:space:]]\@<=\)\[underline\]\*\ze[^* ].\{-}\S/ end=/\*\%([[:punct:][:space:]]\@=\|$\)/ contains=@Spell concealends oneline
+syn region asciidocItalicUnderline matchgroup=Conceal start=/\[underline\]__/ end=/__/ contains=@Spell concealends
+syn region asciidocItalicUnderline matchgroup=Conceal start=/\m\%(^\|[[:punct:][:space:]]\@<=\)\[underline\]_\ze[^_ ].\{-}\S/ end=/_\%([[:punct:][:space:]]\@=\|$\)/ contains=@Spell concealends oneline
+" strikethrough
+syn region asciidocStrikethrough matchgroup=Conceal start=/\[line-through\]##/ end=/##/ contains=@Spell concealends
+syn region asciidocStrikethrough matchgroup=Conceal start=/\m\%(^\|[[:punct:][:space:]]\@<=\)\[line-through\]#\ze[^# ].\{-}\S/ end=/#\%([[:punct:][:space:]]\@=\|$\)/ contains=@Spell concealends oneline
+syn region asciidocBoldStrikethrough matchgroup=Conceal start=/\[line-through\]\*\*/ end=/\*\*/ contains=@Spell concealends
+syn region asciidocBoldStrikethrough matchgroup=Conceal start=/\m\%(^\|[[:punct:][:space:]]\@<=\)\[line-through\]\*\ze[^* ].\{-}\S/ end=/\*\%([[:punct:][:space:]]\@=\|$\)/ contains=@Spell concealends oneline
+syn region asciidocItalicStrikethrough matchgroup=Conceal start=/\[line-through\]__/ end=/__/ contains=@Spell concealends
+syn region asciidocItalicStrikethrough matchgroup=Conceal start=/\m\%(^\|[[:punct:][:space:]]\@<=\)\[line-through\]_\ze[^_ ].\{-}\S/ end=/_\%([[:punct:][:space:]]\@=\|$\)/ contains=@Spell concealends oneline
+
 " passthrough
 " https://docs.asciidoctor.org/asciidoc/latest/pass/pass-macro/
 syn region asciidocPassthrough matchgroup=Conceal start=/++/ end=/++/ contains=@Spell concealends oneline
