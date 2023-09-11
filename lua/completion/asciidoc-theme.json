@@ -224,12 +224,12 @@
         },
         "example": {
           "properties": {
-            
+
           }
         },
         "footnotes": {
           "properties": {
-            
+
           }
         },
         "heading": {
@@ -247,18 +247,21 @@
         },
         "index": {
           "properties": {
-            
+
           }
         },
         "kbd": {
           "properties": {
-            
+
           }
         },
         "link": {
           "properties": {
             "font-color": {
-              "default": "#002FA7"
+              "default": "#0000EE"
+            },
+            "text-decoration": {
+              "default": "underline"
             }
           }
         },
@@ -267,7 +270,7 @@
             "indent": {
             },
             "item-spacing": {
-              
+
             }
           }
         },
@@ -275,7 +278,7 @@
           "properties": {
             "marker": {
               "properties": {
-                
+
               }
             }
           }
@@ -284,32 +287,35 @@
           "properties": {
             "marker": {
               "properties": {
-                
+
               }
             }
           }
         },
         "mark": {
           "properties": {
-            
+
           }
         },
         "menu": {
           "properties": {
-            
+
           }
         },
         "prose": {
           "properties": {
-            
+
           }
         },
         "quote": {
           "properties": {
             "cite": {
               "properties": {
-                
+
               }
+            },
+            "font-size": {
+              "default": 9
             }
           }
         },
@@ -358,7 +364,45 @@
         },
         "footer": {
           "properties": {
-            
+            "border-width": {
+              "default": 0
+            },
+            "verso": {
+              "properties": {
+                "left": {
+                  "properties": {
+                    "content": {
+                      "default": "~"
+                    }
+                  }
+                },
+                "right": {
+                  "properties": {
+                    "content": {
+                      "default": "'{page-number}'"
+                    }
+                  }
+                }
+              }
+            },
+            "recto": {
+              "properties": {
+                "left": {
+                  "properties": {
+                    "content": {
+                      "default": "'{page-number}'"
+                    }
+                  }
+                },
+                "right": {
+                  "properties": {
+                    "content": {
+                      "default": "~"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "running-content": {
@@ -375,7 +419,7 @@
         },
         "sidebar": {
           "properties": {
-            
+
           }
         },
         "svg": {
@@ -387,32 +431,32 @@
           "properties": {
             "head": {
               "properties": {
-                
+
               }
             },
             "body": {
               "properties": {
-                
+
               }
             },
             "foot": {
               "properties": {
-                
+
               }
             },
             "cell": {
               "properties": {
-                
+
               }
             },
             "asciidoc-cell": {
               "properties": {
-                
+
               }
             },
             "header-cell": {
               "properties": {
-                
+
               }
             },
             "caption": {
@@ -459,11 +503,11 @@
         },
         "verse": {
           "properties": {
-              "cite": {
-                "properties": {
-                  
-                }
+            "cite": {
+              "properties": {
+
               }
+            }
           }
         }
       }
