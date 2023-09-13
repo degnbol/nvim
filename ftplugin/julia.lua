@@ -22,3 +22,4 @@ vim.opt.concealcursor = "nvc"
 -- vim.opt.smartindent = true
 
 vim.opt.list = false
+
