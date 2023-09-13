@@ -3,6 +3,9 @@
 return {
 --
 
+s({trig="#!", dscr="Zsh shebang.", snippetType="autosnippet", condition=conds.line_begin},
+{t{"#!/usr/bin/env zsh", ""}}),
+
 s({trig="installed", dscr="is it installed?"},
 {t"which ", i(1, "cargo"), t" > /dev/null"}),
 

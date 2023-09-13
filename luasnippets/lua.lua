@@ -9,6 +9,8 @@ s({trig="[[[", dscr="Double square brackets", snippetType='autosnippet'},
 -- enter like pressing escape then O
 
 -- meta. snippet to write snippets.
+-- TODO: condition these on relevant path in the same way you did it for completions for configuring lazy.
+-- Also add all the allowed args from https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md
 
 s({trig="util", dscr="req utils", condition=conds.line_begin},
 {t[[local lsu = require "utils/]], i(1, "luasnip"), t'"'}),
@@ -32,6 +34,9 @@ s({trig="wordTrig", dscr="Word trigger?"},
 
 s({trig="trigEngine", dscr="Set trigger engine."},
 {t'trigEngine="', c(1, {t"pattern", t"vim", t"ecma", t"plain"}), t'"'}),
+
+s({trig="show_condition", dscr="Set show_condition for luasnip."},
+{t'show_condition="'}),
 
 s({trig="fmta", dscr="Convenience function for formatting snippets, especially multi line snippets."},
 fmta([=[fmta([[<>

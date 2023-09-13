@@ -2,9 +2,25 @@
 return {
 -- not auto
 
+s({trig="cont", dscr="Continue."},
+{t"continue"}),
+s({trig="ret", dscr="Return."},
+{t"return "}),
+
+s({trig="ROOT", dscr="Git root."},
+{
+    t{[[ROOT = `git root` |> readchomp]], ""},
+    c(1, {t"include", t"cd"}),
+    t[[("$ROOT/]], i(2), t[[")]],
+}),
+
 -- replace dumb pr -> print("<>") from one of the snippet bundles
 s({trig="pr", dscr="println"},
 {t"println(", i(1), t")"}),
+
+
+s({trig="usedf", dscr="Using DataFrames and CSV."},
+{t{"using DataFrames, CSV", ""}}),
 
 }, {
 -- auto
@@ -13,8 +29,6 @@ s({trig="pr", dscr="println"},
 s({trig="#!", dscr="shebang", snippetType="autosnippet", condition=conds.line_begin},
 t{"#!/usr/bin/env julia", ""}),
 
--- This is missing when editing on remote and it doesn't use the right julia env 
--- without DataFrames or something.
 s({trig="DF", dscr="DataFrame", snippetType="autosnippet"},
 {t"DataFrame"}),
 
