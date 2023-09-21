@@ -44,11 +44,22 @@ unjump with ``, go to last edit with `.,
 go to last insert mode location with `^.
 Jump along change list with g; and g,
 ```
-In visual: o to go to opposite of selection with cursor.
+In visual: o to go to opposite of selection with cursor. 
+O in visual block to switch corners.
+g+<C-a> is like <C-a> (increment numbers), but increments one higher for each 
+occurence. Use count so it jumps more than 1 for each occurence.
 
-ZZ to quit.
+ZZ to quit. ZQ to force.
 
 Select mode. In-between visual and regular text editor selection.
 It replaces the text and goes to insert mode if you press e.g. backspace.
-Access it with gh (charwise) or gH (linewise).
+Access it with gh (charwise) or gH (linewise) by default. Used by luasnip for 
+filling out placeholder text.
+
+A lot of multicursor stuff can be replaced with search/replace, block visual, 
+and ex command :g/pattern/ex or selection lines then :norm
+:g can also be used with norm, then <C-g> to see which column you are on and 
+easily start the command from the relevant column. In order to do e.g. <esc> 
+you will have to use ecaped :exe, e.g. if it is with :g then
+:g/pattern/exe "ihello\<Esc>dw"
 
