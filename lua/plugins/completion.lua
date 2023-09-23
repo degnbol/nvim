@@ -313,11 +313,11 @@ return {
             -- these default snippets can be replaced with my custom snippets when I have enough
             {"honza/vim-snippets", lazy = true, -- load as cmp dependency
             dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
-                require("luasnip.loaders.from_snipmate").lazy_load {exclude={"tex"}}
+                require("luasnip.loaders.from_snipmate").lazy_load {exclude={"tex", "julia"}}
             end},
             {"rafamadriz/friendly-snippets", lazy = true, -- load as cmp dependency
             dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
-                require("luasnip.loaders.from_vscode").lazy_load {exclude={"tex"}}
+                require("luasnip.loaders.from_vscode").lazy_load {exclude={"tex", "julia"}}
             end},
 
             {
