@@ -35,7 +35,7 @@ return {
                     "gitignore",
                     "gitattributes",
                     "diff", -- for diff output https://github.com/the-mikedavis/tree-sitter-diff
-                    "scheme", -- what treesitter queries (*.scm) are written in
+                    "query", -- what treesitter queries (*.scm) are written in
                     "awk",
                     "rust",
                     "javascript",
