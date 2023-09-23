@@ -3,10 +3,18 @@ local util = require "utils/luasnip"
 
 return {
 -- core lang snippets similar to other bracket related ones found in all.lua
-s({trig="[[[", dscr="Double square brackets", snippetType='autosnippet'},
-{t"[[", i(1), t"]]"}),
--- TODO: make a version for pressing [[[[ that adds newline or make pressing 
--- enter like pressing escape then O
+s({
+    trig='%[%[%[%]%]',
+    dscr="Third bracket in trig pattern is typed last.",
+    snippetType='autosnippet',
+    trigEngine=function (trigger) return util.match_ahead(2) end,
+    priority = 1000,
+},
+-- NOTE: there is no final bracket in replacement since one is left over from end of trigger.
+fmta([=[[[
+    <>
+
+]=], {i(1)})),
 
 -- meta. snippet to write snippets.
 -- TODO: condition these on relevant path in the same way you did it for completions for configuring lazy.

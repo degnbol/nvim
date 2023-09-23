@@ -12,6 +12,7 @@ s({
     trig='"""',
     dscr="Tripple quotes",
     snippetType='autosnippet',
+    priority = 100, -- invoke the all.lua snippet that moves cursor inside first
 },
 fmta([["""
 <>
@@ -21,7 +22,8 @@ s({
     trig='"""',
     dscr="Tripple quotes when the second quote is written last. This is relevant when something autopairs an opening quote.",
     snippetType='autosnippet',
-    trigEngine=function (trigger) return util.match_oneAhead end,
+    priority = 100, -- invoke the all.lua snippet that moves cursor inside first
+    trigEngine=function (trigger) return util.match_ahead(1) end,
 },
 -- NOTE: there are only two final quotes since one is left over from end of trigger.
 fmta([["""

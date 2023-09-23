@@ -7,7 +7,7 @@ s({trig="cont", dscr="Continue."},
 s({trig="ret", dscr="Return."},
 {t"return "}),
 
-s({trig="ROOT", dscr="Git root."},
+s({trig="ROOT", dscr="Git root.", show_condition=conds.line_end},
 {
     t{[[ROOT = `git root` |> readchomp]], ""},
     c(1, {t"include", t"cd"}),
@@ -18,24 +18,27 @@ s({trig="ROOT", dscr="Git root."},
 s({trig="pr", dscr="println"},
 {t"println(", i(1), t")"}),
 
-
-s({trig="usedf", dscr="Using DataFrames and CSV."},
-{t{"using DataFrames, CSV", ""}}),
-
 }, {
 -- auto
 
 -- overwrite the one from https://github.com/honza/vim-snippets
-s({trig="#!", dscr="shebang", snippetType="autosnippet", condition=conds.line_begin},
+s({trig="#!", dscr="shebang", condition=conds.line_begin * conds.line_end},
 t{"#!/usr/bin/env julia", ""}),
 
-s({trig="DF", dscr="DataFrame", snippetType="autosnippet"},
-{t"DataFrame"}),
+s({
+    trig="using df",
+    dscr="Using DataFrames and CSV.",
+    wordTrig=false,
+    condition=conds.line_begin * conds.line_end,
+},
+{t{"using DataFrames, CSV", ""}}),
 
-s({trig="CSV.read", dscr="CSV read DataFrame", snippetType="autosnippet"},
-{t'CSV.read("', i(1, "FILENAME.tsv.gz"), t[[", DataFrame; delim='\t', quoted=false)]]}),
+s({trig="DF", dscr="DataFrame"}, {t"DataFrame"}),
 
-s({trig="CSV.write", dscr="CSV write DataFrame", snippetType="autosnippet"},
+s({trig="CSV.read", dscr="CSV read DataFrame"},
+{t'CSV.read("', i(1, "FILENAME.tsv.gz"), t[[", DataFrame; delim='\t')]]}),
+
+s({trig="CSV.write", dscr="CSV write DataFrame"},
 {
     t'CSV.write("',
     i(1),
@@ -45,5 +48,16 @@ s({trig="CSV.write", dscr="CSV write DataFrame", snippetType="autosnippet"},
     c(3, {t", compress=true", t""}),
     t')'
 }),
+
+s({trig="<=", dscr="Less than."}, {t"≤"}),
+s({trig=">=", dscr="Greater than."}, {t"≥"}),
+s({trig="!=", dscr="Not equal."}, {t"≠"}),
+s({trig=".in", dscr="Each in"}, {t".∈ Ref(", i(1), t")"}),
+
+s({trig="use", dscr="Using.", condition=conds.line_begin}, {t"using "}),
+
+s({trig="fun", dscr="Function.", condition=conds.line_begin * conds.line_end},
+fmta([[function <>(<>)<>
+end]], {i(1, "NAME"), i(2), i(3)})),
 
 }
