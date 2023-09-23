@@ -8,9 +8,12 @@ return {
     {
         dir = "$XDG_CONFIG_HOME/nvim/kittyREPL.nvim", dev=true, opts={
             keymap={
-                line="<CR><CR>",
-                visual="<CR>",
-                operator="<CR>",
+                run="<CR>",
+                paste="<S-CR>",
+                runLine="<CR><CR>",
+                pasteLine="<S-CR><S-CR>",
+                runVisual="<CR>",
+                pasteVisual="<S-CR>",
                 focus="<C-CR>",
                 setlast="<leader>tt",
                 win="<leader>tT",
