@@ -22,4 +22,5 @@ require'lazy'.setup('plugins', {
 
 require "highlights"
 require "keymap"
+require "blockim"
 
