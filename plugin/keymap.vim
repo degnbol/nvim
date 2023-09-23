@@ -96,6 +96,8 @@ inoremap <A-Left> <c-\><c-o>b
 inoremap <A-Right> <c-\><c-o>w
 " change to default behaviour: don't exit to normal mode.
 inoremap <A-h> <c-\><c-o>h
+" Default is backspace
+inoremap <C-h> <c-\><c-o>h
 inoremap <expr> <A-j> v:count == 0 ? "<c-\><c-o>gj" : "j"
 inoremap <expr> <A-k> v:count == 0 ? "<c-\><c-o>gk" : "k"
 " instead of <c-\><c-o>l since then we can't go to the last char of the line
@@ -151,14 +153,27 @@ inoremap <A-S-æ> :
 inoremap <A-ø> '
 inoremap <A-S-ø> "
 
-" completion mapping for function keys available on mechanical keyboard
-imap <F13> <C-space>
-imap <F14> <C-p>
-imap <F15> <C-n>
+" Mapping for function keys available on mechanical keyboard
+" TODO: too far away for being useful for something like regular completion, 
+" tab is more convenient. Find another use, e.g. snippet 
+" completion and navigation? Then you can free up ctrl+j/k/l although we're 
+" not always on mech keyboard, and I don't mind using <s-c-K> for the rare 
+" case of needing special chars.
+imap <F13> <C-j>
+imap <F14> <C-k>
+imap <F15> <C-l>
 
 " typo help
 command Q q
 command X x
 command WQ wq
 command Wq wq
+
+" enables cmdline tab completion when recording macro
+set wildcharm=<Tab>
+
+" use U instead of <C-r> for redo.
+" TODO move line undo to Vu 
+nnoremap U <C-r>
+
 
