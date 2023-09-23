@@ -23,11 +23,7 @@ mamba install -yc conda-forge ripgrep pynvim
 # $0:h/install-scala.sh
 
 # for editing jupyter notebooks
-if which pipx > /dev/null; then
-    pipx install jupytext
-else
-    mamba install -yc conda-forge jupytext
-fi
+mamba install -yc conda-forge jupytext
 
 0:h/tex/unicode/install.sh
 
