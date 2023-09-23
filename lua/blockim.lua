@@ -14,6 +14,8 @@ vim.keymap.set('v', '<C-q>', function ()
         vim.keymap.del({'n', 'i'}, '<Esc>')
         vim.cmd.stopinsert()
         vim.cmd.norm "q"
+        -- if nothing was recorded then just exit, otherwise we get an undojoin related error.
+        if vim.fn.getreg("b") == "" then return end
         local rCur2, cCur2 = unpack(vim.api.nvim_win_get_cursor(0))
         for i = rVis1, rVis2 do
             if i ~= rCur1 then
