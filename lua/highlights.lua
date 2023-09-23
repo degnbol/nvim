@@ -58,6 +58,9 @@ local function afterColorscheme()
     hl.set("CmpItemAbbrMatch", {bold=true})
     hl.set("CmpItemAbbrMatchFuzzy", {bold=true})
 
+    -- there is enough things indicated by color, matched parenthesis etc. with underline is great
+    hl.set("MatchParen", {underline=true})
+
     -- never italic comments but italize builtin stuff
     -- :h group-name
     -- Italics are not default since terms aren't assumed to support it,
@@ -75,18 +78,27 @@ local function afterColorscheme()
     hl.mod("Include", {italic=true})
     hl.mod("Repeat", {italic=true})
     hl.mod("Label", {italic=true})
+    hl.mod("Type", {italic=false})
+    hl.mod("@type.builtin", {italic=false})
     hl.mod("Conditional", {italic=true})
+    -- for e.g. julia there is the `a = bool ? b : c` notation. It's weird to 
+    -- have ? and : italic since that is meant for words, but it does help 
+    -- distinguish them from : used in e.g. ranges.
+    -- hl.mod("@conditional.ternary", {italic=false})
     hl.mod("Identifier", {italic=false})
     hl.mod("Exception", {italic=true})
     hl.mod("@include", {italic=true})
+    hl.link("@keyword", "Keyword")
     hl.mod("Keyword", {italic=true, bold=false})
-    hl.mod("@keyword", {italic=true, bold=false})
     hl.mod("@keyword.function", {italic=true})
     hl.mod("@keyword.return", {italic=true})
     hl.mod("@keyword.operator", {italic=true})
     hl.mod("@parameter", {italic=false})
     hl.mod("@function", {italic=false})
-    hl.mod("@boolean", {italic=true, bold=false})
+    hl.link("@boolean", "Boolean")
+    hl.mod("Boolean", {italic=true, bold=false})
+    hl.mod("@variable.builtin", {italic=true})
+
 
     -- NonText shouldn't be exactly like comments
     if hl.get("Comment")['fg'] == hl.get("NonText")['fg'] then
