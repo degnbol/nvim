@@ -71,8 +71,9 @@ return {
                 -- Keep record of the original value
                 sidescrolloff = vim.opt.sidescrolloff:get()
                 vim.opt.sidescrolloff = 0
-                -- notify
-                print("fo+=a | sidescrolloff=0")
+                notify = "fo+=a | sidescrolloff=0"
+                print(notify)
+                return notify
             end
             local disable_autoformat = function ()
                 vim.opt.formatoptions:remove('a')
@@ -81,8 +82,31 @@ return {
                 -- in a call to enable_autoformat, we set it to what is 
                 -- currently the default in lua/options.lua
                 vim.opt.sidescrolloff = sidescrolloff or 12
-                -- notify
-                print("fo-=a | sidescrolloff=" .. vim.opt.sidescrolloff:get())
+                notify = "fo-=a | sidescrolloff=" .. vim.opt.sidescrolloff:get()
+                print(notify)
+                return notify
+            end
+            local enable_wrap = function ()
+                vim.opt.wrap = true
+                -- also disable autoformat when wrapping
+                -- Keep record of the original value
+                autoformat = vim.opt.formatoptions:get()['a']
+                notify = disable_autoformat() .. " | wrap"
+                print(notify)
+                return notify
+            end
+            local disable_wrap = function ()
+                vim.opt.wrap = false
+                -- reset autoformat.
+                -- if the script local var 'autoformat' hasn't been defined 
+                -- in a call to enable_wrap, we default to false
+                if autoformat then
+                    notify = enable_autoformat() .. " | nowrap"
+                else
+                    notify = "nowrap"
+                end
+                print(notify)
+                return notify
             end
             local toggle_autoformat = function ()
                 if vim.opt.formatoptions:get()['a'] then
@@ -91,6 +115,14 @@ return {
                     enable_autoformat()
                 end
             end
+            local function toggle_wrap()
+                if vim.opt.wrap:get() then
+                    disable_wrap()
+                else
+                    enable_wrap()
+                end
+            end
+
             -- default for yoc is another binding for cursorline which is a lot 
             -- less useful than conceal
             vim.keymap.set('n', 'yoc', toggle_colceal, { desc="conceal" })
@@ -101,6 +133,10 @@ return {
             vim.keymap.set('n', '=sa', toggle_autoformat, { desc="formatoptions auto" })
             vim.keymap.set('n', '<sa', enable_autoformat, { desc="formatoptions auto" })
             vim.keymap.set('n', '>sa', disable_autoformat, { desc="formatoptions auto" })
+            vim.keymap.set('n', 'yow', toggle_wrap, { desc="wrap" })
+            vim.keymap.set('n', '=sw', toggle_wrap, { desc="wrap" })
+            vim.keymap.set('n', '<sw', enable_wrap, { desc="wrap" })
+            vim.keymap.set('n', '>sw', disable_wrap, { desc="wrap" })
         end,
     },
     {
