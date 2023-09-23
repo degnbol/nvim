@@ -76,11 +76,13 @@ return {
             end
             local disable_autoformat = function ()
                 vim.opt.formatoptions:remove('a')
-                -- reset sidescrolloff, assuming the var 'sidescrolloff' has 
-                -- been defined in a call to enable_autoformat
-                vim.opt.sidescrolloff = sidescrolloff
+                -- reset sidescrolloff.
+                -- if the script local var 'sidescrolloff' hasn't been defined 
+                -- in a call to enable_autoformat, we set it to what is 
+                -- currently the default in lua/options.lua
+                vim.opt.sidescrolloff = sidescrolloff or 12
                 -- notify
-                print("fo-=a | sidescrolloff=" .. sidescrolloff)
+                print("fo-=a | sidescrolloff=" .. vim.opt.sidescrolloff:get())
             end
             local toggle_autoformat = function ()
                 if vim.opt.formatoptions:get()['a'] then
