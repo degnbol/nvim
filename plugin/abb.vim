@@ -44,6 +44,7 @@ Abolish dialog dialogue
 Abolish avail available
 Abolish bc because
 Abolish melb Melbourne
+Abolish intro introduction
 " auto-capitalization
 iabbrev english English
 iabbrev danish Danish
