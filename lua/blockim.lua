@@ -27,7 +27,7 @@ vim.keymap.set('v', '<C-q>', function ()
         end
         vim.cmd.stopinsert()
         vim.api.nvim_win_set_cursor(0, {rCur2, cCur2})
-    end, { desc="Run macro." })
+    end, { desc="Run block mode macro on each selected line at the column of the cursor." })
     vim.cmd.norm "qb"
 end, { desc="Block mode improved. Apply macro along block selection." })
 
