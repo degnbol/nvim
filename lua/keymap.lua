@@ -36,10 +36,13 @@ vim.keymap.set("n", "<leader>rs", "<cmd>source $XDG_CONFIG_HOME/nvim/after/plugi
 -- use the following two commands to enable spelling
 -- setlocal spell
 -- set spelllang=en_us
--- ctrl+s (in insert mode) to fix last misspelled word
+-- ctrl+s to fix last misspelled word
 -- credit: https://castel.dev/post/lecture-notes-1/
 -- with git: https://github.com/gillescastel/latex-snippets
-vim.keymap.set('i', '<C-s>', [[<c-g>u<Esc>[s1z=`]a<c-g>u]], { desc="Spell correct closest" })
+-- "i_ctrl-g u" = something about undo history, probably to keep the edit part of the insert edit?
+-- [s = goto last misspelled, 1z= = replace with first spell suggestion. 
+vim.keymap.set('i', '<C-s>', [[<c-g>u<Esc>[s1z=`]i<c-g>u]], { desc="Spell correct closest" })
+vim.keymap.set('n', '<C-s>', [=[[s1z=``]=], { desc="Spell correct closest" })
 
 -- not the most elegant but it works.
 -- LeftMouse to move cursor to pressed location.
@@ -60,4 +63,8 @@ vim.keymap.set('i', '<C-6>',
     [[<C-^><C-\><C-o>:doautocmd User ToggleDansk<CR>]],
     { silent=true, desc="Toggle dansk" }
 )
+-- Ins key was a bit useless just doing what i does so let's make it a language switch insertion:
+vim.keymap.set('n', '<Ins>', 'i<C-6>', { silent=true, desc="Insert + Toggle dansk" })
+
+
 
