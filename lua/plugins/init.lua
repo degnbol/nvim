@@ -194,22 +194,24 @@ return {
     -- easily define custom textobjects
     -- some config in ftplugin/tex.lua
     "kana/vim-textobj-user", 
-    -- TODO: add from https://github.com/kana/vim-textobj-user and https://github.com/kana/vim-textobj-user/wiki
-    {"glts/vim-textobj-comment", dependencies={"kana/vim-textobj-user"}}, -- not working?
+    -- List of uses of the kana plugin:
+    -- https://github.com/kana/vim-textobj-user/wiki
+    -- provides iC and aC for multi line comments.
+    -- Also provides ic which will catch multiline so not ideal but the 
+    -- treesitter one doesn't seem to work.
+    {"glts/vim-textobj-comment", dependencies={"kana/vim-textobj-user"}},
+    -- nvim version of the kana plugin
     {
-        -- https://github.com/chrisgrieser/nvim-various-textobjs
         "chrisgrieser/nvim-various-textobjs",
         -- opts = { useDefaultKeymaps = true },
         config = function ()
-            
             require("various-textobjs").setup {
                 useDefaultKeymaps = true,
-                -- disable some default keymaps, e.g. { "ai", "ii" }
-                disabledKeymaps = {"ak", "ik", "av", "iv"},
+                -- disabledKeymaps = {"ak", "ik", "av", "iv"},
             }
-            
+            -- custom gx function that opens github repos given the short 
+            -- version written in these config files.
             local open = require("utils/init").open
-            
             vim.keymap.set("n", "gx", function()
                 -- go to github for plugin easily.
                 -- First check if we are editing a file read by lazy.nvim
@@ -222,19 +224,15 @@ return {
                         return open("https://github.com/" .. repo)
                     end
                 end
-                
                 -- visually select URL
                 require("various-textobjs").url()
-
                 -- plugin only switches to visual mode when textobj found
                 local foundURL = vim.fn.mode():find("v")
-
                 -- retrieve URL with the z-register as intermediary
                 vim.cmd.normal { '"zy', bang = true }
                 local url = vim.fn.getreg("z")
                 open(url)
-
-            end, { desc = "Smart URL Opener" })
+            end, { desc = "Smart URL opener" })
         end
     },
     -- increment and decrement numbers, dates, color hex, even bool

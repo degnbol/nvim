@@ -140,6 +140,7 @@ return {
                             ["af"] = "@function.outer",
                             ["if"] = "@function.inner",
                             ["ac"] = "@comment.outer",
+                            -- doesn't seem to be supported much. We use a kana derived textobj plugin for ic.
                             ["ic"] = "@comment.inner",
                             ["aa"] = "@parameter.outer",
                             ["ia"] = "@parameter.inner",

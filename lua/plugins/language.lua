@@ -3,7 +3,11 @@ local hl = require "utils/highlights"
 
 return {
     -- add keybindings to toggle comments with motions etc.
-    {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup() end},
+    {"terrortylor/nvim-comment", config=function() require'nvim_comment'.setup {
+        -- default is ic which should instead be the treesitter @comment.inner.
+        -- aC is almost the same and provided by a vim plugin that extends the kana plugin.
+        comment_chunk_text_object="iC",
+    } end},
     -- has the useful gcO and gcA extra mappings, but the basic mappings aren't working as I like from terrortylor
     {"numToStr/Comment.nvim", opts={ mappings={ basic=false, } }},
     -- julia support, colors and unicode substitution. CANNOT use ft=julia
