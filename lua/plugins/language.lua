@@ -79,6 +79,7 @@ return {
                     hl.link("filenameCommentNoSpell", "Comment")
                     hl.link("UrlCommentNoSpell", "Comment")
                     hl.link("linebreak", "Comment")
+                    hl.set("Guitar", {underline=true})
                 end
             })
             -- use conversion to PDF as default for :make
