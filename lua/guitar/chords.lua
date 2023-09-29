@@ -120,5 +120,5 @@ local function prettyChordLine()
     vim.api.nvim_buf_set_lines(0, r, r, true, pretty)
 end
 
-vim.api.nvim_buf_create_user_command(0, "Guitar", prettyChordLine, {})
+vim.api.nvim_create_user_command("Guitar", prettyChordLine, {})
 
