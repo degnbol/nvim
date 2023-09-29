@@ -1,0 +1,2102 @@
+[
+{
+  "name": "C",
+  "fret": 1,
+  "strings": "X32010"
+},
+{
+  "name": "Cm",
+  "fret": 3,
+  "strings": "X13321"
+},
+{
+  "name": "Caug",
+  "fret": 1,
+  "strings": "XX2110"
+},
+{
+  "name": "Cdim",
+  "fret": 3,
+  "strings": "X1232X"
+},
+{
+  "name": "Cdim7",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "C7",
+  "fret": 1,
+  "strings": "032310"
+},
+{
+  "name": "Cmaj7",
+  "fret": 1,
+  "strings": "X32000"
+},
+{
+  "name": "Cm7",
+  "fret": 3,
+  "strings": "X13121"
+},
+{
+  "name": "Csus4",
+  "fret": 1,
+  "strings": "XX3013"
+},
+{
+  "name": "Csus",
+  "fret": 1,
+  "strings": "XX3013"
+},
+{
+  "name": "C4",
+  "fret": 1,
+  "strings": "XX3013"
+},
+{
+  "name": "C0",
+  "fret": 3,
+  "strings": "X1232X"
+},
+{
+  "name": "C⁰",
+  "fret": 3,
+  "strings": "X1232X"
+},
+{
+  "name": "Cmb5",
+  "fret": 3,
+  "strings": "X1232X"
+},
+{
+  "name": "Cm7b5",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Cm7(b5)",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Ch",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Cø",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "C+",
+  "fret": 1,
+  "strings": "XX2110"
+},
+{
+  "name": "Cmin",
+  "fret": 3,
+  "strings": "X13321"
+},
+{
+  "name": "C(maj7)",
+  "fret": 1,
+  "strings": "X32000"
+},
+{
+  "name": "C6",
+  "fret": 1,
+  "strings": "X32210"
+},
+{
+  "name": "C9",
+  "fret": 8,
+  "strings": 131213
+},
+{
+  "name": "Cadd2",
+  "fret": 1,
+  "strings": "X32030"
+},
+{
+  "name": "C(add2)",
+  "fret": 1,
+  "strings": "X32030"
+},
+{
+  "name": "Cadd9",
+  "fret": 1,
+  "strings": "X32033"
+},
+{
+  "name": "C(add9)",
+  "fret": 1,
+  "strings": "X32033"
+},
+{
+  "name": "Csus9",
+  "fret": 7,
+  "strings": "XX4124"
+},
+{
+  "name": "C(sus9)",
+  "fret": 7,
+  "strings": "XX4124"
+},
+{
+  "name": "C9(11)",
+  "fret": 1,
+  "strings": "X3333X"
+},
+{
+  "name": "C11",
+  "fret": 3,
+  "strings": "X13141"
+},
+{
+  "name": "Csus2",
+  "fret": 1,
+  "strings": "X3001X"
+},
+{
+  "name": "C#",
+  "fret": 1,
+  "strings": "XX3121"
+},
+{
+  "name": "C#m",
+  "fret": 1,
+  "strings": "XX2120"
+},
+{
+  "name": "C#aug",
+  "fret": 1,
+  "strings": "XX3221"
+},
+{
+  "name": "C#dim",
+  "fret": 4,
+  "strings": "X1234X"
+},
+{
+  "name": "C#dim7",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "C#7",
+  "fret": 1,
+  "strings": "XX3424"
+},
+{
+  "name": "C#maj7",
+  "fret": 1,
+  "strings": "X43111"
+},
+{
+  "name": "C#m7",
+  "fret": 1,
+  "strings": "XX2424"
+},
+{
+  "name": "C#sus4",
+  "fret": 4,
+  "strings": "XX3341"
+},
+{
+  "name": "C#sus",
+  "fret": 4,
+  "strings": "XX3341"
+},
+{
+  "name": "C#4",
+  "fret": 4,
+  "strings": "XX3341"
+},
+{
+  "name": "C#0",
+  "fret": 4,
+  "strings": "X1234X"
+},
+{
+  "name": "C#⁰",
+  "fret": 4,
+  "strings": "X1234X"
+},
+{
+  "name": "C#mb5",
+  "fret": 4,
+  "strings": "X1234X"
+},
+{
+  "name": "C#m7b5",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "C#m7(b5)",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "C#h",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "C#ø",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "C#+",
+  "fret": 1,
+  "strings": "XX3221"
+},
+{
+  "name": "C#min",
+  "fret": 1,
+  "strings": "XX2120"
+},
+{
+  "name": "C#(maj7)",
+  "fret": 1,
+  "strings": "X43111"
+},
+{
+  "name": "C#add9",
+  "fret": 4,
+  "strings": "X13311"
+},
+{
+  "name": "C#(add9)",
+  "fret": 4,
+  "strings": "X13311"
+},
+{
+  "name": "Db",
+  "fret": 1,
+  "strings": "XX3121"
+},
+{
+  "name": "Dbm",
+  "fret": 1,
+  "strings": "XX2120"
+},
+{
+  "name": "Dbaug",
+  "fret": 1,
+  "strings": "XX3221"
+},
+{
+  "name": "Dbdim",
+  "fret": 4,
+  "strings": "X1234X"
+},
+{
+  "name": "Dbdim7",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Db7",
+  "fret": 1,
+  "strings": "XX3424"
+},
+{
+  "name": "Dbmaj7",
+  "fret": 1,
+  "strings": "X43111"
+},
+{
+  "name": "Dbm7",
+  "fret": 1,
+  "strings": "XX2424"
+},
+{
+  "name": "Dbsus4",
+  "fret": 4,
+  "strings": "XX3341"
+},
+{
+  "name": "Dbsus",
+  "fret": 4,
+  "strings": "XX3341"
+},
+{
+  "name": "Db4",
+  "fret": 4,
+  "strings": "XX3341"
+},
+{
+  "name": "Db0",
+  "fret": 4,
+  "strings": "X1234X"
+},
+{
+  "name": "Db⁰",
+  "fret": 4,
+  "strings": "X1234X"
+},
+{
+  "name": "Dbmb5",
+  "fret": 4,
+  "strings": "X1234X"
+},
+{
+  "name": "Dbm7b5",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Dbm7(b5)",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Dbh",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Dbø",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Db+",
+  "fret": 1,
+  "strings": "XX3221"
+},
+{
+  "name": "Dbmin",
+  "fret": 1,
+  "strings": "XX2120"
+},
+{
+  "name": "Db(maj7)",
+  "fret": 1,
+  "strings": "X43111"
+},
+{
+  "name": "D",
+  "fret": 1,
+  "strings": "XX0232"
+},
+{
+  "name": "Dm",
+  "fret": 1,
+  "strings": "XX0231"
+},
+{
+  "name": "Daug",
+  "fret": 1,
+  "strings": "XX0332"
+},
+{
+  "name": "Ddim",
+  "fret": 1,
+  "strings": "XX0131"
+},
+{
+  "name": "Ddim7",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "D7",
+  "fret": 1,
+  "strings": "XX0212"
+},
+{
+  "name": "Dmaj7",
+  "fret": 1,
+  "strings": "XX0222"
+},
+{
+  "name": "Dm7",
+  "fret": 1,
+  "strings": "XX0211"
+},
+{
+  "name": "Dsus4",
+  "fret": 1,
+  "strings": "XX0233"
+},
+{
+  "name": "Dsus",
+  "fret": 1,
+  "strings": "XX0233"
+},
+{
+  "name": "D4",
+  "fret": 1,
+  "strings": "XX0233"
+},
+{
+  "name": "D0",
+  "fret": 1,
+  "strings": "XX0131"
+},
+{
+  "name": "D⁰",
+  "fret": 1,
+  "strings": "XX0131"
+},
+{
+  "name": "Dmb5",
+  "fret": 1,
+  "strings": "XX0131"
+},
+{
+  "name": "Dm7b5",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Dm7(b5)",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Dh",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Dø",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "D+",
+  "fret": 1,
+  "strings": "XX0332"
+},
+{
+  "name": "Dmin",
+  "fret": 1,
+  "strings": "XX0231"
+},
+{
+  "name": "D(maj7)",
+  "fret": 1,
+  "strings": "XX0222"
+},
+{
+  "name": "D6",
+  "fret": 1,
+  "strings": "X00202"
+},
+{
+  "name": "D9",
+  "fret": 0,
+  "strings": 131213
+},
+{
+  "name": "Dm9",
+  "fret": 1,
+  "strings": "XX3210"
+},
+{
+  "name": "Dadd9",
+  "fret": 1,
+  "strings": "000232"
+},
+{
+  "name": "D(add9)",
+  "fret": 1,
+  "strings": "000232"
+},
+{
+  "name": "D11",
+  "fret": 1,
+  "strings": 300210
+},
+{
+  "name": "Dsus2",
+  "fret": 1,
+  "strings": "000230"
+},
+{
+  "name": "D#",
+  "fret": 3,
+  "strings": "XX3121"
+},
+{
+  "name": "D#m",
+  "fret": 1,
+  "strings": "XX4342"
+},
+{
+  "name": "D#aug",
+  "fret": 1,
+  "strings": "XX1004"
+},
+{
+  "name": "D#dim",
+  "fret": 1,
+  "strings": "XX1242"
+},
+{
+  "name": "D#dim7",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "D#7",
+  "fret": 1,
+  "strings": "XX1323"
+},
+{
+  "name": "D#maj7",
+  "fret": 1,
+  "strings": "XX1333"
+},
+{
+  "name": "D#m7",
+  "fret": 1,
+  "strings": "XX1322"
+},
+{
+  "name": "D#sus4",
+  "fret": 1,
+  "strings": "XX1344"
+},
+{
+  "name": "D#sus",
+  "fret": 1,
+  "strings": "XX1344"
+},
+{
+  "name": "D#4",
+  "fret": 1,
+  "strings": "XX1344"
+},
+{
+  "name": "D#0",
+  "fret": 1,
+  "strings": "XX1242"
+},
+{
+  "name": "D#⁰",
+  "fret": 1,
+  "strings": "XX1242"
+},
+{
+  "name": "D#mb5",
+  "fret": 1,
+  "strings": "XX1242"
+},
+{
+  "name": "D#m7b5",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "D#m7(b5)",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "D#h",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "D#ø",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "D#+",
+  "fret": 1,
+  "strings": "XX1004"
+},
+{
+  "name": "D#min",
+  "fret": 1,
+  "strings": "XX4342"
+},
+{
+  "name": "D#(maj7)",
+  "fret": 1,
+  "strings": "XX1333"
+},
+{
+  "name": "Eb",
+  "fret": 3,
+  "strings": "XX3121"
+},
+{
+  "name": "Ebm",
+  "fret": 1,
+  "strings": "XX4342"
+},
+{
+  "name": "Ebaug",
+  "fret": 1,
+  "strings": "XX1004"
+},
+{
+  "name": "Ebdim",
+  "fret": 1,
+  "strings": "XX1242"
+},
+{
+  "name": "Ebdim7",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Eb7",
+  "fret": 1,
+  "strings": "XX1323"
+},
+{
+  "name": "Ebmaj7",
+  "fret": 1,
+  "strings": "XX1333"
+},
+{
+  "name": "Ebm7",
+  "fret": 1,
+  "strings": "XX1322"
+},
+{
+  "name": "Ebsus4",
+  "fret": 1,
+  "strings": "XX1344"
+},
+{
+  "name": "Ebsus",
+  "fret": 1,
+  "strings": "XX1344"
+},
+{
+  "name": "Eb4",
+  "fret": 1,
+  "strings": "XX1344"
+},
+{
+  "name": "Eb0",
+  "fret": 1,
+  "strings": "XX1242"
+},
+{
+  "name": "Eb⁰",
+  "fret": 1,
+  "strings": "XX1242"
+},
+{
+  "name": "Ebmb5",
+  "fret": 1,
+  "strings": "XX1242"
+},
+{
+  "name": "Ebm7b5",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Ebm7(b5)",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Ebh",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Ebø",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Eb+",
+  "fret": 1,
+  "strings": "XX1004"
+},
+{
+  "name": "Ebmin",
+  "fret": 1,
+  "strings": "XX4342"
+},
+{
+  "name": "Eb(maj7)",
+  "fret": 1,
+  "strings": "XX1333"
+},
+{
+  "name": "Ebadd9",
+  "fret": 1,
+  "strings": "X11341"
+},
+{
+  "name": "Eb(add9)",
+  "fret": 1,
+  "strings": "X11341"
+},
+{
+  "name": "E",
+  "fret": 1,
+  "strings": "022100"
+},
+{
+  "name": "Em",
+  "fret": 1,
+  "strings": "022000"
+},
+{
+  "name": "Eaug",
+  "fret": 1,
+  "strings": "XX2110"
+},
+{
+  "name": "Edim",
+  "fret": 1,
+  "strings": "0120XX"
+},
+{
+  "name": "Edim7",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "E7",
+  "fret": 1,
+  "strings": "022130"
+},
+{
+  "name": "Emaj7",
+  "fret": 1,
+  "strings": "02110X"
+},
+{
+  "name": "Em7",
+  "fret": 1,
+  "strings": "022030"
+},
+{
+  "name": "Esus4",
+  "fret": 1,
+  "strings": "022200"
+},
+{
+  "name": "Esus",
+  "fret": 1,
+  "strings": "022200"
+},
+{
+  "name": "E4",
+  "fret": 1,
+  "strings": "022200"
+},
+{
+  "name": "E0",
+  "fret": 1,
+  "strings": "0120XX"
+},
+{
+  "name": "E⁰",
+  "fret": 1,
+  "strings": "0120XX"
+},
+{
+  "name": "Emb5",
+  "fret": 1,
+  "strings": "0120XX"
+},
+{
+  "name": "Em7b5",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Em7(b5)",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Eh",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Eø",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "E+",
+  "fret": 1,
+  "strings": "XX2110"
+},
+{
+  "name": "Emin",
+  "fret": 1,
+  "strings": "022000"
+},
+{
+  "name": "E(maj7)",
+  "fret": 1,
+  "strings": "02110X"
+},
+{
+  "name": "E6",
+  "fret": 9,
+  "strings": "XX3333"
+},
+{
+  "name": "Em6",
+  "fret": 1,
+  "strings": "022020"
+},
+{
+  "name": "E9",
+  "fret": 1,
+  "strings": 131213
+},
+{
+  "name": "E11",
+  "fret": 1,
+  "strings": 111122
+},
+{
+  "name": "F",
+  "fret": 1,
+  "strings": 133211
+},
+{
+  "name": "Fm",
+  "fret": 1,
+  "strings": 133111
+},
+{
+  "name": "Faug",
+  "fret": 1,
+  "strings": "XX3221"
+},
+{
+  "name": "Fdim",
+  "fret": 1,
+  "strings": "XX3101"
+},
+{
+  "name": "Fdim7",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "F7",
+  "fret": 1,
+  "strings": 131211
+},
+{
+  "name": "Fmaj7",
+  "fret": 1,
+  "strings": "X33210"
+},
+{
+  "name": "Fm7",
+  "fret": 1,
+  "strings": 131111
+},
+{
+  "name": "Fsus4",
+  "fret": 1,
+  "strings": "XX3311"
+},
+{
+  "name": "Fsus",
+  "fret": 1,
+  "strings": "XX3311"
+},
+{
+  "name": "F4",
+  "fret": 1,
+  "strings": "XX3311"
+},
+{
+  "name": "F0",
+  "fret": 1,
+  "strings": "XX3101"
+},
+{
+  "name": "F⁰",
+  "fret": 1,
+  "strings": "XX3101"
+},
+{
+  "name": "Fmb5",
+  "fret": 1,
+  "strings": "XX3101"
+},
+{
+  "name": "Fm7b5",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Fm7(b5)",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Fh",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Fø",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "F+",
+  "fret": 1,
+  "strings": "XX3221"
+},
+{
+  "name": "Fmin",
+  "fret": 1,
+  "strings": 133111
+},
+{
+  "name": "F(maj7)",
+  "fret": 1,
+  "strings": "X33210"
+},
+{
+  "name": "F6",
+  "fret": 1,
+  "strings": "X3323X"
+},
+{
+  "name": "Fm6",
+  "fret": 1,
+  "strings": "XX0111"
+},
+{
+  "name": "F9",
+  "fret": 1,
+  "strings": 242324
+},
+{
+  "name": "Fadd9",
+  "fret": 1,
+  "strings": 303211
+},
+{
+  "name": "F(add9)",
+  "fret": 1,
+  "strings": 303211
+},
+{
+  "name": "F11",
+  "fret": 1,
+  "strings": 131311
+},
+{
+  "name": "F#",
+  "fret": 1,
+  "strings": 244322
+},
+{
+  "name": "F#m",
+  "fret": 1,
+  "strings": 244222
+},
+{
+  "name": "F#aug",
+  "fret": 1,
+  "strings": "XX4332"
+},
+{
+  "name": "F#dim",
+  "fret": 1,
+  "strings": "XX4212"
+},
+{
+  "name": "F#dim7",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "F#7",
+  "fret": 1,
+  "strings": "XX4320"
+},
+{
+  "name": "F#maj7",
+  "fret": 1,
+  "strings": "XX4321"
+},
+{
+  "name": "F#m7",
+  "fret": 1,
+  "strings": 202220
+},
+{
+  "name": "F#sus4",
+  "fret": 1,
+  "strings": "XX4422"
+},
+{
+  "name": "F#sus",
+  "fret": 1,
+  "strings": "XX4422"
+},
+{
+  "name": "F#4",
+  "fret": 1,
+  "strings": "XX4422"
+},
+{
+  "name": "F#0",
+  "fret": 1,
+  "strings": "XX4212"
+},
+{
+  "name": "F#⁰",
+  "fret": 1,
+  "strings": "XX4212"
+},
+{
+  "name": "F#mb5",
+  "fret": 1,
+  "strings": "XX4212"
+},
+{
+  "name": "F#m7b5",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "F#m7(b5)",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "F#h",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "F#ø",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "F#+",
+  "fret": 1,
+  "strings": "XX4332"
+},
+{
+  "name": "F#min",
+  "fret": 1,
+  "strings": 244222
+},
+{
+  "name": "F#(maj7)",
+  "fret": 1,
+  "strings": "XX4321"
+},
+{
+  "name": "F#m6",
+  "fret": 1,
+  "strings": "XX1222"
+},
+{
+  "name": "F#9",
+  "fret": 1,
+  "strings": "X12122"
+},
+{
+  "name": "F#11",
+  "fret": 1,
+  "strings": 242422
+},
+{
+  "name": "Gb",
+  "fret": 1,
+  "strings": 244322
+},
+{
+  "name": "Gbm",
+  "fret": 1,
+  "strings": 244222
+},
+{
+  "name": "Gbaug",
+  "fret": 1,
+  "strings": "XX4332"
+},
+{
+  "name": "Gbdim",
+  "fret": 1,
+  "strings": "XX4212"
+},
+{
+  "name": "Gbdim7",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Gb7",
+  "fret": 1,
+  "strings": "XX4320"
+},
+{
+  "name": "Gbmaj7",
+  "fret": 1,
+  "strings": "XX4321"
+},
+{
+  "name": "Gbm7",
+  "fret": 1,
+  "strings": 202220
+},
+{
+  "name": "Gbsus4",
+  "fret": 1,
+  "strings": "XX4422"
+},
+{
+  "name": "Gbsus",
+  "fret": 1,
+  "strings": "XX4422"
+},
+{
+  "name": "Gb4",
+  "fret": 1,
+  "strings": "XX4422"
+},
+{
+  "name": "Gb0",
+  "fret": 1,
+  "strings": "XX4212"
+},
+{
+  "name": "Gb⁰",
+  "fret": 1,
+  "strings": "XX4212"
+},
+{
+  "name": "Gbmb5",
+  "fret": 1,
+  "strings": "XX4212"
+},
+{
+  "name": "Gbm7b5",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Gbm7(b5)",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Gbh",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Gbø",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Gb+",
+  "fret": 1,
+  "strings": "XX4332"
+},
+{
+  "name": "Gbmin",
+  "fret": 1,
+  "strings": 244222
+},
+{
+  "name": "Gb(maj7)",
+  "fret": 1,
+  "strings": "XX4321"
+},
+{
+  "name": "Gbm6",
+  "fret": 1,
+  "strings": "XX1222"
+},
+{
+  "name": "Gb9",
+  "fret": 1,
+  "strings": "X12122"
+},
+{
+  "name": "G",
+  "fret": 1,
+  "strings": 320033
+},
+{
+  "name": "Gm",
+  "fret": 3,
+  "strings": 133111
+},
+{
+  "name": "Gaug",
+  "fret": 1,
+  "strings": "XX1004"
+},
+{
+  "name": "Gdim",
+  "fret": 3,
+  "strings": "1231XX"
+},
+{
+  "name": "Gdim7",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "G7",
+  "fret": 1,
+  "strings": 320001
+},
+{
+  "name": "Gmaj7",
+  "fret": 2,
+  "strings": "XX4321"
+},
+{
+  "name": "Gm7",
+  "fret": 3,
+  "strings": 131111
+},
+{
+  "name": "Gsus4",
+  "fret": 1,
+  "strings": "XX0011"
+},
+{
+  "name": "Gsus",
+  "fret": 1,
+  "strings": "XX0011"
+},
+{
+  "name": "G4",
+  "fret": 1,
+  "strings": "XX0011"
+},
+{
+  "name": "G0",
+  "fret": 3,
+  "strings": "1231XX"
+},
+{
+  "name": "G⁰",
+  "fret": 3,
+  "strings": "1231XX"
+},
+{
+  "name": "Gmb5",
+  "fret": 3,
+  "strings": "1231XX"
+},
+{
+  "name": "Gm7b5",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Gm7(b5)",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Gh",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Gø",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "G+",
+  "fret": 1,
+  "strings": "XX1004"
+},
+{
+  "name": "Gmin",
+  "fret": 3,
+  "strings": 133111
+},
+{
+  "name": "G(maj7)",
+  "fret": 2,
+  "strings": "XX4321"
+},
+{
+  "name": "G6",
+  "fret": 1,
+  "strings": "3X0000"
+},
+{
+  "name": "Gm6",
+  "fret": 1,
+  "strings": "XX2333"
+},
+{
+  "name": "G9",
+  "fret": 1,
+  "strings": "3X0201"
+},
+{
+  "name": "Gadd9",
+  "fret": 3,
+  "strings": "13X213"
+},
+{
+  "name": "G(add9)",
+  "fret": 3,
+  "strings": "13X213"
+},
+{
+  "name": "G9(11)",
+  "fret": 3,
+  "strings": 131313
+},
+{
+  "name": "G11",
+  "fret": 1,
+  "strings": "3X0211"
+},
+{
+  "name": "G#",
+  "fret": 4,
+  "strings": 133211
+},
+{
+  "name": "G#m",
+  "fret": 4,
+  "strings": 133111
+},
+{
+  "name": "G#aug",
+  "fret": 1,
+  "strings": "XX2110"
+},
+{
+  "name": "G#dim",
+  "fret": 4,
+  "strings": "1231XX"
+},
+{
+  "name": "G#dim7",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "G#7",
+  "fret": 1,
+  "strings": "XX1112"
+},
+{
+  "name": "G#maj7",
+  "fret": 1,
+  "strings": "XX1113"
+},
+{
+  "name": "G#m7",
+  "fret": 4,
+  "strings": "XX1111"
+},
+{
+  "name": "G#sus4",
+  "fret": 1,
+  "strings": "XX1124"
+},
+{
+  "name": "G#sus",
+  "fret": 1,
+  "strings": "XX1124"
+},
+{
+  "name": "G#4",
+  "fret": 1,
+  "strings": "XX1124"
+},
+{
+  "name": "G#0",
+  "fret": 4,
+  "strings": "1231XX"
+},
+{
+  "name": "G#⁰",
+  "fret": 4,
+  "strings": "1231XX"
+},
+{
+  "name": "G#mb5",
+  "fret": 4,
+  "strings": "1231XX"
+},
+{
+  "name": "G#m7b5",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "G#m7(b5)",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "G#h",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "G#ø",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "G#+",
+  "fret": 1,
+  "strings": "XX2110"
+},
+{
+  "name": "G#min",
+  "fret": 4,
+  "strings": 133111
+},
+{
+  "name": "G#(maj7)",
+  "fret": 1,
+  "strings": "XX1113"
+},
+{
+  "name": "G#m6",
+  "fret": 1,
+  "strings": "XX1101"
+},
+{
+  "name": "Ab",
+  "fret": 4,
+  "strings": 133211
+},
+{
+  "name": "Abm",
+  "fret": 4,
+  "strings": 133111
+},
+{
+  "name": "Abaug",
+  "fret": 1,
+  "strings": "XX2110"
+},
+{
+  "name": "Abdim",
+  "fret": 4,
+  "strings": "1231XX"
+},
+{
+  "name": "Abdim7",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Ab7",
+  "fret": 1,
+  "strings": "XX1112"
+},
+{
+  "name": "Abmaj7",
+  "fret": 1,
+  "strings": "XX1113"
+},
+{
+  "name": "Abm7",
+  "fret": 4,
+  "strings": "XX1111"
+},
+{
+  "name": "Absus4",
+  "fret": 1,
+  "strings": "XX1124"
+},
+{
+  "name": "Absus",
+  "fret": 1,
+  "strings": "XX1124"
+},
+{
+  "name": "Ab4",
+  "fret": 1,
+  "strings": "XX1124"
+},
+{
+  "name": "Ab0",
+  "fret": 4,
+  "strings": "1231XX"
+},
+{
+  "name": "Ab⁰",
+  "fret": 4,
+  "strings": "1231XX"
+},
+{
+  "name": "Abmb5",
+  "fret": 4,
+  "strings": "1231XX"
+},
+{
+  "name": "Abm7b5",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Abm7(b5)",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Abh",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Abø",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Ab+",
+  "fret": 1,
+  "strings": "XX2110"
+},
+{
+  "name": "Abmin",
+  "fret": 4,
+  "strings": 133111
+},
+{
+  "name": "Ab(maj7)",
+  "fret": 1,
+  "strings": "XX1113"
+},
+{
+  "name": "Abm6",
+  "fret": 1,
+  "strings": "XX1101"
+},
+{
+  "name": "Ab11",
+  "fret": 4,
+  "strings": 131311
+},
+{
+  "name": "A",
+  "fret": 1,
+  "strings": "X02220"
+},
+{
+  "name": "Am",
+  "fret": 1,
+  "strings": "X02210"
+},
+{
+  "name": "Aaug",
+  "fret": 1,
+  "strings": "X03221"
+},
+{
+  "name": "Adim",
+  "fret": 1,
+  "strings": "X0121X"
+},
+{
+  "name": "Adim7",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "A7",
+  "fret": 1,
+  "strings": "X02020"
+},
+{
+  "name": "Amaj7",
+  "fret": 1,
+  "strings": "X02120"
+},
+{
+  "name": "Am7",
+  "fret": 1,
+  "strings": "X02213"
+},
+{
+  "name": "Asus4",
+  "fret": 1,
+  "strings": "XX2230"
+},
+{
+  "name": "Asus",
+  "fret": 1,
+  "strings": "XX2230"
+},
+{
+  "name": "A4",
+  "fret": 1,
+  "strings": "XX2230"
+},
+{
+  "name": "A0",
+  "fret": 1,
+  "strings": "X0121X"
+},
+{
+  "name": "A⁰",
+  "fret": 1,
+  "strings": "X0121X"
+},
+{
+  "name": "Amb5",
+  "fret": 1,
+  "strings": "X0121X"
+},
+{
+  "name": "Am7b5",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Am7(b5)",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Ah",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "Aø",
+  "fret": 1,
+  "strings": "XX1212"
+},
+{
+  "name": "A+",
+  "fret": 1,
+  "strings": "X03221"
+},
+{
+  "name": "Amin",
+  "fret": 1,
+  "strings": "X02210"
+},
+{
+  "name": "A(maj7)",
+  "fret": 1,
+  "strings": "X02120"
+},
+{
+  "name": "A6",
+  "fret": 1,
+  "strings": "XX2222"
+},
+{
+  "name": "Am6",
+  "fret": 1,
+  "strings": "X02212"
+},
+{
+  "name": "A9",
+  "fret": 1,
+  "strings": "X02100"
+},
+{
+  "name": "Am9",
+  "fret": 5,
+  "strings": "X01113"
+},
+{
+  "name": "A11",
+  "fret": 1,
+  "strings": "X42433"
+},
+{
+  "name": "Asus2",
+  "fret": 1,
+  "strings": "002200"
+},
+{
+  "name": "A#",
+  "fret": 1,
+  "strings": "X13331"
+},
+{
+  "name": "A#m",
+  "fret": 1,
+  "strings": "X13321"
+},
+{
+  "name": "A#aug",
+  "fret": 1,
+  "strings": "XX0332"
+},
+{
+  "name": "A#dim",
+  "fret": 1,
+  "strings": "X12320"
+},
+{
+  "name": "A#dim7",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "A#7",
+  "fret": 3,
+  "strings": "XX1112"
+},
+{
+  "name": "A#maj7",
+  "fret": 1,
+  "strings": "X1323X"
+},
+{
+  "name": "A#m7",
+  "fret": 1,
+  "strings": "X13121"
+},
+{
+  "name": "A#sus4",
+  "fret": 1,
+  "strings": "XX3341"
+},
+{
+  "name": "A#sus",
+  "fret": 1,
+  "strings": "XX3341"
+},
+{
+  "name": "A#4",
+  "fret": 1,
+  "strings": "XX3341"
+},
+{
+  "name": "A#0",
+  "fret": 1,
+  "strings": "X12320"
+},
+{
+  "name": "A#⁰",
+  "fret": 1,
+  "strings": "X12320"
+},
+{
+  "name": "A#mb5",
+  "fret": 1,
+  "strings": "X12320"
+},
+{
+  "name": "A#m7b5",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "A#m7(b5)",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "A#h",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "A#ø",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "A#+",
+  "fret": 1,
+  "strings": "XX0332"
+},
+{
+  "name": "A#min",
+  "fret": 1,
+  "strings": "X13321"
+},
+{
+  "name": "A#(maj7)",
+  "fret": 1,
+  "strings": "X1323X"
+},
+{
+  "name": "Bb",
+  "fret": 1,
+  "strings": "X13331"
+},
+{
+  "name": "Bbm",
+  "fret": 1,
+  "strings": "X13321"
+},
+{
+  "name": "Bbaug",
+  "fret": 1,
+  "strings": "XX0332"
+},
+{
+  "name": "Bbdim",
+  "fret": 1,
+  "strings": "X12320"
+},
+{
+  "name": "Bbdim7",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Bb7",
+  "fret": 3,
+  "strings": "XX1112"
+},
+{
+  "name": "Bbmaj7",
+  "fret": 1,
+  "strings": "X1323X"
+},
+{
+  "name": "Bbm7",
+  "fret": 1,
+  "strings": "X13121"
+},
+{
+  "name": "Bbsus4",
+  "fret": 1,
+  "strings": "XX3341"
+},
+{
+  "name": "Bbsus",
+  "fret": 1,
+  "strings": "XX3341"
+},
+{
+  "name": "Bb4",
+  "fret": 1,
+  "strings": "XX3341"
+},
+{
+  "name": "Bb0",
+  "fret": 1,
+  "strings": "X12320"
+},
+{
+  "name": "Bb⁰",
+  "fret": 1,
+  "strings": "X12320"
+},
+{
+  "name": "Bbmb5",
+  "fret": 1,
+  "strings": "X12320"
+},
+{
+  "name": "Bbm7b5",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Bbm7(b5)",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Bbh",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Bbø",
+  "fret": 1,
+  "strings": "XX2323"
+},
+{
+  "name": "Bb+",
+  "fret": 1,
+  "strings": "XX0332"
+},
+{
+  "name": "Bbmin",
+  "fret": 1,
+  "strings": "X13321"
+},
+{
+  "name": "Bb(maj7)",
+  "fret": 1,
+  "strings": "X1323X"
+},
+{
+  "name": "Bb6",
+  "fret": 1,
+  "strings": "XX3333"
+},
+{
+  "name": "Bb9",
+  "fret": 6,
+  "strings": 131213
+},
+{
+  "name": "Bbm9",
+  "fret": 6,
+  "strings": "XXX113"
+},
+{
+  "name": "Bb11",
+  "fret": 6,
+  "strings": 131341
+},
+{
+  "name": "B",
+  "fret": 1,
+  "strings": "X24442"
+},
+{
+  "name": "Bm",
+  "fret": 1,
+  "strings": "X24432"
+},
+{
+  "name": "Baug",
+  "fret": 1,
+  "strings": "XX1004"
+},
+{
+  "name": "Bdim",
+  "fret": 1,
+  "strings": "X2343X"
+},
+{
+  "name": "Bdim7",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "B7",
+  "fret": 1,
+  "strings": "X21202"
+},
+{
+  "name": "Bmaj7",
+  "fret": 1,
+  "strings": "X2434X"
+},
+{
+  "name": "Bm7",
+  "fret": 2,
+  "strings": "X13121"
+},
+{
+  "name": "Bsus4",
+  "fret": 2,
+  "strings": "XX3341"
+},
+{
+  "name": "Bsus",
+  "fret": 2,
+  "strings": "XX3341"
+},
+{
+  "name": "B4",
+  "fret": 2,
+  "strings": "XX3341"
+},
+{
+  "name": "B0",
+  "fret": 1,
+  "strings": "X2343X"
+},
+{
+  "name": "B⁰",
+  "fret": 1,
+  "strings": "X2343X"
+},
+{
+  "name": "Bmb5",
+  "fret": 1,
+  "strings": "X2343X"
+},
+{
+  "name": "Bm7b5",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Bm7(b5)",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Bh",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "Bø",
+  "fret": 1,
+  "strings": "XX0101"
+},
+{
+  "name": "B+",
+  "fret": 1,
+  "strings": "XX1004"
+},
+{
+  "name": "Bmin",
+  "fret": 1,
+  "strings": "X24432"
+},
+{
+  "name": "B(maj7)",
+  "fret": 1,
+  "strings": "X2434X"
+},
+{
+  "name": "Bm6",
+  "fret": 1,
+  "strings": "XX4434"
+},
+{
+  "name": "B9",
+  "fret": 7,
+  "strings": 131213
+},
+{
+  "name": "B11",
+  "fret": 7,
+  "strings": 133200
+},
+{
+  "name": "Bsus2",
+  "fret": 1,
+  "strings": "X24422"
+},
+{
+  "name": "NC",
+  "fret": 1,
+  "strings": "XXXXXX"
+},
+{
+  "name": "N.C.",
+  "fret": 1,
+  "strings": "XXXXXX"
+}
+]
