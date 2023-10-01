@@ -9,3 +9,7 @@
 ; minus keyword_parameters.
 (parameter_list (identifier) (typed_parameter) (optional_parameter) @parameter.inner)
 (keyword_parameters (_) @parameter.inner)
+; capture e.g. 1 in [1, 2, 3]
+(vector_expression (_) @parameter.inner)
+; capture e.g. 1 in [1; 2; 3] or [1 2 3]
+(matrix_row (_) @parameter.inner)
