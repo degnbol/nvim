@@ -1,3 +1,5 @@
+;extends
+
 ; reclassify word "in" to the syntax group @repeat
 "in" @repeat
 

@@ -1,3 +1,4 @@
+;extends
 ; capture different levels of headings
 (atx_heading
   (atx_h1_marker)

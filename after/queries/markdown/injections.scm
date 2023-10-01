@@ -1,3 +1,4 @@
+;extends
 ; I want to use bash by default in code blocks in markdown but use the 
 ; "info_string" if given to set the language.
 ; So, check fenced_code_block not having an "info_string" subnode.
