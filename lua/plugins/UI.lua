@@ -8,18 +8,23 @@ return {
     {
         dir = "$XDG_CONFIG_HOME/nvim/kittyREPL.nvim", dev=true, opts={
             keymap={
+                focus="<C-CR>",
+                setlast="<leader>rr",
+                new="<leader>rs",
                 run="<CR>",
                 paste="<S-CR>",
+                help="<leader>K",
                 runLine="<CR><CR>",
                 pasteLine="<S-CR><S-CR>",
                 runVisual="<CR>",
                 pasteVisual="<S-CR>",
-                focus="<C-CR>",
-                setlast="<leader>tt",
-                win="<leader>tT",
+                q="<leader>rq",
+                ctrld="<leader>rd",
+                ctrlc="<leader>rc",
+                interrupt="<leader>rk",
             },
             exclude = {tex=true, text=true, tsv=true, markdown=true},
-        }
+        },
     },
     -- ultra fold
     {'kevinhwang91/nvim-ufo', dependencies={'kevinhwang91/promise-async'}, config=function()
@@ -39,7 +44,9 @@ return {
         require('ufo').setup()
     end},
     -- file explorer as a buffer
-    {"stevearc/oil.nvim", config=function ()
+    {"stevearc/oil.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config=function ()
         local oil = require "oil"
         oil.setup {
             -- no prompt on rename, including folder change.
