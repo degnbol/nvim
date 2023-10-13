@@ -11,6 +11,10 @@ return {
     end},
     {"lervag/vimtex", config=function() 
 
+        -- instead of <localleader>l
+        -- We want <localleader>l for LSP and double leader for filetype specific mappings.
+        g.vimtex_mappings_prefix = "<localleader><localleader>"
+
         g.vimtex_view_method = 'skim'
         -- inspiration from https://dr563105.github.io/blog/skim-vimtex-setup/
         -- forward search after every successful compilation
@@ -60,37 +64,37 @@ return {
 
         vim.defer_fn(function ()
             require "utils/keymap"
-            set_keymap_desc('n', '<leader>la', "Context menu")
+            set_keymap_desc('n', '<leader><leader>a', "Context menu")
             -- align table see ftplugin/tex.lua. ma ... `a to not move cursor.
-            vim.keymap.set('n', '<leader>lA', "ma<plug>AlignTable<CR>`a", { desc="Align table" })
-            vim.keymap.set("n", "<leader>lb", "<Cmd>Telescope bibtex<CR>", { desc="Cite" })
-            set_keymap_desc('n', '<leader>lc', "Clean")
-            set_keymap_desc('n', '<leader>lC', "Clean all")
-            set_keymap_desc('n', '<leader>le', "Errors")
-            set_keymap_desc('n', '<leader>lg', "Status")
-            set_keymap_desc('n', '<leader>lG', "Status all")
-            set_keymap_desc('n', '<leader>li', "Info")
-            set_keymap_desc('n', '<leader>lI', "Info full")
-            set_keymap_desc('n', '<leader>lq', "Log")
+            vim.keymap.set('n', '<leader><leader>A', "ma<plug>AlignTable<CR>`a", { desc="Align table" })
+            vim.keymap.set("n", "<leader><leader>b", "<Cmd>Telescope bibtex<CR>", { desc="Cite" })
+            set_keymap_desc('n', '<leader><leader>c', "Clean")
+            set_keymap_desc('n', '<leader><leader>C', "Clean all")
+            set_keymap_desc('n', '<leader><leader>e', "Errors")
+            set_keymap_desc('n', '<leader><leader>g', "Status")
+            set_keymap_desc('n', '<leader><leader>G', "Status all")
+            set_keymap_desc('n', '<leader><leader>i', "Info")
+            set_keymap_desc('n', '<leader><leader>I', "Info full")
+            set_keymap_desc('n', '<leader><leader>q', "Log")
             -- j for jump. Not using p for preamble since I want to use it for pasting tables.
-            vim.keymap.set("n", "<leader>lj", "<Plug>TexJumpPre", { desc="goto/from preamble (table)" })
-            set_keymap_desc('n', '<leader>ls', "Toggle main")
-            set_keymap_desc('n', '<leader>lt', "TOC open")
-            set_keymap_desc('n', '<leader>lT', "TOC toggle")
-            vim.keymap.set({"n", "x"}, "<leader>lu", "<Plug>Latex2Unicode", { desc="TeX -> unicode" })
-            vim.keymap.set({"n", "x"}, "<leader>lU", "<Plug>Unicode2Latex", { desc="Unicode -> TeX" })
-            set_keymap_desc('n', '<leader>lv', "View")
-            set_keymap_desc('n', '<leader>lx', "Reload")
-            set_keymap_desc('n', '<leader>lX', "Reload state")
-            vim.keymap.set("n", "<leader>ly", "<plug>YankTable", { desc="Yank as TSV" })
-            set_keymap_desc('n', '<leader>lk', "Stop")
-            set_keymap_desc('n', '<leader>lK', "Stop all")
-            set_keymap_desc('n', '<leader>ll', "Compile")
-            set_keymap_desc('n', '<leader>lL', "Compile selected")
+            vim.keymap.set("n", "<leader><leader>j", "<Plug>TexJumpPre", { desc="goto/from preamble (table)" })
+            set_keymap_desc('n', '<leader><leader>s', "Toggle main")
+            set_keymap_desc('n', '<leader><leader>t', "TOC open")
+            set_keymap_desc('n', '<leader><leader>T', "TOC toggle")
+            vim.keymap.set({"n", "x"}, "<leader><leader>u", "<Plug>Latex2Unicode", { desc="TeX -> unicode" })
+            vim.keymap.set({"n", "x"}, "<leader><leader>U", "<Plug>Unicode2Latex", { desc="Unicode -> TeX" })
+            vim.keymap.set('n', '<leader>cv', '<Plug>(vimtex-view)', {desc="View"})
+            set_keymap_desc('n', '<leader><leader>x', "Reload")
+            set_keymap_desc('n', '<leader><leader>X', "Reload state")
+            vim.keymap.set("n", "<leader><leader>y", "<plug>YankTable", { desc="Yank as TSV" })
+            vim.keymap.set('n', '<leader>ck', '<Plug>(vimtex-stop)', {desc="Stop"})
+            vim.keymap.set('n', '<leader>cK', '<Plug>(vimtex-stop-all)', {desc="Stop all"})
+            vim.keymap.set('n', '<leader>cc', '<Plug>(vimtex-compile)', {desc="Compile"})
+            vim.keymap.set('x', '<leader>cc', '<Plug>(vimtex-compile-selected)', {desc="Compile selected"})
             -- TODO: maybe take inspo from these insert mode mappings and make 
             -- snippet equivalents then disable them? Or use them if they are useful.
-            set_keymap_desc('n', '<leader>lm', "imaps list")
-            set_keymap_desc('n', '<leader>lo', "Raw compl output")
+            set_keymap_desc('n', '<leader><leader>m', "imaps list")
+            vim.keymap.set('n', '<leader>cl', '<Plug>(vimtex-compile-output)', {desc="Output"})
 
             -- e.g. \section*{}
             set_keymap_desc('n', 'tsc', "Cmd/Star")
