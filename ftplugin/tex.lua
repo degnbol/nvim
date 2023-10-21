@@ -1,10 +1,8 @@
 #!/usr/bin/env lua
-local rtp = vim.opt.runtimepath:get()[1]
-local rtp = rtp .. "/tex/"
-dofile(rtp .. "overleaf.lua")
-dofile(rtp .. "tables.lua")
-dofile(rtp .. "cmds.lua")
-dofile(rtp .. "textcolor.lua")
+require "tex.overleaf"
+require "tex.tables"
+require "tex.cmds"
+require "tex.textcolor"
 
 -- also defined in lua/plugins/mini.lua as shift+` but we can just use ` since 
 -- I don't think it has use in latex, maybe except in some verbatim code block or something?
