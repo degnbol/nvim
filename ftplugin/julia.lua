@@ -1,6 +1,5 @@
 -- remove o, we want to continue comments while editing them only (r).
--- no t and having c+a means only comments are autoformatted.
-vim.opt.formatoptions = "jwcrqla"
+vim.opt.formatoptions = "jwcrql"
 
 -- see ../after/syntax/julia.vim
 vim.opt.conceallevel = 1
