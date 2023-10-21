@@ -56,7 +56,7 @@ s({trig=".in", dscr="Each in"}, {t".∈ Ref(", i(1), t")"}),
 
 s({trig="use", dscr="Using.", condition=conds.line_begin}, {t"using "}),
 
-s({trig="fun", dscr="Function.", condition=conds.line_begin * conds.line_end},
+s({trig="func", dscr="Function.", condition=conds.line_begin * conds.line_end},
 fmta([[function <>(<>)<>
 end]], {i(1, "NAME"), i(2), i(3)})),
 
