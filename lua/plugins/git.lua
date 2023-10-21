@@ -89,12 +89,14 @@ return {
                     ["g<C-x>"]     = actions.cycle_layout,              -- Cycle through available layouts.
                     ["[x"]         = actions.prev_conflict,             -- In the merge_tool: jump to the previous conflict
                     ["]x"]         = actions.next_conflict,             -- In the merge_tool: jump to the next conflict
-                    ["<leader>co"] = actions.conflict_choose("ours"),   -- Choose the OURS version of a conflict
-                    ["<leader>ct"] = actions.conflict_choose("theirs"), -- Choose the THEIRS version of a conflict
-                    ["<leader>cb"] = actions.conflict_choose("base"),   -- Choose the BASE version of a conflict
-                    ["<leader>ca"] = actions.conflict_choose("all"),    -- Choose all the versions of a conflict
+                    ["<leader><leader>o"] = actions.conflict_choose("ours"),   -- Choose the OURS version of a conflict
+                    ["<leader><leader>t"] = actions.conflict_choose("theirs"), -- Choose the THEIRS version of a conflict
+                    ["<leader><leader>b"] = actions.conflict_choose("base"),   -- Choose the BASE version of a conflict
+                    ["<leader><leader>a"] = actions.conflict_choose("all"),    -- Choose all the versions of a conflict
                     ["dx"]         = actions.conflict_choose("none"),   -- Delete the conflict region
+                    ["<leader><leader>d"] = actions.conflict_choose("none"),   -- Use dx instead
                     ["<leader>gq"] = actions.close,                     -- Use :tabclose instead
+                    ["<leader><leader>q"] = actions.close,              -- Use :tabclose instead
                 },
                 diff1 = { --[[ Mappings in single window diff layouts ]] },
                 diff2 = { --[[ Mappings in 2-way diff layouts ]] },
