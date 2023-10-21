@@ -119,11 +119,11 @@ return {
         vim.api.nvim_set_var("whitespaste_before_mapping", 'gP')
         vim.api.nvim_set_var("whitespaste_after_mapping",  'gp')
 
-        vim.defer_fn(function ()
+        vim.schedule(function ()
             require "utils/keymap"
             set_keymap_desc('n', 'gP', "Put before + trim empty")
             set_keymap_desc('n', 'gp', "Put after + trim empty")
-        end, 0)
+        end)
     end,},
 }
 

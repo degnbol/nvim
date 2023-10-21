@@ -90,7 +90,7 @@ fmta([[vim.keymap.set({'n', 'x'}, '<>', "<<Cmd>><><<CR>>", { desc="<>" })]],
 {i(1, "<leader>"), i(2), i(3)}),
 {condition=conds.line_begin}),
 
-s({trig="root", dscr="Get neovim config root", condition=conds.line_begin, snippetType='autosnippet'},
+s({trig="rtp", dscr="Get neovim config root", condition=conds.line_begin, snippetType='autosnippet'},
 {t"local rtp = vim.opt.runtimepath:get()[1]"}),
 
 -- api
@@ -190,6 +190,9 @@ s({
     condition=conds.line_begin,
 },
 {t'vim.fn.jobstart("', i(1, "ls"), t'")'}),
+
+s({trig="cword", dscr="current word under cursor"},
+{t'vim.fn.expand("<cword>")'}),
 
 s({trig="defer", dscr="Defer call", condition=conds.line_begin},
 fmta([[vim.defer_fn(function ()
