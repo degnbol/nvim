@@ -9,6 +9,7 @@ return {
         config=function()
             require"nvim-treesitter.configs".setup {
                 ensure_installed = {
+                    "awk",
                     "bash",
                     "c_sharp",
                     "lua",
@@ -21,9 +22,8 @@ return {
                     -- "kotlin",
                     "help", -- vim help files https://github.com/neovim/tree-sitter-vimdoc
                     "r",
-                    -- some error
-                    -- "markdown", -- for block code
-                    -- "markdown_inline", -- for inline code
+                    "markdown", -- for block code
+                    "markdown_inline", -- for inline code
                     "toml",
                     "vim",
                     "regex",
@@ -87,7 +87,6 @@ return {
             -- https://github.com/Beaglefoot/tree-sitter-awk
             -- then make bash/injections.scm that takes command awk raw_string and captures the raw_string with @awk
             -- maybe mlr but would probs have to write it or something
-
 
         end
     },
