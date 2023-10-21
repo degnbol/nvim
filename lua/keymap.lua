@@ -70,3 +70,4 @@ vim.keymap.set('n', '<Ins>', 'i<C-6>', { silent=true, desc="Insert + Toggle dans
 -- gi  = go to last insert location and enter insert mode. Works even with the change to the line.
 vim.keymap.set('i', '<C-S-A>', "<Esc><sagww0gi", { remap=true, desc="Enable autoformat and apply it." })
 
+vim.keymap.set('n', '<leader>bd', ":bd<CR>", { desc="Delete" })
