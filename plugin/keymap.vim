@@ -175,5 +175,13 @@ set wildcharm=<Tab>
 " use U instead of <C-r> for redo.
 " TODO move line undo to Vu 
 nnoremap U <C-r>
+" Move the builtin - to _ since - is used by oil.nvim.
+" -+ are different from jk since they go at start of line
+nnoremap _ -
+
+" for when you are at "...|" and want to exit the quotes and your fingers 
+" naturally find the quote key
+inoremap <C-'> <right>
+inoremap <C-0> <right>
 
 
