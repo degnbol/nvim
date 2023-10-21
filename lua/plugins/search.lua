@@ -1,4 +1,30 @@
 #!/usr/bin/env lua
+
+-- Auto disable hlsearch after use. The following works but is overkill to check every key press, just add :noh to nmap esc.
+-- vim.on_key(function(char)
+--   if vim.fn.mode() == "n" then
+--     if vim.tbl_contains({ "<Esc>", "<Left>", "<Right>", "<Up>", "<Down>" }, vim.fn.keytrans(char)) then
+--         vim.cmd.nohlsearch()
+--     end
+--   end
+-- end, vim.api.nvim_create_namespace "auto_hlsearch")
+vim.keymap.set('n', '<Esc>', ":noh<CR><Esc>", { silent=true, remap=false, desc="hello" })
+-- disable when entering visual
+local grp = vim.api.nvim_create_augroup("auto_hlsearch", {clear=true})
+vim.api.nvim_create_autocmd("ModeChanged", {
+    -- Mode changed is indicated as <before>:<after> with the codes:
+    -- i=insert, c=cmdline, n=normal, v=visual, V=line visual, \x16=block visual (guessing it means <C-V>), no=normal operator pending.
+    -- we need to avoid responding to changes between normal and cmdline mode since that change is triggered frequently by plugins etc.
+    -- these patterns should capture the same:
+    -- pattern = "*:*[oivV\x16]*",
+    pattern = "*:*[^nc]",
+    group = grp,
+    callback = function ()
+        vim.schedule(vim.cmd.nohlsearch)
+    end
+})
+
+
 return {
     -- let's search result box show number of matches when there's >99 matches
     {
@@ -22,101 +48,27 @@ return {
     }},
     -- show counter for how many n or N's a search result is away from cursor
     -- also lots of other search highlight customizations possible
-    -- currently only used for highlighting next/main search result
-    {"kevinhwang91/nvim-hlslens", event = "VeryLazy", config=function()
-
-        local api = vim.api
-
-        local config = require('hlslens.config')
-        local render = require('hlslens.render')
-        local extmark = require('hlslens.render.extmark')
-
-        local bufs = {}
-        local ns = api.nvim_create_namespace('hlslens')
-
-        -- switch if you like or don't like the virtual text when searching
-        if true then
-            config.override_lens = function(render, posList, nearest, idx, relIdx) end
-        else
-            config.override_lens = function(render, posList, nearest, idx, relIdx)
-                local sfw = vim.v.searchforward == 1
-                local indicator, text, chunks
-                local absRelIdx = math.abs(relIdx)
-                if absRelIdx > 1 then
-                    indicator = ('%d%s'):format(absRelIdx, sfw ~= (relIdx > 1) and '▲' or '▼')
-                elseif absRelIdx == 1 then
-                    indicator = sfw ~= (relIdx == 1) and '▲' or '▼'
-                else
-                    indicator = ''
-                end
-
-                local lnum, col = unpack(posList[idx])
-                if nearest and indicator == '' then
-                    text = ''
-                else
-                    text = indicator
-                end
-
-                bufnr = api.nvim_get_current_buf()
-                render.setVirt(bufnr, lnum, col, text, nearest)
-            end
-
-            render.setVirt = function(bufnr, lnum, col, text, nearest)
-                if nearest then
-                    hlgroup = 'HlSearchLensNear'
-                else
-                    hlgroup = 'HlSearchLens'
-                end
-
-                bufs[bufnr] = true
-                api.nvim_buf_set_extmark(bufnr, ns, lnum-1, col-1, {
-                    id = nil,
-                    virt_text = {{text, hlgroup}},
-                    virt_text_pos = 'overlay',
-                    priority = 100,
-                })
-            end
-
-            -- just copy-pasted to access bufs
-            extmark.clearBuf = function(bufnr)
-                if not bufnr then
-                    return
-                end
-                bufnr = bufnr == 0 and api.nvim_get_current_buf() or bufnr
-                if bufs[bufnr] then
-                    if api.nvim_buf_is_valid(bufnr) then
-                        api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-                        -- seemly a bug for nvim_create_namespace, can't clear extmarks totally
-                        for _, extm in pairs(api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})) do
-                            api.nvim_buf_del_extmark(bufnr, ns, extm[1])
-                        end
-                    end
-                    bufs[bufnr] = nil
-                end
-            end
-
-            extmark.clearAllBuf = function()
-                for bufnr in pairs(bufs) do
-                    extmark.clearBuf(bufnr)
-                end
-                bufs = {}
-            end
-
-        end
-
-        require'hlslens'.setup()
-
-        vim.keymap.set("n", "<leader>tl", "<Cmd>HlSearchLensToggle<CR>", { desc="HlSearchLens", silent=true })
-
-        -- integrate with haya14busa/vim-asterisk
-        vim.api.nvim_set_keymap('n', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
-        vim.api.nvim_set_keymap('n', '#', [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
-        vim.api.nvim_set_keymap('n', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-        vim.api.nvim_set_keymap('n', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-        vim.api.nvim_set_keymap('x', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
-        vim.api.nvim_set_keymap('x', '#', [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
-        vim.api.nvim_set_keymap('x', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-        vim.api.nvim_set_keymap('x', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-
-    end},
+    {
+        "kevinhwang91/nvim-hlslens",
+        cmd = {"HlSearchLensEnable", "HlSearchLensToggle"},
+        init = function ()
+            vim.keymap.set("n", "<leader>tl", function () require'hlslens'.toggle() end, { desc="HlSearchLens", silent=true })
+            -- integrate with haya14busa/vim-asterisk
+            vim.api.nvim_set_keymap('n', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
+            vim.api.nvim_set_keymap('n', '#', [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
+            vim.api.nvim_set_keymap('n', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
+            vim.api.nvim_set_keymap('n', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
+            vim.api.nvim_set_keymap('x', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
+            vim.api.nvim_set_keymap('x', '#', [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
+            vim.api.nvim_set_keymap('x', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
+            vim.api.nvim_set_keymap('x', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
+        end,
+        opts = {
+            auto_enable = false,
+            -- :nohlsearch when moving out of search term.
+            -- cons: disables when scrolling far since cursor moves. Doesn't disable right away on insert, only after a change.
+            -- better solution made manually in ModeChanged and specific keypresses, such as Esc.
+            -- calm_down = true,
+        },
+    },
 }
