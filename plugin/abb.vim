@@ -25,6 +25,7 @@ Abolish tihnk think
 Abolish shoudl should
 Abolish udnerstand understand
 Abolish palce place
+Abolish ot to
 " spelling mistakes
 Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or} {despe,sepa}rat{}
 Abolish flourescent{,ly} fluorescent{}
@@ -72,7 +73,7 @@ function s:ToggleDanskAbbrev() abort
         " set yet so will give an error message
         silent! iunabbrev feks
         iabbrev eg e.g.
-        iabbrev Eg e.g.
+        iabbrev Eg E.g.
         iabbrev ti it
         if &ft == "asciidoc"
             " for regular text where we wouldn't be talking about a variable i 
@@ -87,6 +88,3 @@ augroup ToggleDanskAbbrev
   autocmd FileType * :call s:ToggleDanskAbbrev()
 augroup END
 
-" project specific
-iabbrev hic Hi-C
-iabbrev HiC Hi-C
