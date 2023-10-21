@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 -- https://github.com/DaikyXendo/nvim-material-icon
-return {
+return {{
     "DaikyXendo/nvim-material-icon",
     opts = {
         -- your personnal icons can go here (to override)
@@ -32,11 +32,23 @@ return {
                 name = "Matrix"
             },
             -- for some reason Markdown and md are different by default, copied here is making md the same as Markdown.
-            ["md"] = {
+            md = {
                 icon = "",
                 color = "#519aba",
                 cterm_color = "67",
                 name = "Markdown",
+            },
+            adoc = {
+                icon = "",
+                color = "#519aba",
+                cterm_color = "67",
+                name = "Asciidoc",
+            },
+            crd = {
+                icon = "󰝱",
+                color = "#519aba",
+                cterm_color = "67",
+                name = "Chordpro",
             },
         };
         -- globally enable different highlight colors per icon (default to true)
@@ -46,4 +58,7 @@ return {
         -- will get overriden by `get_icons` option
         -- default = true;
     }
-}
+},
+{"nvim-tree/nvim-web-devicons", opts = {
+    override = require'nvim-material-icon'.get_icons()
+},}}
