@@ -25,8 +25,7 @@ vim.keymap.set("n", "di ", "ciw <Esc>", { desc="Delete excess whitespace" })
 
 -- like =p but for substitution
 vim.keymap.set("n", '=ss', 'ss=`]', {remap=true, silent=true, desc="Substitute+reindent"})
-vim.keymap.set("n", '<leader>h', ':noh<CR>', {silent=true, desc="Clear highlights"})
-vim.keymap.set("n", "<leader>rs", "<cmd>source $XDG_CONFIG_HOME/nvim/after/plugin/luasnip.lua<CR>", {desc="Reload snippets"})
+vim.keymap.set("n", "<leader>Sr", "<cmd>source $XDG_CONFIG_HOME/nvim/after/plugin/luasnip.lua<CR>", {desc="Reload snippets"})
 
 -- <leader>b can be for buffer related things, (bufdel, but :bd is already 
 -- fast) or bibliography things e.g. with papis but this is not added yet and 
@@ -65,6 +64,9 @@ vim.keymap.set('i', '<C-6>',
 )
 -- Ins key was a bit useless just doing what i does so let's make it a language switch insertion:
 vim.keymap.set('n', '<Ins>', 'i<C-6>', { silent=true, desc="Insert + Toggle dansk" })
-
-
+-- <sa = my keybind for enable setting autoformat
+-- gww = autoformat line
+-- 0   = goto column 0, so we scroll all the way back to the right
+-- gi  = go to last insert location and enter insert mode. Works even with the change to the line.
+vim.keymap.set('i', '<C-S-A>', "<Esc><sagww0gi", { remap=true, desc="Enable autoformat and apply it." })
 
