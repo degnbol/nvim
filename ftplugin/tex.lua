@@ -20,3 +20,78 @@ vim.fn["textobj#user#plugin"]("tex", {
     },
 })
 
+-- keymaps assume vimtex is used.
+require "utils/keymap"
+set_keymap_desc('n', '<leader><leader>a', "Context menu")
+-- align table see ftplugin/tex.lua. ma ... `a to not move cursor.
+vim.keymap.set('n', '<leader><leader>A', "ma<plug>AlignTable<CR>`a", { buffer=true, desc="Align table" })
+vim.keymap.set("n", "<leader><leader>b", "<Cmd>Telescope bibtex<CR>", { buffer=true, desc="Cite" })
+set_keymap_desc('n', '<leader><leader>c', "Clean")
+set_keymap_desc('n', '<leader><leader>C', "Clean all")
+set_keymap_desc('n', '<leader><leader>e', "Errors")
+set_keymap_desc('n', '<leader><leader>g', "Status")
+set_keymap_desc('n', '<leader><leader>G', "Status all")
+set_keymap_desc('n', '<leader><leader>i', "Info")
+set_keymap_desc('n', '<leader><leader>I', "Info full")
+set_keymap_desc('n', '<leader><leader>q', "Log")
+-- j for jump. Not using p for preamble since I want to use it for pasting tables.
+vim.keymap.set("n", "<leader><leader>j", "<Plug>TexJumpPre", { buffer=true, desc="goto/from preamble (table)" })
+set_keymap_desc('n', '<leader><leader>s', "Toggle main")
+set_keymap_desc('n', '<leader><leader>t', "TOC open")
+set_keymap_desc('n', '<leader><leader>T', "TOC toggle")
+vim.keymap.set({"n", "x"}, "<leader><leader>u", "<Plug>Latex2Unicode", { buffer=true, desc="TeX -> unicode" })
+vim.keymap.set({"n", "x"}, "<leader><leader>U", "<Plug>Unicode2Latex", { buffer=true, desc="Unicode -> TeX" })
+vim.keymap.set('n', '<leader>cv', '<Plug>(vimtex-view)', {buffer=true, desc="View"})
+set_keymap_desc('n', '<leader><leader>x', "Reload")
+set_keymap_desc('n', '<leader><leader>X', "Reload state")
+vim.keymap.set("n", "<leader><leader>y", "<plug>YankTable", { buffer=true, desc="Yank as TSV" })
+vim.keymap.set('n', '<leader>ck', '<Plug>(vimtex-stop)', {buffer=true, desc="Stop"})
+vim.keymap.set('n', '<leader>cK', '<Plug>(vimtex-stop-all)', {buffer=true, desc="Stop all"})
+vim.keymap.set('n', '<leader>cc', '<Plug>(vimtex-compile)', {buffer=true, desc="Compile"})
+vim.keymap.set('x', '<leader>cc', '<Plug>(vimtex-compile-selected)', {buffer=true, desc="Compile selected"})
+-- TODO: maybe take inspo from these insert mode mappings and make 
+-- snippet equivalents then disable them? Or use them if they are useful.
+set_keymap_desc('n', '<leader><leader>m', "imaps list")
+vim.keymap.set('n', '<leader>cl', '<Plug>(vimtex-compile-output)', {buffer=true, desc="Output"})
+
+-- e.g. \section*{}
+set_keymap_desc('n', 'tsc', "Cmd/Star")
+set_keymap_desc('n', 'tse', "Env/Star")
+-- e.g. with(out) \left 
+set_keymap_desc('n', 'tsd', "Delim")
+-- same as d, but looks through g:vimtex_delim_toggle_mod_list in reverse
+set_keymap_desc('n', 'tsD', "Delim rev")
+-- toggle / <-> \frac
+set_keymap_desc('n', 'tsf', "Fraction")
+-- change surrounding ...
+set_keymap_desc('n', 'csc', "Cmd")
+set_keymap_desc('n', 'cse', "Env")
+set_keymap_desc('n', 'csm', "Math")
+-- in/around ...
+set_keymap_desc({'o', 'x'}, 'id', "Delim")
+set_keymap_desc({'o', 'x'}, 'iP', "Section")
+vim.keymap.set("n", "ts$", "<Plug>(vimtex-env-toggle-math)", { buffer=true, desc="Inline <-> display" })
+vim.keymap.set("n", "ts4", "<Plug>(vimtex-env-toggle-math)", { buffer=true, desc="Inline <-> display" })
+vim.keymap.set("n", "tsm", "<plug>(vimtex-env-toggle-math)", { buffer=true, desc="Inline <-> display"})
+vim.keymap.set("n", "dsm", "<plug>(vimtex-env-delete-math)", { buffer=true, desc="Delete math"})
+vim.keymap.set("n", "csm", "<plug>(vimtex-env-change-math)", { buffer=true, desc="Change math"})
+vim.keymap.set("n", "xad", "yaddad", {remap=true, buffer=true, desc="Cut a delim"})
+vim.keymap.set("n", "xid", "yiddid", {remap=true, buffer=true, desc="Cut in delim"})
+-- item with i instead of m and math with m
+vim.keymap.set({"o", "x"}, "ai", "<Plug>(vimtex-am)", {buffer=true, desc="An item"})
+vim.keymap.set({"o", "x"}, "ii", "<Plug>(vimtex-im)", {buffer=true, desc="In item"})
+vim.keymap.set({"o", "x"}, "am", "<Plug>(vimtex-a$)", {buffer=true, desc="An eq"})
+vim.keymap.set({"o", "x"}, "im", "<Plug>(vimtex-i$)", {buffer=true, desc="In eq"})
+-- shorthand to $ just using 4 ($ without shift)
+vim.keymap.set({"o", "x"}, "a4", "<Plug>(vimtex-a$)", {buffer=true, desc="An eq"})
+vim.keymap.set({"o", "x"}, "i4", "<Plug>(vimtex-i$)", {buffer=true, desc="In eq"})
+-- next/prev start/end of ...
+vim.keymap.set("n", "[m", "<Plug>(vimtex-[n)", { buffer=true, desc="Math start" })
+vim.keymap.set("n", "[M", "<Plug>(vimtex-[N)", { buffer=true, desc="Math end" })
+vim.keymap.set("n", "[4", "<Plug>(vimtex-[n)", { buffer=true, desc="Math start" })
+vim.keymap.set("n", "[$", "<Plug>(vimtex-[N)", { buffer=true, desc="Math end" })
+vim.keymap.set("n", "]m", "<Plug>(vimtex-]n)", { buffer=true, desc="Math start" })
+vim.keymap.set("n", "]M", "<Plug>(vimtex-]N)", { buffer=true, desc="Math end" })
+vim.keymap.set("n", "]4", "<Plug>(vimtex-]n)", { buffer=true, desc="Math start" })
+vim.keymap.set("n", "]$", "<Plug>(vimtex-]N)", { buffer=true, desc="Math end" })
+
