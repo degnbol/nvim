@@ -38,7 +38,7 @@ return {
         "mkschreder/vim-asciidoc",
         branch = "bugfix/asciidoctor",
         -- doesn't seem there is any asciidoc plugin that helps with goto definition
-        ft='asciidoc',
+        ft={'asciidoc', 'chordpro'},
         config=function()
             -- conceal _ and * in _italic_ and *bold*
             vim.g.asciidoctor_syntax_conceal = 1
@@ -79,6 +79,7 @@ return {
                     hl.link("filenameCommentNoSpell", "Comment")
                     hl.link("UrlCommentNoSpell", "Comment")
                     hl.link("linebreak", "Comment")
+                    hl.set("Geo", {underline=true})
                     hl.set("Guitar", {underline=true})
                 end
             })
@@ -91,7 +92,7 @@ return {
         end,
     },
     -- https://quarto.org/
-    {"quarto-dev/quarto-vim", dependencies={"vim-pandoc/vim-pandoc-syntax"}, ft="quarto"},
+    {"quarto-dev/quarto-nvim", ft="quarto"},
     -- flashing for code blocks
     {"lukas-reineke/headlines.nvim", enabled = false, ft = {'markdown', 'norg', 'orgmode', 'rst', 'asciidoc', 'asciidoctor'},
     dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -110,10 +111,7 @@ return {
         -- uncomment to not hide the closing bracket on newline at the cost of 
         -- dot-repeat only performing the last part of the edit.
         -- vim.g.pear_tree_repeatable_expand = 0
-        vim.g.pear_tree_ft_disabled = {
-            "TelescopePrompt", "NvimTree", "qf",
-            "tex",
-        }
+        vim.g.pear_tree_ft_disabled = { "TelescopePrompt", "NvimTree", "qf", "tex", }
     end},
     {
         "nvim-neorg/neorg",
@@ -142,6 +140,15 @@ return {
             }
         },
     },
+    {
+        "kaarmu/typst.vim",
+        init = function ()
+            vim.g.typst_pdf_viewer = "sioyek"
+            vim.keymap.set('n', '<leader>cc', "<Cmd>TypstWatch<CR>", { desc="Compile continuously" })
+        end,
+    },
+    -- "MrPicklePinosaur/typst-conceal.vim",
+    -- "SeniorMars/tree-sitter-typst",
 
 }
 
