@@ -35,10 +35,10 @@ s({
 
 s({trig="DF", dscr="DataFrame"}, {t"DataFrame"}),
 
-s({trig="CSV.read", dscr="CSV read DataFrame"},
+s({trig="CSV.read", dscr="CSV read DataFrame", condition=conds.line_end},
 {t'CSV.read("', i(1, "FILENAME.tsv.gz"), t[[", DataFrame; delim='\t')]]}),
 
-s({trig="CSV.write", dscr="CSV write DataFrame"},
+s({trig="CSV.write", dscr="CSV write DataFrame", condition=conds.line_end},
 {
     t'CSV.write("',
     i(1),
