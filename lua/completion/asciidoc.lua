@@ -144,7 +144,7 @@ M.setup = function()
         {label="rotate",                                                       detail='Display table in landscape orientation by rotating it 90 degrees counterclockwise.'},
     }
 
-    -- main pupose of this is to separate these completion items from regular text items, 
+    -- main purpose of this is to separate these completion items from regular text items, 
     -- so regular text suggestions comes after due to my custom sorting in completion.lua
     local types = require('cmp.types')
     for _, item in ipairs(attributes) do
