@@ -60,4 +60,7 @@ s({trig="func", dscr="Function.", condition=conds.line_begin * conds.line_end},
 fmta([[function <>(<>)<>
 end]], {i(1, "NAME"), i(2), i(3)})),
 
+s({trig="={", wordTrig=false, dscr="PlotlyJS attributes, assuming a=attr has been called."},
+{t"=a(", i(1), t")"}),
+
 }

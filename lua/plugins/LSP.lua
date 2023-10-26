@@ -69,6 +69,14 @@ return {
                 -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, { buffer=bufnr, desc="Goto references" })
                 vim.keymap.set('n', 'gr', "<cmd>Telescope lsp_references<CR>", { buffer = bufnr, desc = "Goto references" })
                 vim.keymap.set('n', '<space>F', vim.lsp.buf.format, { buffer = bufnr, desc = "Format" })
+
+                -- LSP shorthand keymaps
+                vim.keymap.set('n', '<leader>li', "<Cmd>LspInfo<CR>", { buffer=bufnr, desc="Info" })
+                vim.keymap.set('n', '<leader>lr', "<Cmd>LspRestart<CR>", { buffer=bufnr, desc="Restart" })
+                vim.keymap.set('n', '<leader>lk', "<Cmd>LspStop<CR>", { buffer=bufnr, desc="Stop" })
+                vim.keymap.set('n', '<leader>ls', "<Cmd>LspStart<CR>", { buffer=bufnr, desc="Start" })
+                vim.keymap.set('n', '<leader>ll', "<Cmd>LspLog<CR>", { buffer=bufnr, desc="Log" })
+                vim.keymap.set('n', '<leader>lc', "<Cmd>CmpStatus<CR>", { buffer=bufnr, desc="Cmp status" })
             end
 
             local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
@@ -192,7 +200,7 @@ return {
 
             lsp.typst_lsp.setup{
                 settings = {
-                    exportPdf = "onType" -- Choose onType, onSave or never.
+                    exportPdf = "never" -- Choose onType, onSave or never.
                     -- serverPath = "" -- Normally, there is no need to uncomment it.
                 }
             }
