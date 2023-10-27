@@ -30,6 +30,11 @@ M.isattr = function (node)
     local text = M.text(node)
     return M.iscall(node) and (vim.startswith(text, "a(") or vim.startswith(text, "attr("))
 end
+--- Support arbitrary xaxis2_domain etc by ignoring the 2 when looking up completion items
+M.namedArg2item = function (node)
+    item = M.text(node):match("([%w_]+)="):gsub("axis%d+", "axis")
+    return item -- written in two lines, in order to only take the first gsub returned value
+end
 local func2toplevel = {relayout="layout", ["relayout!"]="layout", Layout="layout"}
 M.func2toplevel = function (node)
     local funcname = M.text(node):match("^[%w_]+")
@@ -49,7 +54,7 @@ M.get_func_parents = function ()
         while M.isattr(parent) do
             local namedArg = parent:parent()
             -- prepend
-            table.insert(parents, 1, M.text(namedArg):match("([%w_]+)="))
+            table.insert(parents, 1, M.namedArg2item(namedArg))
             parent = namedArg:parent()
             if parent:type() == "argument_list" then
                 parent = parent:parent()
