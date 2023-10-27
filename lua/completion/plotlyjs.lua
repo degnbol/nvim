@@ -8,6 +8,17 @@ local rtp = vim.opt.runtimepath:get()[1]
 local fh = io.open(rtp .. "/lua/completion/plotlyjs.json")
 local tree = vim.json.decode(fh:read("*a"))
 fh:close()
+-- extend with shortcut entries such as marker_color=... instead of marker=attr(color=...).
+-- Only for top level for now. May extend if valid and useful.
+for kData, vData in pairs(tree) do
+    for kGrp, vGrp in pairs(vData) do
+        if vGrp["items"] then
+            for i, item in ipairs(vGrp["items"]) do
+                table.insert(vData["items"], {label=kGrp .. "_" .. item["label"], detail=item["detail"]})
+            end
+        end
+    end
+end
 
 M.text = function (node)
     return ts.get_node_text(node,0)
@@ -21,7 +32,7 @@ M.isattr = function (node)
 end
 local func2toplevel = {relayout="layout", ["relayout!"]="layout", Layout="layout"}
 M.func2toplevel = function (node)
-    local funcname = M.text(node):match("^%w+")
+    local funcname = M.text(node):match("^[%w_]+")
     return func2toplevel[funcname] or funcname
 end
 M.istoplevel = function (node)
@@ -38,7 +49,7 @@ M.get_func_parents = function ()
         while M.isattr(parent) do
             local namedArg = parent:parent()
             -- prepend
-            table.insert(parents, 1, M.text(namedArg):match("(%w+)="))
+            table.insert(parents, 1, M.text(namedArg):match("([%w_]+)="))
             parent = namedArg:parent()
             if parent:type() == "argument_list" then
                 parent = parent:parent()
@@ -68,7 +79,6 @@ M.setup = function()
     ---If this is ommited, nvim-cmp will use a default keyword pattern. See |cmp-config.completion.keyword_pattern|.
     ---@return string
     function source:get_keyword_pattern()
-        -- add numbers to pattern
         return [[\k]]
     end
 
