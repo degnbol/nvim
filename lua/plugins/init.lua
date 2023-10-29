@@ -50,12 +50,12 @@ return {
             -- some extra functions that I felt were missing
             -- To conceal or not, set by changing the conceallevel between 0 
             -- and a non-zero value.
-            local toggle_colceal = function ()
+            local toggle_conceal = function ()
                 if vim.opt.conceallevel:get() > 0 then
                     nzConcealLvl = vim.opt.conceallevel:get()
                     vim.opt.conceallevel = 0
                 else
-                    vim.opt.conceallevel = nzConcealLvl
+                    vim.opt.conceallevel = nzConcealLvl or 1
                 end
             end
             local toggle_colcealcursor = function ()
@@ -125,8 +125,8 @@ return {
 
             -- default for yoc is another binding for cursorline which is a lot 
             -- less useful than conceal
-            vim.keymap.set('n', 'yoc', toggle_colceal, { desc="conceal" })
-            vim.keymap.set('n', '=sc', toggle_colceal, { desc="conceal" })
+            vim.keymap.set('n', 'yoc', toggle_conceal, { desc="conceal" })
+            vim.keymap.set('n', '=sc', toggle_conceal, { desc="conceal" })
             vim.keymap.set('n', 'yoC', toggle_colcealcursor, { desc="concealcursor" })
             vim.keymap.set('n', '=sC', toggle_colcealcursor, { desc="concealcursor" })
             vim.keymap.set('n', 'yoa', toggle_autoformat, { desc="formatoptions auto" })
