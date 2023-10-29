@@ -289,4 +289,8 @@ fmta("\\cmidrule{<>-<>}", {i(1, "FROM"), i(2, "TO")})),
 s({trig="\\multicolumn", dscr="cell spanning multiple columns", snippetType="autosnippet"},
 fmta("\\multicolumn{<>}{<>}{<>}", {i(1, "3"), i(2, "c"), i(3, "TEXT")})),
 
+s({trig="dark", dscr="Dark mode."},
+{t{"% temp dark mode", [[\usepackage{xcolor}\pagecolor{black}\color{white}]]}}),
+
+
 }
