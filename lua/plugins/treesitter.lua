@@ -51,18 +51,18 @@ return {
                         -- "help", -- removes useful colors from :h group-name
                     }, 
                     additional_vim_regex_highlighting = {
-                        "julia", -- basic things like true and false are not recognized as bool and I couldn't fix it with a custom highlights.scm
                         "help", -- treesitter version removes useful colors from :h group-name
                         "bash", -- spending too much time writing treesitter query. Also covers zsh.
+                        "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
                     },
                 },
                 incremental_selection = {
                     enable = true,
                     keymaps = {
-                        init_selection = "<c-space>",
-                        node_incremental = "<c-space>",
-                        scope_incremental = "<c-s>",
-                        node_decremental = "<c-backspace>",
+                        init_selection = "<leader><up>",
+                        node_incremental = "<leader><up>",
+                        node_decremental = "<leader><down>",
+                        scope_incremental = "<leader><left>",
                     },
                 },
                 -- opt-in to using treesitter for https://github.com/andymass/vim-matchup
@@ -87,6 +87,21 @@ return {
             -- https://github.com/Beaglefoot/tree-sitter-awk
             -- then make bash/injections.scm that takes command awk raw_string and captures the raw_string with @awk
             -- maybe mlr but would probs have to write it or something
+
+            vim.keymap.set('n', '<leader>ti', "<Cmd>Inspect<CR>", { desc="Inspect" })
+            vim.keymap.set('n', '<leader>tI', "<Cmd>InspectTree<CR>", { desc="Inspect tree" })
+            vim.keymap.set('n', '<leader>tn', function ()
+                local node = vim.treesitter.get_node()
+                local text = vim.treesitter.get_node_text(node, 0)
+                local type = node:type()
+                print(text, "type=", type)
+            end, { desc="node" })
+            vim.keymap.set('n', '<leader>tN', function ()
+                local node = vim.treesitter.get_node():parent()
+                local text = vim.treesitter.get_node_text(node, 0)
+                local type = node:type()
+                print(text, "type=", type)
+            end, { desc="parent" })
 
         end
     },
