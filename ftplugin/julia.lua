@@ -22,3 +22,11 @@ vim.opt.concealcursor = "nvc"
 
 vim.opt.list = false
 
+require"completion/plotlyjs".setup()
+
+-- syntax is too slow on julia, e.g. for sidescroll.
+-- We don't need it, we have treesitter.
+vim.schedule(function ()
+    vim.opt_local.syntax = "off"
+end)
+
