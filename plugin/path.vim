@@ -3,11 +3,13 @@ exec "setlocal path+=" . substitute($PATH, ":", ",", "g")
 " prepend git ROOT (doesn't cause issues when not in git repo)
 " Note the '$'. It makes ROOT and env var which means it is available for e.g. 
 " path completion so that $ROOT/ will have completion, e.g. in julia or zsh.
-let $ROOT = finddir('.git/..', expand('%:p:h').';')
+" Note that for a nested git repo, we will focus on the immediate root, but 
+" also add a reference to the top level root.
+let $ROOTTOP = finddir('.git/..', expand('%:p:h').';')
+let $ROOT = system('git root')
 exec "setlocal path^=" . $ROOT
-" append $ROOT/src
+exec "setlocal path+=" . $ROOTTOP
 exec "setlocal path+=" . $ROOT . '/src'
-" append $ROOT/src/*
 exec "setlocal path+=" . $ROOT . '/src/*'
 
 " edit-in-kitty on remotes doesn't copy the env variables that are normally 
