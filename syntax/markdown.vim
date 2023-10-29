@@ -1,22 +1,18 @@
-" Instead of linking them to htmlItalic and htmlBold
-highlight link markdownItalic Italic
-highlight link markdownBold Bold
+" markdownItalic and Bold are linked to html which was linked to nothing.
+" some things with injected code resets highlights (maybe a bug), but this 
+" defualts call works.
+hi! default link htmlItalic Italic
+hi! default link htmlBold Bold
 
 " When using just treesitter, a lot of things are not colored by default but 
 " are in fact captured by the treesitter parser.
 hi @text.title gui=bold
 " Different colors for different levels.
 " The rest will just be bold white if I ever use them.
-hi link @text.title1 @define
-hi link @text.title2 @constructor
-hi link @text.title3 @function
+hi! default link @text.title1 @define
+hi! default link @text.title2 @constructor
+hi! default link @text.title3 @function
 
 hi @text.emphasis gui=italic
 hi @text.strong gui=bold
 
-" temp solution for inline code
-hi link @code_span String
-
-" TODO have conceallevel=1 hide ` with space so it is invisible but doesn't 
-" move text
-set conceallevel=0
