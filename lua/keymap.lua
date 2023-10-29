@@ -73,16 +73,3 @@ vim.keymap.set('i', '<C-S-A>', "<Esc><sagww0gi", { remap=true, desc="Enable auto
 vim.keymap.set('n', '<leader>bd', ":bd<CR>", { desc="Delete" })
 vim.keymap.set('n', '<leader>bD', ":bd!<CR>", { desc="Delete!" })
 
-
-vim.keymap.set('n', '<leader>tn', function ()
-    local node = vim.treesitter.get_node()
-    local text = vim.treesitter.get_node_text(node, 0)
-    local type = node:type()
-    print(text, "type=", type)
-end, { desc="node" })
-vim.keymap.set('n', '<leader>tN', function ()
-    local node = vim.treesitter.get_node():parent()
-    local text = vim.treesitter.get_node_text(node, 0)
-    local type = node:type()
-    print(text, "type=", type)
-end, { desc="parent" })
