@@ -18,3 +18,7 @@ tmp.*
 lars.*
 hej.*
 hejsa.*
+hej_*
+
+.metals/
+
