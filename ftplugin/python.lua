@@ -5,3 +5,13 @@
 vim.opt.formatoptions = "jwcrql"
 vim.opt.concealcursor = ""
 vim.opt.list = false
+
+local grp = vim.api.nvim_create_augroup("colorscheme", {clear=true})
+vim.api.nvim_create_autocmd("Colorscheme", {
+    buffer = 0,
+    group = grp,
+    callback = function ()
+        vim.api.nvim_set_hl(0, "@cell", {reverse=true})
+    end
+})
+
