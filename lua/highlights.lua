@@ -23,7 +23,7 @@ hl.set("@variable", {gui=nil})
 
 local function afterColorscheme()
     -- fix issue where colorscheme change removes all telescope highlight groups
-    vim.cmd 'silent Lazy reload telescope.nvim'
+    -- vim.cmd 'silent Lazy reload telescope.nvim'
 
     ---- git signs link to Gitsigns equivalent which gets defined
     hl.link("DiffAddNr", "GitsignsAddLn")
@@ -120,16 +120,14 @@ vim.api.nvim_create_autocmd("VimEnter", {
     pattern = "*", group = grp,
     callback = function ()
 
-        vim.defer_fn(function ()
-            -- call twice for the bufferline backgrounds to be set for some reason.
+        vim.schedule(function ()
+            vim.cmd "hi clear"
             if vim.o.background == "dark" then
-                vim.cmd('colorscheme ' .. defaultDark)
                 vim.cmd('colorscheme ' .. defaultDark)
             else
                 vim.cmd('colorscheme ' .. defaultLight)
-                vim.cmd('colorscheme ' .. defaultLight)
             end
-        end, 0) -- Not sure why it needs a 0 ms delay.
+        end)
     end
 })
 
