@@ -14,7 +14,7 @@ for kData, vData in pairs(tree) do
     for kGrp, vGrp in pairs(vData) do
         if vGrp["items"] then
             for i, item in ipairs(vGrp["items"]) do
-                table.insert(vData["items"], {label=kGrp .. "_" .. item["label"], detail=item["detail"]})
+                table.insert(vData["items"], {label=kGrp .. "_" .. item["label"], documentation=item["documentation"]})
             end
         end
     end
@@ -28,7 +28,8 @@ M.iscall = function (node)
 end
 M.isattr = function (node)
     local text = M.text(node)
-    return M.iscall(node) and (vim.startswith(text, "a(") or vim.startswith(text, "attr("))
+    local attrNames = {a=true, attr=true, ["…"]=true}
+    return M.iscall(node) and attrNames[text:match("^[^(]+")]
 end
 --- Support arbitrary xaxis2_domain etc by ignoring the 2 when looking up completion items
 M.namedArg2item = function (node)

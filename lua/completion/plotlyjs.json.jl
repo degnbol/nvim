@@ -39,7 +39,7 @@ for (i, name) in enumerate(names)
         t = t[p]
     end
     if "items" ∉ keys(t) t["items"] = Dict{String,String}[] end
-    push!(t["items"], Dict("label"=>name, "detail"=>"$(desc[i])\nDefault: $(defaults[i])\nType: $(types[i])"))
+    push!(t["items"], Dict("label"=>name, "documentation"=>"$(desc[i])\nDefault: $(defaults[i])\nType: $(types[i])"))
 end
 
 open("plotlyjs.json", "w") do io
