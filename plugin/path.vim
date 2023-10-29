@@ -6,7 +6,7 @@ exec "setlocal path+=" . substitute($PATH, ":", ",", "g")
 " Note that for a nested git repo, we will focus on the immediate root, but 
 " also add a reference to the top level root.
 let $ROOTTOP = finddir('.git/..', expand('%:p:h').';')
-let $ROOT = system('git root')
+let $ROOT = trim(system('git root'))
 exec "setlocal path^=" . $ROOT
 exec "setlocal path+=" . $ROOTTOP
 exec "setlocal path+=" . $ROOT . '/src'
