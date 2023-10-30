@@ -6,11 +6,13 @@ exec "setlocal path+=" . substitute($PATH, ":", ",", "g")
 " Note that for a nested git repo, we will focus on the immediate root, but 
 " also add a reference to the top level root.
 let $ROOTTOP = finddir('.git/..', expand('%:p:h').';')
-let $ROOT = trim(system('git root'))
-exec "setlocal path^=" . $ROOT
-exec "setlocal path+=" . $ROOTTOP
-exec "setlocal path+=" . $ROOT . '/src'
-exec "setlocal path+=" . $ROOT . '/src/*'
+let $ROOT = trim(system('git root 2> /dev/null'))
+if $ROOT != ""
+    exec "setlocal path+=" . $ROOTTOP
+    exec "setlocal path^=" . $ROOT
+    exec "setlocal path+=" . $ROOT . '/src'
+    exec "setlocal path+=" . $ROOT . '/src/*'
+endif
 
 " edit-in-kitty on remotes doesn't copy the env variables that are normally 
 " present locally so we have to set the necessary ones. These are for julia 
