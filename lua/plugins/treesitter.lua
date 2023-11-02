@@ -20,7 +20,7 @@ return {
                     "latex",
                     -- "java",
                     -- "kotlin",
-                    "help", -- vim help files https://github.com/neovim/tree-sitter-vimdoc
+                    "vimdoc",
                     "r",
                     "markdown", -- for block code
                     "markdown_inline", -- for inline code
@@ -48,10 +48,9 @@ return {
                     disable = {
                         "vim", -- not perfect
                         "latex", -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$
-                        -- "help", -- removes useful colors from :h group-name
                     }, 
                     additional_vim_regex_highlighting = {
-                        "help", -- treesitter version removes useful colors from :h group-name
+                        "vimdoc", -- treesitter version doesn't contain useful colors from :h group-name
                         "bash", -- spending too much time writing treesitter query. Also covers zsh.
                         "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
                     },
@@ -88,8 +87,11 @@ return {
             -- then make bash/injections.scm that takes command awk raw_string and captures the raw_string with @awk
             -- maybe mlr but would probs have to write it or something
 
+            vim.keymap.set('n', '<leader>te', "<Cmd>TSEnable highlight<CR>", { desc="Enable (highlight)" })
+            vim.keymap.set('n', '<leader>td', "<Cmd>TSDisable highlight<CR>", { desc="Disable (highlight)" })
             vim.keymap.set('n', '<leader>ti', "<Cmd>Inspect<CR>", { desc="Inspect" })
-            vim.keymap.set('n', '<leader>tI', "<Cmd>InspectTree<CR>", { desc="Inspect tree" })
+            vim.keymap.set('n', '<leader>tt', "<Cmd>InspectTree<CR>", { desc="Inspect tree" })
+            vim.keymap.set('n', '<leader>tI', "<Cmd>Capture TSInstallInfo<CR>", { desc="Install info" })
             vim.keymap.set('n', '<leader>tn', function ()
                 local node = vim.treesitter.get_node()
                 local text = vim.treesitter.get_node_text(node, 0)
