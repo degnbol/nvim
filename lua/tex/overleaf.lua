@@ -16,7 +16,7 @@ if vim.startswith(remote, "https://git.overleaf.com/") then
         group = overleaf,
         buffer = 0, -- only for current buffer. Mutually exclusive with pattern arg.
         callback = function ()
-            vim.fn.jobstart({rtp .. "/lua/tex/overleaf/gitsync.sh", vim.api.nvim_buf_get_name(0)})
+            vim.fn.jobstart({rtp .. "/tex/overleaf/gitsync.sh", vim.api.nvim_buf_get_name(0)})
         end
     })
 end

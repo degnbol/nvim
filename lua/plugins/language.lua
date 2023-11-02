@@ -151,5 +151,8 @@ return {
     -- "MrPicklePinosaur/typst-conceal.vim",
     -- "SeniorMars/tree-sitter-typst",
 
+
+    "fladson/vim-kitty", -- syntax highlights for kitty conf
+
 }
 

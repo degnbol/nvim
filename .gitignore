@@ -22,3 +22,6 @@ hej_*
 
 .metals/
 
+# binaries
+pandoc-unicode-math
+pandoc-unicode-math-from-latex

@@ -13,6 +13,25 @@ return {
             g.tex_conceal='abdmg'
         end,
     },
+    -- AirLatex is a plugin for editing overleaf locally where you can even see the cursors of other users.
+    -- Currently doesn't work for me so I use my git auto update approach instead for now.
+    -- is detected as a robot by overleaf and looking up the cookie string isn't convenient and doesn't seem to work either.
+    {
+        "da-h/AirLatex.vim",
+        -- cmd = "AirLatex", -- breaks it
+        enabled = false,
+        build = {
+            "pip install 'keyring[completion]' tornado requests pynvim",
+            -- if password is not already set then you can use
+            -- keyring set airlatex_www.overleaf.com cdmadsen@student.unimelb.edu.au
+            ":UpdateRemotePlugins",
+        },
+        init = function ()
+            vim.g.AirLatexAllowInsecure = 0
+            -- vim.g.AirLatexUsername = "cdmadsen@student.unimelb.edu.au"
+            vim.g.AirLatexUsername = "cookies"
+        end,
+    },
     {
         "lervag/vimtex",
         init=function() 
@@ -56,18 +75,18 @@ return {
             -- concealed the text doesn't align nicely which must have been the 
             -- original intent. Also, my snippet expanding a '-' for a new item becomes more complicated.
             -- vimtex solution doesn't work: https://github.com/lervag/vimtex/issues/2599
-            -- use builtin indent function GetTexIndent() since the solution for that does work:
-                -- https://github.com/vim/vim/blob/eb3dc87f01391bb075d97aef3d00f91b4e08a25c/runtime/indent/tex.vim#L70-L122
-                g.vimtex_indent_enabled = false
-                -- builtin vim setting for tex files, not a vimtex setting
-                g.tex_indent_items = 0
+            -- use builtin indent function GetTexIndent since the solution for that does work:
+            -- https://github.com/vim/vim/blob/eb3dc87f01391bb075d97aef3d00f91b4e08a25c/runtime/indent/tex.vim#L70-L122
+            g.vimtex_indent_enabled = false
+            -- builtin vim setting for tex files, not a vimtex setting
+            g.tex_indent_items = 0
 
-                g.vimtex_toc_config = {
-                    indent_levels = 1, -- has no effect but would be nice
-                    mode = 4, -- the only mode that works
-                    -- layers = {'content', 'todo', 'include'}, -- don't list labels
-                }
-            end,
-        },
-    }
+            g.vimtex_toc_config = {
+                indent_levels = 1, -- has no effect but would be nice
+                mode = 4, -- the only mode that works
+                -- layers = {'content', 'todo', 'include'}, -- don't list labels
+            }
+        end,
+    },
+}
 

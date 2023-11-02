@@ -241,7 +241,7 @@ return {
             ensure_installed = {
                 "bashls",
                 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#omnisharp
-                "csharp_ls",
+                -- "csharp_ls", -- instead see install-csharp.sh
                 "jedi_language_server",
                 "pyright",
                 "pylsp",
