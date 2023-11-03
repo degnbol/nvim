@@ -38,6 +38,8 @@ return {
             hi.link("NeogitDiffDeleteHighlight", "GitSignsDelete")
 
             require"neogit".setup {
+                -- go directly to insert mode after pressing cc for commit, if the commit message is empty
+                disable_insert_on_commit = "auto",
                 signs = {
                     -- { CLOSED, OPENED }
                     section = { "", "" },
