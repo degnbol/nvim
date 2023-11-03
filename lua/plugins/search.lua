@@ -36,7 +36,7 @@ return {
     {"petertriho/nvim-scrollbar", cmd={"ScrollbarToggle", "ScrollbarShow"},
     dependencies={"kevinhwang91/nvim-hlslens"},
     init = function ()
-        vim.keymap.set("n", "<leader>ts", "<Cmd>ScrollbarToggle<CR>", { desc="Scrollbar" })
+        vim.keymap.set("n", "yoS", "<Cmd>ScrollbarToggle<CR>", { desc="Scrollbar" })
     end,
     opts = {
         show = false, -- enable with :ScrollbarToggle etc.
@@ -52,7 +52,7 @@ return {
         "kevinhwang91/nvim-hlslens",
         cmd = {"HlSearchLensEnable", "HlSearchLensToggle"},
         init = function ()
-            vim.keymap.set("n", "<leader>tl", function () require'hlslens'.toggle() end, { desc="HlSearchLens", silent=true })
+            vim.keymap.set("n", "yoH", function () require'hlslens'.toggle() end, { desc="HlSearchLens", silent=true })
             -- integrate with haya14busa/vim-asterisk
             vim.api.nvim_set_keymap('n', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
             vim.api.nvim_set_keymap('n', '#', [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})

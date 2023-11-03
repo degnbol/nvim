@@ -37,3 +37,5 @@ return {
     }
 }
 
+-- TODO: there's some error if you open the command window while fidget is still spinning.
+-- Command window is opened with q: by default but I remapped to <C-;> because I kept mistyping :q

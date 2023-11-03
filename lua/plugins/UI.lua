@@ -54,5 +54,8 @@ return {
             -- skip_confirm_for_simple_edits = true,
         }
         vim.keymap.set("n", "-", oil.open, { desc = "Open parent directory" })
+        -- Move the builtin - to _ since - is used here above and it also is natural to use shift for both + and -
+        -- -+ are different from jk since they go at start of line
+        vim.keymap.set('n', "_", "-")
     end}
 }

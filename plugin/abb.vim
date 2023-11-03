@@ -25,7 +25,6 @@ Abolish tihnk think
 Abolish shoudl should
 Abolish udnerstand understand
 Abolish palce place
-Abolish ot to
 " spelling mistakes
 Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or} {despe,sepa}rat{}
 Abolish flourescent{,ly} fluorescent{}
@@ -58,14 +57,16 @@ Abolish noone no one
 Abolish ie i.e.
 
 " language specific, see lua/keymap
+" TODO: make this a bit more convenient, for autocorrecting language specific 
+" spelling errors in prose only
 function s:ToggleDanskAbbrev() abort
     if &iminsert
         " Dansk
         abbrev feks f.eks.
         silent! unabbrev eg
         silent! unabbrev Eg
-        silent! unabbrev ti
         " only works with <buffer>
+        silent! iunabbrev <buffer> ti
         silent! iunabbrev <buffer> i
     else
         " English
@@ -74,11 +75,11 @@ function s:ToggleDanskAbbrev() abort
         silent! iunabbrev feks
         iabbrev eg e.g.
         iabbrev Eg E.g.
-        iabbrev ti it
         if &ft == "asciidoc"
             " for regular text where we wouldn't be talking about a variable i 
             " or in Danish where i is a word.
             iabbrev <buffer> i I
+            iabbrev <buffer> ti it
         endif
     endif
 endfunction

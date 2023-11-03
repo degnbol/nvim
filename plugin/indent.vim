@@ -1,7 +1,9 @@
 " indentation can also be done in insert mode with <C+D>, <C+T> and <C+F> (see :h i_CTRL-T etc.)
 
-" copy pasted from https://vi.stackexchange.com/questions/18310/keep-relative-cursor-position-after-indenting-with
-" modified to handle vim-repeat based on http://vimcasts.org/episodes/creating-repeatable-mappings-with-repeat-vim/
+" copy pasted from
+" https://vi.stackexchange.com/questions/18310/keep-relative-cursor-position-after-indenting-with
+" modified to handle vim-repeat based on
+" http://vimcasts.org/episodes/creating-repeatable-mappings-with-repeat-vim/
 
 " indent cursor according to shiftwidth
 func! IndentInc()

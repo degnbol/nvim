@@ -99,7 +99,6 @@ local function afterColorscheme()
     hl.mod("Boolean", {italic=true, bold=false})
     hl.mod("@variable.builtin", {italic=true})
 
-
     -- NonText shouldn't be exactly like comments
     if hl.get("Comment")['fg'] == hl.get("NonText")['fg'] then
         hl.mod("NonText", {fg="gray"})

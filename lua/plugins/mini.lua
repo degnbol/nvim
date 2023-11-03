@@ -128,7 +128,7 @@ clue.setup({
     { mode = 'n', keys = '<leader>P', desc = "Paste before" },
 
     { mode = 'n', keys = '<leader>r', desc = "Re|REPL" },
-    { mode = 'n', keys = '<leader>t', desc = "Toggle" },
+    { mode = 'n', keys = '<leader>t', desc = "Tree-sitter" },
     { mode = 'n', keys = '<leader>w', desc = "Workspace" },
     { mode = 'n', keys = ']s', desc = "Spell" },
     { mode = 'n', keys = '[s', desc = "Spell" },

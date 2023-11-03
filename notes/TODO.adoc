@@ -1,5 +1,7 @@
-When opening a new ipython REPL with leader tT it doesn't activate the 
-right env. Possibly because it doesn't understand autoenv.
+Some of the =ss and ss after some cut operations or something is broken.
+
+When opening a new ipython REPL with leader tT it doesn't activate the right 
+env. Possibly because it doesn't understand autoenv.
 
 TODO: improve julia LSP. Slow, doesn't have completion, e.g. mean from stats.
 I think you need to understand some basics, watch tj on lsp servers, interact 
@@ -206,7 +208,7 @@ Would be cool to have essentially zsh/bash LSP, where gf works for paths even
 if they are using env variables defined in the same script or if using e.g. 
 "`git root`/src/hello.jl"
 
-FIXME: slow while scrolling, e.g. ~/Topology/Chromatin/Pub/Su_2020/hicVsImg.jl
+FIXME: horixontal scroll lag, e.g. ~/Topology/Chromatin/Pub/Su_2020/hicVsImg.jl
 
 <leader>s split should also understand then...end in lua
 
@@ -215,4 +217,9 @@ Low priority. Forward and reverse search in typst inspired by vimtex.
 Don't progress to next line when running current line in REPL.
 
 If possible, make the kitty run cmds send q to julia REPL first, if pager is detected.
+
+vimscript (at least neovim vimscript 8) is a lot slower than lua so migrate as 
+much as possible of .vim files to lua. This will also make the repo a bit 
+cleaner since you often have two files that are essentially filling the same 
+role, e.g. ftplugin/<lang>.{vim,lua}
 

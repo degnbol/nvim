@@ -155,6 +155,8 @@ s({trig="startswith", dscr="startswith"},
 s({trig="endswith", dscr="endswith"},
 {t"vim.endswith(", i(1), t")"}),
 
+s({trig="command", dscr='equivalent of "command" in vimscript.'},
+{t'vim.api.nvim_create_user_command("', i(1,"Q"), t'", "', i(2,"q"), t'", {})'}),
 s({trig="cmd", dscr="set new command for neovim's cmdline."},
 fmta([[vim.api.nvim_create_user_command("<>", function ()
     <>

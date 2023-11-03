@@ -1,6 +1,6 @@
 local cmd = vim.cmd
 local opt = vim.opt
-local g = vim.g
+local g   = vim.g
 local api = vim.api
 
 local rtp = vim.opt.runtimepath:get()[1]
@@ -28,6 +28,7 @@ opt.sidescrolloff = 12 -- number of blocks to keep to sides of cursor
 opt.splitbelow = true
 opt.splitright = true
 opt.wildmode = 'longest:full,full' -- settings for how to show completion on command line
+opt.wildcharm = 9 -- enables cmdline tab completion when recording macro. 9 is the ascii code (and UTF8 code) for tab.
 -- opt.number = true -- show line numbering by default. yon toggles
 -- opt.relativenumber = true -- should the line numbering be shown relative to current line?
 opt.clipboard = 'unnamed,unnamedplus' -- share clipboard between copy paste and yank
@@ -36,6 +37,7 @@ opt.smoothscroll = true -- if we wrap lines, then show partial start
 opt.linebreak = true -- if I sometimes were to wrap lines, do it at whitespaces and other characters indicated in breakat
 opt.numberwidth = 2 -- reduce default numbering from starting as 3 characters wide to 2
 opt.mouse = "a" -- activate the mouse, i.e. click to move cursor, drag to visual select and scroll to scroll window instead of cursor
+opt.mousescroll = "ver:1,hor:1"
 opt.termguicolors = true
 opt.cursorline = true -- highlight current line
 opt.cursorlineopt = "number" -- only highlight cursorline number
@@ -78,9 +80,10 @@ opt.ruler = false
 -- hide ~ tilde at end of buffer.
 opt.fillchars = "eob: "
 -- add space symbol to whitespace chars
-opt.listchars:append( 'space:⋅')
-opt.listchars:append( 'tab:▏ ' )
-
+opt.listchars:append('space:⋅')
+opt.listchars:append('tab:▏ ' )
+-- change from showing default ---- to ╱╱╱╱ for deleted lines in git diff
+opt.fillchars:append('diff:╱')
 -- Danglish support
 opt.keymap = "danglish"
 -- use ctrl+6 to toggle
