@@ -207,7 +207,7 @@ return {
         config = function ()
             require("various-textobjs").setup {
                 useDefaultKeymaps = true,
-                -- disabledKeymaps = {"ak", "ik", "av", "iv"},
+                disabledKeymaps = {"gc"}, -- breaks go comment in visual
             }
             -- custom gx function that opens github repos given the short 
             -- version written in these config files.
