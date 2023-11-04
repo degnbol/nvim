@@ -21,8 +21,8 @@ map('n', "U", "<C-r>")
 -- For remote with problematic clipboard we replace the cutlass x that works 
 -- locally with a mapping where we call y (which is mapped to smartyank) then 
 -- d.
-map('n', "xx", "yydd", {remap=true})
-map('x', "x",  "ygvd", {remap=true})
+map('n', "xx", "yydd")
+map('x', "x",  "ygvd")
 function CutOperator(type, ...)
     if type == "line" then
         vim.cmd.normal "`[V`]ygvd"
@@ -164,4 +164,5 @@ map('i', '<C-S-A>', "<Esc><sagww0gi", { remap=true, desc="Enable autoformat and 
 
 map('n', '<leader>bd', ":bd<CR>", { desc="Delete" })
 map('n', '<leader>bD', ":bd!<CR>", { desc="Delete!" })
+map('n', "<leader>bn", "<Cmd>enew<CR>", { desc="New" })
 
