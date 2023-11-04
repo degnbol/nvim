@@ -32,6 +32,7 @@ return {
             exclude = {tex=true, text=true, tsv=true, markdown=true},
             progress = false,
             editpaste = true,
+            closepager = true,
         },
     },
     -- ultra fold
