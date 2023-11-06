@@ -119,11 +119,6 @@ map("n", "di ", "ciw <Esc>", { desc="Delete excess whitespace" })
 map("n", '=ss', 'ss=`]', {remap=true, silent=true, desc="Substitute+reindent"})
 map("n", "<leader>Sr", "<cmd>source $XDG_CONFIG_HOME/nvim/after/plugin/luasnip.lua<CR>", {desc="Reload snippets"})
 
--- <leader>b can be for buffer related things, (bufdel, but :bd is already 
--- fast) or bibliography things e.g. with papis but this is not added yet and 
--- could also just fit under latex (<leader>l) since I don't really use it in 
--- markdown.
-
 -- use the following two commands to enable spelling
 -- setlocal spell
 -- set spelllang=en_us
@@ -162,7 +157,21 @@ map('n', '<Ins>', 'i<C-6>', { silent=true, desc="Insert + Toggle dansk" })
 -- gi  = go to last insert location and enter insert mode. Works even with the change to the line.
 map('i', '<C-S-A>', "<Esc><sagww0gi", { remap=true, desc="Enable autoformat and apply it." })
 
-map('n', '<leader>bd', ":bd<CR>", { desc="Delete" })
-map('n', '<leader>bD', ":bd!<CR>", { desc="Delete!" })
+map('n', "<leader>qo", "<Cmd>copen<CR>", {desc="Open"})
+map('n', "<leader>qq", "<Cmd>cclose<CR>", {desc="Close"}) -- q for quit and is fast
+map('n', "<leader>q1", "<Cmd>cc 1<CR>", {desc="Entry 1"})
+map('n', "<leader>q2", "<Cmd>cc 2<CR>", {desc="Entry 2"})
+map('n', "<leader>q3", "<Cmd>cc 3<CR>", {desc="Entry 3"})
+-- we don't map :cnext etc here since we have ]q etc
+
+map('n', "<leader>Qo", "<Cmd>lopen<CR>", {desc="Open"})
+map('n', "<leader>QQ", "<Cmd>lclose<CR>", {desc="Close"}) -- Q for quit and is fast
+map('n', "<leader>Q1", "<Cmd>ll 1<CR>", {desc="Entry 1"})
+map('n', "<leader>Q2", "<Cmd>ll 2<CR>", {desc="Entry 2"})
+map('n', "<leader>Q3", "<Cmd>ll 3<CR>", {desc="Entry 3"})
+-- we don't map :lnext etc here since we have ]l etc
+
+map('n', '<leader>bd', "<Cmd>bd<CR>", { desc="Delete" })
+map('n', '<leader>bD', "<Cmd>bd!<CR>", { desc="Delete!" })
 map('n', "<leader>bn", "<Cmd>enew<CR>", { desc="New" })
 
