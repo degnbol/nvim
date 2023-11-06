@@ -130,6 +130,8 @@ clue.setup({
     { mode = 'n', keys = '<leader>r', desc = "Re|REPL" },
     { mode = 'n', keys = '<leader>t', desc = "Tree-sitter" },
     { mode = 'n', keys = '<leader>w', desc = "Workspace" },
+    { mode = 'n', keys = '<leader>q', desc = "Quickfix" },
+    { mode = 'n', keys = '<leader>Q', desc = "Locationlist" },
     { mode = 'n', keys = ']s', desc = "Spell" },
     { mode = 'n', keys = '[s', desc = "Spell" },
     -- vim unimpaired
