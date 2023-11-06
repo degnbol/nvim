@@ -49,6 +49,10 @@ local function afterColorscheme()
     hl.rev("Search")
     hl.mod("IncSearch", {reverse=true})
 
+    -- highlight bg defeats the purpose of folding for me.
+    -- It is still plenty clear that text is folded.
+    hl.bg("Folded", nil)
+
     ---- bufferline
     -- bold instead of italic+bold selected
     hl.set("BufferLineBufferSelected", {bold=true, italic=false})
