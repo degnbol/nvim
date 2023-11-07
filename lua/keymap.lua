@@ -104,8 +104,39 @@ vim.cmd [[cnoreabbrev qq q]]
 
 -- for when you are at "...|" and want to exit the quotes and your fingers 
 -- naturally find the quote key
-map('i', "<C-'>", "<right>")
 map('i', "<C-0>", "<right>")
+
+map('i', "<C-'>", "''<left>")
+map('i', "<C-S-'>", '""<left>')
+map('i', "<C-9>", '()<left>')
+map('i', "<C-S-9>", '()<left>')
+map('i', "<C-]>", '[]<left>')
+map('i', "<C-S-[>", '{}<left>')
+map('i', "<C-S-]>", '{}<left>')
+
+local triples = { '"""', "'''", "```" }
+local pairs   = { '""', "''", "``", "{}", '[]', "()", "<>" }
+local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>' }
+-- hack map of shift+space
+map('i', "\x1a", function ()
+    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+    local line = vim.api.nvim_get_current_line()
+    if vim.tbl_contains(triples, line:sub(c-2,c)) then
+        return "<left>"
+    elseif vim.tbl_contains(triples, line:sub(c+1,c+3)) then
+        return "<right>"
+    elseif vim.tbl_contains(pairs, line:sub(c-1,c)) then
+        return "<left>"
+    elseif vim.tbl_contains(pairs, line:sub(c+1,c+2)) then
+        return "<right>"
+    elseif vim.tbl_contains(singles, line:sub(c,c)) then
+        return "<left>"
+    else
+        return "<right>"
+    end
+end, {expr=true, desc="Move inside empty pair/triples or outside non-empty"})
+
+vim.keymap.set('i', '<S-CR>', "<CR><ESC>O", { desc="Indented newline" })
 
 -- switch to/from Danish æøå and to insert mode, which is convenient.
 -- remap in order to utilise the remapped <C-^> which updates the cmp dictionary
