@@ -3,6 +3,7 @@ local util = require "utils/luasnip"
 
 return {
 -- core lang snippets similar to other bracket related ones found in all.lua
+
 s({
     trig='%[%[%[%]%]',
     dscr="Third bracket in trig pattern is typed last.",

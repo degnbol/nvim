@@ -102,14 +102,13 @@ vim.api.nvim_create_user_command("Wq", "wq", {})
 -- abbrev instead of command since command has to start with uppercase
 vim.cmd [[cnoreabbrev qq q]]
 
--- for when you are at "...|" and want to exit the quotes and your fingers 
--- naturally find the quote key
-map('i', "<C-0>", "<right>")
-
 map('i', "<C-'>", "''<left>")
 map('i', "<C-S-'>", '""<left>')
 map('i', "<C-9>", '()<left>')
 map('i', "<C-S-9>", '()<left>')
+map('i', "<C-0>", '()<left>')
+map('i', "<C-S-0>", '()<left>')
+-- map('i', "<C-[>", '[]<left>') -- not possible since it's literally ESC
 map('i', "<C-]>", '[]<left>')
 map('i', "<C-S-[>", '{}<left>')
 map('i', "<C-S-]>", '{}<left>')
@@ -138,7 +137,11 @@ map('i', "\x1a", function ()
     end
 end, {expr=true, desc="Move inside empty pair/triples or outside non-empty"})
 
-vim.keymap.set('i', '<S-CR>', "<CR><ESC>O", { desc="Indented newline" })
+-- useful with cursor | in {|} to get
+-- {
+--     |
+-- }
+vim.keymap.set('i', '<S-CR>', "<CR><Esc>O", { desc="Indented newline" })
 
 -- switch to/from Danish æøå and to insert mode, which is convenient.
 -- remap in order to utilise the remapped <C-^> which updates the cmp dictionary

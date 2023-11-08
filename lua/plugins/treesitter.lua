@@ -87,8 +87,8 @@ return {
             -- then make bash/injections.scm that takes command awk raw_string and captures the raw_string with @awk
             -- maybe mlr but would probs have to write it or something
 
-            vim.keymap.set('n', '<leader>te', "<Cmd>TSEnable highlight<CR>", { desc="Enable (highlight)" })
-            vim.keymap.set('n', '<leader>td', "<Cmd>TSDisable highlight<CR>", { desc="Disable (highlight)" })
+            vim.keymap.set('n', '<leader>th', "<Cmd>TSBufToggle highlight<CR>", { desc="Toggle local highlight" })
+            vim.keymap.set('n', '<leader>tH', "<Cmd>TSToggle highlight<CR>", { desc="Toggle global highlight" })
             vim.keymap.set('n', '<leader>ti', "<Cmd>Inspect<CR>", { desc="Inspect" })
             vim.keymap.set('n', '<leader>tt', "<Cmd>InspectTree<CR>", { desc="Inspect tree" })
             vim.keymap.set('n', '<leader>tI', "<Cmd>Capture TSInstallInfo<CR>", { desc="Install info" })
@@ -158,11 +158,19 @@ return {
                             ["ac"] = "@comment.outer",
                             -- doesn't seem to be supported much. We use a kana derived textobj plugin for ic.
                             ["ic"] = "@comment.inner",
+                            -- iC and aC are used for multiline comment elsewhere
+                            ["a?"] = "@conditional.outer",
+                            ["i?"] = "@conditional.inner",
+                            ["ao"] = "@loop.outer",
+                            ["io"] = "@loop.inner",
                             ["aa"] = "@parameter.outer",
                             ["ia"] = "@parameter.inner",
                             ["ik"] = "@assignment.lhs",
                             ["ik"] = "@assignment.lhs",
                             ["iv"] = "@assignment.rhs",
+                            ["ab"] = "@block.outer",
+                            ["ib"] = "@block.inner",
+                            -- TODO: textobj for whatever the current enclosing container is, similar to nmap <leader><Up>
                         }
                     },
                     swap = {
