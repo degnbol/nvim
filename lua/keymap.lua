@@ -82,12 +82,11 @@ map('i', "<A-S-æ>", ":")
 map('i', "<A-ø>", "'")
 map('i', "<A-S-ø>", '"')
 
-
 -- Remap for dealing with word wrap
-map('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-map('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-map('i', '<down>', [[v:count == 0 ? '<C-\><C-O>gj' : '<down>']], { expr = true, silent = true })
-map('i', '<up>',   [[v:count == 0 ? '<C-\><C-O>gk' : '<up>']],   { expr = true, silent = true })
+map('i', '<down>', [[v:count == 0 ? '<C-\><C-O>gj' : '<down>']], { expr=true, silent = true })
+map('i', '<up>',   [[v:count == 0 ? '<C-\><C-O>gk' : '<up>']],   { expr=true, silent = true })
+map('n', '<down>', [[v:count == 0 ? 'gj' : '<down>']],           { expr=true, silent = true })
+map('n', '<up>',   [[v:count == 0 ? 'gk' : '<up>']],             { expr=true, silent = true })
 
 -- Typos. I don't use command window much but I often press q: or q; when I mean :q
 map('n', 'q:', ':q')
