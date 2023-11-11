@@ -3,6 +3,7 @@ local util = require "utils/luasnip"
 
 return {
 -- core lang snippets similar to other bracket related ones found in all.lua
+
 s({
     trig='%[%[%[%]%]',
     dscr="Third bracket in trig pattern is typed last.",
@@ -15,6 +16,9 @@ fmta([=[[[
     <>
 
 ]=], {i(1)})),
+
+s({trig="join", dscr="Join array of strings to a string."},
+{t"table.concat(", i(1,"strings"), t", ", i(2,"[sep]"), t")"}),
 
 -- meta. snippet to write snippets.
 -- TODO: condition these on relevant path in the same way you did it for completions for configuring lazy.
@@ -90,7 +94,7 @@ fmta([[vim.keymap.set({'n', 'x'}, '<>', "<<Cmd>><><<CR>>", { desc="<>" })]],
 {i(1, "<leader>"), i(2), i(3)}),
 {condition=conds.line_begin}),
 
-s({trig="root", dscr="Get neovim config root", condition=conds.line_begin, snippetType='autosnippet'},
+s({trig="rtp", dscr="Get neovim config root", condition=conds.line_begin, snippetType='autosnippet'},
 {t"local rtp = vim.opt.runtimepath:get()[1]"}),
 
 -- api
@@ -155,6 +159,8 @@ s({trig="startswith", dscr="startswith"},
 s({trig="endswith", dscr="endswith"},
 {t"vim.endswith(", i(1), t")"}),
 
+s({trig="command", dscr='equivalent of "command" in vimscript.'},
+{t'vim.api.nvim_create_user_command("', i(1,"Q"), t'", "', i(2,"q"), t'", {})'}),
 s({trig="cmd", dscr="set new command for neovim's cmdline."},
 fmta([[vim.api.nvim_create_user_command("<>", function ()
     <>
@@ -190,6 +196,9 @@ s({
     condition=conds.line_begin,
 },
 {t'vim.fn.jobstart("', i(1, "ls"), t'")'}),
+
+s({trig="cword", dscr="current word under cursor"},
+{t'vim.fn.expand("<cword>")'}),
 
 s({trig="defer", dscr="Defer call", condition=conds.line_begin},
 fmta([[vim.defer_fn(function ()

@@ -69,6 +69,14 @@ return {
                 -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, { buffer=bufnr, desc="Goto references" })
                 vim.keymap.set('n', 'gr', "<cmd>Telescope lsp_references<CR>", { buffer = bufnr, desc = "Goto references" })
                 vim.keymap.set('n', '<space>F', vim.lsp.buf.format, { buffer = bufnr, desc = "Format" })
+
+                -- LSP shorthand keymaps
+                vim.keymap.set('n', '<leader>li', "<Cmd>LspInfo<CR>", { buffer=bufnr, desc="Info" })
+                vim.keymap.set('n', '<leader>lr', "<Cmd>LspRestart<CR>", { buffer=bufnr, desc="Restart" })
+                vim.keymap.set('n', '<leader>lk', "<Cmd>LspStop<CR>", { buffer=bufnr, desc="Stop" })
+                vim.keymap.set('n', '<leader>ls', "<Cmd>LspStart<CR>", { buffer=bufnr, desc="Start" })
+                vim.keymap.set('n', '<leader>ll', "<Cmd>LspLog<CR>", { buffer=bufnr, desc="Log" })
+                vim.keymap.set('n', '<leader>lc', "<Cmd>CmpStatus<CR>", { buffer=bufnr, desc="Cmp status" })
             end
 
             local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
@@ -93,13 +101,50 @@ return {
             -- lsp.pylsp.setup { }
             lsp.jedi_language_server.setup {}
             lsp.julials.setup {
+                cmd = {
+                    "julia", "--startup-file=no", "--history-file=no",
+                    "-J", "/Users/cdmadsen/.julia/environments/nvim-lspconfig/languageserver.dylib",
+                    "-e",
+                    '# Load LanguageServer.jl: attempt to load from ~/.julia/environments/nvim-lspconfig\
+                    # with the regular load path as a fallback\
+                    ls_install_path = joinpath(\
+                    get(DEPOT_PATH, 1, joinpath(homedir(), ".julia")),\
+                    "environments", "nvim-lspconfig"\
+                    )\
+                    pushfirst!(LOAD_PATH, ls_install_path)\
+                    using LanguageServer\
+                    popfirst!(LOAD_PATH)\
+                    depot_path = get(ENV, "JULIA_DEPOT_PATH", "")\
+                    project_path = let\
+                    dirname(something(\
+                    ## 1. Finds an explicitly set project (JULIA_PROJECT)\
+                    Base.load_path_expand((\
+                    p = get(ENV, "JULIA_PROJECT", nothing);\
+                    p === nothing ? nothing : isempty(p) ? nothing : p\
+                    )),\
+                    ## 2. Look for a Project.toml file in the current working directory,\
+                    ##    or parent directories, with $HOME as an upper boundary\
+                    Base.current_project(),\
+                    ## 3. First entry in the load path\
+                    get(Base.load_path(), 1, nothing),\
+                    ## 4. Fallback to default global environment,\
+                    ##    this is more or less unreachable\
+                    Base.load_path_expand("@v#.#"),\
+                    ))\
+                    end\
+                    @info "Running language server" VERSION pwd() project_path depot_path\
+                    server = LanguageServer.LanguageServerInstance(stdin, stdout, project_path, depot_path)\
+                    server.runlinter = true\
+                    run(server)',
+                },
                 on_new_config = function(new_config, _)
                     local julia = vim.fn.expand("~/.julia/environments/nvim-lspconfig/bin/julia")
+                    local dylib = vim.fn.expand("~/.julia/environments/nvim-lspconfig/languageserver.dylib")
                     -- check if we have made the dedicated julia env which should have a custom system image
-                    if require 'lspconfig'.util.path.is_file(julia) then
-                        -- regular julia seem to work
-                        -- new_config.cmd[1] = julia
-                    end
+                    -- if require 'lspconfig'.util.path.is_file(julia) then
+                        new_config.cmd[1] = julia
+                        -- new_config.cmd = {julia, "-J", dylib}
+                    -- end
                 end
             }
             lsp.r_language_server.setup {}
@@ -153,6 +198,13 @@ return {
                 }}}
             }
 
+            lsp.typst_lsp.setup{
+                settings = {
+                    exportPdf = "never" -- Choose onType, onSave or never.
+                    -- serverPath = "" -- Normally, there is no need to uncomment it.
+                }
+            }
+
             -- scala. Linked as minimal setup from on nvim-metals git:
             -- https://github.com/scalameta/nvim-metals/discussions/39
             local metals_config = require "metals".bare_config()
@@ -189,7 +241,7 @@ return {
             ensure_installed = {
                 "bashls",
                 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#omnisharp
-                "csharp_ls",
+                -- "csharp_ls", -- instead see install-csharp.sh
                 "jedi_language_server",
                 "pyright",
                 "pylsp",
@@ -206,6 +258,7 @@ return {
                 "matlab_ls",
                 -- "kotlin-language-server",
                 "yamlls",
+                "typst_lsp",
             }
         }
     },

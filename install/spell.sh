@@ -1,5 +1,13 @@
-#!/usr/bin/env zsh
-# requires aspell. Install on mac with `brew install aspell`
+if ! command -v aspell > /dev/null; then
+    if [ `uname` = "Darwin" ]; then
+        brew install aspell
+    else
+        echo "requires aspell"
+        exit 1
+    fi
+fi
+
+cd $XDG_CONFIG_HOME/nvim
 mkdir -p spell
 aspell -d en dump master | aspell -l en expand > spell/en.dic
 aspell -d da dump master | aspell -l da expand > spell/da.dic

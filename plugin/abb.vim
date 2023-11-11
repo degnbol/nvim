@@ -57,14 +57,16 @@ Abolish noone no one
 Abolish ie i.e.
 
 " language specific, see lua/keymap
+" TODO: make this a bit more convenient, for autocorrecting language specific 
+" spelling errors in prose only
 function s:ToggleDanskAbbrev() abort
     if &iminsert
         " Dansk
         abbrev feks f.eks.
         silent! unabbrev eg
         silent! unabbrev Eg
-        silent! unabbrev ti
         " only works with <buffer>
+        silent! iunabbrev <buffer> ti
         silent! iunabbrev <buffer> i
     else
         " English
@@ -72,12 +74,12 @@ function s:ToggleDanskAbbrev() abort
         " set yet so will give an error message
         silent! iunabbrev feks
         iabbrev eg e.g.
-        iabbrev Eg e.g.
-        iabbrev ti it
+        iabbrev Eg E.g.
         if &ft == "asciidoc"
             " for regular text where we wouldn't be talking about a variable i 
             " or in Danish where i is a word.
             iabbrev <buffer> i I
+            iabbrev <buffer> ti it
         endif
     endif
 endfunction
@@ -87,6 +89,3 @@ augroup ToggleDanskAbbrev
   autocmd FileType * :call s:ToggleDanskAbbrev()
 augroup END
 
-" project specific
-iabbrev hic Hi-C
-iabbrev HiC Hi-C

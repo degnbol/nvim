@@ -1,6 +1,5 @@
 -- remove o, we want to continue comments while editing them only (r).
--- no t and having c+a means only comments are autoformatted.
-vim.opt.formatoptions = "jwcrqla"
+vim.opt.formatoptions = "jwcrql"
 
 -- see ../after/syntax/julia.vim
 vim.opt.conceallevel = 1
@@ -22,4 +21,12 @@ vim.opt.concealcursor = "nvc"
 -- vim.opt.smartindent = true
 
 vim.opt.list = false
+
+require"completion/plotlyjs".setup()
+
+-- syntax is too slow on julia, e.g. for sidescroll.
+-- We don't need it, we have treesitter.
+vim.schedule(function ()
+    vim.opt_local.syntax = "off"
+end)
 

@@ -9,6 +9,7 @@ return {
         config=function()
             require"nvim-treesitter.configs".setup {
                 ensure_installed = {
+                    "awk",
                     "bash",
                     "c_sharp",
                     "lua",
@@ -19,11 +20,10 @@ return {
                     "latex",
                     -- "java",
                     -- "kotlin",
-                    "help", -- vim help files https://github.com/neovim/tree-sitter-vimdoc
+                    "vimdoc",
                     "r",
-                    -- some error
-                    -- "markdown", -- for block code
-                    -- "markdown_inline", -- for inline code
+                    "markdown", -- for block code
+                    "markdown_inline", -- for inline code
                     "toml",
                     "vim",
                     "regex",
@@ -48,21 +48,20 @@ return {
                     disable = {
                         "vim", -- not perfect
                         "latex", -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$
-                        -- "help", -- removes useful colors from :h group-name
                     }, 
                     additional_vim_regex_highlighting = {
-                        "julia", -- basic things like true and false are not recognized as bool and I couldn't fix it with a custom highlights.scm
-                        "help", -- treesitter version removes useful colors from :h group-name
+                        "vimdoc", -- treesitter version doesn't contain useful colors from :h group-name
                         "bash", -- spending too much time writing treesitter query. Also covers zsh.
+                        "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
                     },
                 },
                 incremental_selection = {
                     enable = true,
                     keymaps = {
-                        init_selection = "<c-space>",
-                        node_incremental = "<c-space>",
-                        scope_incremental = "<c-s>",
-                        node_decremental = "<c-backspace>",
+                        init_selection = "<leader><up>",
+                        node_incremental = "<leader><up>",
+                        node_decremental = "<leader><down>",
+                        scope_incremental = "<leader><left>",
                     },
                 },
                 -- opt-in to using treesitter for https://github.com/andymass/vim-matchup
@@ -88,6 +87,23 @@ return {
             -- then make bash/injections.scm that takes command awk raw_string and captures the raw_string with @awk
             -- maybe mlr but would probs have to write it or something
 
+            vim.keymap.set('n', '<leader>th', "<Cmd>TSBufToggle highlight<CR>", { desc="Toggle local highlight" })
+            vim.keymap.set('n', '<leader>tH', "<Cmd>TSToggle highlight<CR>", { desc="Toggle global highlight" })
+            vim.keymap.set('n', '<leader>ti', "<Cmd>Inspect<CR>", { desc="Inspect" })
+            vim.keymap.set('n', '<leader>tt', "<Cmd>InspectTree<CR>", { desc="Inspect tree" })
+            vim.keymap.set('n', '<leader>tI', "<Cmd>Capture TSInstallInfo<CR>", { desc="Install info" })
+            vim.keymap.set('n', '<leader>tn', function ()
+                local node = vim.treesitter.get_node()
+                local text = vim.treesitter.get_node_text(node, 0)
+                local type = node:type()
+                print(text, "type=", type)
+            end, { desc="node" })
+            vim.keymap.set('n', '<leader>tN', function ()
+                local node = vim.treesitter.get_node():parent()
+                local text = vim.treesitter.get_node_text(node, 0)
+                local type = node:type()
+                print(text, "type=", type)
+            end, { desc="parent" })
 
         end
     },
@@ -142,11 +158,19 @@ return {
                             ["ac"] = "@comment.outer",
                             -- doesn't seem to be supported much. We use a kana derived textobj plugin for ic.
                             ["ic"] = "@comment.inner",
+                            -- iC and aC are used for multiline comment elsewhere
+                            ["a?"] = "@conditional.outer",
+                            ["i?"] = "@conditional.inner",
+                            ["ao"] = "@loop.outer",
+                            ["io"] = "@loop.inner",
                             ["aa"] = "@parameter.outer",
                             ["ia"] = "@parameter.inner",
                             ["ik"] = "@assignment.lhs",
                             ["ik"] = "@assignment.lhs",
                             ["iv"] = "@assignment.rhs",
+                            ["ab"] = "@block.outer",
+                            ["ib"] = "@block.inner",
+                            -- TODO: textobj for whatever the current enclosing container is, similar to nmap <leader><Up>
                         }
                     },
                     swap = {

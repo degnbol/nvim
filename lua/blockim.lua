@@ -10,8 +10,8 @@ vim.keymap.set('v', '<C-q>', function ()
     util.end_visual()
     local rVis1, cVis1, rVis2, cVis2 = util.get_visual_range()
     local rCur1, cCur1 = unpack(vim.api.nvim_win_get_cursor(0))
-    vim.keymap.set({'n', 'i'}, '<Esc>', function ()
-        vim.keymap.del({'n', 'i'}, '<Esc>')
+    vim.keymap.set('n', '<Esc>', function ()
+        vim.keymap.del('n', '<Esc>')
         vim.cmd.stopinsert()
         vim.cmd.norm "q"
         -- if nothing was recorded then just exit, otherwise we get an undojoin related error.

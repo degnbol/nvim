@@ -15,7 +15,8 @@ return {
         -- this was necessary, random lhs rhs messages was appearing 
         vim.g.latex_to_unicode_tab = "off"
         -- auto insert latex if moving on with e.g. space or other writing that is not part of a unicode char
-        -- vim.g.latex_to_unicode_auto = true
+        -- Super useful for e.g. completing \notin if LSP can't be used for completing it.
+        vim.g.latex_to_unicode_auto = true
     end},
     -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
     {"jeetsukumaran/vim-pythonsense", ft='python'},
@@ -38,7 +39,7 @@ return {
         "mkschreder/vim-asciidoc",
         branch = "bugfix/asciidoctor",
         -- doesn't seem there is any asciidoc plugin that helps with goto definition
-        ft='asciidoc',
+        ft={'asciidoc', 'chordpro'},
         config=function()
             -- conceal _ and * in _italic_ and *bold*
             vim.g.asciidoctor_syntax_conceal = 1
@@ -79,6 +80,7 @@ return {
                     hl.link("filenameCommentNoSpell", "Comment")
                     hl.link("UrlCommentNoSpell", "Comment")
                     hl.link("linebreak", "Comment")
+                    hl.set("Geo", {underline=true})
                     hl.set("Guitar", {underline=true})
                 end
             })
@@ -91,7 +93,7 @@ return {
         end,
     },
     -- https://quarto.org/
-    {"quarto-dev/quarto-vim", dependencies={"vim-pandoc/vim-pandoc-syntax"}, ft="quarto"},
+    {"quarto-dev/quarto-nvim", ft="quarto"},
     -- flashing for code blocks
     {"lukas-reineke/headlines.nvim", enabled = false, ft = {'markdown', 'norg', 'orgmode', 'rst', 'asciidoc', 'asciidoctor'},
     dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -110,10 +112,7 @@ return {
         -- uncomment to not hide the closing bracket on newline at the cost of 
         -- dot-repeat only performing the last part of the edit.
         -- vim.g.pear_tree_repeatable_expand = 0
-        vim.g.pear_tree_ft_disabled = {
-            "TelescopePrompt", "NvimTree", "qf",
-            "tex",
-        }
+        vim.g.pear_tree_ft_disabled = { "TelescopePrompt", "NvimTree", "qf", "tex", }
     end},
     {
         "nvim-neorg/neorg",
@@ -142,6 +141,18 @@ return {
             }
         },
     },
+    {
+        "kaarmu/typst.vim",
+        ft = "typst",
+        init = function ()
+            vim.g.typst_pdf_viewer = "sioyek"
+        end,
+    },
+    -- "MrPicklePinosaur/typst-conceal.vim",
+    -- "SeniorMars/tree-sitter-typst",
+
+
+    "fladson/vim-kitty", -- syntax highlights for kitty conf
 
 }
 

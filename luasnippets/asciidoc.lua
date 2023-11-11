@@ -26,6 +26,16 @@ end}
 
 return {
 -- syntax snippets
+
+-- NOTE: requires concealcursor-=v if conceallevel>0
+s({
+    trig='````',
+    dscr="Tripple backticks",
+    snippetType='autosnippet',
+    condition=conds.line_begin,
+},
+{t"```", i(1, "LANGUAGE"), t{"", "```"}}),
+
 -- https://docs.asciidoctor.org/asciidoc/latest/blocks/delimited/
 -- block comment. [comment] can also precede a paragraph or open block (-- ... --).
 s({

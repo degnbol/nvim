@@ -1,0 +1,217 @@
+When opening a new ipython REPL with leader tT it doesn't activate the right 
+env. Possibly because it doesn't understand autoenv.
+
+TODO: improve julia LSP. Slow, doesn't have completion, e.g. mean from stats.
+I think you need to understand some basics, watch tj on lsp servers, interact 
+directly with julia lsp server to see if it works. Maybe set it up without any 
+mason help.
+
+TODO: error highlight it when I write choice node with string rather than node, 
+e.g. `c(1, {"", ""})` when I should do `c(1, {t"", t""})`
+
+FIXME: i_ctrl-x_ctrl-s gives spell suggestions, but adds +" for some reason.
+
+FIXME: understand the runtime in terms of colorscheme etc. zshFunction and operator are linked to none.
+We want to change them to link to function and operator. Some things in syntax/ 
+are getting applied, things in after/syntax are not. We don't want options to 
+be ignored, maybe by the double setting of the colorscheme.
+NOTE: it sometimes helps to use `hi! default` instead of `hi`
+
+FIXME: zsh. o understand correct indent, but == doesn't!
+And fix having no colors. Either fix treesitter parsing of zsh or use some basic regex syntax.
+
+<< moves cursor up 1 line if we are too close to line start.
+
+Could browse files with
+https://github.com/nvim-telescope/telescope-file-browser.nvim
+
+splitjoin shouldn't have issue splitting when there is a comment in a lua block for instance.
+
+Alt tree browsers:
+https://github.com/miversen33/netman.nvim
+https://github.com/nvim-neo-tree/neo-tree.nvim
+
+tex cmd trying to ctrl+t \texttt the whole text within an \href surrounds the whole \href cmd. It shouldnt.
+
+You can toggle LSP diagnostics with:
+WhoIsSethDaniel/toggle-lsp-diagnostics.nvim
+Consider https://github.com/seblj/nvim-tabline and 
+customized to use tabs rather than buffers
+https://github.com/kyazdani42/nvim-tree.lua
+Delete button cuts, but should just delete. Fixed for backspace now using black hole register.
+
+inspiration:
+https://github.com/rstacruz/vim-coc-settings/blob/master/README.md
+https://www.youtube.com/c/benbrastmckie/videos
+
+browse search to go slightly quicker to stackoverflow or other google results for your problems:
+https://www.reddit.com/r/neovim/comments/td9uwd/plugin_browse_internet_from_neovim/
+https://github.com/lalitmee/browse.nvim/blob/main/lua/browse/input.lua
+
+try to make a union highlight group to show both git and diagnostics:
+https://github.com/neoclide/coc.nvim/blob/release/doc/coc.txt # CocErrorHighlight and other highlight groups
+google vim combine highlight groups
+https://github.com/gerw/vim-HiLinkTrace
+
+inspiration:
+https://github.com/rockerBOO/awesome-neovim
+
+see video again from kitty main page and implement super useful things, e.g. the thing that let's you edit remote files locally.
+https://sw.kovidgoyal.net/kitty/
+
+Maybe move around vim and kitty windows more seamlessly
+https://github.com/knubie/vim-kitty-navigator
+
+Check out https://github.com/ms-jpq/isomorphic_copy
+to deal with clipboard on remote. Ideally use kitty kittens tho.
+
+Telescope filter underfull overfull and warnings in latex.
+
+markid better syntax highlighting
+
+Make writing guitar tabs easy. E.g. ability to convert from finger position as 100231 to a pretty version. And convenient way of editing
+e|-0---------0-----|
+B|-------2-------2-|
+G|-----2-------2---|
+D|-2-------2-------|
+A|-----------------|
+E|-----------------|
+
+play with cypher syntax highlight.
+Automatically uppercase cypher keywords like a spell check word replacement call?
+Or make a command to toggle entire doc between uppercase and lowercase keywords.
+It is nice that they are uppercase if you read without syntax highlighting but 
+no need when they are colored. This applies to other query languages as well, 
+sql for instance.
+
+Checkout https://www.reddit.com/r/neovim/comments/x53lzx/i_must_be_missing_something/
+
+make tables in latex nice to edit, similar to tsv files.
+
+make legendary listing of keybindings to also serve as help for remembering 
+e.g. m[a-zA-Z] is mark, then `[a-zA-Z] or '[a-zA-Z] to go to mark or marked 
+line.
+
+features: leader+leader+p to toggle pipe notation in julia, leader+leader+i 
+toggling between inline function, regular and begin/end and other toggles could 
+be useful. Currently made some macros.
+
+look more into editing remote files with nvim from local without using kitten for it.
+Purpose:
+1) browse the actual remote folder instead of a local temp folder.
+2) indenpendence from kitty so we can use any terminal.
+
+there seem to be some nice util functions you can use at https://gitlab.com/jrop/dotfiles/-/blob/master/.config/nvim/lua/my/utils.lua#L27
+
+consider if x and d should be swapped, since d's natural role is cut, so then only x will be non-standard.
+
+Still not happy with autopairs. E.g. { at end of line where I have something on next line that I intend to put inside {}.
+Or finishing an unclosed quote in lua seems like an obvious case not to introduce a new pair of "".
+
+Would be cool if viv and vik could understand when = is inside arg and then do intersect of itself and via.
+I downloaded the key/value text objs as a starting point in lua/textobjects/keyvalue.lua.
+
+Custom completion sources, e.g. valid string values for ggplot, e.g. annotate and guide="none" or direction="vertical"
+inspiration from youtuber showing custom cmp source:
+https://github.com/wincent/wincent/blob/2d926177773f/aspects/nvim/files/.config/nvim/lua/wincent/cmp/handles.lua
+
+conceal \textcolor in tex and show the contained color in the chosen color.
+
+highlight _ that is outside math env with ERROR color in tex.
+
+https://neovimcraft.com/plugin/folke/noice.nvim/index.html
+
+Consider cmdline completion for e.g. search:
+https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
+https://github.com/hrsh7th/cmp-cmdline
+https://github.com/dmitmel/cmp-cmdline-history
+Consider cmdline completion search:
+https://github.com/hrsh7th/cmp-nvim-lsp-document-symbol/blob/main/README.md
+Also:
+https://github.com/kristijanhusak/vim-dadbod-completion
+https://github.com/uga-rosa/cmp-dynamic
+https://github.com/aspeddro/cmp-pandoc.nvim
+https://github.com/jc-doyle/cmp-pandoc-references
+Check if tex completion is lacking:
+https://github.com/amarakon/nvim-cmp-lua-latex-symbols
+OR https://github.com/kdheepak/cmp-latex-symbols
+
+autoswap for kitty? or just allow editing file in multiple windows.
+
+consider:
+https://github.com/folke/trouble.nvim
+
+Would be cool to only list dark or light themes in :Treesitter colorscheme.
+I made a small temp solution with multiple user events but it doesn't deal with 
+requiring plugins with both light and dark colorscheme or to unlist loaded ones later.
+
+In case you want to auto switch comment (commentstring) in markdown with code 
+sections:
+https://dotfyle.com/plugins/JoosepAlviste/nvim-ts-context-commentstring
+
+The U key. It undos all changes in the line. I have never used it.
+We could remap to redo or something else more useful.
+We can still have undo line by remapping Vu to undo line. 
+Default for visual is lowercase and uppercase for u and U.
+But the normal mode gu and gU works just fine as well and we again never use this.
+
+I notice that block wise cut and paste works in --clean but not in my config without <leader>pb.
+
+try out https://github.com/folke/flash.nvim
+instead of leap
+
+Injected code, e.g. in markdown or asciidoc. Treesitter should be able to 
+handle this supposedly. I feel like I have something like this work at some 
+point.
+
+abb hic to Hi-C shouldn't happen in code, maybe have abbrevs you set for prose 
+filetypes only or do something with snippets that only expand in prose or 
+comments.
+
+Should maybe write something more intelligent for brackets? e.g. df[:, [[|] 
+doesn't expand to [] since it thinks we just pressed [ x3.
+
+julia lua func or macro like @inline vs @function for toggling between pipe |> and regular ()
+
+kittyREPL: don't do bracketed when not needed, e.g. for single line since it 
+will be visible when REPL is too busy to parse. I often do e.g. <CR>} and I 
+think you never need to empty lines, so those should be filtered out, and then 
+we check whether one line is left. Still make sure a final newline is not 
+discarded so python still runs things and doesn't start pasting.
+
+add snippets or custom completion for writing luasnippets, reference:
+https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md
+
+Also, either find out how to have a snip replace the entire line, always, or 
+write custom completion source that has more control, in order to do this.
+Relevant for req/import/using statements etc that I generally write with one thing per line.
+
+Place LSP related commands such as restart under <leader>lr and place latex 
+commands such as compile under <leader>cc or something that is consistently 
+used for compilation. Then <leader>co for open, or v for view or p for preview 
+idk.
+Then we can make it more explicit which tool is used, e.g. t for treesitter things.
+If you want to have a place to put filetype local things (like align table for 
+latex), then <leader><leader> could be good as a prefix.
+
+FIXME: vmap x doesn't allow =p
+
+I think some of the julia cool things you want like convert string to/from 
+symbol, inline vs not inline function etc are what are called code actions.
+https://old.reddit.com/r/neovim/comments/16v32p5/clearactionnvim_makes_lsp_code_actions/
+
+Would be cool to have essentially zsh/bash LSP, where gf works for paths even 
+if they are using env variables defined in the same script or if using e.g. 
+"`git root`/src/hello.jl"
+
+FIXME: horixontal scroll lag, e.g. ~/Topology/Chromatin/Pub/Su_2020/hicVsImg.jl
+
+<leader>s split should also understand then...end in lua
+
+Low priority. Forward and reverse search in typst inspired by vimtex.
+
+vimscript (at least neovim vimscript 8) is a lot slower than lua so migrate as 
+much as possible of .vim files to lua. This will also make the repo a bit 
+cleaner since you often have two files that are essentially filling the same 
+role, e.g. ftplugin/<lang>.{vim,lua}
+

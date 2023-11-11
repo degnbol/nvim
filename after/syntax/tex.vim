@@ -22,3 +22,6 @@ syn match textgreek /\\texttau/ conceal cchar=τ
 
 " same as e.g. \AA angstrom
 hi link textgreek SpecialChar
+
+hi texItalStyle gui=italic
+

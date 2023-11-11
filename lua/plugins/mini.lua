@@ -117,18 +117,21 @@ clue.setup({
   clues = {
     -- use e.g. postkeys='<C-w>' to make a submode. 
     { mode = 'n', keys = '<leader>a', desc = "Argument" },
-    { mode = 'n', keys = '<leader>c', desc = "Choose|Color|Code" },
+    { mode = 'n', keys = '<leader>b', desc = "Buffer" },
+    { mode = 'n', keys = '<leader>c', desc = "Compile|Code|Color" },
     { mode = 'n', keys = '<leader>d', desc = "Diagnostic|Definition" },
     { mode = 'n', keys = '<leader>f', desc = "Find|File" },
     { mode = 'n', keys = '<leader>g', desc = "Git" },
-    { mode = 'n', keys = '<leader>l', desc = "LaTeX" },
+    { mode = 'n', keys = '<leader>l', desc = "LSP" },
     -- UnconditionalPaste
     { mode = 'n', keys = '<leader>p', desc = "Paste after" },
     { mode = 'n', keys = '<leader>P', desc = "Paste before" },
 
-    { mode = 'n', keys = '<leader>r', desc = "Re" },
-    { mode = 'n', keys = '<leader>t', desc = "Toggle|Term" },
+    { mode = 'n', keys = '<leader>r', desc = "Re|REPL" },
+    { mode = 'n', keys = '<leader>t', desc = "Tree-sitter" },
     { mode = 'n', keys = '<leader>w', desc = "Workspace" },
+    { mode = 'n', keys = '<leader>q', desc = "Quickfix" },
+    { mode = 'n', keys = '<leader>Q', desc = "Locationlist" },
     { mode = 'n', keys = ']s', desc = "Spell" },
     { mode = 'n', keys = '[s', desc = "Spell" },
     -- vim unimpaired
@@ -184,14 +187,14 @@ clue.setup({
   },
 })
 
-vim.defer_fn(function ()
+vim.schedule(function ()
     require "utils/keymap"
     set_keymap_desc('n', 'gc', "Comment")
     set_keymap_desc('n', 'gcc', "Line")
     set_keymap_desc('n', 'g/', "Last search")
     set_keymap_desc('n', '>>', "Indent line")
     set_keymap_desc('n', '<<', "Unindent line")
-end, 0)
+end)
 
 
 end},

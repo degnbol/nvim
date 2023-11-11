@@ -35,10 +35,10 @@ s({
 
 s({trig="DF", dscr="DataFrame"}, {t"DataFrame"}),
 
-s({trig="CSV.read", dscr="CSV read DataFrame"},
+s({trig="CSV.read", dscr="CSV read DataFrame", condition=conds.line_end},
 {t'CSV.read("', i(1, "FILENAME.tsv.gz"), t[[", DataFrame; delim='\t')]]}),
 
-s({trig="CSV.write", dscr="CSV write DataFrame"},
+s({trig="CSV.write", dscr="CSV write DataFrame", condition=conds.line_end},
 {
     t'CSV.write("',
     i(1),
@@ -51,13 +51,19 @@ s({trig="CSV.write", dscr="CSV write DataFrame"},
 
 s({trig="<=", dscr="Less than."}, {t"≤"}),
 s({trig=">=", dscr="Greater than."}, {t"≥"}),
-s({trig="!=", dscr="Not equal."}, {t"≠"}),
+-- we don't do this one, since it's similar to == which is long,
+-- whereas >= is similar to > which is short.
+-- s({trig="!=", dscr="Not equal."}, {t"≠"}),
 s({trig=".in", dscr="Each in"}, {t".∈ Ref(", i(1), t")"}),
 
 s({trig="use", dscr="Using.", condition=conds.line_begin}, {t"using "}),
 
-s({trig="fun", dscr="Function.", condition=conds.line_begin * conds.line_end},
+s({trig="func", dscr="Function.", condition=conds.line_begin * conds.line_end},
 fmta([[function <>(<>)<>
 end]], {i(1, "NAME"), i(2), i(3)})),
+
+-- TODO: not in comment, not when PlotlyJS isn't loaded.
+s({trig="={", wordTrig=false, dscr="PlotlyJS attributes, assuming a=attr has been called."},
+{t"=…(", i(1), t")"}),
 
 }

@@ -201,6 +201,20 @@ return {
             }
         })
 
+        cmp.setup.filetype('julia', {
+            sources = {
+                { name = 'plotlyjs' },
+                { name = 'nvim_lsp' },
+                { name = 'path', option = {trailing_slash=true} },
+                { name = 'nvim_lsp_signature_help' },
+                { name = 'luasnip', options = {show_autosnippets=true} },
+                -- { name = 'luasnip_choice' },
+                { name = 'calc' },
+                { name = 'buffer', group_index=2 },
+            }
+        })
+
+
         cmp.setup.cmdline(':', {
             sources = {
                 { name = 'colorschemes' },
@@ -313,11 +327,11 @@ return {
             -- these default snippets can be replaced with my custom snippets when I have enough
             {"honza/vim-snippets", lazy = true, -- load as cmp dependency
             dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
-                require("luasnip.loaders.from_snipmate").lazy_load {exclude={"tex", "julia"}}
+                require("luasnip.loaders.from_snipmate").lazy_load {exclude={"tex", "julia", "all", "_"}}
             end},
             {"rafamadriz/friendly-snippets", lazy = true, -- load as cmp dependency
             dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
-                require("luasnip.loaders.from_vscode").lazy_load {exclude={"tex", "julia"}}
+                require("luasnip.loaders.from_vscode").lazy_load {exclude={"tex", "julia", "license", "global", "all"}}
             end},
 
             {

@@ -34,7 +34,7 @@ return {
         init = function ()
             -- but always map toggle since the other plugins doesn't implement it
             -- alt use "<Plug>JoinToggle" if you want to make binding somewhere else
-            vim.keymap.set("n", "<leader>tj", "<Cmd>TSJToggle<CR>", { desc="Split/join" })
+            vim.keymap.set("n", "<leader>J", "<Cmd>TSJToggle<CR>", { desc="Toggle split/join" })
 
             -- use alt plugins for specific filetypes
             -- it is also a possibility to define them for treesj

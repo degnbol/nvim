@@ -3,23 +3,14 @@ local util = require "utils/luasnip"
 return {
 --
 
+-- NOTE: requires concealcursor-=v if conceallevel>0
 s({
-    trig='```',
+    trig='````',
     dscr="Tripple backticks",
     snippetType='autosnippet',
+    condition=conds.line_begin,
 },
-fmta([[```<>
-```
-]], i(1))),
-s({
-    trig='```',
-    dscr="Tripple quotes when the second quote is written last. This is relevant when something autopairs an opening quote.",
-    snippetType='autosnippet',
-    trigEngine=function (trigger) return util.match_ahead(1) end,
-},
--- NOTE: there are only two final backticks since one is left over from end of trigger.
-fmta([[```<>
-``
-]], i(1))),
+{t"```", i(1, "LANGUAGE"), t{"", "```"}}),
+
 
 }

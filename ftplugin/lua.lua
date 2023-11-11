@@ -13,3 +13,6 @@ vim.keymap.set('x', 'K', [["hy:h <C-r>h<CR>]], { buffer=true, desc="Help" })
 local rtp = vim.opt.runtimepath:get()[1]
 vim.opt_local.path:append(rtp .. "/lua")
 
+vim.cmd.iabbrev("ture", "true")
+vim.cmd.iabbrev("flase", "false")
+

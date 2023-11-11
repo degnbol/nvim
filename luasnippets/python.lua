@@ -1,34 +1,17 @@
-local util = require "utils/luasnip"
-local re = util.re
-
 return {
 --
-
 
 s({trig="#!", dscr="Python shebang", snippetType="autosnippet", condition=conds.line_begin},
 {t{"#!/usr/bin/env python3", ""}}),
 
 s({
-    trig='"""',
+    trig='""""',
     dscr="Tripple quotes",
     snippetType='autosnippet',
-    priority = 100, -- invoke the all.lua snippet that moves cursor inside first
 },
 fmta([["""
 <>
 """
-]], i(1))),
-s({
-    trig='"""',
-    dscr="Tripple quotes when the second quote is written last. This is relevant when something autopairs an opening quote.",
-    snippetType='autosnippet',
-    priority = 100, -- invoke the all.lua snippet that moves cursor inside first
-    trigEngine=function (trigger) return util.match_ahead(1) end,
-},
--- NOTE: there are only two final quotes since one is left over from end of trigger.
-fmta([["""
-<>
-""
 ]], i(1))),
 
 -- TODO: make these work better, i.e. show up if typing numpy at line start or 

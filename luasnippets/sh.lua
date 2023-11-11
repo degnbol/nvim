@@ -6,12 +6,12 @@ return {
 s({trig="#!", dscr="Zsh shebang.", snippetType="autosnippet", condition=conds.line_begin},
 {t{"#!/usr/bin/env zsh", ""}}),
 
-s({trig="installed", dscr="is it installed?"},
-{t"which ", i(1, "cargo"), t" > /dev/null"}),
+s({trig="exists", dscr="Does it exist?"},
+{t"command -v ", i(1, "cargo"), t" > /dev/null"}),
 
-s({trig="ifinstalled", dscr="is it installed?"},
+s({trig="ifexists", dscr="Does it exist?"},
 fmta([[
-if which <> >> /dev/null; then
+if command -v <> >> /dev/null; then
     <> install <>
 else
     <> <>

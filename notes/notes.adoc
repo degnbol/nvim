@@ -1,9 +1,10 @@
+Startup is changed by Lazy, the following may be outdated.
 See `:h initialization` for order of calls under startup.
 Broadly
  - init.lua runs lua/ files.
  - ftplugin/
  - plugins has a similar structure so may run code at all kinds of timings.
-   See their code in `~/.local/share/nvim/site/pack/packer/start/`
+   See their code in `~/.local/share/nvim/lazy/`
  - seems after/ is never run?
  - after/.../
 
@@ -21,7 +22,9 @@ but it seemed the ftdetect was overridden to "conf" and it requires all of
 miller git be cloned so a bit much. ftdetect/mlr.vim probs won't need updating, 
 other files probs won't be added and I don't edit miller files that much so it 
 seems fine to update manually with copy paste with
+```bash
 ./update.sh
+```
 
 word count: g then ctrl+g
 
@@ -39,7 +42,7 @@ ctrl+] is default vim go-to-definition.
 enter replace mode with R in normal mode or Ins in insert mode.
 Useful for when text is aligned with excess whitespace.
 
-```verbatim
+```
 unjump with ``, go to last edit with `.,
 go to last insert mode location with `^.
 Jump along change list with g; and g,

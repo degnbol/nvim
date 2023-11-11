@@ -23,7 +23,7 @@ hl.set("@variable", {gui=nil})
 
 local function afterColorscheme()
     -- fix issue where colorscheme change removes all telescope highlight groups
-    vim.cmd 'silent Lazy reload telescope.nvim'
+    -- vim.cmd 'silent Lazy reload telescope.nvim'
 
     ---- git signs link to Gitsigns equivalent which gets defined
     hl.link("DiffAddNr", "GitsignsAddLn")
@@ -48,6 +48,10 @@ local function afterColorscheme()
     -- green.
     hl.rev("Search")
     hl.mod("IncSearch", {reverse=true})
+
+    -- highlight bg defeats the purpose of folding for me.
+    -- It is still plenty clear that text is folded.
+    hl.bg("Folded", nil)
 
     ---- bufferline
     -- bold instead of italic+bold selected
@@ -99,7 +103,6 @@ local function afterColorscheme()
     hl.mod("Boolean", {italic=true, bold=false})
     hl.mod("@variable.builtin", {italic=true})
 
-
     -- NonText shouldn't be exactly like comments
     if hl.get("Comment")['fg'] == hl.get("NonText")['fg'] then
         hl.mod("NonText", {fg="gray"})
@@ -120,16 +123,14 @@ vim.api.nvim_create_autocmd("VimEnter", {
     pattern = "*", group = grp,
     callback = function ()
 
-        vim.defer_fn(function ()
-            -- call twice for the bufferline backgrounds to be set for some reason.
+        vim.schedule(function ()
+            vim.cmd "hi clear"
             if vim.o.background == "dark" then
-                vim.cmd('colorscheme ' .. defaultDark)
                 vim.cmd('colorscheme ' .. defaultDark)
             else
                 vim.cmd('colorscheme ' .. defaultLight)
-                vim.cmd('colorscheme ' .. defaultLight)
             end
-        end, 0) -- Not sure why it needs a 0 ms delay.
+        end)
     end
 })
 

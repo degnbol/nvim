@@ -1,9 +1,8 @@
 #!/usr/bin/env zsh
-cd $0:h
 
 # install pandoc
-if ! type pandoc &> /dev/null; then
-    if type brew &> /dev/null; then
+if ! command -v pandoc > /dev/null; then
+    if command -v brew > /dev/null; then
         brew install pandoc
     else
         mamba install pandoc
@@ -16,6 +15,7 @@ else
     os="Linux"
 fi
 
+cd $0:h
 # install latest converter filter
 # https://github.com/marhop/pandoc-unicode-math/releases/latest
 release="v3.1.0"
