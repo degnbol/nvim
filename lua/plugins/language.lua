@@ -149,10 +149,11 @@ return {
         end,
     },
     -- "MrPicklePinosaur/typst-conceal.vim",
-    -- "SeniorMars/tree-sitter-typst",
-
 
     "fladson/vim-kitty", -- syntax highlights for kitty conf
+
+    -- basic kotlin support
+    "udalov/kotlin-vim",
 
 }
 
