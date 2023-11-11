@@ -1,4 +1,6 @@
 #!/usr/bin/env lua
-require "ftplugin.sh"
+local rtp = vim.opt.runtimepath:get()[1]
+dofile(rtp .. "/ftplugin/sh.lua")
 vim.opt.list = false
+
 
