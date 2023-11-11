@@ -248,7 +248,7 @@ return {
                 "julials",
                 "ltex",
                 "texlab",
-                "r_language_server",
+                -- "r_language_server",
                 "lua_ls",
                 "vimls",
                 "rust_analyzer",
