@@ -265,14 +265,16 @@ return {
         }
     },
     -- flutter tools contains LSP for dart.
-    -- TODO: usual attach capabilities for this as well.
+    -- The FlutterRun doesn't seem to work, so currently only using the flutter packaged dart lsp, 
+    -- and running flutter run --flavor dev --debug from the terminal, while 
+    -- android studio has opened an emulator.
     {
         "akinsho/flutter-tools.nvim",
         ft = "dart",
         dependencies = {
             "neovim/nvim-lspconfig",
             "nvim-lua/plenary.nvim",
-            -- 'stevearc/dressing.nvim', -- optional for vim.ui.select
+            'stevearc/dressing.nvim', -- optional for vim.ui.select
         },
         config = function ()
             -- https://github.com/akinsho/flutter-tools.nvim#full-configuration

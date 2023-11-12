@@ -25,7 +25,4 @@ function backwardScreen()
     setTopline(getTopline() - vim.api.nvim_win_get_height(win))
 end
 
-vim.keymap.set('n', '<leader><leader>v', vnewFurther, { desc="vnew with one window height offset and scrollbind enabled. Accepts a count." })
-vim.keymap.set('n', '<leader><leader>f', forwardScreen, { desc="Like <C-f> but jumps foward one screen visually in the split regardless of scrolloff." })
-vim.keymap.set('n', '<leader><leader>b', backwardScreen, { desc="Like <C-b> but jumps backwards one screen visually in the split regardless of scrolloff." })
 
