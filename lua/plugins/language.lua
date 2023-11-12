@@ -81,7 +81,7 @@ return {
                     hl.link("UrlCommentNoSpell", "Comment")
                     hl.link("linebreak", "Comment")
                     hl.set("Geo", {underline=true})
-                    hl.set("Guitar", {underline=true})
+                    hl.set("Chord", {underline=true})
                 end
             })
             -- use conversion to PDF as default for :make
