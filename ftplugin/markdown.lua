@@ -1,9 +1,9 @@
 #!/usr/bin/env lua
-opt = vim.opt
+opt = vim.opt_local
 -- markdown doesn't really have comments. 
 -- The default is html comments <!-- ... -->.
 -- For making tex documents with the markdown package it is possible to ignore latex comments, hence:
-vim.api.nvim_buf_set_option(0, "commentstring", "% %s")
+opt.commentstring = "% %s"
 -- c=continue comment when wrapping. Should already be enabled.
 -- r=with enter in insert mode. Should already be enabled.
 -- o=with o/O in normal mode. Not sure if I want this.
@@ -21,8 +21,5 @@ opt.sidescrolloff = 0
 -- conceal comment leader and the _ and * around emphasis
 -- level=1 -> conceal but don't remove block
 opt.conceallevel = 1
--- nvc=normal,visual,command -> only unconceal in insert mode with cursor on 
--- the line.
-opt.concealcursor = "nvc"
 
 opt.list = false
