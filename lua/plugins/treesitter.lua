@@ -105,6 +105,21 @@ return {
                 print(text, "type=", type)
             end, { desc="parent" })
 
+            -- add custom parsers
+            local SeniorMars = { -- more stars, seems less maintained
+                url = "https://github.com/SeniorMars/tree-sitter-typst", -- local path or git repo
+                files = {"src/parser.c", "src/scanner.c"}, -- note that some parsers also require src/scanner.c or src/scanner.cc
+                branch = "main",
+            }
+            local uben0 = { -- Newer. Currently maintained. Claims to be complete.
+                url = "https://github.com/uben0/tree-sitter-typst",
+                files = {"src/parser.c", "src/scanner.c"}, -- note that some parsers also require src/scanner.c or src/scanner.cc
+            }
+            local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+            parser_config.typst = {
+                -- install_info = SeniorMars
+                install_info = uben0
+            }
         end
     },
     -- refactor
