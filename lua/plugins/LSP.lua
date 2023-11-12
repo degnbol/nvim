@@ -43,7 +43,7 @@ return {
 
             -- See `:help vim.diagnostic.*` for documentation on any of the below functions
             vim.keymap.set('n', '<space>dd', vim.diagnostic.open_float, {desc = "Line diagnostic"})
-            vim.keymap.set('n', '<space>D', "<cmd>Telescope diagnostics<CR>", { desc = "Diagnostics" })
+            vim.keymap.set('n', '<space>fd', "<cmd>Telescope diagnostics<CR>", { desc = "Diagnostics" })
             vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Diagnostic" })
             vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Diagnostic" })
             vim.keymap.set('n', '<space>dl', vim.diagnostic.setloclist, { desc = "Loclist diagnostics" })
@@ -198,12 +198,14 @@ return {
                 }}}
             }
 
-            lsp.typst_lsp.setup{
+            lsp.typst_lsp.setup {
                 settings = {
                     exportPdf = "never" -- Choose onType, onSave or never. Toggle in ftplugin/typst.lua
                     -- serverPath = "" -- Normally, there is no need to uncomment it.
                 }
             }
+
+            lsp.kotlin_language_server.setup { }
 
             -- scala. Linked as minimal setup from on nvim-metals git:
             -- https://github.com/scalameta/nvim-metals/discussions/39
@@ -262,4 +264,24 @@ return {
             }
         }
     },
+    -- flutter tools contains LSP for dart.
+    -- TODO: usual attach capabilities for this as well.
+    {
+        "akinsho/flutter-tools.nvim",
+        ft = "dart",
+        dependencies = {
+            "neovim/nvim-lspconfig",
+            "nvim-lua/plenary.nvim",
+            -- 'stevearc/dressing.nvim', -- optional for vim.ui.select
+        },
+        config = function ()
+            -- https://github.com/akinsho/flutter-tools.nvim#full-configuration
+            require "flutter-tools".setup {
+                -- there are other fields under lsp than capabilities and 
+                -- on_attach, but this is a fine way to write it as long as we 
+                -- don't change the other settings.
+                lsp = require "lspconfig".util.default_config
+            }
+        end
+    }
 }
