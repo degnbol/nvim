@@ -43,6 +43,8 @@ return {
 
             -- See `:help vim.diagnostic.*` for documentation on any of the below functions
             vim.keymap.set('n', '<space>dd', vim.diagnostic.open_float, {desc = "Line diagnostic"})
+            vim.keymap.set('n', '<space>dk', vim.diagnostic.disable, {desc = "Disable diagnostics"})
+            vim.keymap.set('n', '<space>ds', vim.diagnostic.enable, {desc = "Enable diagnostics"})
             vim.keymap.set('n', '<space>fd', "<cmd>Telescope diagnostics<CR>", { desc = "Diagnostics" })
             vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Diagnostic" })
             vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Diagnostic" })
