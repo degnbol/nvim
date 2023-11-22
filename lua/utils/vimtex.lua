@@ -1,4 +1,6 @@
 #!/usr/bin/env lua
+local make_condition = require("luasnip.extras.conditions").make_condition
+
 local M = {}
 
 function M.in_math()
@@ -15,6 +17,8 @@ function M.in_env(name)
 end
 function M.in_itemize() return M.in_env('itemize') end
 function M.in_description() return M.in_env('description') end
+M.cond_itemize = make_condition(M.in_itemize)
+M.cond_description = make_condition(M.in_description)
 
 -- Use vimtex (1,1)-indexing!
 -- only "name" is required.
