@@ -102,13 +102,27 @@ local function afterColorscheme()
     hl.link("@boolean", "Boolean")
     hl.mod("Boolean", {italic=true, bold=false})
     hl.mod("@variable.builtin", {italic=true})
+    hl.mod("@function.builtin", {italic=true})
 
+    -- delim. Currently using RainbowDelimiterRed since it's the default for parentheses.
+    hl.link("Delimiter", "RainbowDelimiterRed")
+    hl.link("@punctuation.delimiter", "Delimiter")
+    
     -- NonText shouldn't be exactly like comments
     if hl.get("Comment")['fg'] == hl.get("NonText")['fg'] then
         hl.mod("NonText", {fg="gray"})
     end
     -- it seems pretty good if they're bold even if the color is similar.
     hl.mod("NonText", {bold=true})
+
+    -- semantic tokens
+    hl.mod("@lsp.mod.strong", {bold=true})
+    hl.mod("@lsp.mod.emph", {italic=true})
+    hl.link("@lsp.type.operator", "@operator")
+    hl.link("@lsp.type.keyword", "@keyword")
+
+    -- variable is the default
+    hl.clear("@variable")
 end
 
 local defaultDark = 'fluoromachine'

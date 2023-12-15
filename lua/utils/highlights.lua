@@ -27,4 +27,8 @@ function M.mod(name, val)
     M.set(name, vim.tbl_extend("force", M.get(name), val))
 end
 
+function M.clear(name)
+    vim.api.nvim_set_hl(0, name, {})
+end
+
 return M
