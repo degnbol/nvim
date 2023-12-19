@@ -30,8 +30,8 @@ f(function(val)
 end, {1}),
 }),
 -- doesn't work if autopairing
-s({trig="()", dscr="left( right)", wordTrig=false, snippetType="autosnippet"},
-{t"\\left(", d(1, get_visual), t"\\right)"}, optm),
+-- s({trig="()", dscr="left( right)", wordTrig=false, snippetType="autosnippet"},
+-- {t"\\left(", d(1, get_visual), t"\\right)"}, optm),
 
 },
 {
@@ -69,10 +69,10 @@ f(function(_, snip)
 end),
 t"}{", i(1), t"}"}, optm),
 
--- [^%s(){}]+ instead of %w+ since the latter doesn't capture unicode.
+-- [^%s(){}$]+ instead of %w+ since the latter doesn't capture unicode.
 -- I'm not excluding + and * etc. on purpose, so I can type "a+b/" to get a 
 -- division (a+b)/ and type "a + b/" to get a division only on b
-s({trig="([^%s(){}]+)/", dscr="fraction after word", regTrig=true},
+s({trig="([^%s(){}$]+)/", dscr="fraction after word", regTrig=true},
 {t"\\frac{", re(1), t"}{", i(1), t"}"}, optm),
 
 s({trig='([^%a])ee', regTrig=true, wordTrig=false},
