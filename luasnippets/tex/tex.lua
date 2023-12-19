@@ -136,7 +136,9 @@ s({trig="- ", dscr="item", snippetType="autosnippet"},
 s({trig="mm", dscr="inline math", snippetType="autosnippet"},
 {t"$", d(1, get_visual), t"$" },
 {condition=conds.line_begin}),
-s({trig="([^%a])mm", dscr="inline math", wordTrig=false, regTrig=true, snippetType="autosnippet"},
+-- Making sure to not allow alphanumeric prefix, since it will ruin words that contain mm,
+-- and not numbers either since it will ruin e.g. 4mm when writing units for tikz.
+s({trig="([^%w])mm", dscr="inline math", wordTrig=false, regTrig=true, snippetType="autosnippet"},
 {re(1), t"$", d(1, get_visual), t"$" }),
 
 s({trig="dm", snippetType="autosnippet", condition=conds.line_begin*conds.line_end},
@@ -146,7 +148,7 @@ fmta([[\[
 
 ]], i(1))),
 
-s({trig="ali", dscr="align", snippetType="autosnippet"},
+s({trig="align", dscr="align", snippetType="autosnippet", condition=conds.line_begin*conds.line_end},
 fmta([[\begin{align*}
 	<>
 \end{align*}
@@ -155,10 +157,13 @@ fmta([[\begin{align*}
 s({trig="(%a)-", dscr="p-value, n-dimensional, ...", regTrig=true, snippetType="autosnippet"},
 {t"$", re(1), t"$-"}),
 
-s({trig="fig", dscr="fig", condition=conds.line_begin, snippetType="autosnippet"},
+s({trig="img", dscr="includegraphics", condition=conds.line_begin*conds.line_end, snippetType="autosnippet"},
+{t"\\includegraphics[width=\\textwidth]{./figures", i(1), t"}"}),
+
+s({trig="fig", dscr="fig", condition=conds.line_begin*conds.line_end, snippetType="autosnippet"},
 fmta([[\begin{figure}[ht]
 	\centering
-	\includegraphics[width=0.95\textwidth]{figures/<>}
+	\includegraphics[width=0.95\textwidth]{./figures<>}
 	\caption{<>}
 	\label{fig:<>}
 \end{figure}
@@ -171,13 +176,13 @@ fmta([[\begin{figure}[ht]
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\caption{}
-		\includegraphics[width=0.95\textwidth]{figures/<>}
+		\includegraphics[width=0.95\textwidth]{./figures<>}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\caption{}
-		\includegraphics[width=0.95\textwidth]{figures/<>}
+		\includegraphics[width=0.95\textwidth]{./figures<>}
 	\end{subfigure}
 	\caption{<>}
 	\label{fig:<>}
@@ -221,5 +226,14 @@ s({trig="gif", dscr="Animation that works in e.g. pdfpc. Convert gif to mov onli
 fmta([[\href{run:./figures/<>.mov?autostart&loop}{\includegraphics[width=\textwidth]{./figures/<>.png}}]],
 {i(1, "FILENAME"), rep(1)}),
 {show_condition=conds.line_end}),
+
+s(
+    {trig="(%d)tw", dscr="textwidth", trigEngine="pattern", snippetType="autosnippet"},
+    {re(1), t"\\textwidth"}
+),
+s(
+    {trig="(%d)lw", dscr="linewidth", trigEngine="pattern", snippetType="autosnippet"},
+    {re(1), t"\\linewidth"}
+),
 
 }
