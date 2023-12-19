@@ -16,7 +16,7 @@ map({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 -- use U instead of <C-r> for redo.
 -- TODO move line undo to Vu 
-map('n', "U", "<C-r>")
+-- map('n', "U", "<C-r>")
 
 -- For remote with problematic clipboard we replace the cutlass x that works 
 -- locally with a mapping where we call y (which is mapped to smartyank) then 
@@ -113,7 +113,7 @@ map('i', "<C-S-[>", '{}<left>')
 map('i', "<C-S-]>", '{}<left>')
 
 local triples = { '"""', "'''", "```" }
-local pairs   = { '""', "''", "``", "{}", '[]', "()", "<>" }
+local pairs   = { '""', "''", "``", "{}", '[]', "()", "<>", "$$" }
 local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>' }
 -- hack map of shift+space
 map('i', "\x1a", function ()
