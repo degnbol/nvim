@@ -113,17 +113,17 @@ map('i', "<C-S-[>", '{}<left>')
 map('i', "<C-S-]>", '{}<left>')
 
 local triples = { '"""', "'''", "```" }
-local pairs   = { '""', "''", "``", "{}", '[]', "()", "<>", "$$" }
-local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>' }
+local pairs   = { '""', "''", "``", "()", '[]', "{}", "<>", "$$" }
+local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>', '$' }
 -- hack map of shift+space
-map('i', "\x1a", function ()
+map({'i', 'n'}, "\x1F", function ()
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
     local line = vim.api.nvim_get_current_line()
-    if c == #line then
-        return "<left>"
-    elseif vim.tbl_contains(triples, line:sub(c+1,c+3)) then
-        return "<right>"
+    if vim.tbl_contains(triples, line:sub(c+1,c+3)) then
+        return "<right><right><right>"
     elseif vim.tbl_contains(triples, line:sub(c-2,c)) then
+        return "<left><left><left>"
+    elseif c == #line then
         return "<left>"
     elseif vim.tbl_contains(pairs, line:sub(c+1,c+2)) then
         return "<right>"
