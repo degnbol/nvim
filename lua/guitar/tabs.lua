@@ -15,9 +15,9 @@ function tabNew()
 end
 
 local function isTabLine(line)
-    return line:match("^%a?|.+|$")
+    return line:match("^%a?|%S*|")
 end
-local function inTab()
+function inTab()
     return isTabLine(vim.api.nvim_get_current_line())
 end
 ---Get index of guitar string.
@@ -56,11 +56,16 @@ function tabBS()
         vim.api.nvim_buf_set_lines(0, r-n, r-n+6+1, true, replacement)
         vim.api.nvim_win_set_cursor(0, {r, c-1})
     else
-        return '<BS>'
+        local keys = vim.api.nvim_replace_termcodes('<BS>', true,false,true)
+        vim.api.nvim_feedkeys(keys, 'n', false)
     end
 end
 
 function tabSelect()
     local n = getCurrentString() - 1
-    return n .. "k<C-v>5jo"
+    if n > 0 then
+        return n .. "k<C-v>5jo"
+    else
+        return       "<C-v>5jo"
+    end
 end
