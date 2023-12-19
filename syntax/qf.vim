@@ -1,8 +1,3 @@
-
-if exists('b:current_syntax')
-    finish
-endif
-
 syn match qfFileName /^[^│]*/ nextgroup=qfSeparatorLeft
 syn match qfSeparatorLeft /│/ contained nextgroup=qfLineNr
 syn match qfLineNr /[^│]*/ contained nextgroup=qfSeparatorRight
@@ -12,17 +7,3 @@ syn match qfWarning /W .*$/ contained
 syn match qfInfo /I .*$/ contained
 syn match qfNote /[NH] .*$/ contained
 
-hi def link qfFileName Directory
-" hi def link qfSeparatorLeft Delimiter
-" hi def link qfSeparatorRight Delimiter
-" hide separators
-hi def qfSeparatorLeft guifg=#2d303d guibg=#2d303d
-hi def qfSeparatorRight guifg=#2d303d guibg=#2d303d
-
-hi def link qfLineNr LineNr
-hi def link qfError DiagnosticError
-hi def link qfWarning DiagnosticWarn
-hi def link qfInfo DiagnosticInfo
-hi def link qfNote DiagnosticHint
-
-let b:current_syntax = 'qf'
