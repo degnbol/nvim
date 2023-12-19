@@ -24,6 +24,15 @@ return {
     {
         "svermeulen/vim-yoink",
         config = function ()
+            -- yoink integration with cutlass
+            vim.g.yoinkIncludeDeleteOperations = 1
+            -- add yanks to numbered register
+            vim.g.yoinkSyncNumberedRegisters = 1 
+            -- move cursor to end instead of start of multi-line paste
+            vim.g.yoinkMoveCursorToEndOfPaste = 0
+            -- preserve yank between neovim sessions
+            vim.g.yoinkSavePersistently = 1
+
             vim.keymap.set('n', 'p', "<plug>(YoinkPaste_p)", { desc="Paste below with history" })
             vim.keymap.set('n', 'P', "<plug>(YoinkPaste_P)", { desc="Paste above with history" })
             -- whitepaste gets preference
@@ -42,13 +51,15 @@ return {
         end,
     },
     -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut. Since we have added backspace and delete button support in normal mode there is no need for default x behavior
-    {"gbprod/cutlass.nvim", opts={
+    {"gbprod/cutlass.nvim",
+    opts={
         cut_key='x',
         override_del = true, -- true -> del key will put in blackhole register}
     }},
     -- yank in tmux and over ssh
     {
         'ibhagwan/smartyank.nvim',
+        enabled = false, -- breaks blockwise paste
         opts = {
             -- same as
             -- api.nvim_create_autocmd({"TextYankPost"}, { callback=function() vim.highlight.on_yank{on_visual=false} end })
@@ -113,7 +124,8 @@ return {
         vim.keymap.set("n", "<leader>pw", ":set paste<CR>p:set nopaste<CR>`[gw`]", { desc="Format default" })
     end},
     -- paste with multiple empty lines around contents reduced to single empty lines.
-    {"AndrewRadev/whitespaste.vim", init = function ()
+    {"AndrewRadev/whitespaste.vim",
+    init = function ()
         -- normally gp is p where cursor is moved at end. Since we do that by default, we can use it for whitepaste.
         -- the plugin uses ,p and ,P by default but that slows down using , for ,; moving between f/t searching.
         vim.api.nvim_set_var("whitespaste_before_mapping", 'gP')
