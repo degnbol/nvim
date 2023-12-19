@@ -66,3 +66,8 @@ easily start the command from the relevant column. In order to do e.g. <esc>
 you will have to use ecaped :exe, e.g. if it is with :g then
 :g/pattern/exe "ihello\<Esc>dw"
 
+In quickfix (e.g. opens when you gd on something that may be defined multiple 
+places or gr on something referenced multiple places), you can press c-v 
+instead of enter to open the location in a new split instead of jumping away 
+from where you were.
+
