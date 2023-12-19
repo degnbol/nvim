@@ -95,3 +95,29 @@ vim.keymap.set("n", "]M", "<Plug>(vimtex-]N)", { buffer=true, desc="Math end" })
 vim.keymap.set("n", "]4", "<Plug>(vimtex-]n)", { buffer=true, desc="Math start" })
 vim.keymap.set("n", "]$", "<Plug>(vimtex-]N)", { buffer=true, desc="Math end" })
 
+
+
+-- colorscheme aucmd to fix missing or inconsistent hl links
+local grp = vim.api.nvim_create_augroup("Tex", {clear=true})
+vim.api.nvim_create_autocmd("Colorscheme", {
+    buffer = 0,
+    group = grp,
+    callback = function ()
+        vim.api.nvim_set_hl(0, "texCmd",         {link="@function"})
+        vim.api.nvim_set_hl(0, "texCmdEnv",      {link="@keyword.function"}) -- italic instead of bold for begin end
+        vim.api.nvim_set_hl(0, "texEnvArgName",  {link="@method"}) -- bold and shine instead of nothing
+        vim.api.nvim_set_hl(0, "texCmdBeamer",   {link="@function"})
+        vim.api.nvim_set_hl(0, "texOpt",         {link="@parameter"})
+        vim.api.nvim_set_hl(0, "texBeamerOpt",   {link="@parameter"})
+        vim.api.nvim_set_hl(0, "texOptEqual",    {link="@operator"})
+        vim.api.nvim_set_hl(0, "texArg",         {link="@parameter"})
+        vim.api.nvim_set_hl(0, "texFileArg",     {link="@string"})
+        vim.api.nvim_set_hl(0, "texFilesArg",    {link="@string"})
+        vim.api.nvim_set_hl(0, "texFileOpt",     {link="@parameter"})
+        vim.api.nvim_set_hl(0, "Delimiter",      {link="RainbowDelimiterRed"})
+        vim.api.nvim_set_hl(0, "TexBeamerDelim", {link="Delimiter"})
+        vim.api.nvim_set_hl(0, "superscript",    {link="Type"}) -- like \huge, \normalsize etc
+        vim.api.nvim_set_hl(0, "subscript",      {link="Type"}) -- like \huge, \normalsize etc
+    end
+})
+
