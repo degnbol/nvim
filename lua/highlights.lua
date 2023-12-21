@@ -1,53 +1,15 @@
 #!/usr/bin/env lua
 local hl = require "utils/highlights"
 
----- some sane defaults that a colorscheme may overwrite
-
--- mods to default nvim colorscheme
--- TODO: maybe move these to a colorscheme that is an extension of default.
-hl.set("@conditional",      {fg="#9a808f", italic=true})
-hl.set("@repeat",           {fg="#9a808f", italic=true})
-hl.set("@include",          {fg="#9a808f", italic=true})
-hl.set("Exception",         {fg="#9a808f", italic=true})
-hl.set("Keyword",           {fg="#9a808f", italic=true})
-hl.set("Operator",          {fg="#9a808f", bold=true})
-hl.set("@keyword.function", {fg="#9a808f"})
-hl.set("Type",              {fg="#9a808f", bold=true})
-hl.set("Preproc",           {fg="#8888ff"})
--- hl.set("Type", {fg="#88ef88", bold=true})
-hl.link("Identifier", "@variable")
-hl.link("Special", "PreProc")
-hl.link("Number", "String")
-hl.link("Constant", "String")
-hl.link("@constant.builtin", "String")
-
--- Italic highlight group doesn't actually make terminal text italic by default.
-hl.set("Italic", {italic=true})
-
--- remove bg on concealchars
-hl.bg("Conceal", nil)
-
--- set completion menu bg to main bg and make scrollbar minimal
-hl.bg("Pmenu", nil)
-hl.bg("PmenuSbar", nil)
-hl.rev("PmenuSel")
-
-hl.fg("LineNr", "grey")
-hl.fg("CursorLineNr", nil)
-
--- @variable seemed to start being linked to @identifier after update?
-hl.set("@variable", {gui=nil})
-
-
 local function afterColorscheme()
     -- fix issue where colorscheme change removes all telescope highlight groups
     -- vim.cmd 'silent Lazy reload telescope.nvim'
 
     ---- git signs link to Gitsigns equivalent which gets defined
-    hl.link("DiffAddNr", "GitsignsAddLn")
-    hl.link("DiffChangeNr", "GitsignsChangeLn")
-    hl.link("DiffTopDeleteNr", "GitsignsDeleteVirtLn") -- edge-case where first line(s) of file is deleted
-    hl.link("DiffChangeDeleteNr", "GitsignsChangedeleteLn")
+    hl.def("DiffAddNr", "GitsignsAddLn")
+    hl.def("DiffChangeNr", "GitsignsChangeLn")
+    hl.def("DiffTopDeleteNr", "GitsignsDeleteVirtLn") -- edge-case where first line(s) of file is deleted
+    hl.def("DiffChangeDeleteNr", "GitsignsChangedeleteLn")
     -- special decides the color for the underline
     hl.set("DiffDeleteNr", {underline=true, special=hl.get("DiffDelete")["fg"], fg=nil})
 
@@ -108,6 +70,9 @@ local function afterColorscheme()
     -- hl.mod("@conditional.ternary", {italic=false})
     hl.mod("Identifier", {italic=false})
     hl.mod("Number", {italic=false})
+    -- vim in lua is @lsp.typemod.variable.global.lua linked to Constant.
+    -- If you find other constants that you don't want to make italic then mod the semantic @lsp global instead.
+    hl.mod("Constant", {italic=true})
     hl.mod("Exception", {italic=true})
     hl.mod("@include", {italic=true})
     hl.link("@keyword", "Keyword")
@@ -125,7 +90,7 @@ local function afterColorscheme()
     hl.link("@boolean", "Boolean")
     hl.mod("Boolean", {italic=true, bold=false})
     hl.mod("@variable.builtin", {italic=true})
-    hl.mod("@function.builtin", {italic=true})
+    hl.mod("@function.builtin", {italic=true, bold=false})
     hl.mod("@constant.builtin", {italic=true})
     hl.mod("@type.builtin",     {italic=true})
 
@@ -145,6 +110,10 @@ local function afterColorscheme()
     hl.mod("@lsp.mod.emph", {italic=true})
     hl.link("@lsp.type.operator", "@operator")
     hl.link("@lsp.type.keyword", "@keyword")
+    -- instead of to @function since we only want function definitions to be 
+    -- bold and @type.function is often not, e.g. in this very file.
+    hl.link("@lsp.type.function", "@function.call")
+    hl.link("@lsp.type.method", "@function.call")
 
     -- variable is the default.
     -- I set it to copy normal instead of using clear since if I clear it will 
@@ -153,7 +122,9 @@ local function afterColorscheme()
     hl.fg("@variable", hl.get("Normal")["fg"])
 end
 
-local defaultDark = 'fluoromachine'
+-- local defaultDark = 'fluoromachine'
+local defaultDark = 'delta'
+-- local defaultDark = 'neutral'
 local defaultLight = 'kanagawa-lotus'
 
 local grp = vim.api.nvim_create_augroup("afterColorscheme", {clear=true})
@@ -164,17 +135,16 @@ vim.api.nvim_create_autocmd("Colorscheme", {
 vim.api.nvim_create_autocmd("VimEnter", {
     pattern = "*", group = grp,
     callback = function ()
-
         vim.schedule(function ()
             -- pretend we called colorscheme in order to trigger all autcmds 
             -- that fire after setting a new colorscheme.
-            vim.api.nvim_exec_autocmds("Colorscheme", {})
-            -- vim.cmd "hi clear"
-            -- if vim.o.background == "dark" then
-            --     vim.cmd('colorscheme ' .. defaultDark)
-            -- else
-            --     vim.cmd('colorscheme ' .. defaultLight)
-            -- end
+            -- vim.api.nvim_exec_autocmds("Colorscheme", {})
+            vim.cmd "hi clear"
+            if vim.o.background == "dark" then
+                vim.cmd('colorscheme ' .. defaultDark)
+            else
+                vim.cmd('colorscheme ' .. defaultLight)
+            end
         end)
     end
 })
