@@ -1,6 +1,7 @@
 local hl = require "utils/highlights"
 
 -- mods to default nvim colorscheme
+vim.cmd "hi clear"
 
 hl.set("Keyword", {fg="#9a808f", italic=true})
 hl.link("@conditional", "Keyword")

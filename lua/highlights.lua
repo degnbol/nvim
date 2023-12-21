@@ -97,6 +97,7 @@ local function afterColorscheme()
     -- delim. Currently using the default for parentheses.
     hl.link("Delimiter", "RainbowDelimiterViolet")
     hl.link("@punctuation.delimiter", "Delimiter")
+    hl.link("@punctuation.special", "Special")
     
     -- NonText shouldn't be exactly like comments
     if hl.get("Comment")['fg'] == hl.get("NonText")['fg'] then
