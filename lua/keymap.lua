@@ -211,4 +211,5 @@ map('n', "<leader>Q3", "<Cmd>ll 3<CR>", {desc="Entry 3"})
 map('n', '<leader>bd', "<Cmd>bd<CR>", { desc="Delete" })
 map('n', '<leader>bD', "<Cmd>bd!<CR>", { desc="Delete!" })
 map('n', "<leader>bn", "<Cmd>enew<CR>", { desc="New" })
+map('n', "<leader>bc", "<Cmd>tabclose<CR>", { desc="tabclose" })
 

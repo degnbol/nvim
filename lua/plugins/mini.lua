@@ -117,7 +117,7 @@ clue.setup({
   clues = {
     -- use e.g. postkeys='<C-w>' to make a submode. 
     { mode = 'n', keys = '<leader>a', desc = "Argument" },
-    { mode = 'n', keys = '<leader>b', desc = "Buffer" },
+    { mode = 'n', keys = '<leader>b', desc = "Buffer/Tab" },
     { mode = 'n', keys = '<leader>c', desc = "Compile|Code|Color" },
     { mode = 'n', keys = '<leader>d', desc = "Diagnostic|Definition" },
     { mode = 'n', keys = '<leader>f', desc = "Find|File" },

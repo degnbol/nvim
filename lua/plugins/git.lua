@@ -113,7 +113,7 @@ return {
             -- Open during merge or rebase should show conflicts nicer automatically.
             vim.keymap.set("n", "<leader>gd", "<Cmd>DiffviewOpen -uno<CR>:DiffviewToggleFiles<CR>", { desc="Diffview open" })
             -- pretty cool: works on ranges
-            vim.keymap.set({"n", "x"}, "<leader>gh", "<Cmd>DiffviewFileHistory<CR>", { desc="History" })
+            vim.keymap.set({"n", "x"}, "<leader>gh", "<Cmd>DiffviewFileHistory %<CR>", { desc="History" })
         end,
         config=function()
             local diffview = require "diffview"
@@ -150,6 +150,7 @@ return {
                         ["<leader><leader>d"] = actions.conflict_choose("none"),   -- Use dx instead
                         ["<leader>gq"] = actions.close,                     -- Use :tabclose instead
                         ["<leader><leader>q"] = actions.close,              -- Use :tabclose instead
+                        ["<leader>bc"] = "<Cmd>tabclose<CR>",
                     },
                     diff1 = { --[[ Mappings in single window diff layouts ]] },
                     diff2 = { --[[ Mappings in 2-way diff layouts ]] },
@@ -192,6 +193,9 @@ return {
                         ["g<C-x>"]        = actions.cycle_layout,
                         ["[x"]            = actions.prev_conflict,
                         ["]x"]            = actions.next_conflict,
+                        ["<leader>gq"]    = "<Cmd>tabclose<CR>",
+                        ["<leader><leader>q"] = "<Cmd>tabclose<CR>",
+                        ["<leader>bc"] = "<Cmd>tabclose<CR>",
                     },
                     file_history_panel = {
                         ["g!"]            = actions.options,          -- Open the option panel
@@ -217,6 +221,9 @@ return {
                         ["<leader>e"]     = actions.focus_files,
                         -- ["<leader>e"]     = actions.toggle_files,
                         ["g<C-x>"]        = actions.cycle_layout,
+                        ["<leader>gq"]    = "<Cmd>tabclose<CR>",
+                        ["<leader><leader>q"] = "<Cmd>tabclose<CR>",
+                        ["<leader>bc"] = "<Cmd>tabclose<CR>",
                     },
                     option_panel = {
                         ["<tab>"] = actions.select_entry,
