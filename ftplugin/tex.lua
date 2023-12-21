@@ -114,7 +114,6 @@ vim.api.nvim_create_autocmd("Colorscheme", {
         vim.api.nvim_set_hl(0, "texFileArg",     {link="@string"})
         vim.api.nvim_set_hl(0, "texFilesArg",    {link="@string"})
         vim.api.nvim_set_hl(0, "texFileOpt",     {link="@parameter"})
-        vim.api.nvim_set_hl(0, "Delimiter",      {link="RainbowDelimiterRed"})
         vim.api.nvim_set_hl(0, "TexBeamerDelim", {link="Delimiter"})
         vim.api.nvim_set_hl(0, "superscript",    {link="Type"}) -- like \huge, \normalsize etc
         vim.api.nvim_set_hl(0, "subscript",      {link="Type"}) -- like \huge, \normalsize etc

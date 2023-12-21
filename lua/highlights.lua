@@ -3,6 +3,24 @@ local hl = require "utils/highlights"
 
 ---- some sane defaults that a colorscheme may overwrite
 
+-- mods to default nvim colorscheme
+-- TODO: maybe move these to a colorscheme that is an extension of default.
+hl.set("@conditional",      {fg="#9a808f", italic=true})
+hl.set("@repeat",           {fg="#9a808f", italic=true})
+hl.set("@include",          {fg="#9a808f", italic=true})
+hl.set("Exception",         {fg="#9a808f", italic=true})
+hl.set("Keyword",           {fg="#9a808f", italic=true})
+hl.set("Operator",          {fg="#9a808f", bold=true})
+hl.set("@keyword.function", {fg="#9a808f"})
+hl.set("Type",              {fg="#9a808f", bold=true})
+hl.set("Preproc",           {fg="#8888ff"})
+-- hl.set("Type", {fg="#88ef88", bold=true})
+hl.link("Identifier", "@variable")
+hl.link("Special", "PreProc")
+hl.link("Number", "String")
+hl.link("Constant", "String")
+hl.link("@constant.builtin", "String")
+
 -- Italic highlight group doesn't actually make terminal text italic by default.
 hl.set("Italic", {italic=true})
 
@@ -83,13 +101,13 @@ local function afterColorscheme()
     hl.mod("Repeat", {italic=true})
     hl.mod("Label", {italic=true})
     hl.mod("Type", {italic=false})
-    hl.mod("@type.builtin", {italic=false})
     hl.mod("Conditional", {italic=true})
     -- for e.g. julia there is the `a = bool ? b : c` notation. It's weird to 
     -- have ? and : italic since that is meant for words, but it does help 
     -- distinguish them from : used in e.g. ranges.
     -- hl.mod("@conditional.ternary", {italic=false})
     hl.mod("Identifier", {italic=false})
+    hl.mod("Number", {italic=false})
     hl.mod("Exception", {italic=true})
     hl.mod("@include", {italic=true})
     hl.link("@keyword", "Keyword")
@@ -98,14 +116,21 @@ local function afterColorscheme()
     hl.mod("@keyword.return", {italic=true})
     hl.mod("@keyword.operator", {italic=true})
     hl.mod("@parameter", {italic=false})
-    hl.mod("@function", {italic=false})
+    hl.mod("@function", {italic=false, bold=true})
+    hl.mod("@function.call", {bold=false})
+    hl.link("@function.macro", "@function.call")
+    hl.mod("Conditional", {italic=true, bold=false})
+    hl.mod("@conditional.ternary", {italic=false})
+    hl.mod("@repeat", {italic=true, bold=false})
     hl.link("@boolean", "Boolean")
     hl.mod("Boolean", {italic=true, bold=false})
     hl.mod("@variable.builtin", {italic=true})
     hl.mod("@function.builtin", {italic=true})
+    hl.mod("@constant.builtin", {italic=true})
+    hl.mod("@type.builtin",     {italic=true})
 
-    -- delim. Currently using RainbowDelimiterRed since it's the default for parentheses.
-    hl.link("Delimiter", "RainbowDelimiterRed")
+    -- delim. Currently using the default for parentheses.
+    hl.link("Delimiter", "RainbowDelimiterViolet")
     hl.link("@punctuation.delimiter", "Delimiter")
     
     -- NonText shouldn't be exactly like comments
@@ -121,8 +146,11 @@ local function afterColorscheme()
     hl.link("@lsp.type.operator", "@operator")
     hl.link("@lsp.type.keyword", "@keyword")
 
-    -- variable is the default
-    hl.clear("@variable")
+    -- variable is the default.
+    -- I set it to copy normal instead of using clear since if I clear it will 
+    -- be overrideen by other colors, but I want it to appear. Example in julia:
+    -- "$variable" will color variable as string with clear and as normal with this approach.
+    hl.fg("@variable", hl.get("Normal")["fg"])
 end
 
 local defaultDark = 'fluoromachine'
@@ -138,12 +166,15 @@ vim.api.nvim_create_autocmd("VimEnter", {
     callback = function ()
 
         vim.schedule(function ()
-            vim.cmd "hi clear"
-            if vim.o.background == "dark" then
-                vim.cmd('colorscheme ' .. defaultDark)
-            else
-                vim.cmd('colorscheme ' .. defaultLight)
-            end
+            -- pretend we called colorscheme in order to trigger all autcmds 
+            -- that fire after setting a new colorscheme.
+            vim.api.nvim_exec_autocmds("Colorscheme", {})
+            -- vim.cmd "hi clear"
+            -- if vim.o.background == "dark" then
+            --     vim.cmd('colorscheme ' .. defaultDark)
+            -- else
+            --     vim.cmd('colorscheme ' .. defaultLight)
+            -- end
         end)
     end
 })

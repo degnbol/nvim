@@ -23,7 +23,7 @@ vim.api.nvim_set_hl(0, "typstMarkupHeading", {link="@text.title", default=true})
 vim.api.nvim_set_hl(0, "@lsp.type.escape.typst", {link="@comment", default=true})
 vim.api.nvim_set_hl(0, "@lsp.typemod.punct.emph.typst", {link="@comment", default=true})
 vim.api.nvim_set_hl(0, "@lsp.typemod.punct.strong.typst", {link="@comment", default=true})
-vim.api.nvim_set_hl(0, "@lsp.type.punct.typst", {link="RainbowDelimiterRed", default=true})
+vim.api.nvim_set_hl(0, "@lsp.type.punct.typst", {link="Delimiter", default=true})
 vim.api.nvim_set_hl(0, "@lsp.type.pol.typst", {link="@variable", default=true})
 
 -- local grp = vim.api.nvim_create_augroup("typst", {clear=true})

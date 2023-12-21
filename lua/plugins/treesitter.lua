@@ -336,13 +336,13 @@ return {
                     latex = 'rainbow-blocks', -- doesn't work otherwise
                 },
                 highlight = {
-                    'RainbowDelimiterRed',
+                    'RainbowDelimiterViolet',
+                    'RainbowDelimiterOrange',
                     'RainbowDelimiterYellow',
                     'RainbowDelimiterBlue',
-                    'RainbowDelimiterOrange',
                     'RainbowDelimiterGreen',
-                    'RainbowDelimiterViolet',
                     'RainbowDelimiterCyan',
+                    'RainbowDelimiterRed',
                 },
             }
         end
