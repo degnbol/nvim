@@ -28,6 +28,9 @@ local function afterColorscheme()
     -- green.
     hl.rev("Search")
     hl.mod("IncSearch", {reverse=true})
+    -- cursor looks to much like the current search word under cursor
+    hl.set("CurSearch", {fg="gray", bg=hl.get("IncSearch")["fg"], standout=true, bold=true})
+    -- hl.mod("CurSearch", {standout=true})
 
     -- highlight bg defeats the purpose of folding for me.
     -- It is still plenty clear that text is folded.
