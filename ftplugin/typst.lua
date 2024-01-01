@@ -27,6 +27,7 @@ vim.api.nvim_set_hl(0, "@lsp.typemod.punct.emph.typst", {link="@comment", defaul
 vim.api.nvim_set_hl(0, "@lsp.typemod.punct.strong.typst", {link="@comment", default=true})
 vim.api.nvim_set_hl(0, "@lsp.type.punct.typst", {link="Delimiter", default=true})
 vim.api.nvim_set_hl(0, "@lsp.type.pol.typst", {link="@variable", default=true})
+vim.api.nvim_set_hl(0, "@lsp.type.string.typst", {link="@string", default=true})
 
 -- local grp = vim.api.nvim_create_augroup("typst", {clear=true})
 -- vim.api.nvim_create_autocmd("Colorscheme", {
