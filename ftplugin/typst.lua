@@ -21,6 +21,8 @@ vim.api.nvim_set_hl(0, "typstMarkupHeading", {link="@text.title", default=true})
 -- Semantic tokens.
 -- captures \ at the end of lines, ~ between words and \* that let's you write a literal *. The last one is not ideal but worth it for the other two.
 vim.api.nvim_set_hl(0, "@lsp.type.escape.typst", {link="@comment", default=true})
+-- undo coloring from above on "..." with help from custom capture in after/queries/typst/highlights.scm
+vim.api.nvim_set_hl(0, "@punct.ellipsis.typst", {link="Normal", default=true})
 vim.api.nvim_set_hl(0, "@lsp.typemod.punct.emph.typst", {link="@comment", default=true})
 vim.api.nvim_set_hl(0, "@lsp.typemod.punct.strong.typst", {link="@comment", default=true})
 vim.api.nvim_set_hl(0, "@lsp.type.punct.typst", {link="Delimiter", default=true})
@@ -34,3 +36,7 @@ vim.api.nvim_set_hl(0, "@lsp.type.pol.typst", {link="@variable", default=true})
 --        
 --     end
 -- })
+
+vim.opt_local.wrap = true
+vim.opt_local.sidescrolloff = 0
+
