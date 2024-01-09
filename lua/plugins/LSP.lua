@@ -42,9 +42,9 @@ return {
 
 
             -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-            vim.keymap.set('n', '<space>dd', vim.diagnostic.open_float, {desc = "Line diagnostic"})
-            vim.keymap.set('n', '<space>dk', vim.diagnostic.disable, {desc = "Disable diagnostics"})
-            vim.keymap.set('n', '<space>ds', vim.diagnostic.enable, {desc = "Enable diagnostics"})
+            vim.keymap.set('n', '<space>dd', vim.diagnostic.open_float, { desc = "Line diagnostic" })
+            vim.keymap.set('n', '<space>dk', vim.diagnostic.disable, { desc = "Disable diagnostics" })
+            vim.keymap.set('n', '<space>ds', vim.diagnostic.enable, { desc = "Enable diagnostics" })
             vim.keymap.set('n', '<space>fd', "<cmd>Telescope diagnostics<CR>", { desc = "Diagnostics" })
             vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Diagnostic" })
             vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Diagnostic" })
@@ -70,7 +70,7 @@ return {
                 vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, { buffer = bufnr, desc = "Code action" })
                 -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, { buffer=bufnr, desc="Goto references" })
                 vim.keymap.set('n', 'gr', "<cmd>Telescope lsp_references<CR>", { buffer = bufnr, desc = "Goto references" })
-                vim.keymap.set('n', '<space>F', vim.lsp.buf.format, { buffer = bufnr, desc = "Format" })
+                vim.keymap.set({'n', 'v'}, '<space>lf', vim.lsp.buf.format, { buffer = bufnr, desc = "Format" })
 
                 -- LSP shorthand keymaps
                 vim.keymap.set('n', '<leader>li', "<Cmd>LspInfo<CR>", { buffer=bufnr, desc="Info" })
@@ -79,6 +79,15 @@ return {
                 vim.keymap.set('n', '<leader>ls', "<Cmd>LspStart<CR>", { buffer=bufnr, desc="Start" })
                 vim.keymap.set('n', '<leader>ll', "<Cmd>LspLog<CR>", { buffer=bufnr, desc="Log" })
                 vim.keymap.set('n', '<leader>lc', "<Cmd>CmpStatus<CR>", { buffer=bufnr, desc="Cmp status" })
+                vim.keymap.set('n', '<leader>ld', function ()
+                    if vim.diagnostic.is_disabled() then
+                        vim.diagnostic.enable()
+                        print("Diagnostics ON")
+                    else
+                        vim.diagnostic.disable()
+                        print("Diagnostics OFF")
+                    end
+                end, { buffer=bufnr, desc="Diagnostics toggle" })
             end
 
             local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
