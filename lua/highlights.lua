@@ -118,12 +118,19 @@ local function afterColorscheme()
     -- bold and @type.function is often not, e.g. in this very file.
     hl.link("@lsp.type.function", "@function.call")
     hl.link("@lsp.type.method", "@function.call")
+    hl.link("@lsp.type.string", "@string")
 
-    -- variable is the default.
-    -- I set it to copy normal instead of using clear since if I clear it will 
-    -- be overrideen by other colors, but I want it to appear. Example in julia:
-    -- "$variable" will color variable as string with clear and as normal with this approach.
-    hl.fg("@variable", hl.get("Normal")["fg"])
+    -- variable is the default capture for most things in code so we want it to 
+    -- be neutral, although not if the language is markdown etc.
+    local showVar = {typst=true, markdown=true, asciidoc=true, latex=true}
+    if showVar[vim.bo.filetype] then
+        hl.fg("@variable", hl.get("@variable.builtin")["fg"])
+    else
+        -- I set it to copy normal instead of using clear since if I clear it will 
+        -- be overrideen by other colors, but I want it to appear. Example in julia:
+        -- "$variable" will color variable as string with clear and as normal with this approach.
+        hl.fg("@variable", hl.get("Normal")["fg"])
+    end
 end
 
 -- local defaultDark = 'fluoromachine'
