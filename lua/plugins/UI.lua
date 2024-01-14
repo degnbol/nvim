@@ -19,6 +19,7 @@ return {
                 paste="<S-CR>",
                 help="<leader>K",
                 runLine="<CR><CR>",
+                runLineFor="<leader>ro",
                 pasteLine="<S-CR><S-CR>",
                 runVisual="<CR>",
                 pasteVisual="<S-CR>",

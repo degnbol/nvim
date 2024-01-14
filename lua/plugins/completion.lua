@@ -9,7 +9,7 @@ return {
         branch = "patch-1",
     },
     {"hrsh7th/nvim-cmp",
-    event = "InsertEnter",
+    -- event = "InsertEnter" NO, doesn't work, e.g. for query loading luasnip
     dependencies = {
         'onsails/lspkind.nvim', -- pretty pictograms
         -- putting completion sources as dependencies so they only load when cmp is loaded.
