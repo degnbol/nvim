@@ -1,5 +1,6 @@
 ;extends
 
+
 "in" @repeat
 
 ; fix syntax thinking `x |> f` is piping into a variable.
@@ -8,7 +9,12 @@
   (_)
   (operator) @_pipe
   (identifier) @function.call
-  (#lua-match? @_pipe "\.?|>"))
+  (#any-of? @_pipe "|>" ".|>"))
+; TODO: maybe figure out how to set this as lower priority
+; (tried adding (#set! "priority" 0))
+; Since piping into types (e.g. x |> String) has the right highlights
+; (same as String(x)) but in the wrong order, so the color from builtin type is 
+; overruled by function.call.
 
 ; support @chain macro recognizing @function.call as well.
 (macrocall_expression
