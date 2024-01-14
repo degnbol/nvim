@@ -213,3 +213,7 @@ map('n', '<leader>bD', "<Cmd>bd!<CR>", { desc="Delete!" })
 map('n', "<leader>bn", "<Cmd>enew<CR>", { desc="New" })
 map('n', "<leader>bc", "<Cmd>tabclose<CR>", { desc="tabclose" })
 
+-- poor fix for cmp replacing capitlisation of buffer words.
+-- default C-c is cancel, so exit to normal mode. Not very useful.
+map('i', "<C-c>", "<Esc>b~gi", { desc="Capitalise last word" })
+
