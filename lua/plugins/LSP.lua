@@ -40,7 +40,6 @@ return {
             -- now for adding the language servers
             local lsp = require "lspconfig"
 
-
             -- See `:help vim.diagnostic.*` for documentation on any of the below functions
             vim.keymap.set('n', '<space>dd', vim.diagnostic.open_float, { desc = "Line diagnostic" })
             vim.keymap.set('n', '<space>dk', vim.diagnostic.disable, { desc = "Disable diagnostics" })
@@ -49,6 +48,13 @@ return {
             vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Diagnostic" })
             vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Diagnostic" })
             vim.keymap.set('n', '<space>dl', vim.diagnostic.setloclist, { desc = "Loclist diagnostics" })
+            -- LSP shorthand keymaps
+            vim.keymap.set('n', '<leader>li', "<Cmd>LspInfo<CR>", { buffer=bufnr, desc="Info" })
+            vim.keymap.set('n', '<leader>lr', "<Cmd>LspRestart<CR>", { buffer=bufnr, desc="Restart" })
+            vim.keymap.set('n', '<leader>lk', "<Cmd>LspStop<CR>", { buffer=bufnr, desc="Stop" })
+            vim.keymap.set('n', '<leader>ls', "<Cmd>LspStart<CR>", { buffer=bufnr, desc="Start" })
+            vim.keymap.set('n', '<leader>ll', "<Cmd>LspLog<CR>", { buffer=bufnr, desc="Log" })
+            vim.keymap.set('n', '<leader>lc', "<Cmd>CmpStatus<CR>", { buffer=bufnr, desc="Cmp status" })
 
             -- Use an on_attach function to only map the following keys
             -- after the language server attaches to the current buffer
@@ -62,32 +68,15 @@ return {
                 -- gi is for goto last insert and switch to insert mode so we use gI
                 vim.keymap.set('n', 'gI', vim.lsp.buf.implementation, { buffer = bufnr, desc = "Goto implementation" })
                 vim.keymap.set('n', 'gh', vim.lsp.buf.signature_help, { buffer = bufnr, desc = "Signature" })
-                vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, { buffer = bufnr, desc = "Add" })
-                vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, { buffer = bufnr, desc = "Remove" })
-                vim.keymap.set('n', '<space>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, { buffer = bufnr, desc = "List" })
-                vim.keymap.set('n', '<space>dt', vim.lsp.buf.type_definition, { buffer = bufnr, desc = "Type def" })
-                vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, { buffer = bufnr, desc = "Rename" })
-                vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, { buffer = bufnr, desc = "Code action" })
+                vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { buffer = bufnr, desc = "Add" })
+                vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { buffer = bufnr, desc = "Remove" })
+                vim.keymap.set('n', '<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, { buffer = bufnr, desc = "List" })
+                vim.keymap.set('n', '<leader>dt', vim.lsp.buf.type_definition, { buffer = bufnr, desc = "Type def" })
+                vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { buffer = bufnr, desc = "Rename" })
+                vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { buffer = bufnr, desc = "Code action" })
                 -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, { buffer=bufnr, desc="Goto references" })
                 vim.keymap.set('n', 'gr', "<cmd>Telescope lsp_references<CR>", { buffer = bufnr, desc = "Goto references" })
-                vim.keymap.set({'n', 'v'}, '<space>lf', vim.lsp.buf.format, { buffer = bufnr, desc = "Format" })
-
-                -- LSP shorthand keymaps
-                vim.keymap.set('n', '<leader>li', "<Cmd>LspInfo<CR>", { buffer=bufnr, desc="Info" })
-                vim.keymap.set('n', '<leader>lr', "<Cmd>LspRestart<CR>", { buffer=bufnr, desc="Restart" })
-                vim.keymap.set('n', '<leader>lk', "<Cmd>LspStop<CR>", { buffer=bufnr, desc="Stop" })
-                vim.keymap.set('n', '<leader>ls', "<Cmd>LspStart<CR>", { buffer=bufnr, desc="Start" })
-                vim.keymap.set('n', '<leader>ll', "<Cmd>LspLog<CR>", { buffer=bufnr, desc="Log" })
-                vim.keymap.set('n', '<leader>lc', "<Cmd>CmpStatus<CR>", { buffer=bufnr, desc="Cmp status" })
-                vim.keymap.set('n', '<leader>ld', function ()
-                    if vim.diagnostic.is_disabled() then
-                        vim.diagnostic.enable()
-                        print("Diagnostics ON")
-                    else
-                        vim.diagnostic.disable()
-                        print("Diagnostics OFF")
-                    end
-                end, { buffer=bufnr, desc="Diagnostics toggle" })
+                vim.keymap.set({'n', 'v'}, '<leader>lf', vim.lsp.buf.format, { buffer = bufnr, desc = "Format" })
             end
 
             local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
