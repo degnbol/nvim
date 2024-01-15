@@ -55,17 +55,17 @@ fmta("\\frac{<>}{<>}", {d(1, get_visual), i(2)}), optm),
 s({trig='(%b())/', dscr="fraction after paren", regTrig=true},
 {t"\\frac{",
 f(function(_, snip)
-    s = snip.captures[1]
-    return string.sub(s, 2, #s-1)
+    local c = snip.captures[1]
+    return string.sub(c, 2, #c-1)
 end),
 t"}{", i(1), t"}"}, optm),
 
 s({trig='\\left(%b())/', dscr="fraction after paren 2", regTrig=true},
 {t"\\frac{",
 f(function(_, snip)
-    s = snip.captures[1]
+    local c = snip.captures[1]
     -- 7 for length of "\right)"
-    return string.sub(s, 2, #s-7)
+    return string.sub(c, 2, #c-7)
 end),
 t"}{", i(1), t"}"}, optm),
 
