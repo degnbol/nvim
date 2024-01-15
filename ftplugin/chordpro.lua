@@ -12,7 +12,7 @@ vim.keymap.set('n', '<leader><leader>f', forwardScreen,   { buffer=true, desc="L
 vim.keymap.set('n', '<leader><leader>b', backwardScreen,  { buffer=true, desc="Like <C-b> but jumps backwards one screen visually in the split regardless of scrolloff." })
 vim.keymap.set('n', '<leader><leader>c', prettyChordLine, { buffer=true, desc="Write a pretty print of chord at current line." })
 vim.keymap.set('n', '<leader><leader>t', tabNew,          { buffer=true, desc="New tab" })
-vim.keymap.set('i', '-',                 tabDash,         { buffer=true, desc="Potentially extend tab" })
+-- vim.keymap.set('i', '-',                 tabDash,         { buffer=true, desc="Potentially extend tab" })
 -- sometimes you want to simply BS normally, e.g. while writing anything other than additional -.
 -- the <leader><C-v> mapping is useful for deleting parts of tab.
 -- vim.keymap.set('i', '<BS>',              tabBS,           { buffer=true, desc="Potentially delete tab" })
