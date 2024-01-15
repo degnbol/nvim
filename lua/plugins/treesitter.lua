@@ -55,6 +55,13 @@ return {
                         "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
                     },
                 },
+                indent = {
+                    -- note vimscript indentexpr
+                    -- https://github.com/JuliaEditorSupport/julia-vim/blob/master/indent/julia.vim
+                    -- is terrible for julia, so definitely use 
+                    -- treesitter indent, if for no other lang.
+                    enable = true,
+                },
                 incremental_selection = {
                     enable = true,
                     keymaps = {
