@@ -11,7 +11,8 @@ return {
     -- has the useful gcO and gcA extra mappings, but the basic mappings aren't working as I like from terrortylor
     {"numToStr/Comment.nvim", opts={ mappings={ basic=false, } }},
     -- julia support, colors and unicode substitution. CANNOT use ft=julia
-    {"JuliaEditorSupport/julia-vim", config=function()
+    {"JuliaEditorSupport/julia-vim",
+    config=function()
         -- this was necessary, random lhs rhs messages was appearing 
         vim.g.latex_to_unicode_tab = "off"
         -- auto insert latex if moving on with e.g. space or other writing that is not part of a unicode char
@@ -155,5 +156,6 @@ return {
     -- basic kotlin support
     "udalov/kotlin-vim",
 
+    "jaredsampson/vim-pymol",
 }
 
