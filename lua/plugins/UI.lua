@@ -1,8 +1,12 @@
 #!/usr/bin/env lua
 return {
     -- popular plugin to take advantage of some exposed UI hooks
-    -- doesn't seem to apply changes
-    { "stevearc/dressing.nvim", enabled = false, event = "VeryLazy", opts = {} },
+    {
+        "stevearc/dressing.nvim",
+        -- enabled = false, -- was disabled since rename didn't seem to take effect.
+        event = "VeryLazy",
+        opts = {},
+    },
     -- :Capture hi to call :hi where you can search etc.
     {"tyru/capture.vim", cmd="Capture"},
     {
@@ -15,6 +19,7 @@ return {
                 paste="<S-CR>",
                 help="<leader>K",
                 runLine="<CR><CR>",
+                runLineFor="<leader>ro",
                 pasteLine="<S-CR><S-CR>",
                 runVisual="<CR>",
                 pasteVisual="<S-CR>",

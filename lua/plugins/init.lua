@@ -147,6 +147,7 @@ return {
             vim.keymap.set("n", "gA", "ga", { desc="Char info" })
         end
     },
+
     -- multi cursor
     {
         "mg979/vim-visual-multi",

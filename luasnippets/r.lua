@@ -29,9 +29,12 @@ fmta([[<> = melt(<>, <>, <>, variable.name="<>", value.name="<>")]],
 
 -- data.table
 
-s({trig="update", dscr="Update joined rows"},
+s({trig="DTupdate", dscr="Update joined rows"},
 fmta([[<>[<>, on=c(<>="<>"), c("<>") := .(<>)]
 ]], {i(1, "DT_TRG"), i(2, "DT_SRC"), i(3, "ON_TRG"), i(4, "ON_SRC"), i(5, "COL_TRG"), i(6, "i.COL_DUP")})),
+
+s({trig="DTmulti", dscr="Multiple column assignment"},
+{t'c("', i(1, 'COL'), t'"):=.(', i(2, 'COL'), t")"}),
 
 -- ggplot
 

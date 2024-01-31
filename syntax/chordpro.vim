@@ -1,4 +1,5 @@
-syn match Guitar /╳/
-syn match Guitar /│/
-syn match Guitar /●/
+syn match Chord /╳/
+syn match Chord /│/
+syn match Chord /●/
+syn match Tab /^[aBGDAE]\?|.*|/
 

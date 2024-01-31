@@ -1,5 +1,8 @@
 #!/usr/bin/env lua
 
+-- instead of to Constant, which is currently italic.
+vim.api.nvim_set_hl(0, "AsciidoctorCode", {link="@string", default=true})
+
 local function get_xref_id()
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
     local c=c+1 -- 1-index

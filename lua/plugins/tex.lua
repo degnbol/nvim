@@ -39,7 +39,8 @@ return {
             -- We want <localleader>l for LSP and double leader for filetype specific mappings.
             g.vimtex_mappings_prefix = "<localleader><localleader>"
 
-            g.vimtex_view_method = 'sioyek'
+            -- g.vimtex_view_method = 'sioyek' -- not working
+            g.vimtex_view_method = 'skim'
             -- inspiration from https://dr563105.github.io/blog/skim-vimtex-setup/
             -- forward search after every successful compilation
             g.vimtex_view_skim_sync = true
@@ -48,6 +49,7 @@ return {
             g.vimtex_view_skim_reading_bar = true
 
             g.vimtex_log_ignore = { "Underfull", "Overfull" }
+            g.vimtex_quickfix_ignore_filters = { "Underfull", "Overfull" }
             g.vimtex_quickfix_open_on_warning = false
 
             -- :h vimtex-af-enhanced-matchparen
@@ -56,7 +58,7 @@ return {
 
             -- defaults at :h vimtex_compiler_latexmk
             g.vimtex_compiler_latexmk = {
-                build_dir = "build",
+                aux_dir = "aux",
             }
             -- set default latex engine to the modern lualatex over pdflatex
             g.vimtex_compiler_latexmk_engines = { _="-lualatex" }

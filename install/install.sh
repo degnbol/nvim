@@ -2,7 +2,7 @@
 ln -s $XDG_CONFIG_HOME/nvim/install/nvim ~/nvim
 cd $XDG_CONFIG_HOME/nvim/install
 
-./neovim.sh
+./neovim.sh || ./neovim_alt.sh
 
 # https://tree-sitter.github.io/tree-sitter/creating-parsers#installation
 cargo install tree-sitter-cli

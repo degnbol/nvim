@@ -51,7 +51,7 @@ s({trig=";X", wordTrig=false}, { t"Ξ", }),
 
 s({trig="\\nabla", wordTrig=false}, t"∇", optm),
 
-s({trig="*", dscr="cdot", wordTrig=false}, t"⋅", optm),
+s({trig="**", dscr="cdot", wordTrig=false}, t"⋅", optm),
 s({trig="xx", dscr="cross", wordTrig=false}, t"×", optm),
 s({trig="\\pm", dscr="plus/minus", wordTrig=false}, t"±", optm),
 s({trig="\\mp", dscr="plus/minus", wordTrig=false}, t"∓", optm),

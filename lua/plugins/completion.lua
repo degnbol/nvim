@@ -1,13 +1,21 @@
 #!/usr/bin/env lua
 return {
+    {
+        -- hack solution. I want buffer completed words with either capitalization.
+        -- It wasn't easy to get cmp to not change capitalization for buffer 
+        -- completions, so I made this fork of the repo where regular words are 
+        -- indexed with either capitalization.
+        "degnbol/cmp-buffer",
+        branch = "patch-1",
+    },
     {"hrsh7th/nvim-cmp",
-    event = "InsertEnter",
+    -- event = "InsertEnter" NO, doesn't work, e.g. for query loading luasnip
     dependencies = {
         'onsails/lspkind.nvim', -- pretty pictograms
         -- putting completion sources as dependencies so they only load when cmp is loaded.
         'L3MON4D3/LuaSnip',
         'hrsh7th/cmp-nvim-lsp',
-        'hrsh7th/cmp-buffer',
+        'degnbol/cmp-buffer',
         'hrsh7th/cmp-path',
         'hrsh7th/cmp-nvim-lsp-signature-help',
         'hrsh7th/cmp-nvim-lua', -- neovim Lua API
@@ -49,7 +57,7 @@ return {
         end
 
         -- for tab support, code copied from https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
-        mappings = {
+        local mappings = {
             -- the Down and Up calls means we don't move in the list (default) but rather ignore the menu and move the cursor in the file.
             ['<up>'] = cmp.mapping.closeFallback(),
             ['<down>'] = cmp.mapping.closeFallback(),
@@ -158,12 +166,14 @@ return {
                     cmp.config.compare.order,
                 },
             },
-            experimental = {
-                ghost_text = { hl_group = 'nontext' },
-            }
+            -- it's too distracting when inside a line.
+            -- I would like it to only be active at end of empty line.
+            -- experimental = {
+            --     ghost_text = { hl_group = 'nontext' },
+            -- }
         }
 
-        cmp.setup.filetype({'markdown', 'tex'}, {
+        cmp.setup.filetype({'markdown', 'tex', 'text', 'asciidoc'}, {
             sources = {
                 { name = 'nvim_lsp' },
                 { name = 'path', option = {trailing_slash=true} },
@@ -214,131 +224,134 @@ return {
             }
         })
 
-
         cmp.setup.cmdline(':', {
             sources = {
                 { name = 'colorschemes' },
             }
         })
 
-                -- TODO: take inspo from https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
-                -- and link completion menu colors to equivalent things
-            end},
+        -- local cmp_case = require "completecase"
+        -- cmp.event:on('confirm_done', cmp_case.on_menu_closed())
 
-            -- alts: hrsh7th/vim-vsnip, SirVer/ultisnips, ...
-            {'L3MON4D3/LuaSnip', lazy=true, -- load as cmp dependency
-            dependencies="nvim-treesitter/nvim-treesitter", -- depend on treesitter for the ft_func
-            -- the make command is optional: https://github.com/L3MON4D3/LuaSnip
-            build="make install_jsregexp", },
-            {'saadparwaiz1/cmp_luasnip', lazy=true,
-            dependencies={'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp"}, config=function() 
-                local luasnip = require "luasnip"
-                -- works better to put it here than directly with luasnip, since we need to 
-                -- require ft_func and would then replace config anyways
-                luasnip.config.set_config {
-                    -- https://youtu.be/Dn800rlPIho?t=440
-                    -- don't jump back into exited snippet
-                    history = true,
-                    -- dynamic snippets update as you type
-                    updateevents = "TextChanged,TextChangedI",
-                    enable_autosnippets = true,
-                    store_selection_keys = "<Tab>",
-                    -- https://github.com/L3MON4D3/LuaSnip/blob/master/Examples/snippets.lua
-                    -- Snippets aren't automatically removed if their text is deleted.
-                    -- `delete_check_events` determines on which events (:h events) a check for
-                    -- deleted snippets is performed.
-                    -- This can be especially useful when `history` is enabled.
-                    delete_check_events = "TextChanged",
-                    -- treesitter-hl has 100, use something higher (default is 200).
-                    ext_base_prio = 300,
-                    -- minimal increase in priority.
-                    ext_prio_increase = 1,
+        -- TODO: take inspo from https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
+        -- and link completion menu colors to equivalent things
+    end},
 
-                    -- get filetype with treesitter instead of default from buffer filetype, to detect filetype in markdown code blocks.
-                    -- get error if attempting to set from LuaSnip opts config above.
-                    -- https://github.com/L3MON4D3/LuaSnip/blob/master/lua/luasnip/extras/filetype_functions.lua
-                    -- "luasnippets" folder no longer auto-included. It also changes from tex->latex.
-                    -- ft_func = require("luasnip.extras.filetype_functions").from_cursor_pos
-                }
+    -- alts: hrsh7th/vim-vsnip, SirVer/ultisnips, ...
+    {'L3MON4D3/LuaSnip', lazy=true, -- load as cmp dependency
+    dependencies="nvim-treesitter/nvim-treesitter", -- depend on treesitter for the ft_func
+    -- the make command is optional: https://github.com/L3MON4D3/LuaSnip
+    build="make install_jsregexp", },
+    {'saadparwaiz1/cmp_luasnip', lazy=true,
+    dependencies={'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp"}, config=function() 
+        local luasnip = require "luasnip"
+        -- works better to put it here than directly with luasnip, since we need to 
+        -- require ft_func and would then replace config anyways
+        luasnip.config.set_config {
+            -- https://youtu.be/Dn800rlPIho?t=440
+            -- don't jump back into exited snippet
+            history = true,
+            -- dynamic snippets update as you type
+            updateevents = "TextChanged,TextChangedI",
+            enable_autosnippets = true,
+            store_selection_keys = "<Tab>",
+            -- https://github.com/L3MON4D3/LuaSnip/blob/master/Examples/snippets.lua
+            -- Snippets aren't automatically removed if their text is deleted.
+            -- `delete_check_events` determines on which events (:h events) a check for
+            -- deleted snippets is performed.
+            -- This can be especially useful when `history` is enabled.
+            delete_check_events = "TextChanged",
+            -- treesitter-hl has 100, use something higher (default is 200).
+            ext_base_prio = 300,
+            -- minimal increase in priority.
+            ext_prio_increase = 1,
 
-                vim.keymap.set({ "i", "s" }, "<C-k>", function ()
-                    -- including expand means ctrl+k will autocomplete the first visible snippet in completion menu
-                    if luasnip.expand_or_jumpable() then luasnip.expand_or_jump() end
-                end, { silent = true })
-
-                vim.keymap.set({ "i", "s" }, "<C-j>", function ()
-                    if luasnip.jumpable(-1) then luasnip.jump(-1) end
-                end, { silent = true })
-
-                vim.keymap.set({ "i", "s" }, "<C-l>", function ()
-                    if luasnip.choice_active() then
-                        luasnip.change_choice(1)
-                    else
-                        -- fallback to moving right, useful for writing "..."
-                        local keys = vim.api.nvim_replace_termcodes('<right>', true,false,true)
-                        vim.api.nvim_feedkeys(keys, 'm', false)
-                    end
-                end)
-
-            end },
-            -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
-            {'uga-rosa/cmp-dictionary', lazy = true, -- load when cmp loads since dependency
-            config=function()
-                local cmpd = require "cmp_dictionary"
-                local rtp = vim.opt.runtimepath:get()[1]
-
-                cmpd.setup {
-                    dic = {
-                        -- dicts generated with ./spell.sh
-                        ["*"] = {
-                            rtp .. "/spell/custom.dic",
-                            rtp .. "/spell/en.dic",
-                        },
-                        spelllang = { 
-                            da = rtp .. "/spell/da.dic",
-                        }
-                    },
-                    first_case_insensitive = true,
-                    async = true, -- from slight but noticeable startup delay to instant.
-                }
-
-                function CmpDictUpdate()
-                    if vim.bo.iminsert == 1 then
-                        cmpd.update()
-                    else
-                        -- We want spelllang=en,da so we can underline bad 
-                        -- spelling for both english and danish words,
-                        -- but danish completion should only be shown when 
-                        -- iminsert==1.
-                        -- Save spelllang to temp var that is probably en,da
-                        local spelllang = vim.bo.spelllang
-                        vim.bo.spelllang = "en"
-                        cmpd.update()
-                        vim.bo.spelllang = spelllang
-                    end
-                end
-                vim.defer_fn(CmpDictUpdate, 500)
-                -- also trigger it when language is changed. See lua/keymap
-                vim.api.nvim_create_autocmd("User", {
-                    pattern = "ToggleDansk",
-                    callback = CmpDictUpdate
-                })
-            end},
-            -- these default snippets can be replaced with my custom snippets when I have enough
-            {"honza/vim-snippets", lazy = true, -- load as cmp dependency
-            dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
-                require("luasnip.loaders.from_snipmate").lazy_load {exclude={"tex", "julia", "all", "_"}}
-            end},
-            {"rafamadriz/friendly-snippets", lazy = true, -- load as cmp dependency
-            dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
-                require("luasnip.loaders.from_vscode").lazy_load {exclude={"tex", "julia", "license", "global", "all"}}
-            end},
-
-            {
-                'KadoBOT/cmp-plugins',
-                lazy = true, -- loaded when cmp since it is a dependency
-                ft = 'lua',
-                opts = {files = { "nvim/lua/plugins/" }},
-            },
-
+            -- get filetype with treesitter instead of default from buffer filetype, to detect filetype in markdown code blocks.
+            -- get error if attempting to set from LuaSnip opts config above.
+            -- https://github.com/L3MON4D3/LuaSnip/blob/master/lua/luasnip/extras/filetype_functions.lua
+            -- "luasnippets" folder no longer auto-included. It also changes from tex->latex.
+            -- ft_func = require("luasnip.extras.filetype_functions").from_cursor_pos
         }
+
+        vim.keymap.set({ "i", "s" }, "<C-k>", function ()
+            -- including expand means ctrl+k will autocomplete the first visible snippet in completion menu
+            if luasnip.expand_or_jumpable() then luasnip.expand_or_jump() end
+        end, { silent = true })
+
+        vim.keymap.set({ "i", "s" }, "<C-j>", function ()
+            if luasnip.jumpable(-1) then luasnip.jump(-1) end
+        end, { silent = true })
+
+        vim.keymap.set({ "i", "s" }, "<C-l>", function ()
+            if luasnip.choice_active() then
+                luasnip.change_choice(1)
+            else
+                -- fallback to moving right, useful for writing "..."
+                local keys = vim.api.nvim_replace_termcodes('<right>', true,false,true)
+                vim.api.nvim_feedkeys(keys, 'm', false)
+            end
+        end)
+
+    end },
+    -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
+    {'uga-rosa/cmp-dictionary',
+    -- lazy = true, -- Doesn't work to lazy load.
+    config=function()
+        local cmpd = require "cmp_dictionary"
+        local rtp = vim.opt.runtimepath:get()[1]
+
+        cmpd.setup {
+            dic = {
+                -- dicts generated with ./spell.sh
+                ["*"] = {
+                    rtp .. "/spell/custom.dic",
+                    rtp .. "/spell/en.dic",
+                },
+                spelllang = { 
+                    da = rtp .. "/spell/da.dic",
+                }
+            },
+            first_case_insensitive = true,
+            async = true, -- from slight but noticeable startup delay to instant.
+        }
+
+        function CmpDictUpdate()
+            if vim.bo.iminsert == 1 then
+                cmpd.update()
+            else
+                -- We want spelllang=en,da so we can underline bad 
+                -- spelling for both english and danish words,
+                -- but danish completion should only be shown when 
+                -- iminsert==1.
+                -- Save spelllang to temp var that is probably en,da
+                local spelllang = vim.bo.spelllang
+                vim.bo.spelllang = "en"
+                cmpd.update()
+                vim.bo.spelllang = spelllang
+            end
+        end
+        vim.defer_fn(CmpDictUpdate, 500)
+        -- also trigger it when language is changed. See lua/keymap
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "ToggleDansk",
+            callback = CmpDictUpdate
+        })
+    end},
+    -- these default snippets can be replaced with my custom snippets when I have enough
+    {"honza/vim-snippets", lazy = true, -- load as cmp dependency
+    dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
+        require("luasnip.loaders.from_snipmate").lazy_load {exclude={"tex", "julia", "all", "_"}}
+    end},
+    {"rafamadriz/friendly-snippets", lazy = true, -- load as cmp dependency
+    dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
+        require("luasnip.loaders.from_vscode").lazy_load {exclude={"tex", "julia", "license", "global", "all"}}
+    end},
+
+    {
+        'KadoBOT/cmp-plugins',
+        lazy = true, -- loaded when cmp since it is a dependency
+        ft = 'lua',
+        opts = {files = { "nvim/lua/plugins/" }},
+    },
+
+}

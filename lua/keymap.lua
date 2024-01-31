@@ -16,7 +16,7 @@ map({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 -- use U instead of <C-r> for redo.
 -- TODO move line undo to Vu 
-map('n', "U", "<C-r>")
+-- map('n', "U", "<C-r>")
 
 -- For remote with problematic clipboard we replace the cutlass x that works 
 -- locally with a mapping where we call y (which is mapped to smartyank) then 
@@ -113,15 +113,17 @@ map('i', "<C-S-[>", '{}<left>')
 map('i', "<C-S-]>", '{}<left>')
 
 local triples = { '"""', "'''", "```" }
-local pairs   = { '""', "''", "``", "{}", '[]', "()", "<>" }
-local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>' }
+local pairs   = { '""', "''", "``", "()", '[]', "{}", "<>", "$$" }
+local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>', '$' }
 -- hack map of shift+space
-map('i', "\x1a", function ()
+map({'i', 'n'}, "\x1F", function ()
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
     local line = vim.api.nvim_get_current_line()
     if vim.tbl_contains(triples, line:sub(c+1,c+3)) then
-        return "<right>"
+        return "<right><right><right>"
     elseif vim.tbl_contains(triples, line:sub(c-2,c)) then
+        return "<left><left><left>"
+    elseif c == #line then
         return "<left>"
     elseif vim.tbl_contains(pairs, line:sub(c+1,c+2)) then
         return "<right>"
@@ -209,4 +211,9 @@ map('n', "<leader>Q3", "<Cmd>ll 3<CR>", {desc="Entry 3"})
 map('n', '<leader>bd', "<Cmd>bd<CR>", { desc="Delete" })
 map('n', '<leader>bD', "<Cmd>bd!<CR>", { desc="Delete!" })
 map('n', "<leader>bn", "<Cmd>enew<CR>", { desc="New" })
+map('n', "<leader>bc", "<Cmd>tabclose<CR>", { desc="tabclose" })
+
+-- poor fix for cmp replacing capitlisation of buffer words.
+-- default C-c is cancel, so exit to normal mode. Not very useful.
+map('i', "<C-c>", "<Esc>b~gi", { desc="Capitalise last word" })
 

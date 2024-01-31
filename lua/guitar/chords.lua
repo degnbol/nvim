@@ -109,7 +109,7 @@ end
 --- ╳││││●
 --- │││●││
 --- ││││●│
-local function prettyChordLine()
+function prettyChordLine()
     strings, fret = detectChordLine()
     if strings == nil then
         print("Chord code not understood.")
@@ -120,5 +120,5 @@ local function prettyChordLine()
     vim.api.nvim_buf_set_lines(0, r, r, true, pretty)
 end
 
-vim.api.nvim_create_user_command("Guitar", prettyChordLine, {})
+vim.api.nvim_create_user_command("Chord", prettyChordLine, {})
 

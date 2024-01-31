@@ -97,6 +97,9 @@ fmta([[vim.keymap.set({'n', 'x'}, '<>', "<<Cmd>><><<CR>>", { desc="<>" })]],
 s({trig="rtp", dscr="Get neovim config root", condition=conds.line_begin, snippetType='autosnippet'},
 {t"local rtp = vim.opt.runtimepath:get()[1]"}),
 
+s({trig="setlocal", dscr="Set local option.", condition=conds.line_begin*conds.line_end},
+{t"vim.opt_local."}),
+
 -- api
 
 s({trig="aucmd", snippetType="autosnippet" },
@@ -174,8 +177,8 @@ s({
     dscr="Press key where codes such as <right> are converted to some coded version first.",
 },
 fmta([[local keys = vim.api.nvim_replace_termcodes('<<<>>>', true,false,true)
-vim.api.nvim_feedkeys(keys, 'm', false)
-]], {i(1, "right")})),
+vim.api.nvim_feedkeys(keys, '<>', false)
+]], {i(1, "right"), c(2, {t"m", t"n", t"t", t"i", t"x", t"x!"})})),
 
 -- help text says to prefer vim.system for both, but it doesn't seem to exist.
 -- returns stdout
@@ -207,3 +210,4 @@ end, <>)
 ]], {i(1), i(2, "500")})),
 
 }
+

@@ -55,6 +55,13 @@ return {
                         "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
                     },
                 },
+                indent = {
+                    -- note vimscript indentexpr
+                    -- https://github.com/JuliaEditorSupport/julia-vim/blob/master/indent/julia.vim
+                    -- is terrible for julia, so definitely use 
+                    -- treesitter indent, if for no other lang.
+                    enable = true,
+                },
                 incremental_selection = {
                     enable = true,
                     keymaps = {
@@ -105,6 +112,21 @@ return {
                 print(text, "type=", type)
             end, { desc="parent" })
 
+            -- add custom parsers
+            local SeniorMars = { -- more stars, seems less maintained
+                url = "https://github.com/SeniorMars/tree-sitter-typst", -- local path or git repo
+                files = {"src/parser.c", "src/scanner.c"}, -- note that some parsers also require src/scanner.c or src/scanner.cc
+                branch = "main",
+            }
+            local uben0 = { -- Newer. Currently maintained. Claims to be complete.
+                url = "https://github.com/uben0/tree-sitter-typst",
+                files = {"src/parser.c", "src/scanner.c"}, -- note that some parsers also require src/scanner.c or src/scanner.cc
+            }
+            local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+            parser_config.typst = {
+                -- install_info = SeniorMars
+                install_info = uben0
+            }
         end
     },
     -- refactor
@@ -274,6 +296,7 @@ return {
     -- tree sitter based rainbow color parenthesis to easily see the matching
     {
         "mrjones2014/nvim-ts-rainbow",
+        enabled=false,
         dependencies='nvim-treesitter/nvim-treesitter',
         config=function()
             require("nvim-treesitter.configs").setup {
@@ -306,5 +329,30 @@ return {
             }
         end
     },
+    {
+        "https://gitlab.com/HiPhish/rainbow-delimiters.nvim",
+        dependencies='nvim-treesitter/nvim-treesitter',
+        config = function ()
+            local rainbow_delimiters = require 'rainbow-delimiters'
+            vim.g.rainbow_delimiters = {
+                strategy = {
+                    [''] = rainbow_delimiters.strategy['global'],
+                },
+                query = {
+                    [''] = 'rainbow-delimiters',
+                    latex = 'rainbow-blocks', -- doesn't work otherwise
+                },
+                highlight = {
+                    'RainbowDelimiterViolet',
+                    'RainbowDelimiterOrange',
+                    'RainbowDelimiterYellow',
+                    'RainbowDelimiterBlue',
+                    'RainbowDelimiterGreen',
+                    'RainbowDelimiterCyan',
+                    'RainbowDelimiterRed',
+                },
+            }
+        end
+    }
 }
 

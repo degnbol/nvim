@@ -9,3 +9,10 @@ vim.keymap.set({ "o", "x" }, "a|",
 	"<cmd>lua require('various-textobjs').shellPipe(false)<CR>",
 	{ buffer = true }
 )
+
+vim.opt_local.list = false
+
+-- was linked to Conditional which is italic.
+-- It matches == and ! in a conditional, which should not be italic.
+vim.api.nvim_set_hl(0, "shTestOpr", {link="Operator", default=true})
+

@@ -20,7 +20,7 @@ require('mini.bracketed').setup {
 
 require'mini.surround'.setup {
     mappings = {
-    add = 'ys', -- Add surrounding in Normal and Visual modes
+    add = 'ys', -- Add surrounding in Normal. Not Visual modes, see below.
     delete = 'ds', -- Delete surrounding
     find = '', -- Find surrounding (to the right)
     find_left = '', -- Find surrounding (to the left)
@@ -54,10 +54,10 @@ require'mini.surround'.setup {
 }
 
 -- Remap adding surrounding to Visual mode selection
-vim.api.nvim_del_keymap('x', 'ys') -- del to avoid y(ank) waiting
-vim.api.nvim_set_keymap('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { noremap = true, desc="Surround" })
+vim.keymap.del('x', 'ys') -- del to avoid y(ank) waiting
+vim.keymap.set('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { noremap = true, desc="Surround" })
 -- Make special mapping for "add surrounding for line"
-vim.api.nvim_set_keymap('n', 'yss', 'ys_', { noremap = false, desc="Surround line" })
+vim.keymap.set('n', 'yss', 'ys_', { remap = true, desc="Surround line" })
 
 -- highlight hex colors and todos, notes etc
 -- consider this or https://github.com/folke/paint.nvim if you want to highlight custom things.
@@ -117,7 +117,7 @@ clue.setup({
   clues = {
     -- use e.g. postkeys='<C-w>' to make a submode. 
     { mode = 'n', keys = '<leader>a', desc = "Argument" },
-    { mode = 'n', keys = '<leader>b', desc = "Buffer" },
+    { mode = 'n', keys = '<leader>b', desc = "Buffer/Tab" },
     { mode = 'n', keys = '<leader>c', desc = "Compile|Code|Color" },
     { mode = 'n', keys = '<leader>d', desc = "Diagnostic|Definition" },
     { mode = 'n', keys = '<leader>f', desc = "Find|File" },
