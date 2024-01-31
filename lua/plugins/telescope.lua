@@ -21,6 +21,7 @@ return {
             vim.keymap.set("n", "<leader>ff", "<Cmd>Telescope find_files<CR>", { desc="File" })
             vim.keymap.set("n", "<leader>fK", "<Cmd>Telescope help_tags<CR>", { desc="Help tags" })
             vim.keymap.set("n", "<leader>fh", "<Cmd>Telescope highlights<CR>", { desc="Highlights" })
+            vim.keymap.set("n", "<leader>fj", "<Cmd>Telescope jumplist<CR>", { desc="Highlights" })
             vim.keymap.set("n", "<leader>fo", "<Cmd>Telescope oldfiles<CR>", { desc="Recent" })
             vim.keymap.set("n", "<leader>fr", "<Cmd>Telescope resume<CR>", { desc="Resume" })
             vim.keymap.set("n", "<leader>fw", "<Cmd>Telescope live_grep<CR>", { desc="Grep" })
