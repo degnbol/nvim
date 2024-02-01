@@ -125,10 +125,13 @@ map({'i', 'n'}, "\x1F", function ()
         return "<right><right><right>"
     elseif c == #line then
         return "<left>"
+    -- left priority over right for pairs so we go back first for e.g. Matrix{}|[]
     elseif vim.tbl_contains(pairs, line:sub(c-1,c)) then
         return "<left>"
     elseif vim.tbl_contains(pairs, line:sub(c+1,c+2)) then
         return "<right>"
+    -- right priority over left for singles, since they are usually half of a 
+    -- filled out pair and we want to prioritize progressing in that case.
     elseif vim.tbl_contains(singles, line:sub(c+1,c+1)) then
         return "<right>"
     elseif vim.tbl_contains(singles, line:sub(c,c)) then
