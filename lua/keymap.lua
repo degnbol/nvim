@@ -129,10 +129,10 @@ map({'i', 'n'}, "\x1F", function ()
         return "<left>"
     elseif vim.tbl_contains(pairs, line:sub(c+1,c+2)) then
         return "<right>"
-    elseif vim.tbl_contains(singles, line:sub(c,c)) then
-        return "<left>"
     elseif vim.tbl_contains(singles, line:sub(c+1,c+1)) then
         return "<right>"
+    elseif vim.tbl_contains(singles, line:sub(c,c)) then
+        return "<left>"
     else
         return "<right>"
     end
