@@ -66,7 +66,7 @@ local function afterColorscheme()
     hl.mod("Repeat", {italic=true})
     hl.mod("Label", {italic=true})
     hl.mod("Type", {italic=false})
-    hl.mod("Conditional", {italic=true})
+    hl.mod("Conditional", {italic=true, bold=false})
     -- for e.g. julia there is the `a = bool ? b : c` notation. It's weird to 
     -- have ? and : italic since that is meant for words, but it does help 
     -- distinguish them from : used in e.g. ranges.
@@ -87,7 +87,7 @@ local function afterColorscheme()
     hl.mod("@function", {italic=false, bold=true})
     hl.mod("@function.call", {bold=false})
     hl.link("@function.macro", "@function.call")
-    hl.mod("Conditional", {italic=true, bold=false})
+    hl.mod("@conditional", {italic=true, bold=false})
     hl.mod("@conditional.ternary", {italic=false})
     hl.mod("@repeat", {italic=true, bold=false})
     hl.link("@boolean", "Boolean")
@@ -99,6 +99,7 @@ local function afterColorscheme()
 
     -- delim. Currently using the default for parentheses.
     hl.link("Delimiter", "RainbowDelimiterViolet")
+    hl.link("@punctuation.bracket", "RainbowDelimiterViolet")
     hl.link("@punctuation.delimiter", "Delimiter")
     hl.link("@punctuation.special", "Special")
     

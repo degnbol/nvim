@@ -220,3 +220,9 @@ map('n', "<leader>bc", "<Cmd>tabclose<CR>", { desc="tabclose" })
 -- default C-c is cancel, so exit to normal mode. Not very useful.
 map('i', "<C-c>", "<Esc>b~gi", { desc="Capitalise last word" })
 
+-- tired for accidentally jumping really far when pressing shift+down
+map('v', "<S-down>", "<down>")
+map('v', "<S-up>", "<up>")
+map('n', "<S-down>", "v<down>")
+map('n', "<S-up>", "v<up>")
+
