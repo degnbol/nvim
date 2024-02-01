@@ -119,20 +119,20 @@ local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>', '$' }
 map({'i', 'n'}, "\x1F", function ()
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
     local line = vim.api.nvim_get_current_line()
-    if vim.tbl_contains(triples, line:sub(c+1,c+3)) then
-        return "<right><right><right>"
-    elseif vim.tbl_contains(triples, line:sub(c-2,c)) then
+    if vim.tbl_contains(triples, line:sub(c-2,c)) then
         return "<left><left><left>"
+    elseif vim.tbl_contains(triples, line:sub(c+1,c+3)) then
+        return "<right><right><right>"
     elseif c == #line then
+        return "<left>"
+    elseif vim.tbl_contains(pairs, line:sub(c-1,c)) then
         return "<left>"
     elseif vim.tbl_contains(pairs, line:sub(c+1,c+2)) then
         return "<right>"
-    elseif vim.tbl_contains(pairs, line:sub(c-1,c)) then
+    elseif vim.tbl_contains(singles, line:sub(c,c)) then
         return "<left>"
     elseif vim.tbl_contains(singles, line:sub(c+1,c+1)) then
         return "<right>"
-    elseif vim.tbl_contains(singles, line:sub(c,c)) then
-        return "<left>"
     else
         return "<right>"
     end
