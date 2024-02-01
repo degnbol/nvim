@@ -54,6 +54,11 @@ return {
             }
         }
     },
+    {
+        -- enables command :Telescope symbols
+        "nvim-telescope/telescope-symbols.nvim",
+        enabled = false,
+    }, 
     {'sudormrfbin/cheatsheet.nvim', init = function ()
         vim.keymap.set("n", "<leader>?", "<Cmd>Cheatsheet<CR>", {desc="Cheatsheet"})
     end, cmd="Cheatsheet", dependencies={'nvim-telescope/telescope.nvim'}},
