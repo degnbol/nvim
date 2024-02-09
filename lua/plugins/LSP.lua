@@ -170,18 +170,7 @@ return {
             }
             lsp.matlab_ls.setup {}
             lsp.marksman.setup { filetypes = { "markdown" } }
-            -- seems ltex has more text description for functions but texlab has more functions so I use both in combination
-            lsp.ltex.setup {
-                filetypes = { "tex" }, -- active for markdown as well by default which crashes
-                on_attach = function(client, bufnr)
-                    on_attach(client, bufnr)
-                    -- hacky. VimtexErrors puts errors found by Vimtex in quickfix (should be
-                    -- running, use <leader>Lb) then cclose closes quickfix, and then Telescope
-                    -- opens the quickfix in a nicer view.
-                    vim.keymap.set('n', '<space>E', "<Cmd>VimtexErrors<CR>|:cclose|<Cmd>Telescope quickfix<CR>", opts)
-                end }
             lsp.texlab.setup {}
-
             lsp.csharp_ls.setup {
                 -- AutomaticWorkspaceInit = true,
             }
@@ -248,7 +237,7 @@ return {
                 "pyright",
                 "pylsp",
                 "julials",
-                "ltex",
+                -- "ltex", -- grammar check for latex, markdown, etc
                 "texlab",
                 -- "r_language_server",
                 "lua_ls",
