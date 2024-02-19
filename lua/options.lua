@@ -93,5 +93,6 @@ vim.opt.dictionary = rtp .. "/spell/en.dic"
 -- visual mode also works.
 -- It's possible to have multiple spellfiles and use a preceding count.
 vim.opt.spellfile = rtp .. "/spell/custom.utf8.add"
-
+-- set a default commentstring
+vim.cmd [[setlocal commentstring=#%s]]
 
