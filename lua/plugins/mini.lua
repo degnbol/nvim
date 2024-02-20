@@ -196,6 +196,7 @@ vim.schedule(function ()
     set_keymap_desc('n', '<<', "Unindent line")
 end)
 
+require('mini.notify').setup()
 
-end},
-}
+end
+},}
