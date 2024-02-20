@@ -16,21 +16,6 @@ return {
             -- call before rest of lspconfig
             require "neodev".setup {}
 
-            -- hide diagnostics for hints and information.
-            vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-                vim.lsp.diagnostic.on_publish_diagnostics, {
-                    signs = {
-                        severity_limit = 'Warning',
-                    },
-                    underline = false,
-                    update_in_insert = false,
-                    virtual_text = {
-                        spacing = 4,
-                        severity_limit = 'Error',
-                    },
-                }
-            )
-
             -- replace the default lsp diagnostic letters with prettier symbols
             vim.fn.sign_define("LspDiagnosticsSignError", { text = "", numhl = "LspDiagnosticsDefaultError" })
             vim.fn.sign_define("LspDiagnosticsSignWarning", { text = "", numhl = "LspDiagnosticsDefaultWarning" })
