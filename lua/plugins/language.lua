@@ -91,6 +91,15 @@ return {
             -- If this is not desired then use :make.
             vim.keymap.set('n', '<leader>cc', "<Cmd>Asciidoctor2PDF<CR><CR>", { desc="Compile to PDF" })
             vim.keymap.set('n', '<leader>oo', "<Cmd>AsciidoctorOpenPDF<CR><CR>", { desc="Open compiled PDF" })
+            -- start autocompiling on save
+            vim.keymap.set('n', '<leader><leader>c', function ()
+                local grp = vim.api.nvim_create_augroup("asciidocCompile", {clear=true})
+                vim.api.nvim_create_autocmd("BufWritePost", {
+                    buffer = 0,
+                    group = grp,
+                    command = "silent Asciidoctor2PDF"
+                })
+            end, { desc="Compile on save" })
         end,
     },
     -- https://quarto.org/
