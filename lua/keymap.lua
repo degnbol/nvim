@@ -14,34 +14,10 @@ end
 -- Keymaps for better default experience
 map({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
--- use U instead of <C-r> for redo.
--- TODO move line undo to Vu 
--- map('n', "U", "<C-r>")
-
--- For remote with problematic clipboard we replace the cutlass x that works 
--- locally with a mapping where we call y (which is mapped to smartyank) then 
--- d.
-map('n', "xx", "yydd")
-map('x', "x",  "ygvd")
-function CutOperator(type, ...)
-    if type == "line" then
-        vim.cmd.normal "`[V`]ygvd"
-    else
-        vim.cmd.normal "`[v`]ygvd"
-    end
-end
-map('n', "x", function ()
-    -- TODO: use function rather than string after pull request is merged:
-    -- https://github.com/neovim/neovim/pull/20187
-    vim.opt.operatorfunc = "v:lua.CutOperator"
-    return "g@"
-end, {expr=true})
-
 -- in the terminal map escape to changing from terminal mode (insert mode) to 
 -- normal terminal mode <C-\><C-n> then change window to the left assuming that 
 -- term is on the right
 map('t', "<Esc>", [[<C-\><C-n><C-w>h]])
-
 
 -- Danglish support. For when Danglish keyboard is selected.
 -- Generally you should instead stay in code keyboard and use iminsert=2
