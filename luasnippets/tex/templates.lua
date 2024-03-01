@@ -42,7 +42,7 @@ fmta([[
 \usepackage{ragged2e}
 % \usepackage{flushend} % enable for two columns, to get equal lengths on last page.
 
-% \begin{itemize}[label={--}] instead of repeating /item[--]
+% \begin{itemize}[label={--}] instead of repeating /item[--]. There is also the outlines package.
 \usepackage{enumitem}
 \usepackage{fancyhdr} % header/footer control
 % paragraph space instead of indent
@@ -62,10 +62,18 @@ fmta([[
 % (Per default \thesubfigure is defined as \alph{subfigure}, i.e. lowercase letters)
 \renewcommand\thesubfigure{\Alph{subfigure}}
 \renewcommand\thesubtable{\Alph{subtable}}
-% singlelinecheck=on means if only single line caption, then ignore raggedright (center).
-\captionsetup[subfigure]{singlelinecheck=off,justification=raggedright}
-% remove () around subfig numbering
-\captionsetup[sub]{format=plain,position=top,font+=Large,labelformat=simple}
+\captionsetup[subfigure]{
+	justification=raggedright, % ragged right means left aligned
+	% singlelinecheck=off means that the justification setting is used even when 
+	% the caption is only a single line long. if singlelinecheck=on, then 
+	% caption is always centered when the caption is only one line.
+	singlelinecheck=off,
+	labelfont={bf,sf}, % bold, sans-serif
+	font=Large,
+	labelformat=simple, % remove () around subfig numbering
+	labelsep=colon % since no parenthesis
+}
+
 \usepackage{float}
 % makes figures and tables stay in their section
 \usepackage[section]{placeins}
@@ -87,8 +95,7 @@ fmta([[
 % Auto define acronyms on first use. https://www.overleaf.com/learn/latex/Glossaries
 \usepackage[acronym]{glossaries-extra}
 \setabbreviationstyle[acronym]{long-short}
-% bibliography
-\usepackage{biblatex}
+
 % appendix
 \usepackage[toc,page]{appendix}
 % Code blocks.
@@ -97,12 +104,20 @@ fmta([[
 % \usepackage{listings}
 % \usepackage{minted} % supports julia
 
+% biblatex is modern, but a journal may force use to use the ancient bibtex
+% adds url and doi field to bibtex but not needed for biblatex
+% \bibliographystyle{plainurl}
+\usepackage{biblatex}
+\addbibresource{<>}
+% hyperlink doi
+\usepackage{doi}
+
 \begin{document}
 
 <>
 
 \end{document}
-]], {i(1),}),
+]], {i(1, "bibliography.bib"), i(2),}),
 {show_condition=conds.line_end}),
 
 s("beamer",
@@ -174,12 +189,13 @@ fmta([[
 
 \usepackage{xcolor} % define colors
 \usepackage{hyperref}
+% line break long urls
+\usepackage{xurl}
 % \usepackage[capitalise]{cleverref} % \cref which auto adds e.g. "Table " to \ref
 % Auto define acronyms on first use. https://www.overleaf.com/learn/latex/Glossaries
 \usepackage[acronym]{glossaries-extra}
 \setabbreviationstyle[acronym]{long-short}
-% bibliography
-\usepackage{biblatex}
+
 % appendix
 \usepackage[toc,page]{appendix}
 % Code blocks.
