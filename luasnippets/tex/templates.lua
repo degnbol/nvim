@@ -116,6 +116,8 @@ fmta([[
 
 <>
 
+\printbibliography
+
 \end{document}
 ]], {i(1, "bibliography.bib"), i(2),}),
 {show_condition=conds.line_end}),
