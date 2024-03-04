@@ -20,6 +20,9 @@ fmta([=[[[
 s({trig="join", dscr="Join array of strings to a string."},
 {t"table.concat(", i(1,"strings"), t", ", i(2,"[sep]"), t")"}),
 
+s({trig="append", dscr="Append to table"},
+{t"table.insert(", i(1, "TABLE"), t", ", i(2, "VALUE"), t")"}),
+
 -- meta. snippet to write snippets.
 -- TODO: condition these on relevant path in the same way you did it for completions for configuring lazy.
 -- Also add all the allowed args from https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md

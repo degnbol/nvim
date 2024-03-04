@@ -1,11 +1,160 @@
 #!/usr/bin/env lua
+local util = require "utils/init"
 local vtu = require "utils/vimtex"
 local is_inside = vtu.is_inside
 local in_env = vtu.in_env
 local cmd = vim.cmd
 
+--- Work for either a visual selection or for the current env.
+---maxwidth: maximum allowed column width
+---usemax: in case a cell exceeds the max, should it be ignored (default), or 
+---should the column be set to maxwidth (usemax=true).
+function alignTable(opts)
+    opts = opts or {}
+    maxwidth = opts.maxwidth or 20
+    usemax = opts.usemax or false
 
-vim.keymap.set("n", "<plug>AlignTable", "gaie<C-f>v/\\multicol<CR>*&", {silent=true, remap=true, desc="Align table"})
+    if not in_env("table") then return end
+
+    local mode = vim.api.nvim_get_mode().mode
+    local r1, r2
+    if mode == "n" then
+        -- get lines of env using vimtex
+        -- should never return nil since we test in_env above
+        _, r1, _, r2, _ = unpack(vtu.get_env())
+    else
+        util.end_visual()
+        r1, _, r2, _ = util.get_visual_range()
+    end
+    -- -1 since we are using 1-indexed r1, r2 in 0-indexed end-exclusive function
+    -- to get the lines withinh the end, so excluding the begin/end lines
+    local lines = vim.api.nvim_buf_get_lines(0, r1, r2-1, true)
+    -- final newline necessary to not lose final cell
+    local text = table.concat(lines, '\n') .. '\n'
+    local indentation = text:match('^[s%\t]*')
+    local cells = {}
+    local cellc = {} -- column in table
+    local cellcl = {} -- column in line
+    local col = 0
+    local coll = 0
+    local lasti = 0
+    -- find the position of each & and \\, the latter assumed to be at end of line.
+    -- This assumption avoids \\ inside cell with forced linebreak.
+    for i, m in text:gmatch('()([&\n])') do
+        local section = text:sub(lasti, i-1)
+        if m == '&' and text:sub(i,i) ~= '\\' then
+            -- the minus works like *, except match as shortly as possible, which let's us trim whitespace.
+            local cell = section:match('\n?%s*([^\n]-)%s*$')
+            table.insert(cells, cell)
+            table.insert(cellc, col)
+            table.insert(cellcl, coll)
+            local colspan = cell:match("^\\multicolumn{(%d+)}") or 1
+            col=col + colspan
+            coll=coll + colspan
+            lasti = i+1
+        elseif m == '\n' then
+            local cell = section:match('\n?%s*([^\n]-)%s*\\\\%s*$')
+            -- might not have the \\, e.g. if cell is a \toprule line
+            if cell == nil then
+                table.insert(cells, section .. '\n')
+                table.insert(cellc, -1) -- mark to ignore
+                table.insert(cellcl, coll)
+            else
+                table.insert(cells, cell)
+                table.insert(cellc, col)
+                table.insert(cellcl, coll)
+                col=0
+            end
+            coll=0
+            lasti = i+1
+        end
+    end
+    local maxcol = math.max(unpack(cellc))
+    -- column width preallocate zeros
+    local widths = {}
+    for i = 0, maxcol do widths[i] = 0 end
+    for i, col in ipairs(cellc) do
+        if col >= 0 then
+            local cell = cells[i]
+            -- ignore multicolumn
+            if not cell:match("^\\multicolumn") then
+                -- get column width, restricted by a max allowed,
+                if #cell < maxwidth then
+                    widths[col] = math.max(widths[col], #cell)
+                elseif usemax then
+                    widths[col] = maxwidth
+                end
+            end
+        end
+    end
+    -- build new text
+    local text = {}
+    local idealw = 0
+    local currentw = 0
+    for i, cell in ipairs(cells) do
+        local col = cellc[i]
+        local coll = cellcl[i]
+        if col == -1 then
+            table.insert(text, cell)
+            idealw, currentw = 0, 0
+        else
+            idealw=idealw + widths[col]
+            local multicol = cell:match("^\\multicolumn{(%d+)}")
+            if multicol ~= nil then
+                for i = 1, multicol-1 do
+                    idealw=idealw + 3 + widths[col+i]
+                end
+            end
+            if coll == 0 then
+                cell = indentation .. cell
+                idealw=idealw+#indentation
+            elseif cell ~= "" then
+                cell = " " .. cell
+            end
+            currentw=currentw + #cell
+            if currentw < idealw then
+                cell = cell .. string.rep(' ', idealw - currentw)
+                currentw = idealw
+            end
+            if i == #cellc or cellc[i+1] == 0 or col == maxcol then
+                cell = cell .. " \\\\\n"
+                idealw, currentw = 0, 0
+            else
+                if cell ~= "" or currentw+1 < idealw then
+                    cell=cell.." "
+                    currentw=currentw+1
+                end
+                cell=cell.."&"
+                currentw=currentw+1
+                idealw=idealw+3
+            end
+            table.insert(text, cell)
+        end
+    end
+    local lines = vim.split(table.concat(text):gsub('\n$', ''), '\n', {plain=true})
+    vim.api.nvim_buf_set_lines(0, r1, r2-1, true, lines)
+end
+
+vim.keymap.set(
+    "n", "<plug>TableAlign", alignTable,
+    { silent=true, desc="Align columns in tex table", }
+)
+-- align &s using plugin (that also aligns \\ since it understands it is for 
+-- latex), ignoring lines that contain "multicol".
+-- Fails for complicated cells, such as \makecell[l]{a \\ b},
+-- hence I wrote the alignTable function above.
+vim.keymap.set("n", "<plug>TableAlign2", "gaie<C-f>v/\\multicol<CR>*&", {
+    silent=true,
+    remap=true,
+    desc="Align table",
+})
+
+
+-- TODO:
+-- functions or ways of moving/deleting/adding rows/columns.
+-- Maybe each a function but ideally a more modular (vim) way, e.g. selection of row/col,
+-- moving between cells, etc. But might not be possible without elaborate 
+-- function due to things like header row, and not having one row per line.
 
 -- get tabular-like env start r and c
 local function get_tabular()
@@ -62,7 +211,7 @@ end
 
 -- TODO: when jumping to 0-th that is empty we go to 0-th column instead of cell indent.
 -- jump to or from the relevant column in the preamble for a tabular/tabularx/tabulary table.
-vim.keymap.set("n", "<plug>TexJumpPre", function()
+vim.keymap.set("n", "<plug>TableJumpPre", function()
     local r_tabular, c_pre, pre = getPreTabular()
     if r_tabular == nil then return end
     
@@ -143,7 +292,7 @@ vim.keymap.set("i", "&", function()
     local line = vim.api.nvim_get_current_line()
     local column = #line:sub(1, c + 2):gsub('\\&', ''):gsub('[^&]', '')
     
-    cmd [[silent! exe "normal \<Plug>AlignTable"]]
+    cmd [[silent! exe "normal \<Plug>TableAlign"]]
     
     -- the alignTable call moves the cursor and modifies lines.
     -- The cursor is now at the top of inside the table env.
@@ -163,7 +312,7 @@ end, {remap=false, silent=true, buffer=true})
 
 -- TODO: deal with \& and maybe add more tabs after multicolumn (which we will have to remove later in the inverse function.)
 -- also, is the \\ missing after toprule etc? if so, edit the snippet template.
-vim.keymap.set("n", "<plug>YankTable", function()
+vim.keymap.set("n", "<plug>TableYank", function()
     local delim = '\t'
     cmd [[normal "tyie]]
     local content = vim.fn.getreg("t")
@@ -177,10 +326,9 @@ vim.keymap.set("n", "<plug>YankTable", function()
     vim.fn.setreg('+', content)
 end, {desc="Yank table"})
 
-vim.keymap.set("n", "<plug>PasteTable", function()
+vim.keymap.set("n", "<plug>TablePaste", function()
     local delim = '\t'
     -- TODO: inverse of above
 end, {desc="Paste table"})
-
 
 
