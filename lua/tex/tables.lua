@@ -181,7 +181,8 @@ local function getCurrentColumn(c)
     end
 end
 
--- get r, c, contents of preamble for a containing tabular/tabularx/tabulary env.
+-- get {r, c, string} of preamble for a containing tabular/tabularx/tabulary env.
+-- where string is e.g. "@{}p{1.1cm}rrlp{1.1cm}rrrrlX@{}"
 local function getPreTabular()
     local r_tabular, _ = get_tabular()
     if r_tabular == 0 then return end
@@ -206,7 +207,10 @@ end
 
 -- return tex table column 0-index assuming the cursor (with "column" c) is at the preamble line.
 local function getCurrentColumnPre(c, c_pre, pre)
-    return math.max(0, #pre:sub(1, c+1-c_pre):gsub('[^%a]', ''))
+    local until_cursor = pre:sub(1, c+2-c_pre)
+    local nAlpha = #until_cursor:gsub("%b{}", ""):gsub('[^%a]', '')
+    -- 0-indexing
+    return math.max(0, nAlpha-1)
 end
 
 -- TODO: when jumping to 0-th that is empty we go to 0-th column instead of cell indent.
@@ -257,15 +261,20 @@ vim.keymap.set("n", "<plug>TableJumpPre", function()
         vim.api.nvim_win_set_cursor(0, {r+iGoto, cGoto})
     else
         local col = getCurrentColumn(c)
-        -- match col number of alphanumerics
-        -- char, rather than the @{} that might precede
-        local _, cGoto = pre:find(("[^%a]*%a"):rep(col+1))
-        if cGoto == nil then
-            -- the preamble is lacking entries so we go to its end.
-            cGoto = c_pre + #pre
-        else
-            cGoto=cGoto+c_pre-2
+        -- go across preamble string for "col" alphanumerics ignoring {...}
+        local bracketDepth = 0
+        local cGoto = 0
+        while cGoto < #pre do
+            cGoto=cGoto+1
+            local char = pre:sub(cGoto, cGoto)
+            if char == '{' then bracketDepth=bracketDepth+1
+            elseif char == '}' then bracketDepth=bracketDepth-1
+            elseif bracketDepth == 0 and char:match("%a") then
+                col=col-1
+                if col < 0 then break end
+            end
         end
+        cGoto=cGoto+c_pre-2
         -- Mark current location for jumplist to work (e.g. <c-o> to go back in table)
         -- lua version doesn't work
         cmd "normal m`"
