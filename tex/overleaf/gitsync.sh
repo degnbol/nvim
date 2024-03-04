@@ -5,8 +5,7 @@ remote=`git remote get-url origin`
 
 filename=$1
 
-git add $filename || return 1
-git commit -m "local changes: $filename" || return 1
+git add $filename && git commit -m "local changes: $filename"
 git pull || return 1
 git push || return 1
 
