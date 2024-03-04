@@ -48,7 +48,7 @@ s({trig="trigEngine", dscr="Set trigger engine."},
 {t'trigEngine="', c(1, {t"pattern", t"vim", t"ecma", t"plain"}), t'"'}),
 
 s({trig="show_condition", dscr="Set show_condition for luasnip."},
-{t'show_condition="'}),
+{t'show_condition=', i(1, 'conds.line_end')}),
 
 s({trig="fmta", dscr="Convenience function for formatting snippets, especially multi line snippets."},
 fmta([=[fmta([[<>
@@ -208,6 +208,9 @@ fmta([[vim.defer_fn(function ()
     <>
 end, <>)
 ]], {i(1), i(2, "500")})),
+
+s({trig="mode", dscr="Get mode (normal or visual etc)", show_condition=conds.line_end},
+{t"local mode, blocking = vim.api.nvim_get_mode()"}),
 
 }
 
