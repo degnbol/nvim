@@ -210,7 +210,7 @@ end, <>)
 ]], {i(1), i(2, "500")})),
 
 s({trig="mode", dscr="Get mode (normal or visual etc)", show_condition=conds.line_end},
-{t"local mode, blocking = vim.api.nvim_get_mode()"}),
+{t"local mode = vim.api.nvim_get_mode().mode"}),
 
 }
 
