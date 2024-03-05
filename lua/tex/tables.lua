@@ -443,28 +443,37 @@ local function deleteColumn(opts)
     local tab = parseTable()
 
     -- 0-indexed
-    local cDel = getCurrentColumn()
-    local cells2, cellc2, presufs2 = {}, {}, {}
-    for i, cell in ipairs(tab.texts) do
+    local _, colDel = getCurrentCell(tab)
+    local texts, cols, presufs = {}, {}, {}
+    for i, text in ipairs(tab.texts) do
         local col = tab.cols[i]
         local presuf = tab.presufs[i]
-        if col < cDel then
-            table.insert(cells2, cell)
-            table.insert(cellc2,  col)
-            table.insert(presufs2, presuf)
-        elseif col > cDel then
-            table.insert(cells2, cell)
-            table.insert(cellc2,  col-1)
-            table.insert(presufs2, math.max(0, presuf-1))
+        if col < colDel then
+            table.insert(texts, text)
+            table.insert(cols,  col)
+            table.insert(presufs, presuf)
+        elseif col > colDel then
+            table.insert(texts, text)
+            table.insert(cols,  col-1)
+            -- keep indent
+            if col == 1 then
+                table.insert(presufs, tab.presufs[i-1])
+            else
+                table.insert(presufs, presuf)
+            end
         end
     end
 
-    writeTable({cells2, cellc2, presufs2, tab.maxcol-1}, opts)
+    tab.texts = texts
+    tab.cols = cols
+    tab.presufs = presufs
+    tab.maxcol=tab.maxcol-1
+    writeTable(tab, opts)
 
     -- remove entry from preamble
     local r, c, pre, parts, premap = parsePre()
     -- +1 for index conv
-    table.remove(parts, premap[cDel+1])
+    table.remove(parts, premap[colDel+1])
     -- from 1 to 0 indexing
     vim.api.nvim_buf_set_text(0, r-1, c-1, r-1, c+#pre-1, {table.concat(parts)})
 end
