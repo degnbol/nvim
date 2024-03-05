@@ -7,6 +7,8 @@ function M.end_visual()
     vim.api.nvim_feedkeys('\027', 'xt', false)
 end
 
+-- Return (1,0)-indexed start and end position of visual selection:
+-- r1, c1, r2, c2
 function M.get_visual_range()
     local r1, c1 = unpack(vim.api.nvim_buf_get_mark(0, "<"))
     local r2, c2 = unpack(vim.api.nvim_buf_get_mark(0, ">"))

@@ -2,6 +2,8 @@
 local M = {}
 
 local ls = require "luasnip"
+-- otherwise we get errors in other scripts that says s is defined as a bool
+local s = ls.snippet
 local sn = ls.snippet_node
 local i = ls.insert_node
 local f = ls.f

@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 require "tex.overleaf"
-require "tex.tables"
+local tbl = require "tex.tables"
 require "tex.cmds"
 require "tex.textcolor"
 
@@ -23,23 +23,35 @@ vim.fn["textobj#user#plugin"]("tex", {
 -- keymaps assume vimtex is used.
 require "utils/keymap"
 set_keymap_desc('n', '<leader><leader>a', "Context menu")
--- align table see ftplugin/tex.lua. ma ... `a to not move cursor.
-vim.keymap.set('n', '<leader><leader>A', "ma<plug>AlignTable<CR>`a", { buffer=true, desc="Align table" })
+vim.keymap.set('n', '<leader><leader>A', "<plug>TableAlign", { buffer=true, desc="Align table" })
+vim.keymap.set('n', 'da|', "<Plug>TableDelCol", { buffer=true, desc="Delete a table column" })
+vim.keymap.set("n", "dix", tbl.deleteInCell, { silent=true, desc="Delete in cell", })
+vim.keymap.set("n", "cix", tbl.changeInCell, { silent=true, desc="Change in cell", })
+vim.keymap.set("n", "xix", function () tbl.deleteInCell("+") end, { silent=true, desc="Cut in cell", })
+vim.keymap.set("v", "ix", "<Plug>TableSelInCell", { silent=true, desc="Select in cell", })
+vim.keymap.set('n', '<leader><leader>[', "<Plug>TableSwapLeft", { buffer=true, desc="Swap table column left"})
+vim.keymap.set('n', '<leader><leader>]', "<Plug>TableSwapRight", { buffer=true, desc="Swap table column right"})
+vim.keymap.set('n', '<leader><leader>{', "<Plug>TableAddColLeft", { buffer=true, desc="Add new empty column to the left"})
+vim.keymap.set('n', '<leader><leader>}', "<Plug>TableAddColRight", { buffer=true, desc="Add new empty column to the right"})
 vim.keymap.set("n", "<leader><leader>b", "<Cmd>Telescope bibtex<CR>", { buffer=true, desc="Cite" })
+vim.keymap.set('n', '<leader><leader><left>', "<Plug>TableGoLeft", { buffer=true, desc="Goto left cell"})
+vim.keymap.set('n', '<leader><leader><right>', "<Plug>TableGoRight", { buffer=true, desc="Goto right cell"})
+vim.keymap.set('n', '<leader><leader><up>', "<Plug>TableGoUp", { buffer=true, desc="Goto up cell"})
+vim.keymap.set('n', '<leader><leader><down>', "<Plug>TableGoDown", { buffer=true, desc="Goto down cell"})
 set_keymap_desc('n', '<leader><leader>c', "Clean")
 set_keymap_desc('n', '<leader><leader>C', "Clean all")
 set_keymap_desc('n', '<leader><leader>e', "Errors")
 -- hacky. VimtexErrors puts errors found by Vimtex in quickfix (should be
 -- running, use <leader>Lb) then cclose closes quickfix, and then Telescope
 -- opens the quickfix in a nicer view.
-vim.keymap.set('n', '<space>E', "<Cmd>VimtexErrors<CR>|:cclose|<Cmd>Telescope quickfix<CR>", opts)
+vim.keymap.set('n', '<space>E', "<Cmd>VimtexErrors<CR>|:cclose|<Cmd>Telescope quickfix<CR>", { buffer=true, desc="Errors"})
 set_keymap_desc('n', '<leader><leader>g', "Status")
 set_keymap_desc('n', '<leader><leader>G', "Status all")
 set_keymap_desc('n', '<leader><leader>i', "Info")
 set_keymap_desc('n', '<leader><leader>I', "Info full")
 set_keymap_desc('n', '<leader><leader>q', "Log")
 -- j for jump. Not using p for preamble since I want to use it for pasting tables.
-vim.keymap.set("n", "<leader><leader>j", "<Plug>TexJumpPre", { buffer=true, desc="goto/from preamble (table)" })
+vim.keymap.set("n", "<leader><leader>j", "<Plug>TableJumpPre", { buffer=true, desc="goto/from preamble (table)" })
 set_keymap_desc('n', '<leader><leader>s', "Toggle main")
 set_keymap_desc('n', '<leader><leader>t', "TOC open")
 set_keymap_desc('n', '<leader><leader>T', "TOC toggle")
@@ -48,7 +60,7 @@ vim.keymap.set({"n", "x"}, "<leader><leader>U", "<Plug>Unicode2Latex", { buffer=
 vim.keymap.set('n', '<leader>cv', '<Plug>(vimtex-view)', {buffer=true, desc="View"})
 set_keymap_desc('n', '<leader><leader>x', "Reload")
 set_keymap_desc('n', '<leader><leader>X', "Reload state")
-vim.keymap.set("n", "<leader><leader>y", "<plug>YankTable", { buffer=true, desc="Yank as TSV" })
+vim.keymap.set("n", "<leader><leader>y", "<plug>TableYank", { buffer=true, desc="Yank as TSV" })
 vim.keymap.set('n', '<leader>ck', '<Plug>(vimtex-stop)', {buffer=true, desc="Stop"})
 vim.keymap.set('n', '<leader>cK', '<Plug>(vimtex-stop-all)', {buffer=true, desc="Stop all"})
 vim.keymap.set('n', '<leader>cc', '<Plug>(vimtex-compile)', {buffer=true, desc="Compile"})
