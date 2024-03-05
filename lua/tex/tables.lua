@@ -5,30 +5,168 @@ local is_inside = vtu.is_inside
 local in_env = vtu.in_env
 local cmd = vim.cmd
 
---- Work for either a visual selection or for the current env.
----maxwidth: maximum allowed column width
----usemax: in case a cell exceeds the max, should it be ignored (default), or 
----should the column be set to maxwidth (usemax=true).
-function alignTable(opts)
-    opts = opts or {}
-    maxwidth = opts.maxwidth or 20
-    usemax = opts.usemax or false
+-- TODO:
+-- functions or ways of moving/deleting/adding rows/columns.
+-- Maybe each a function but ideally a more modular (vim) way, e.g. selection of row/col,
+-- moving between cells, etc. But might not be possible without elaborate 
+-- function due to things like header row, and not having one row per line.
 
-    if not in_env("table") then return end
+-- get tabular-like env start r and c
+local function get_tabular()
+    local r, c = unpack(is_inside("tabularx"))
+    if r > 0 or c > 0 then return r, c end
+    r, c = unpack(is_inside("tabulary"))
+    if r > 0 or c > 0 then return r, c end
+    r, c = unpack(is_inside("tabular"))
+    if r > 0 or c > 0 then return r, c end
+end
 
-    local mode = vim.api.nvim_get_mode().mode
-    local r1, r2
-    if mode == "n" then
-        -- get lines of env using vimtex
-        -- should never return nil since we test in_env above
-        _, r1, _, r2, _ = unpack(vtu.get_env())
-    else
-        util.end_visual()
-        r1, _, r2, _ = util.get_visual_range()
+-- return tex table column 0-index by counting (unescaped) ampersands (&) before cursor "column" c.
+local function getCurrentColumn()
+    local _, c = unpack(vim.api.nvim_win_get_cursor(0))
+    local line = vim.api.nvim_get_current_line():gsub('\\&', '  ')
+    local nAmp = #line:sub(1,c):gsub('[^&]', '')
+    if not line:match('multicol') then return nAmp else
+        local beforeCell = line:sub(1,c):match('.*&') -- matches the last & before cursor
+        if beforeCell then
+            for n in beforeCell:gmatch[[\multicolumn{(%d+)}]] do
+                nAmp=nAmp + n-1
+            end
+        end
+        return nAmp
     end
-    -- -1 since we are using 1-indexed r1, r2 in 0-indexed end-exclusive function
-    -- to get the lines withinh the end, so excluding the begin/end lines
-    local lines = vim.api.nvim_buf_get_lines(0, r1, r2-1, true)
+end
+
+-- get {r, c, string} of preamble for a containing tabular/tabularx/tabulary env.
+-- where string is e.g. "@{}p{1.1cm}rrlp{1.1cm}rrrrlX@{}"
+local function getPreTabular()
+    local r_tabular, _ = get_tabular()
+    if r_tabular == 0 then return end
+    local line = vim.fn.getline(r_tabular)
+    -- find preamble range using balanced bracket patterns.
+    -- Empty () to get location (instead of an extracted substring).
+    -- example to match:
+    -- \begin{tabular}[c]{@{}lcX@{}}
+    -- \begin{tabularx}{\textwidth}{@{}lcX@{}}
+    -- \begin{tabulary}{1.0\textwidth}{L|L|L|L|L|L}
+    local pre_begin, pre_end = line:match('\\begin{tabular.}%b{}()%b{}()')
+    if pre_begin == nil then -- tabular
+        pre_begin, pre_end = line:match('\\begin{tabular}%b[]()%b{}()')
+    end -- cannot test pre_begin from first if-statement in second if it is an elseif
+    if pre_begin == nil then
+        pre_begin, pre_end = line:match('\\begin{tabular}()%b{}()')
+    end
+    pre_begin=pre_begin+1
+    pre_end=pre_end-2
+    return r_tabular, pre_begin, line:sub(pre_begin, pre_end)
+end
+
+--- get {r, c, parsed parts}, where the latter is an array of each element in the preamble, e.g.
+--- { "@{}", "p{1.1cm}", "r", "|", "r", "||", "p{1.1cm}", "r", "r", ">{l}", "r", "l", "X", "@{}" }
+function parsePre()
+    local r, c, pre = getPreTabular()
+    local parsed = {}
+    local _pre = pre:gsub('%s', '')
+    while #_pre > 0 do
+        local part = _pre:match("^.%b{}")
+        if part ~= nil then
+            table.insert(parsed, part)
+            _pre = _pre:sub(1+#part)
+        else
+            -- for e.g. ||
+            local nonalpha = _pre:match("^[^%a]+")
+            if nonalpha ~= nil then
+                table.insert(parsed, nonalpha)
+                _pre = _pre:sub(1+#nonalpha)
+            else
+                table.insert(parsed, _pre:sub(1,1))
+                _pre = _pre:sub(2)
+            end
+        end
+    end
+    return r, c, pre, parsed
+end
+
+-- return tex table column 0-index assuming the cursor (with "column" c) is at the preamble line.
+local function getCurrentColumnPre(c, c_pre, pre)
+    local until_cursor = pre:sub(1, c+2-c_pre)
+    local nAlpha = #until_cursor:gsub("%b{}", ""):gsub('[^%a]', '')
+    -- 0-indexing
+    return math.max(0, nAlpha-1)
+end
+
+-- jump to or from the relevant column in the preamble for a tabular/tabularx/tabulary table.
+vim.keymap.set("n", "<plug>TableJumpPre", function()
+    local r_tabular, c_pre, pre = getPreTabular()
+    if r_tabular == nil then return end
+    
+    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+    if r == r_tabular then
+        local col = getCurrentColumnPre(c, c_pre, pre)
+        -- goto first line with the most cells found.
+        -- scan 9 lines for now. 0-indexing means r excludes preamble.
+        local scan = vim.api.nvim_buf_get_lines(0, r, r+10, false)
+        local iGoto, maxAmp = r, 0
+        for i, v in ipairs(scan) do
+            scan[i] = v:gsub('\\&', '  ')
+            _, nAmp = scan[i]:gsub('&', '')
+            if nAmp > maxAmp then
+                iGoto, maxAmp = i, nAmp
+            end
+        end
+        local lGoto = scan[iGoto]
+        local _, cGoto = lGoto:find(("[^&]*&"):rep(col))
+        if cGoto == nil then
+            -- there was no match so the line is lacking &s
+            -- we go to EOL although before optional \\
+            if lGoto:sub(-2) == [[\\]] then cGoto = #lGoto-2
+            else cGoto = #lGoto end
+        end
+        -- go to first non-whitespace as long as not & (indicating the next cell)
+        local _, firstNonW = lGoto:sub(cGoto+1):find("^%s*[^%s&]")
+        if firstNonW == nil then -- the cell is empty
+            if cGoto == 0 then -- the very first cell
+                -- we want to go to indentation.
+                -- Take indentation from previous line.
+                -- ERRORs if we are jumping to first line in table.
+                -- Maybe rethink the scan 10 lines logic to jump to first line with >1 cell (jump over hline and without multicol)
+                firstNonW = scan[iGoto-1]:find("%S")
+            else
+                firstNonW = 1
+            end
+        end
+        cGoto = cGoto + firstNonW-1
+        -- Mark current location for jumplist to work (e.g. <c-o> to go back in table)
+        -- lua version doesn't work
+        cmd "normal m`"
+        vim.api.nvim_win_set_cursor(0, {r+iGoto, cGoto})
+    else
+        local col = getCurrentColumn()
+        -- go across preamble string for "col" alphanumerics ignoring {...}
+        local bracketDepth = 0
+        local cGoto = 0
+        while cGoto < #pre do
+            cGoto=cGoto+1
+            local char = pre:sub(cGoto, cGoto)
+            if char == '{' then bracketDepth=bracketDepth+1
+            elseif char == '}' then bracketDepth=bracketDepth-1
+            elseif bracketDepth == 0 and char:match("%a") then
+                col=col-1
+                if col < 0 then break end
+            end
+        end
+        cGoto=cGoto+c_pre-2
+        -- Mark current location for jumplist to work (e.g. <c-o> to go back in table)
+        -- lua version doesn't work
+        cmd "normal m`"
+        vim.api.nvim_win_set_cursor(0, {r_tabular, cGoto})
+    end
+end, {desc="Goto preamble"})
+
+
+
+local function parseTable(r1, r2)
+    local lines = vim.api.nvim_buf_get_lines(0, r1, r2, true)
     -- final newline necessary to not lose final cell
     local text = table.concat(lines, '\n') .. '\n'
     local indentation = text:match('^[s%\t]*')
@@ -70,6 +208,16 @@ function alignTable(opts)
         end
     end
     local maxcol = math.max(unpack(cellc))
+    return indentation, cells, cellc, cellcl, maxcol
+end
+
+---maxwidth: maximum allowed column width
+---usemax: in case a cell exceeds the max, should it be ignored (default), or 
+---should the column be set to maxwidth (usemax=true).
+local function writeTable(r1, r2, indentation, cells, cellc, cellcl, maxcol, opts)
+    opts = opts or {}
+    maxwidth = opts.maxwidth or 20
+    usemax = opts.usemax or false
     -- column width preallocate zeros
     local widths = {}
     for i = 0, maxcol do widths[i] = 0 end
@@ -132,155 +280,34 @@ function alignTable(opts)
         end
     end
     local lines = vim.split(table.concat(text):gsub('\n$', ''), '\n', {plain=true})
-    vim.api.nvim_buf_set_lines(0, r1, r2-1, true, lines)
+    vim.api.nvim_buf_set_lines(0, r1, r2, true, lines)
 end
 
-vim.keymap.set(
-    "n", "<plug>TableAlign", alignTable,
-    { silent=true, desc="Align columns in tex table", }
-)
--- align &s using plugin (that also aligns \\ since it understands it is for 
--- latex), ignoring lines that contain "multicol".
--- Fails for complicated cells, such as \makecell[l]{a \\ b},
--- hence I wrote the alignTable function above.
-vim.keymap.set("n", "<plug>TableAlign2", "gaie<C-f>v/\\multicol<CR>*&", {
-    silent=true,
-    remap=true,
-    desc="Align table",
-})
+--- Work for either a visual selection or for the current env.
+---maxwidth: maximum allowed column width
+---usemax: in case a cell exceeds the max, should it be ignored (default), or 
+---should the column be set to maxwidth (usemax=true).
+local function alignTable(opts)
+    if not in_env("table") then return end
 
-
--- TODO:
--- functions or ways of moving/deleting/adding rows/columns.
--- Maybe each a function but ideally a more modular (vim) way, e.g. selection of row/col,
--- moving between cells, etc. But might not be possible without elaborate 
--- function due to things like header row, and not having one row per line.
-
--- get tabular-like env start r and c
-local function get_tabular()
-    local r, c = unpack(is_inside("tabularx"))
-    if r > 0 or c > 0 then return r, c end
-    r, c = unpack(is_inside("tabulary"))
-    if r > 0 or c > 0 then return r, c end
-    r, c = unpack(is_inside("tabular"))
-    if r > 0 or c > 0 then return r, c end
-end
-
--- return tex table column 0-index by counting (unescaped) ampersands (&) before cursor "column" c.
-local function getCurrentColumn(c)
-    local line = vim.api.nvim_get_current_line():gsub('\\&', '  ')
-    local nAmp = #line:sub(1,c):gsub('[^&]', '')
-    if not line:match('multicol') then return nAmp else
-        local beforeCell = line:sub(1,c):match('.*&') -- matches the last & before cursor
-        if beforeCell then
-            for n in beforeCell:gmatch[[\multicolumn{(%d+)}]] do
-                nAmp=nAmp + n-1
-            end
-        end
-        return nAmp
-    end
-end
-
--- get {r, c, string} of preamble for a containing tabular/tabularx/tabulary env.
--- where string is e.g. "@{}p{1.1cm}rrlp{1.1cm}rrrrlX@{}"
-local function getPreTabular()
-    local r_tabular, _ = get_tabular()
-    if r_tabular == 0 then return end
-    local line = vim.fn.getline(r_tabular)
-    -- find preamble range using balanced bracket patterns.
-    -- Empty () to get location (instead of an extracted substring).
-    -- example to match:
-    -- \begin{tabular}[c]{@{}lcX@{}}
-    -- \begin{tabularx}{\textwidth}{@{}lcX@{}}
-    -- \begin{tabulary}{1.0\textwidth}{L|L|L|L|L|L}
-    local pre_begin, pre_end = line:match('\\begin{tabular.}%b{}()%b{}()')
-    if pre_begin == nil then -- tabular
-        pre_begin, pre_end = line:match('\\begin{tabular}%b[]()%b{}()')
-    end -- cannot test pre_begin from first if-statement in second if it is an elseif
-    if pre_begin == nil then
-        pre_begin, pre_end = line:match('\\begin{tabular}()%b{}()')
-    end
-    pre_begin=pre_begin+1
-    pre_end=pre_end-2
-    return r_tabular, pre_begin, line:sub(pre_begin, pre_end)
-end
-
--- return tex table column 0-index assuming the cursor (with "column" c) is at the preamble line.
-local function getCurrentColumnPre(c, c_pre, pre)
-    local until_cursor = pre:sub(1, c+2-c_pre)
-    local nAlpha = #until_cursor:gsub("%b{}", ""):gsub('[^%a]', '')
-    -- 0-indexing
-    return math.max(0, nAlpha-1)
-end
-
--- TODO: when jumping to 0-th that is empty we go to 0-th column instead of cell indent.
--- jump to or from the relevant column in the preamble for a tabular/tabularx/tabulary table.
-vim.keymap.set("n", "<plug>TableJumpPre", function()
-    local r_tabular, c_pre, pre = getPreTabular()
-    if r_tabular == nil then return end
-    
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    if r == r_tabular then
-        local col = getCurrentColumnPre(c, c_pre, pre)
-        -- goto first line with the most cells found.
-        -- scan 9 lines for now. 0-indexing means r excludes preamble.
-        local scan = vim.api.nvim_buf_get_lines(0, r, r+10, false)
-        local iGoto, maxAmp = r, 0
-        for i, v in ipairs(scan) do
-            scan[i] = v:gsub('\\&', '  ')
-            _, nAmp = scan[i]:gsub('&', '')
-            if nAmp > maxAmp then
-                iGoto, maxAmp = i, nAmp
-            end
-        end
-        local lGoto = scan[iGoto]
-        local _, cGoto = lGoto:find(("[^&]*&"):rep(col))
-        if cGoto == nil then
-            -- there was no match so the line is lacking &s
-            -- we go to EOL although before optional \\
-            if lGoto:sub(-2) == [[\\]] then cGoto = #lGoto-2
-            else cGoto = #lGoto end
-        end
-        -- go to first non-whitespace as long as not & (indicating the next cell)
-        local _, firstNonW = lGoto:sub(cGoto+1):find("^%s*[^%s&]")
-        if firstNonW == nil then -- the cell is empty
-            if cGoto == 0 then -- the very first cell
-                -- we want to go to indentation.
-                -- Take indentation from previous line.
-                -- ERRORs if we are jumping to first line in table.
-                -- Maybe rethink the scan 10 lines logic to jump to first line with >1 cell (jump over hline and without multicol)
-                firstNonW = scan[iGoto-1]:find("%S")
-            else
-                firstNonW = 1
-            end
-        end
-        cGoto = cGoto + firstNonW-1
-        -- Mark current location for jumplist to work (e.g. <c-o> to go back in table)
-        -- lua version doesn't work
-        cmd "normal m`"
-        vim.api.nvim_win_set_cursor(0, {r+iGoto, cGoto})
+    local mode = vim.api.nvim_get_mode().mode
+    local r1, r2
+    if mode == "n" then
+        -- get lines of env using vimtex
+        -- should never return nil since we test in_env above
+        _, r1, _, r2, _ = unpack(vtu.get_env())
     else
-        local col = getCurrentColumn(c)
-        -- go across preamble string for "col" alphanumerics ignoring {...}
-        local bracketDepth = 0
-        local cGoto = 0
-        while cGoto < #pre do
-            cGoto=cGoto+1
-            local char = pre:sub(cGoto, cGoto)
-            if char == '{' then bracketDepth=bracketDepth+1
-            elseif char == '}' then bracketDepth=bracketDepth-1
-            elseif bracketDepth == 0 and char:match("%a") then
-                col=col-1
-                if col < 0 then break end
-            end
-        end
-        cGoto=cGoto+c_pre-2
-        -- Mark current location for jumplist to work (e.g. <c-o> to go back in table)
-        -- lua version doesn't work
-        cmd "normal m`"
-        vim.api.nvim_win_set_cursor(0, {r_tabular, cGoto})
+        util.end_visual()
+        r1, _, r2, _ = util.get_visual_range()
     end
-end, {desc="Goto preamble"})
+
+    -- -1 since we are using 1-indexed r1, r2 in 0-indexed end-exclusive function
+    -- to get the lines withinh the end, so excluding the begin/end lines
+    local indentation, cells, cellc, cellcl, maxcol = parseTable(r1, r2-1)
+    writeTable(r1, r2-1, indentation, cells, cellc, cellcl, maxcol, opts)
+end
+
+
 
 -- TODO: let multicolumn align to the rest but not the other way. What to do if not one row per line?
 -- TODO: have a config parameter for max cell length, so anything longer will not force other cells to be silly long.
@@ -316,8 +343,158 @@ vim.keymap.set("i", "&", function()
     cmd "echo ' '"
 end, {remap=false, silent=true, buffer=true})
 
--- TODO: <leader>-a and <leader>-A could swap columns like they normally swap args.
+local function deleteColumn(opts)
+    if not in_env("table") then return end
 
+    local mode = vim.api.nvim_get_mode().mode
+    local r1, r2
+    if mode == "n" then
+        -- get lines of env using vimtex
+        -- should never return nil since we test in_env above
+        _, r1, _, r2, _ = unpack(vtu.get_env())
+    else
+        util.end_visual()
+        r1, _, r2, _ = util.get_visual_range()
+    end
+
+    -- -1 since we are using 1-indexed r1, r2 in 0-indexed end-exclusive function
+    -- to get the lines withinh the end, so excluding the begin/end lines
+    local indentation, cells, cellc, cellcl, maxcol = parseTable(r1, r2-1)
+
+    local cDel = getCurrentColumn()
+    local cells2, cellc2, cellcl2 = {}, {}, {}
+    for i, cell in ipairs(cells) do
+        local col = cellc[i]
+        local coll = cellcl[i]
+        if col < cDel then
+            table.insert(cells2, cell)
+            table.insert(cellc2,  col)
+            table.insert(cellcl2, coll)
+        elseif col > cDel then
+            table.insert(cells2, cell)
+            table.insert(cellc2,  col-1)
+            table.insert(cellcl2, math.max(0, coll-1))
+        end
+    end
+
+    writeTable(r1, r2-1, indentation, cells2, cellc2, cellcl2, maxcol-1, opts)
+
+    -- remove entry from preamble
+    local r, c, pre, parts = parsePre()
+    local cPre = 0
+    local parts2 = {}
+    for _, part in ipairs(parts) do
+        if part:match("^%a") then
+            if cDel ~= cPre then
+                table.insert(parts2, part)
+            end
+            cPre=cPre+1
+            -- also consider modifers <{} and >{}
+        elseif part:match("^>") and cDel == cPre then
+        elseif part:match("^<") and cDel == cPre-1 then
+        else
+            table.insert(parts2, part)
+        end
+    end
+    local pre2 = table.concat(parts2)
+    -- from 1 to 0 indexing
+    vim.api.nvim_buf_set_text(0, r-1, c-1, r-1, c+#pre-1, {pre2})
+end
+
+local function swapColumn(left, opts)
+    left = left or false
+    if not in_env("table") then return end
+
+    local mode = vim.api.nvim_get_mode().mode
+    local r1, r2
+    if mode == "n" then
+        -- get lines of env using vimtex
+        -- should never return nil since we test in_env above
+        _, r1, _, r2, _ = unpack(vtu.get_env())
+    else
+        util.end_visual()
+        r1, _, r2, _ = util.get_visual_range()
+    end
+
+    -- -1 since we are using 1-indexed r1, r2 in 0-indexed end-exclusive function
+    -- to get the lines withinh the end, so excluding the begin/end lines
+    local indentation, cells, cellc, cellcl, maxcol = parseTable(r1, r2-1)
+
+    -- first is 0-indexed index of column to swap to the right
+    local first = getCurrentColumn()
+    if left then
+        first=first-1
+        if first < 0 then return end
+    elseif first+1 > maxcol then return end
+
+    local cells2, cellc2, cellcl2 = {}, {}, {}
+    local i = 0
+    while i <= #cells do
+        i=i+1
+        local cell = cells[i]
+        local col = cellc[i]
+        local coll = cellcl[i]
+        if col == first then
+            table.insert(cells2, cells[i+1])
+            table.insert(cellc2,  col)
+            table.insert(cellcl2, coll)
+            table.insert(cells2, cell)
+            table.insert(cellc2,  cellc[i+1])
+            table.insert(cellcl2, cellcl[i+1])
+            i=i+1
+        else
+            table.insert(cells2, cell)
+            table.insert(cellc2,  col)
+            table.insert(cellcl2, coll)
+        end
+    end
+    
+    writeTable(r1, r2-1, indentation, cells2, cellc2, cellcl2, maxcol, opts)
+
+    -- also mod preamble and try to take modifers < and > into account
+    local r, c, pre, parts = parsePre()
+    local cPre = 0
+    local parts2 = {}
+    local i = 0
+    while i < #parts do
+        i=i+1
+        local part = parts[i]
+        if part:match("^>") and first == cPre then
+            table.insert(parts2, parts[i+2])
+            table.insert(parts2, parts[i])
+            table.insert(parts2, parts[i+1])
+            i=i+2
+            first=-1 -- swap complete
+        elseif part:match("^%a") then
+            if cPre == first then
+                if parts[i+1]:match("^<") then
+                    table.insert(parts2, parts[i+2])
+                    table.insert(parts2, parts[i])
+                    table.insert(parts2, parts[i+1])
+                    i=i+2
+                elseif parts[i+1]:match("^>") then
+                    table.insert(parts2, parts[i+1])
+                    table.insert(parts2, parts[i+2])
+                    table.insert(parts2, parts[i])
+                    i=i+2
+                else
+                    table.insert(parts2, parts[i+1])
+                    table.insert(parts2, parts[i])
+                    i=i+1
+                end
+                first=-1 -- swap complete
+            else
+                table.insert(parts2, part)
+            end
+            cPre=cPre+1
+        else
+            table.insert(parts2, part)
+        end
+    end
+    local pre2 = table.concat(parts2)
+    -- from 1 to 0 indexing
+    vim.api.nvim_buf_set_text(0, r-1, c-1, r-1, c+#pre-1, {pre2})
+end
 
 -- TODO: deal with \& and maybe add more tabs after multicolumn (which we will have to remove later in the inverse function.)
 -- also, is the \\ missing after toprule etc? if so, edit the snippet template.
@@ -339,5 +516,23 @@ vim.keymap.set("n", "<plug>TablePaste", function()
     local delim = '\t'
     -- TODO: inverse of above
 end, {desc="Paste table"})
+
+
+vim.keymap.set(
+    "n", "<plug>TableAlign", alignTable,
+    { silent=true, desc="Align columns in tex table", }
+)
+vim.keymap.set(
+    "n", "<plug>TableDelCol", deleteColumn,
+    { silent=true, desc="Delete current column (also from preamble)", }
+)
+vim.keymap.set(
+    "n", "<plug>TableSwapRight", swapColumn,
+    { silent=true, desc="Swap table column right (also mod preamble)", }
+)
+vim.keymap.set(
+    "n", "<plug>TableSwapLeft", function () swapColumn(true) end,
+    { silent=true, desc="Swap table column left (also mod preamble)", }
+)
 
 

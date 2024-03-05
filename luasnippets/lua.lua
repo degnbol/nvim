@@ -20,8 +20,12 @@ fmta([=[[[
 s({trig="join", dscr="Join array of strings to a string."},
 {t"table.concat(", i(1,"strings"), t", ", i(2,"[sep]"), t")"}),
 
+-- or: TABLE[#TABLE+1] = VALUE
 s({trig="append", dscr="Append to table"},
 {t"table.insert(", i(1, "TABLE"), t", ", i(2, "VALUE"), t")"}),
+
+s({trig="rep", dscr="String repeat"},
+{t"string.rep(", i(1, "' '"), t", ", i(2, "N"), t")"}),
 
 -- meta. snippet to write snippets.
 -- TODO: condition these on relevant path in the same way you did it for completions for configuring lazy.
@@ -102,6 +106,9 @@ s({trig="rtp", dscr="Get neovim config root", condition=conds.line_begin, snippe
 
 s({trig="setlocal", dscr="Set local option.", condition=conds.line_begin*conds.line_end},
 {t"vim.opt_local."}),
+
+s({trig="count", dscr="Count prefix for functions."},
+{t{"local count = vim.v.count", "if count == 0 then count = 1 end"}}),
 
 -- api
 
