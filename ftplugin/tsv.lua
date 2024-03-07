@@ -1,13 +1,22 @@
 #!/usr/bin/env lua
 local util = require "utils/init"
 
+-- NOTE Limitations:
+-- assumes tab is always field sep and newline is always record sep, no multiline cells.
+-- undo doesn't currently work well. extmarks are not a buffer change so aren't 
+-- undone, but the hiding of text is done with a buffer modification so it is 
+-- undone. If we were to find a way to not include it in the undo tree then we would have another issue,
+-- what if the last change was inside the hidden text? So, I think the best 
+-- option is to make an UndoEvent and RedoEvent and change the extmark along 
+-- with the buffer change (and update vartabstop)
+
 local defaults = {
     maxwidth = 10, -- excl gap
     checklines = 100, -- max lines to look at to detect column widths
     checkevents = {"BufEnter", "BufWritePost"},
 }
 
-local widths -- set in BufEnter. Record of unhidden column widths.
+local widths -- set in BufEnter. Record of unhidden column widths excl gap.
 -- abililty to have different column widths and used for indicating if column is currently hidden
 local maxwidths = {}
 
@@ -18,12 +27,14 @@ local function isComment(line, commentchar)
     return line:match("^[\t%s]*" .. commentchar)
 end
 
+--- Not adding hidden text lengths.
 ---@row number 1-indexed
 ---@col number 1-indexed
----@return (c1, c2) 0-indexed, inclusive
+---@return (c1, c2) 0-indexed, inclusive or nil if the cell doesn't exist.
 local function getCellRange(row, col)
     local line = util.get_line(row-1)
     local fields = vim.split(line, '\t')
+    if #fields < col then return end
     local c = 0
     for i = 1, col-1 do c=c+#fields[i]+1 end
     return c, c + #fields[col]
@@ -53,6 +64,9 @@ local function delExtmark(row, col)
     return vim.api.nvim_buf_del_extmark(0, ns[col], row)
 end
 
+---@return int r 0-indexed
+---@return int c 0-indexed
+---@return # invalid
 local function getExtmark(row, col)
     local r, c, details = unpack(vim.api.nvim_buf_get_extmark_by_id(0, ns[col], row, {details=true}))
     return r, c, details.invalid
@@ -60,18 +74,56 @@ end
 
 local hidden = {}
 
+-- update vartabstop
+local function updateVartabstop()
+    local vartabstop = {}
+    for col, width in ipairs(widths) do
+        -- use "hidden" to indicate if a column is currently hiding content 
+        -- since we want to have maxwidths remember last used maxwidth for the 
+        -- column
+        if hidden[col] ~= nil and maxwidths[col] < width then
+            -- 2 spaces gap
+            table.insert(vartabstop, maxwidths[col]+2)
+        else
+            -- 2 spaces gap
+            table.insert(vartabstop, width+2)
+        end
+    end
+    vim.opt_local.vartabstop = vartabstop
+end
+
+
+local function unhideCell(row, col, hiddenText)
+    local r, c, invalid = getExtmark(row, col)
+    if not invalid then
+        vim.api.nvim_buf_set_text(0, r, c, r, c, {hiddenText})
+    end
+    delExtmark(row, col)
+    hidden[col][row] = nil
+    return r, c
+end
+
 -- use with large maxwidth to unhide
 local function hideCell(row, col)
     -- get range and text of full cell
     local c1, c2 = getCellRange(row, col)
+    -- in case the cell doesn't exist
+    if c1 == nil then return end
     local text = util.get_text(row-1, c1, c2)
     -- if already hidden
     local hiddenText = hidden[col][row]
     if hiddenText ~= nil then
-        -- reset buffer text
-        text=text..hiddenText
-        vim.api.nvim_buf_set_text(0, row-1, c1, row-1, c2, {text})
-        c2=c2+#hiddenText
+        -- reset
+        local rUnhidden, _ = unhideCell(row, col, hiddenText)
+        -- if lines have been added or removed the rows may be shifted
+        if rUnhidden ~= row-1 then
+            -- rehide the unhidden cell with corrected id
+            hideCell(rUnhidden+1, col)
+        else
+            -- recalculate
+            c1, c2 = getCellRange(row, col)
+            text = util.get_text(row-1, c1, c2)
+        end
     end
     
     local cHidden = c1 + maxwidths[col]
@@ -90,22 +142,18 @@ local function hideCell(row, col)
     vim.api.nvim_buf_set_text(0, row-1, cHidden, row-1, c2, {})
 end
 
--- update vartabstop
-local function updateVartabstop()
-    local vartabstop = {}
-    for col, width in ipairs(widths) do
-        -- use "hidden" to indicate if a column is currently hiding content 
-        -- since we want to have maxwidths remember last used maxwidth for the 
-        -- column
-        if hidden[col] ~= nil and maxwidths[col] < width then
-            -- 2 spaces gap
-            table.insert(vartabstop, maxwidths[col]+2)
-        else
-            table.insert(vartabstop, width)
+local function unhide(cols)
+    for _, col in ipairs(cols) do
+        if hidden[col] ~= nil then
+            for row, hiddenText in pairs(hidden[col]) do
+                unhideCell(row, col, hiddenText)
+            end
         end
+        hidden[col] = nil
     end
-    vim.opt_local.vartabstop = vartabstop
+    updateVartabstop()
 end
+
 
 local function hide(cols, maxwidth)
     -- 0 or less not valid maxwidth
@@ -135,23 +183,6 @@ local function hide(cols, maxwidth)
                 hideCell(row, col)
             end
         end
-    end
-    updateVartabstop()
-end
-
-local function unhide(cols)
-    for _, col in ipairs(cols) do
-        if hidden[col] ~= nil then
-            for row, hiddenText in pairs(hidden[col]) do
-                local r, c, invalid = getExtmark(row, col)
-                if not invalid then
-                    vim.api.nvim_buf_set_text(0, r, c, r, c, {hiddenText})
-                end
-                delExtmark(row, col)
-                hidden[col][row] = nil
-            end
-        end
-        hidden[col] = nil
     end
     updateVartabstop()
 end
@@ -208,6 +239,42 @@ vim.keymap.set( {'n', 'v'}, 'zo',
     { desc="Unhide current column(s)" }
 )
 
+-- vim.keymap.set( {'n', 'v'}, '<Plug>TsvHideMore',
+vim.keymap.set( {'n', 'v'}, '{',
+    function ()
+        local count = vim.v.count
+        if count == 0 then count = 1 end
+        local cols = getCurCols()
+        for _, col in ipairs(cols) do
+            -- use maxwidth if currently hiding
+            local width = hidden[col] and maxwidths[col] or widths[col]
+            hide({col}, math.max(1, width-count))
+        end
+    end,
+    { desc="Hide more of current column(s)", buffer=true }
+)
+
+-- vim.keymap.set( {'n', 'v'}, '<Plug>TsvHideMore',
+vim.keymap.set( {'n', 'v'}, '}',
+    function ()
+        local count = vim.v.count
+        if count == 0 then count = 1 end
+        local cols = getCurCols()
+        for _, col in ipairs(cols) do
+            -- hiding less is only relevant if currently hiding
+            if hidden[col] ~= nil then
+                local maxwidth = maxwidths[col]+count
+                if maxwidth < widths[col] then
+                    hide({col}, maxwidth)
+                else
+                    unhide({col})
+                end
+            end
+        end
+    end,
+    { desc="Hide less of current column(s)", buffer=true }
+)
+
 local grp = vim.api.nvim_create_augroup("hide", {clear=true})
 -- this autocmd sets vartabstop on file save based on longest cell in each column.
 vim.api.nvim_create_autocmd(defaults.checkevents, {
@@ -234,58 +301,128 @@ vim.api.nvim_create_autocmd(defaults.checkevents, {
         end
 
         -- min 2 visual spaces gap between columns
-        for i, v in ipairs(widths) do
-            widths[i] = v+2
+        local vartabstop = {}
+        for i, width in ipairs(widths) do
+            vartabstop[i] = width+2
         end
-
-        -- apply
-        vim.opt_local.vartabstop = widths
+        vim.opt_local.vartabstop = vartabstop
     end
 })
+
 -- unhide and rehide when saving as to always save the full text to file
 vim.api.nvim_create_autocmd("BufWritePre", {
-    buffer = 0,
-    group = grp,
-    callback = function () unhide(allCols()) end
+    buffer = 0, group = grp, callback = function()
+    unhide(allCols())
+end
 })
 vim.api.nvim_create_autocmd("BufWritePost", {
-    buffer = 0,
-    group = grp,
+    buffer = 0, group = grp, callback = function()
+    for col, maxwidth in pairs(maxwidths) do
+        hide({col}, maxwidth)
+    end
+end
+})
+
+-- yank hidden text as well
+vim.api.nvim_create_autocmd("TextYankPost", {
+    buffer = 0, group = grp,
     callback = function ()
-        -- rehide all
-        for col, maxwidth in pairs(maxwidths) do
-            hide({col}, maxwidth)
+        if vim.tbl_isempty(hidden) then return end
+        local lines = vim.v.event.regcontents
+        local linewise = vim.v.event.regtype == 'V'
+        -- get range of yank 0-ind
+        local r1, c1, r2, _ = util.last_changeyank_range()
+        local row1 = r1+1
+        local row2 = r2+1
+        -- shift for each line. zero for other lines until we start adding in hidden text
+        local cShift = {-c1}
+        for row = row1, row2 do
+            for col, h in pairs(hidden) do
+                local text = h[row]
+                if text ~= nil then
+                    local r, c, invalid = getExtmark(row, col)
+                    if not invalid then
+                        local i = r-r1+1 -- 1-ind
+                        local line = lines[i]
+                        if line ~= nil then
+                            local shift = cShift[i] or 0
+                            c = c + shift
+                            if linewise or (c >= 0 and (c < #line or row<row2)) then
+                                lines[i] = line:sub(1,c) .. text .. line:sub(c+1)
+                                cShift[i] = shift + #text
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        -- update register
+        local regname = vim.v.event.regname
+        if regname == "" then regname = "*" end
+        vim.fn.setreg(regname, table.concat(lines, '\n'), vim.v.event.regtype)
+    end
+})
+
+-- redo the active hiding when pasting line(s)
+vim.api.nvim_create_autocmd("TextChanged", {
+    buffer = 0, group = grp,
+    callback = function ()
+        if vim.tbl_isempty(hidden) then return end
+        -- 0-ind
+        local r1, c1, r2, c2 = util.last_changeyank_range()
+        -- full line(s) edit?
+        if c1 == 0 and c2+1 == #util.get_line(r2) then
+            -- iterate "hidden" to make sure we are only rehiding what already has hiding intent
+            for col, _ in pairs(hidden) do
+                hide({col}, maxwidths[col])
+            end
         end
     end
 })
 
 
 vim.keymap.set('n', ']]', function ()
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    local line = vim.api.nvim_get_current_line()
-    local nextTab = line:sub(c+1):match('()\t')
-    if nextTab ~= nil then
-        vim.api.nvim_win_set_cursor(0, {r, c+nextTab})
+    local count = vim.v.count
+    if count == 0 then count = 1 end
+    for _ = 1, count do
+        local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+        local line = vim.api.nvim_get_current_line()
+        local nextTab = line:sub(c+1):match('()\t')
+        if nextTab ~= nil then
+            vim.api.nvim_win_set_cursor(0, {r, c+nextTab})
+        end
     end
-end, { desc="Goto next start of cell" })
+end, { desc="Goto next start of cell", buffer=true })
 vim.keymap.set('n', '[[', function ()
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    if c == 0 then return end
-    local line = vim.api.nvim_get_current_line()
-    local prevTab = line:sub(1, c-1):match('\t?()[^\t]*$')
-    vim.api.nvim_win_set_cursor(0, {r, prevTab-1})
-end, { desc="Goto previous start of cell" })
+    local count = vim.v.count
+    if count == 0 then count = 1 end
+    for _ = 1, count do
+        local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+        if c == 0 then return end
+        local line = vim.api.nvim_get_current_line()
+        local prevTab = line:sub(1, c-1):match('\t?()[^\t]*$')
+        vim.api.nvim_win_set_cursor(0, {r, prevTab-1})
+    end
+end, { desc="Goto previous start of cell", buffer=true })
 vim.keymap.set('n', '][', function ()
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    local line = vim.api.nvim_get_current_line()
-    -- TODO
+    local count = vim.v.count
+    if count == 0 then count = 1 end
+    for _ = 1, count do
+        local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+        local line = vim.api.nvim_get_current_line()
+        -- TODO
+    end
 end, { desc="Goto next end of cell" })
 vim.keymap.set('n', '[]', function ()
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    if c == 0 then return end
-    local line = vim.api.nvim_get_current_line()
-    -- TODO
-end, { desc="Goto previous end of cell" })
+    local count = vim.v.count
+    if count == 0 then count = 1 end
+    for _ = 1, count do
+        local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+        if c == 0 then return end
+        local line = vim.api.nvim_get_current_line()
+        -- TODO
+    end
+end, { desc="Goto previous end of cell", buffer=true })
 
 
 
