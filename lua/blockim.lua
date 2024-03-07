@@ -7,7 +7,6 @@ end
 
 vim.keymap.set('v', '<C-q>', function ()
     if not isblock() then return end
-    util.end_visual()
     local rVis1, cVis1, rVis2, cVis2 = util.get_visual_range()
     local rCur1, cCur1 = unpack(vim.api.nvim_win_get_cursor(0))
     vim.keymap.set('n', '<Esc>', function ()
