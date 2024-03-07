@@ -36,14 +36,15 @@ function IsText() abort
     return l:cmd['name'] == "\\caption"
     " return len(vimtex#syntax#stack()) == 0
 endfunction
-augroup foHack
-    autocmd InsertCharPre <buffer> if !&wrap && IsText() | set fo+=a | else | set fo-=a | endif
-augroup end
+" augroup foHack
+"     autocmd InsertCharPre <buffer> if !&wrap && IsText() | set fo+=a | else | set fo-=a | endif
+" augroup end
+" maybe just wrap instead of this hack, although we don't wanna wrap tables
 
-nmap <plug>Latex2Unicode v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/tex/unicode/latex2unicode.sh<CR>
-nmap <plug>Unicode2Latex v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/tex/unicode/unicode2latex.sh<CR>
-xmap <plug>Latex2Unicode_visual :!$XDG_CONFIG_HOME/nvim/tex/unicode/latex2unicode.sh<CR>
-xmap <plug>Unicode2Latex_visual :!$XDG_CONFIG_HOME/nvim/tex/unicode/unicode2latex.sh<CR>
+nmap <buffer> <plug>Latex2Unicode v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/tex/unicode/latex2unicode.sh<CR>
+nmap <buffer> <plug>Unicode2Latex v<plug>(vimtex-a$):!$XDG_CONFIG_HOME/nvim/tex/unicode/unicode2latex.sh<CR>
+xmap <buffer> <plug>Latex2Unicode_visual :!$XDG_CONFIG_HOME/nvim/tex/unicode/latex2unicode.sh<CR>
+xmap <buffer> <plug>Unicode2Latex_visual :!$XDG_CONFIG_HOME/nvim/tex/unicode/unicode2latex.sh<CR>
 " doesn't seem to work
 " silent! call repeat#set("\<Plug>Latex2Unicode", v:count)
 " silent! call repeat#set("\<Plug>Unicode2Latex", v:count)
