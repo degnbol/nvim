@@ -24,7 +24,7 @@ local function getCommentChar()
     return vim.opt_local.commentstring:get():sub(1,1)
 end
 local function isComment(line, commentchar)
-    return line:match("^[\t%s]*" .. commentchar)
+    return commentchar and commentchar ~= "" and line:match("^[\t%s]*" .. commentchar)
 end
 
 --- Not adding hidden text lengths.
@@ -278,7 +278,7 @@ vim.keymap.set( {'n', 'v'}, '}',
 local grp = vim.api.nvim_create_augroup("hide", {clear=true})
 -- this autocmd sets vartabstop on file save based on longest cell in each column.
 vim.api.nvim_create_autocmd(defaults.checkevents, {
-    buffer=0,
+    pattern="*.tsv",
     group=grp,
     callback = function()
         local commentchar = getCommentChar()
@@ -311,12 +311,12 @@ vim.api.nvim_create_autocmd(defaults.checkevents, {
 
 -- unhide and rehide when saving as to always save the full text to file
 vim.api.nvim_create_autocmd("BufWritePre", {
-    buffer = 0, group = grp, callback = function()
+    pattern = '*.tsv', group = grp, callback = function()
     unhide(allCols())
 end
 })
 vim.api.nvim_create_autocmd("BufWritePost", {
-    buffer = 0, group = grp, callback = function()
+    pattern = '*.tsv', group = grp, callback = function()
     for col, maxwidth in pairs(maxwidths) do
         hide({col}, maxwidth)
     end
@@ -325,7 +325,7 @@ end
 
 -- yank hidden text as well
 vim.api.nvim_create_autocmd("TextYankPost", {
-    buffer = 0, group = grp,
+    pattern = "*.tsv", group = grp,
     callback = function ()
         if vim.tbl_isempty(hidden) then return end
         local lines = vim.v.event.regcontents
@@ -365,7 +365,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 
 -- redo the active hiding when pasting line(s)
 vim.api.nvim_create_autocmd("TextChanged", {
-    buffer = 0, group = grp,
+    pattern = '*.tsv', group = grp,
     callback = function ()
         if vim.tbl_isempty(hidden) then return end
         -- 0-ind

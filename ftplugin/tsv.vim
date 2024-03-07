@@ -6,3 +6,6 @@ setlocal concealcursor=nvc
 
 " show tabs by default
 setlocal list
+
+setlocal commentstring=#%s
+
