@@ -689,43 +689,63 @@ function M.addCol(tab, index, opts)
     vim.cmd.startinsert()
 end
 
--- TODO: deal with \& and maybe add more tabs after multicolumn (which we will have to remove later in the inverse function.)
--- also, is the \\ missing after toprule etc? if so, edit the snippet template.
-vim.keymap.set("n", "<plug>TableYank", function()
-    local delim = '\t'
-    cmd [[normal "tyie]]
-    local content = vim.fn.getreg("t")
-    content = content:
-    	gsub('[\n\r]', ''):
-    	gsub('^%s*', ''):
-    	gsub('%s*$', ''):
-    	gsub([[%s*\\%s*]], '\n'):
-    	gsub('[ \t]*&[ \t]*', delim) -- can't replace %s since it also removes \n
+---@onlycells bool Exclude formatting lines if true, such as \toprule. Default=false.
+---@delim Delimiter. Default=tab
+local function yankTable(onlycells, delim)
+    onlycells = onlycells or false
+    delim = delim or '\t'
+    local tab = parseTable()
+    local lines = {}
+    local lastrow = -1 -- to add lines
+    local lastcol -- to choose number of delimiters to write
+    for i, text in ipairs(tab.texts) do
+        local row = tab.rows[i]
+        local col = tab.cols[i]
+        -- formatting line?
+        if col == -1 then
+            if not onlycells then
+                -- strip is only necessary since format lines are left alone completely in the parse
+                lines[#lines+1] = util.strip(text)
+                row=row-1 -- so that next cell (if there is one) will make a new line
+            end
+        else
+            -- new line?
+            if row ~= lastrow then
+                lines[#lines+1] = ""
+                lastcol = 0
+            end
+            lines[#lines]=lines[#lines] .. delim:rep(col - lastcol) .. text
+        end
+        lastrow = row
+        lastcol = col
+    end
     -- set system clipboard
-    vim.fn.setreg('+', content)
-end, {desc="Yank table"})
+    vim.fn.setreg('+', table.concat(lines, '\n'))
+end
+
+vim.keymap.set("n", "<plug>TableYank", yankTable, {buffer=true, desc="Yank table"})
 
 vim.keymap.set("n", "<plug>TablePaste", function()
     local delim = '\t'
     -- TODO: inverse of above
-end, {desc="Paste table"})
+end, {buffer=true, desc="Paste table"})
 
 
 vim.keymap.set(
     "n", "<plug>TableAlign", alignTable,
-    { silent=true, desc="Align columns in tex table", }
+    { buffer=true, silent=true, desc="Align columns in tex table", }
 )
 vim.keymap.set(
     "n", "<plug>TableDelCol", deleteColumn,
-    { silent=true, desc="Delete current column (also from preamble)", }
+    { buffer=true, silent=true, desc="Delete current column (also from preamble)", }
 )
 vim.keymap.set(
     "n", "<plug>TableSwapRight", swapColumn,
-    { silent=true, desc="Swap table column right (also mod preamble)", }
+    { buffer=true, silent=true, desc="Swap table column right (also mod preamble)", }
 )
 vim.keymap.set(
     "n", "<plug>TableSwapLeft", function () swapColumn(true) end,
-    { silent=true, desc="Swap table column left (also mod preamble)", }
+    { buffer=true, silent=true, desc="Swap table column left (also mod preamble)", }
 )
 vim.keymap.set("n", "<plug>TableGoLeft", function ()
     local count = vim.v.count
@@ -733,34 +753,34 @@ vim.keymap.set("n", "<plug>TableGoLeft", function ()
     local tab = parseTable()
     local row, col = getCurrentCell(tab)
     gotoCell(tab, row, col-count)
-end)
+end, { buffer=true })
 vim.keymap.set("n", "<plug>TableGoRight", function ()
     local count = vim.v.count
     if count == 0 then count = 1 end
     local tab = parseTable()
     local row, col = getCurrentCell(tab)
     gotoCell(tab, row, col+count)
-end)
+end, { buffer=true })
 vim.keymap.set("n", "<plug>TableGoUp", function ()
     local count = vim.v.count
     if count == 0 then count = 1 end
     local tab = parseTable()
     local row, col = getCurrentCell(tab)
     gotoCell(tab, row-count, col)
-end)
+end, { buffer=true })
 vim.keymap.set("n", "<plug>TableGoDown", function ()
     local count = vim.v.count
     if count == 0 then count = 1 end
     local tab = parseTable()
     local row, col = getCurrentCell(tab)
     gotoCell(tab, row+count, col)
-end)
+end, { buffer=true })
 
 vim.keymap.set('n', '<Plug>TableAddColLeft', function ()
     local tab = parseTable()
     local _, col = getCurrentCell(tab)
     M.addCol(tab, col)
-end, { desc="Add new empty column to the left" })
+end, { buffer=true, desc="Add new empty column to the left" })
 
 vim.keymap.set('n', '<Plug>TableAddColRight', function ()
     local tab = parseTable()
@@ -768,7 +788,7 @@ vim.keymap.set('n', '<Plug>TableAddColRight', function ()
     M.addCol(tab, col+1)
 end, { desc="Add new empty column to the right" })
 
-vim.keymap.set('v', '<Plug>TableSelInCell', selectInCell, { silent=true, desc="Select in cell" })
+vim.keymap.set('v', '<Plug>TableSelInCell', selectInCell, { buffer=true, silent=true, desc="Select in cell" })
 
 return M
 
