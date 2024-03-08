@@ -193,25 +193,27 @@ fmta([[local keys = vim.api.nvim_replace_termcodes('<<<>>>', true,false,true)
 vim.api.nvim_feedkeys(keys, '<>', false)
 ]], {i(1, "right"), c(2, {t"m", t"n", t"t", t"i", t"x", t"x!"})})),
 
--- help text says to prefer vim.system for both, but it doesn't seem to exist.
 -- returns stdout
-
 s({
     trig="sync",
     dscr="call external cmd synchronously",
     snippetType='autosnippet',
     condition=conds.line_begin,
 },
-{t'vim.fn.system("', i(1, "ls"), t'")'}),
--- Returns a code (not exit code).
--- Use e.g. vim.fn.jobstart("cmd", {on_stdout=...})
+{t'local obj = vim.system(', i(1, "{'echo', 'hello'}"), t', {text=true}):wait()'}),
 s({
     trig="async",
     dscr="call external cmd asynchronously",
     snippetType='autosnippet',
     condition=conds.line_begin,
 },
-{t'vim.fn.jobstart("', i(1, "ls"), t'")'}),
+{t'vim.system(', i(1, "{'echo', 'hello'}"), t[[, {text=true}, function(obj)
+    print(obj.code)
+    print(obj.signal)
+    print(obj.stdout)
+    print(obj.stderr)
+end
+)]]}),
 
 s({trig="cword", dscr="current word under cursor"},
 {t'vim.fn.expand("<cword>")'}),
