@@ -184,6 +184,7 @@ fmta([[
 \usepackage{tabularx} % Column type X for width filling.
 \usepackage{tabulary} % Column type L,C,R,J for balanced width versions of l,c,r,j.
 \usepackage{booktabs} % Better vertical spacing. Midrule etc with varying thickness instead of \hline.
+\newcommand{\thinrule}{\specialrule{0.05ex}{0.1ex}{0.1ex}}
 % creates missing tabularx column type named "R" to specify right adjustment
 \newcolumntype{R}{>>{\raggedleft\arraybackslash}X}
 \usepackage{multicol, multirow} % Also see pbox.
@@ -194,9 +195,22 @@ fmta([[
 % line break long urls
 \usepackage{xurl}
 % \usepackage[capitalise]{cleverref} % \cref which auto adds e.g. "Table " to \ref
-% Auto define acronyms on first use. https://www.overleaf.com/learn/latex/Glossaries
-\usepackage[acronym]{glossaries-extra}
-\setabbreviationstyle[acronym]{long-short}
+
+% Glossaries and acronyms.
+% pac acronym automatically compiles but doesn't provide flexibility with 
+% hyperlinks, either all on or all off.
+% \usepackage[printonlyused,withpage,nohyperlinks]{acronym}
+% most people seem to use pac glossaries. Manual compile (keymap <leader><leader>g)
+\usepackage[toc,acronym]{glossaries} % add option "nomain" if only using acronyms
+\makeglossaries
+% glossaries-extra is similar:
+% \usepackage[toc,acronym]{glossaries-extra}
+% \setabbreviationstyle[acronym]{long-short}
+% glossaries{,-extra} uses:
+% \newacronym{tf}{TF}{Transcription Factor}. \gls, \glspl, \glspl*, ...
+% \printglossary[type=\acronymtype] and \printglossaries
+% pac acronym uses: \ac, \acp, ...
+% \begin{acronyms}\acro{tf}{TF}{Transcription Factor}\end{acronyms}
 
 % appendix
 \usepackage[toc,page]{appendix}
