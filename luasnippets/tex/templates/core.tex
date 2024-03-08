@@ -1,0 +1,29 @@
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{float}
+% makes figures and tables stay in their section
+\usepackage[section]{placeins}
+\usepackage{xcolor} % define colors
+% line break long urls
+\usepackage{xurl}
+\usepackage{xspace} % \xspace at end of newcommand allows "\CUSTOM " instead of "\CUSTOM\ "
+% Improve default latex packages.
+% allowing (2%) letter stretch
+\usepackage{microtype}
+% \raggedright ->> \RaggedRight, \flushleft env ->> \FlushLeft, \center ->> \Center
+% https://www.overleaf.com/learn/latex/Text_alignment
+\usepackage{ragged2e}
+% \usepackage{flushend} % enable for two columns, to get equal lengths on last page.
+\usepackage{fancyhdr} % header/footer control
+% paragraph space instead of indent
+\usepackage[parfill]{parskip} 
+% appendix
+\usepackage[toc,page]{appendix}
+% \begin{itemize}[label={--}] instead of repeating /item[--]. There is also the outlines package.
+\usepackage{enumitem}
+% less boilerplate alt to itemize. \begin{outline}\end{outline} with optional [enumerate]. 
+% replace \item and nested \item with \1 and \2.
+% Change bullet style with e.g.:
+% \renewcommand{\labelitemiii}{\textbullet}
+% \renewcommand{\labelitemiv}{\textendash}
+% \usepackage{outlines}

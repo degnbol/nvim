@@ -1,0 +1,11 @@
+% Tables
+% https://tex.stackexchange.com/questions/12672/which-tabular-packages-do-which-tasks-and-which-packages-conflict
+\usepackage{array} % flexible column formatting
+\usepackage{tabularx} % Column type X for width filling.
+\usepackage{tabulary} % Column type L,C,R,J for balanced width versions of l,c,r,j.
+\usepackage{booktabs} % Better vertical spacing. Midrule etc with varying thickness instead of \hline.
+% creates missing tabularx column type named "R" to specify right adjustment
+\newcolumntype{R}{>>{\raggedleft\arraybackslash}X}
+\usepackage{multicol, multirow} % Also see pbox.
+% \usepackage{longtable} % Multipage table. Might not support column X. Alts: xltabular, ltxtable
+% \usepackage{makecell} % multiline cell with \makecell[tl]{TEXT}

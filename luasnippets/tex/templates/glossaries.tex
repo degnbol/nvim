@@ -1,0 +1,14 @@
+% Glossaries and acronyms with the glossaries package.
+% most people seem to use pac glossaries. Manual compile (keymap leader leader g)
+\usepackage[toc,acronym]{glossaries} % add option "nomain" if only using acronyms
+\makeglossaries
+% glossaries-extra is similar:
+% \usepackage[toc,acronym]{glossaries-extra}
+% \setabbreviationstyle[acronym]{long-short}
+% % glossaries{,-extra} uses:
+% % \newacronym{tf}{TF}{Transcription Factor}. \gls, \glspl, \glspl*, ...
+% % where * removes link.
+% \printglossaries
+% \printglossary[type=\acronymtype]
+% pac acronym uses: \ac, \acp, ...
+% \begin{acronyms}\acro{tf}{TF}{Transcription Factor}\end{acronyms}

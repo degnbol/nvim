@@ -30,6 +30,12 @@ s({trig="rep", dscr="String repeat"},
 s({trig="strip", dscr="Strip whitespace"},
 {i(1), t[[:match("^[\t%s]*(.-)[\t%s]*$")]]}),
 
+s({trig="read", dscr="Read text of a file"},
+{fmta([[local fh = open(<>)
+    local <> = fh:read("*a") -- *a or *all
+    fh:close()
+]], {i(1), i(2, "content")})}),
+
 -- meta. snippet to write snippets.
 -- TODO: condition these on relevant path in the same way you did it for completions for configuring lazy.
 -- Also add all the allowed args from https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md
