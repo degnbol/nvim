@@ -92,12 +92,29 @@ fmta([[
 \usepackage{xcolor} % define colors
 \usepackage{hyperref}
 % \usepackage[capitalise]{cleverref} % \cref which auto adds e.g. "Table " to \ref
-% Auto define acronyms on first use. https://www.overleaf.com/learn/latex/Glossaries
-\usepackage[acronym]{glossaries-extra}
-\setabbreviationstyle[acronym]{long-short}
+
+% Glossaries and acronyms.
+% pac acronym automatically compiles but doesn't provide flexibility with 
+% hyperlinks; either all on or all off. I can just write regular text to avoid link.
+\usepackage[withpage]{acronym}
+% most people seem to use pac glossaries. Manual compile (keymap leader leader g)
+% \usepackage[toc,acronym]{glossaries} % add option "nomain" if only using acronyms
+% \makeglossaries
+% glossaries-extra is similar:
+% \usepackage[toc,acronym]{glossaries-extra}
+% \setabbreviationstyle[acronym]{long-short}
+% % glossaries{,-extra} uses:
+% % \newacronym{tf}{TF}{Transcription Factor}. \gls, \glspl, \glspl*, ...
+% % where * removes link.
+% \printglossaries
+% \printglossary[type=\acronymtype]
+% pac acronym uses: \ac, \acp, ...
+% \begin{acronyms}\acro{tf}{TF}{Transcription Factor}\end{acronyms}
+% there's also a pac acro that I haven't tried.
 
 % appendix
 \usepackage[toc,page]{appendix}
+
 % Code blocks.
 % https://www.overleaf.com/learn/latex/Code_listing
 % https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
@@ -112,11 +129,18 @@ fmta([[
 % hyperlink doi
 \usepackage{doi}
 
+\title{TITLE}
+\author{Christian Degnbol Madsen}
+
 \begin{document}
+\maketitle
+% \tableofcontents
 
 <>
 
-\printbibliography
+% \clearpage
+
+% \printbibliography
 
 \end{document}
 ]], {i(1, "bibliography.bib"), i(2),}),
@@ -196,24 +220,6 @@ fmta([[
 \usepackage{xurl}
 % \usepackage[capitalise]{cleverref} % \cref which auto adds e.g. "Table " to \ref
 
-% Glossaries and acronyms.
-% pac acronym automatically compiles but doesn't provide flexibility with 
-% hyperlinks, either all on or all off.
-% \usepackage[printonlyused,withpage,nohyperlinks]{acronym}
-% most people seem to use pac glossaries. Manual compile (keymap <leader><leader>g)
-\usepackage[toc,acronym]{glossaries} % add option "nomain" if only using acronyms
-\makeglossaries
-% glossaries-extra is similar:
-% \usepackage[toc,acronym]{glossaries-extra}
-% \setabbreviationstyle[acronym]{long-short}
-% glossaries{,-extra} uses:
-% \newacronym{tf}{TF}{Transcription Factor}. \gls, \glspl, \glspl*, ...
-% \printglossary[type=\acronymtype] and \printglossaries
-% pac acronym uses: \ac, \acp, ...
-% \begin{acronyms}\acro{tf}{TF}{Transcription Factor}\end{acronyms}
-
-% appendix
-\usepackage[toc,page]{appendix}
 % Code blocks.
 % https://www.overleaf.com/learn/latex/Code_listing
 % https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
