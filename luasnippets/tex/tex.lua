@@ -164,11 +164,14 @@ s({trig="fig", dscr="fig", condition=conds.line_begin*conds.line_end, snippetTyp
 fmta([[\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.95\textwidth]{./figures<>}
-	\caption{<>}
+	\caption{
+	    \textbf{<>.}
+	    <>.
+	}
 	\label{fig:<>}
 \end{figure}
 
-]], {i(1, "FILENAME"), i(2, "\\textbf{Title.} Caption."), i(3)})),
+]], {i(1, "FILENAME"), i(2, "TITLE"), i(3, "CAPTION"), i(3)})),
 
 s({trig="subfig", dscr="subfig", condition=conds.line_begin, snippetType="autosnippet"},
 fmta([[\begin{figure}[ht]
