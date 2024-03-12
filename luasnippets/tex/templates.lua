@@ -61,6 +61,8 @@ fmta([[
 
 % \clearpage
 
+<>
+
 % \printbibliography
 
 \end{document}
@@ -77,6 +79,9 @@ fmta([[
         "biblatex",
     },
     i(2),
+    putfilenode {
+        "acro-doc",
+    },
 }),
 {show_condition=conds.line_end}),
 

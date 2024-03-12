@@ -1,13 +1,10 @@
 \usepackage{acro}
 \acsetup{
-	case-insensitive=true,
-	use-id-as-short=true,
-	uppercase/all,
-	% default=only used. We want to not think to hard if we have defined a term in order to have it listed.
-	list/display=all,
-	pages/display=all,
+	pages/display=all, % in listing, show page number for all uses
+	% treat acronyms differently if only used once. Use e.g. single-style=short-long for exceptions.
+	single=true,
 }
 % using acro for terms that aren't acronyms, i.e. the long field will have a description that should only be seen in the listing.
-% usage: \DeclareAcronym{imr90}{short=IMR90,preset=glossary,long=human fibroblast cell line}
 \NewAcroPreset{glossary}{tag=glossary,first-style=short}
-
+% for glossary entry, even with the preset the long form will sometimes be inserted, so use
+% \DeclareAcronym{imr90}{preset=glossary,short=IMR90,long=IMR90,list=Human fibroblast cell line}
