@@ -88,26 +88,25 @@ map('i', "<C-]>", '[]<left>')
 map('i', "<C-S-[>", '{}<left>')
 map('i', "<C-S-]>", '{}<left>')
 
+-- hack map of shift+space
+local bracketJumpCode =  "\x1F"
 local triples = { '"""', "'''", "```" }
 local pairs   = { '""', "''", "``", "()", '[]', "{}", "<>", "$$" }
 local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>', '$' }
--- hack map of shift+space
-map({'i', 'n'}, "\x1F", function ()
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    local line = vim.api.nvim_get_current_line()
+local function bracketJump(line, c)
     if vim.tbl_contains(triples, line:sub(c-2,c)) then
         return "<left><left><left>"
     elseif vim.tbl_contains(triples, line:sub(c+1,c+3)) then
         return "<right><right><right>"
     elseif c == #line then
         return "<left>"
-    -- left priority over right for pairs so we go back first for e.g. Matrix{}|[]
+        -- left priority over right for pairs so we go back first for e.g. Matrix{}|[]
     elseif vim.tbl_contains(pairs, line:sub(c-1,c)) then
         return "<left>"
     elseif vim.tbl_contains(pairs, line:sub(c+1,c+2)) then
         return "<right>"
-    -- right priority over left for singles, since they are usually half of a 
-    -- filled out pair and we want to prioritize progressing in that case.
+        -- right priority over left for singles, since they are usually half of a 
+        -- filled out pair and we want to prioritize progressing in that case.
     elseif vim.tbl_contains(singles, line:sub(c+1,c+1)) then
         return "<right>"
     elseif vim.tbl_contains(singles, line:sub(c,c)) then
@@ -115,7 +114,17 @@ map({'i', 'n'}, "\x1F", function ()
     else
         return "<right>"
     end
+end
+map({'i', 'n'}, bracketJumpCode, function ()
+    local line = vim.api.nvim_get_current_line()
+    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+    return bracketJump(line, c)
 end, {expr=true, desc="Move inside empty pair/triples or outside non-empty"})
+vim.keymap.set('c', bracketJumpCode, function ()
+    local line = vim.fn.getcmdline()
+    local c = vim.fn.getcmdpos()
+    return bracketJump(line, c-1)
+end, {expr=true, desc="Move inside empty pair/triples or outside non-empty" })
 
 -- useful with cursor | in {|} to get
 -- {
