@@ -13,9 +13,22 @@ local in_text = vtu.in_text
 local cond_itemize = vtu.cond_itemize
 local cond_description = vtu.cond_description
 
+--- Get functionnode that uppercases the text in node i
+---@i int the index of another node
+---@return functionnode upper
+local function fUpper(i)
+    return f(function (args, parent, user_args)
+        return args[1][1]:upper()
+    end, {i})
+end
+
 return {
 --
 
+s({trig="\\new", dscr="New command", snippetType="autosnippet", condition=conds.line_begin},
+{t"\\newcommand{\\", i(1), t"}{", i(2), t"}"}),
+
+    
 s({trig="pdflatex", dscr="Use PdfLaTeX", condition=conds.line_begin},
 t{"% !TEX program = PdfLaTeX", ""}),
 
@@ -237,6 +250,18 @@ s(
 s(
     {trig="(%d)lw", dscr="linewidth", trigEngine="pattern", snippetType="autosnippet"},
     {re(1), t"\\linewidth"}
+),
+
+s({trig="acro", dscr="Define new acronym", snippetType="autosnippet", condition=conds.line_begin},
+    fmta([[\DeclareAcronym{<>}{short=<>,long=<>}]], {
+        i(1), fUpper(1), i(2),
+    })
+),
+
+s({trig="glos", dscr="Define new glossary entry", snippetType="autosnippet", condition=conds.line_begin},
+    fmta([[\DeclareAcronym{<>}{preset=glossary,short=<>,long=<>,list=<>}]], {
+        i(1), fUpper(1), fUpper(1), i(2),
+    })
 ),
 
 }
