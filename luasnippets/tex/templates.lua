@@ -2,7 +2,7 @@
 -- https://castel.dev/post/lecture-notes-1/
 -- https://www.ejmastnak.com/tutorials/vim-latex/luasnip
 -- https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets
-
+local util = require "utils/init"
 local lsu = require "utils/luasnip"
 local vtu = require "utils/vimtex"
 
@@ -13,12 +13,32 @@ local in_text = vtu.in_text
 local in_itemize = vtu.in_itemize
 local in_description = vtu.in_description
 
+local rtp = vim.opt.runtimepath:get()[1]
+
+--- Functionnode function to put text from file(s) at a node location
+---:h luasnip-functionnode
+---@user_args table fnames
+---@return text contents from file
+local function putfile(args, parent, user_args)
+    local texts = {}
+    for _, fname in ipairs(user_args) do
+        table.insert(texts, util.readtext(rtp .. "/luasnippets/tex/templates/" .. fname .. ".tex"))
+    end
+    local text = table.concat(texts, '\n')
+    return vim.split(text, '\n')
+end
+---@return functionnode
+local function putfilenode(fnames)
+    return f(putfile, {}, {user_args={fnames}})
+end
+
+
 return {
 -- TODO: maybe add toggling between different templates.
 -- E.g. for PdfLaTeX relevant to journal old-fashioned requirements maybe use package textgreek
 -- https://tex.stackexchange.com/questions/553/what-packages-do-people-load-by-default-in-latex
 s("template",
--- < and > chars are escaped in fmta call by typing << and >>
+-- NOTE: < and > chars are escaped in fmta call by typing << and >>
 -- \usepackage[utf8]{inputenc} is no longer required since 2018 https://www.overleaf.com/learn/latex/Greek
 -- \usepackage[T1]{fontenc} specifies output encoding and should also no longer 
 -- be needed, especially with modern lualatex or xelatex.
@@ -27,107 +47,8 @@ fmta([[
 % !TEX program = LuaLaTeX
 \documentclass[a4paper,10pt]{article}
 \usepackage[margin=2cm, top=0.5in]{geometry}
-\usepackage{xspace} % \xspace at end of newcommand allows "\CUSTOM " instead of "\CUSTOM\ "
 
-\usepackage{csquotes}
-\usepackage{fontspec}
-% don't \usepackage{lmodern}, see latex/fonts.tex for details.
-\setmainfont{New Computer Modern 10}
-
-% Improve default latex packages.
-% allowing (2%) letter stretch
-\usepackage{microtype}
-% \raggedright ->> \RaggedRight, \flushleft env ->> \FlushLeft, \center ->> \Center
-% https://www.overleaf.com/learn/latex/Text_alignment
-\usepackage{ragged2e}
-% \usepackage{flushend} % enable for two columns, to get equal lengths on last page.
-
-% \begin{itemize}[label={--}] instead of repeating /item[--]. There is also the outlines package.
-\usepackage{enumitem}
-\usepackage{fancyhdr} % header/footer control
-% paragraph space instead of indent
-\usepackage[parfill]{parskip} 
-
-% math
-\usepackage{mathtools} % loads amsmath, plus e.g. \coloneqq,\mathclap,\substack
-\usepackage{amssymb}
-\usepackage{siunitx} % provides \SI and column type S (align decimal)
-\usepackage{unicode-math} % experimental support for unicode in math
-
-\usepackage{graphicx}
-
-% Subfigures. "skip" == spacing between subfigures.
-\usepackage[skip=0pt]{subcaption}
-% Use uppercase instead of lowercase letters for sub-figure numbering
-% (Per default \thesubfigure is defined as \alph{subfigure}, i.e. lowercase letters)
-\renewcommand\thesubfigure{\Alph{subfigure}}
-\renewcommand\thesubtable{\Alph{subtable}}
-\captionsetup[subfigure]{
-	justification=raggedright, % ragged right means left aligned
-	% singlelinecheck=off means that the justification setting is used even when 
-	% the caption is only a single line long. if singlelinecheck=on, then 
-	% caption is always centered when the caption is only one line.
-	singlelinecheck=off,
-	labelfont={bf,sf}, % bold, sans-serif
-	font=Large,
-	labelformat=simple, % remove () around subfig numbering
-	labelsep=colon % since no parenthesis
-}
-
-\usepackage{float}
-% makes figures and tables stay in their section
-\usepackage[section]{placeins}
-
-% Tables.
-% https://tex.stackexchange.com/questions/12672/which-tabular-packages-do-which-tasks-and-which-packages-conflict
-\usepackage{array} % flexible column formatting
-\usepackage{tabularx} % Column type X for width filling.
-\usepackage{tabulary} % Column type L,C,R,J for balanced width versions of l,c,r,j.
-\usepackage{booktabs} % Better vertical spacing. Midrule etc with varying thickness instead of \hline.
-% creates missing tabularx column type named "R" to specify right adjustment
-\newcolumntype{R}{>>{\raggedleft\arraybackslash}X}
-\usepackage{multicol, multirow} % Also see pbox.
-% \usepackage{longtable} % Multipage table. Might not support column X. Alts: xltabular, ltxtable
-
-\usepackage{xcolor} % define colors
-\usepackage{hyperref}
-% \usepackage[capitalise]{cleverref} % \cref which auto adds e.g. "Table " to \ref
-
-% Glossaries and acronyms.
-% pac acronym automatically compiles but doesn't provide flexibility with 
-% hyperlinks; either all on or all off. I can just write regular text to avoid link.
-\usepackage[withpage]{acronym}
-% most people seem to use pac glossaries. Manual compile (keymap leader leader g)
-% \usepackage[toc,acronym]{glossaries} % add option "nomain" if only using acronyms
-% \makeglossaries
-% glossaries-extra is similar:
-% \usepackage[toc,acronym]{glossaries-extra}
-% \setabbreviationstyle[acronym]{long-short}
-% % glossaries{,-extra} uses:
-% % \newacronym{tf}{TF}{Transcription Factor}. \gls, \glspl, \glspl*, ...
-% % where * removes link.
-% \printglossaries
-% \printglossary[type=\acronymtype]
-% pac acronym uses: \ac, \acp, ...
-% \begin{acronyms}\acro{tf}{TF}{Transcription Factor}\end{acronyms}
-% there's also a pac acro that I haven't tried.
-
-% appendix
-\usepackage[toc,page]{appendix}
-
-% Code blocks.
-% https://www.overleaf.com/learn/latex/Code_listing
-% https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
-% \usepackage{listings}
-% \usepackage{minted} % supports julia
-
-% biblatex is modern, but a journal may force use to use the ancient bibtex
-% adds url and doi field to bibtex but not needed for biblatex
-% \bibliographystyle{plainurl}
-\usepackage{biblatex}
-\addbibresource{<>}
-% hyperlink doi
-\usepackage{doi}
+<>
 
 \title{TITLE}
 \author{Christian Degnbol Madsen}
@@ -143,7 +64,20 @@ fmta([[
 % \printbibliography
 
 \end{document}
-]], {i(1, "bibliography.bib"), i(2),}),
+]], {
+    putfilenode {
+        "core",
+        "fonts",
+        "math",
+        "subfig",
+        "tables",
+        "cleveref",
+        "acro", -- or "glossaries",
+        "verbatim",
+        "biblatex",
+    },
+    i(2),
+}),
 {show_condition=conds.line_end}),
 
 s("beamer",
@@ -159,75 +93,9 @@ fmta([[
 \beamertemplatenavigationsymbolsempty
 \usepackage{appendixnumberbeamer} % reset frame counter when calling \appendix
 
-\usepackage{xspace} % \xspace at end of newcommand allows "\CUSTOM " instead of "\CUSTOM\ "
+<>
 
-\usepackage{csquotes}
-\usepackage{fontspec}
-% don't \usepackage{lmodern}, see latex/fonts.tex for details.
-\setmainfont{New Computer Modern 10}
-
-% Improve default latex packages.
-% allowing (2%) letter stretch
-\usepackage{microtype}
-% \raggedright ->> \RaggedRight, \flushleft env ->> \FlushLeft, \center ->> \Center
-% https://www.overleaf.com/learn/latex/Text_alignment
-\usepackage{ragged2e}
-% \usepackage{flushend} % enable for two columns, to get equal lengths on last page.
-
-% \begin{itemize}[label={--}] instead of repeating /item[--]
-\usepackage{enumitem}
-\usepackage{fancyhdr} % header/footer control
-% paragraph space instead of indent
-\usepackage[parfill]{parskip} 
-
-% math
-\usepackage{mathtools} % loads amsmath, plus e.g. \coloneqq,\mathclap,\substack
-\usepackage{amssymb}
-\usepackage{siunitx} % provides \SI and column type S (align decimal)
-\usepackage{unicode-math} % experimental support for unicode in math
-
-\usepackage{graphicx}
-
-% Subfigures. "skip" == spacing between subfigures.
-\usepackage[skip=0pt]{subcaption}
-% Use uppercase instead of lowercase letters for sub-figure numbering
-% (Per default \thesubfigure is defined as \alph{subfigure}, i.e. lowercase letters)
-\renewcommand\thesubfigure{\Alph{subfigure}}
-\renewcommand\thesubtable{\Alph{subtable}}
-% singlelinecheck=on means if only single line caption, then ignore raggedright (center).
-\captionsetup[subfigure]{singlelinecheck=off,justification=raggedright}
-% remove () around subfig numbering
-\captionsetup[sub]{format=plain,position=top,font+=Large,labelformat=simple}
-\usepackage{float}
-% makes figures and tables stay in their section
-\usepackage[section]{placeins}
-
-% Tables.
-% https://tex.stackexchange.com/questions/12672/which-tabular-packages-do-which-tasks-and-which-packages-conflict
-\usepackage{array} % flexible column formatting
-\usepackage{tabularx} % Column type X for width filling.
-\usepackage{tabulary} % Column type L,C,R,J for balanced width versions of l,c,r,j.
-\usepackage{booktabs} % Better vertical spacing. Midrule etc with varying thickness instead of \hline.
-\newcommand{\thinrule}{\specialrule{0.05ex}{0.1ex}{0.1ex}}
-% creates missing tabularx column type named "R" to specify right adjustment
-\newcolumntype{R}{>>{\raggedleft\arraybackslash}X}
-\usepackage{multicol, multirow} % Also see pbox.
-% \usepackage{longtable} % Multipage table. Might not support column X. Alts: xltabular, ltxtable
-
-\usepackage{xcolor} % define colors
-\usepackage{hyperref}
-% line break long urls
-\usepackage{xurl}
-% \usepackage[capitalise]{cleverref} % \cref which auto adds e.g. "Table " to \ref
-
-% Code blocks.
-% https://www.overleaf.com/learn/latex/Code_listing
-% https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
-% \usepackage{listings}
-% \usepackage{minted} % supports julia
-
-% set larger default separation between list items
-\usepackage{enumitem}
+% set larger default separation between list items with pac enumitem in core.tex
 \setlist[1]{itemsep=1em} % only increase sep for highest level (1)
 
 \begin{document}
@@ -255,7 +123,20 @@ fmta([[
 \end{frame}
 
 \end{document}
-]], { i(1, "TITLE"), i(2), i(3) }),
+]], {
+    putfilenode {
+        "core",
+        "fonts",
+        "math",
+        "subfig",
+        "tables",
+        "cleveref",
+        "verbatim",
+    },
+    i(1, "TITLE"),
+    i(2),
+    i(3),
+}),
 {show_condition=conds.line_end}),
 
 
