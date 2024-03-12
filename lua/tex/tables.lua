@@ -723,52 +723,125 @@ local function yankTable(onlycells, delim)
     vim.fn.setreg('+', table.concat(lines, '\n'))
 end
 
-vim.keymap.set("n", "<plug>TableYank", yankTable, {buffer=true, desc="Yank table"})
+---if not a row then a line can be \toprule, comment line, empty line etc
+---@return bool
+local function isRow(fields)
+    -- TODO: what about a row of all empty cells
+    -- is row if multiple fields that aren't empty
+    if #fields > 1 then
+        for i = 2, #fields do
+            if fields[i] ~= "" then return true end
+        end
+    end
+    -- otherwise see if the the first (and maybe only) field is line command, comment, or empty
+    -- \toprule etc
+    if not fields[1]:match('^[%s\t]*\\%a+[%s\t]*$') then return false end
+    -- either 1 field or the rest are empty
+    if #fields == 1 then return true end
+    for i = 2, #fields do
+        if fields[i] ~= "" then return false end
+    end
+    return true
+end
 
-vim.keymap.set("n", "<plug>TablePaste", function()
-    local delim = '\t'
-    -- TODO: inverse of above
-end, {buffer=true, desc="Paste table"})
+---Given a delim separated table in clipboard (register "+), format it as tex 
+---and paste at cursor location if normal mode or replace a range if visual.
+---@delim char field separator
+local function pasteTable(delim, opts)
+    delim = delim or '\t'
+    -- TODO shouldn't be hardcoded
+    local indentation = '\t\t'
+    -- parse delimited text from clipboard
+    local lines = vim.split(vim.fn.getreg('+'):gsub('\n$', ''), '\n')
+    local texts = {}
+    local cols = {}
+    local presufs = {}
+    for _, line in ipairs(lines) do
+        local fields = vim.split(line, delim)
+        if not isRow(fields) then
+            -- TODO don't keep indentation as part of text for format lines
+            table.insert(texts, indentation .. fields[1])
+            table.insert(cols, -1)
+            table.insert(presufs, "\n")
+        else
+            local col = 0
+            while col < #fields do
+                local field = fields[col+1]
+                table.insert(texts, field) -- -> 1-ind
+                table.insert(cols, col)
+                table.insert(presufs, "")
+                local colspan = field:match("\\multicolumn{(%d+)}")
+                if colspan then
+                    -- skip empty cells after multicolumn
+                    for i = col+1, col+colspan-1 do
+                        -- -> 1-ind
+                        if fields[i+1] ~= "" then break end
+                        col = i
+                    end
+                end
+                col=col+1
+            end
+            presufs[#presufs-#fields+1] = indentation
+            presufs[#presufs] = " \\\\\n"
+        end
+    end
 
+    local r1, r2
+    local mode = vim.api.nvim_get_mode().mode
+    if mode == 'n' then
+        r1, _ = unpack(vim.api.nvim_win_get_cursor(0))
+        r2 = r1
+    else
+        r1, _, r2, _ = util.get_visual_range()
+        r1=r1-1
+    end
 
+    local maxcol = math.max(unpack(cols))
+    local tab = {r1=r1, r2=r2, maxcol=maxcol, texts=texts, cols=cols, presufs=presufs}
+    -- print(vim.inspect(tab))
+    writeTable(tab, opts)
+end
+
+vim.keymap.set('n', "<plug>TableYank", yankTable, {buffer=true, desc="Yank table"})
+vim.keymap.set({'n', 'v'}, "<plug>TablePaste", pasteTable, {buffer=true, desc="Paste table"})
 vim.keymap.set(
-    "n", "<plug>TableAlign", alignTable,
+    'n', "<plug>TableAlign", alignTable,
     { buffer=true, silent=true, desc="Align columns in tex table", }
 )
 vim.keymap.set(
-    "n", "<plug>TableDelCol", deleteColumn,
+    'n', "<plug>TableDelCol", deleteColumn,
     { buffer=true, silent=true, desc="Delete current column (also from preamble)", }
 )
 vim.keymap.set(
-    "n", "<plug>TableSwapRight", swapColumn,
+    'n', "<plug>TableSwapRight", swapColumn,
     { buffer=true, silent=true, desc="Swap table column right (also mod preamble)", }
 )
 vim.keymap.set(
-    "n", "<plug>TableSwapLeft", function () swapColumn(true) end,
+    'n', "<plug>TableSwapLeft", function () swapColumn(true) end,
     { buffer=true, silent=true, desc="Swap table column left (also mod preamble)", }
 )
-vim.keymap.set("n", "<plug>TableGoLeft", function ()
+vim.keymap.set('n', "<plug>TableGoLeft", function ()
     local count = vim.v.count
     if count == 0 then count = 1 end
     local tab = parseTable()
     local row, col = getCurrentCell(tab)
     gotoCell(tab, row, col-count)
 end, { buffer=true })
-vim.keymap.set("n", "<plug>TableGoRight", function ()
+vim.keymap.set('n', "<plug>TableGoRight", function ()
     local count = vim.v.count
     if count == 0 then count = 1 end
     local tab = parseTable()
     local row, col = getCurrentCell(tab)
     gotoCell(tab, row, col+count)
 end, { buffer=true })
-vim.keymap.set("n", "<plug>TableGoUp", function ()
+vim.keymap.set('n', "<plug>TableGoUp", function ()
     local count = vim.v.count
     if count == 0 then count = 1 end
     local tab = parseTable()
     local row, col = getCurrentCell(tab)
     gotoCell(tab, row-count, col)
 end, { buffer=true })
-vim.keymap.set("n", "<plug>TableGoDown", function ()
+vim.keymap.set('n', "<plug>TableGoDown", function ()
     local count = vim.v.count
     if count == 0 then count = 1 end
     local tab = parseTable()

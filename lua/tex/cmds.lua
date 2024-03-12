@@ -3,7 +3,6 @@ local util = require "utils/init"
 local vtu = require "utils/vimtex"
 
 local before = util.before
-local end_visual = util.end_visual
 local get_visual_range = util.get_visual_range
 local in_math = vtu.in_math
 local cmd = vim.cmd
@@ -104,7 +103,6 @@ end
 -- surround a selection with a cmd that is joined if overlapping, e.g. textbf 
 -- where it isn't meaningful to bold text twice.
 local function surround_visual(name)
-    end_visual()
     local r1, c1, r2, c2 = get_visual_range()
     -- (1,1)-indexed.
     c1,c2=c1+1,c2+1

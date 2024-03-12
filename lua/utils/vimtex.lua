@@ -20,8 +20,23 @@ function M.in_description() return M.in_env('description') end
 M.cond_itemize = make_condition(M.in_itemize)
 M.cond_description = make_condition(M.in_description)
 
--- Use vimtex (1,1)-indexing!
--- only "name" is required.
+--- 1-indexed return values.
+--- returns: nil or {name, start line, start column, end line, end column}
+function M.get_env()
+    local cur = vim.fn['vimtex#env#get_inner']()
+    if vim.tbl_isempty(cur) then return end
+    return {
+        cur['name'],
+        cur['open']['lnum'],
+        cur['open']['cnum'],
+        cur['close']['lnum'],
+        cur['close']['cnum'],
+    }
+end
+
+--- Use vimtex (1,1)-indexing!
+--- only "name" is required.
+--- returns: nil or {start line, start column, end line, end column}
 function M.inside_cmd(name, r, c)
     local cur
     if r == nil or c == nil then

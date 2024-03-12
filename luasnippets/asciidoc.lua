@@ -86,8 +86,8 @@ s({trig="line-through", dscr="Line-through text."},
 s({trig="strikethrough", dscr="Line-through text."},
 {t"[line-through]#", i(1, "TEXT"), t"#"}, optt),
 -- ref
-s({trig="<<", dscr="Cross reference shorthand.", snippetType="autosnippet"},
-{t"<<", i(1, "ID"), c(2, {t"", {t",", i(1, "LABEL")}}), t">>"}),
+-- s({trig="<<", dscr="Cross reference shorthand.", snippetType="autosnippet"},
+-- {t"<<", i(1, "ID"), c(2, {t"", {t",", i(1, "LABEL")}}), t">>"}),
 s({trig="xref", dscr="Cross reference.", snippetType="autosnippet"},
 {t"xref:", i(1, "FILE.adoc#ID"), t"[", i(2, "LABEL"), t"]"}),
 -- include
