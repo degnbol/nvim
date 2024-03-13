@@ -1171,6 +1171,11 @@ s(
     {t":text-align: ", c(1, {t"center", t"justify", t"left", t"right", t"inherit"})},
     opta
 ),
+
+-- convenience
+s({trig="newline", dscr="Respect newlines", show_condition=conds.line_end},
+{t":hardbreaks-option:"}),
+    
 -- options
 s({trig="float", dscr="Float alignment, left or right."},
 {t"float=", c(1, {t"left", t"right"})},
