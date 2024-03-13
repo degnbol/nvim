@@ -1,10 +1,11 @@
 \usepackage{acro}
 \acsetup{
-	pages/display=all, % in listing, show page number for all uses
+	pages/display=first, % in listing, show page number for first use, all uses, or none
 	% treat acronyms differently if only used once. Use e.g. single-style=short-long for exceptions.
 	single=true,
 }
 % using acro for terms that aren't acronyms, i.e. the long field will have a description that should only be seen in the listing.
 \NewAcroPreset{glossary}{tag=glossary,first-style=short}
+\NewAcroPreset{glossary-list}{tag={glossary,glossary-list},first-style=short}
 % for glossary entry, even with the preset the long form will sometimes be inserted, so use
 % \DeclareAcronym{imr90}{preset=glossary,short=IMR90,long=IMR90,list=Human fibroblast cell line}
