@@ -1,14 +1,6 @@
 #!/usr/bin/env lua
 
--- Auto disable hlsearch after use. The following works but is overkill to check every key press, just add :noh to nmap esc.
--- vim.on_key(function(char)
---   if vim.fn.mode() == "n" then
---     if vim.tbl_contains({ "<Esc>", "<Left>", "<Right>", "<Up>", "<Down>" }, vim.fn.keytrans(char)) then
---         vim.cmd.nohlsearch()
---     end
---   end
--- end, vim.api.nvim_create_namespace "auto_hlsearch")
-vim.keymap.set('n', '<Esc>', ":noh<CR><Esc>", { silent=true, remap=false, desc="hello" })
+vim.keymap.set('n', '<Esc>', ":noh<CR><Esc>", { silent=true, remap=false, desc="Disable search highlights" })
 -- disable when entering visual
 local grp = vim.api.nvim_create_augroup("auto_hlsearch", {clear=true})
 vim.api.nvim_create_autocmd("ModeChanged", {
