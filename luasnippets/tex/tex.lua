@@ -25,7 +25,7 @@ end
 return {
 --
 
-s({trig="\\new", dscr="New command", snippetType="autosnippet", condition=conds.line_begin},
+s({trig="\\newcommand", dscr="New command", show_condition=conds.line_end},
 {t"\\newcommand{\\", i(1), t"}{", i(2), t"}"}),
 
     
