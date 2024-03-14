@@ -121,6 +121,14 @@ local function afterColorscheme()
     hl.link("@lsp.type.method", "@function.call")
     hl.link("@lsp.type.string", "@string")
 
+    --- Fix lua. Colon before function call is captured by @constant making it italic.
+    if vim.bo.filetype == "lua" then
+        hl.set("@constant", {})
+        -- remap things that were mapped to @constant to preserve their functioning highlights
+        hl.link("@lsp.typemod.variable.global.lua", "Constant")
+        hl.link("@lsp.typemod.variable.defaultLibrary.lua", "Constant")
+    end
+
     -- variable is the default capture for most things in code so we want it to 
     -- be neutral, although not if the language is markdown etc.
     local showVar = {typst=true, markdown=true, asciidoc=true, latex=true}
@@ -144,6 +152,7 @@ vim.api.nvim_create_autocmd("Colorscheme", {
     pattern = "*", group = grp,
     callback = afterColorscheme,
 })
+
 vim.api.nvim_create_autocmd("VimEnter", {
     pattern = "*", group = grp,
     callback = function ()
