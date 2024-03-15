@@ -272,11 +272,12 @@ return {
             vim.g.gutentags_cache_dir = "~/.local/state/nvim/tags/"
             -- exclude filetypes as default in order to opt-in.
             -- I added all that I use from `ctags --list-languages`, especially 
-            -- those that has LSP and/or treesitter
+            -- those that has LSP and/or treesitter.
+            -- Using tags when there is LSP is useful for using c-] inplace of gd when I import using ROOT
             vim.g.gutentags_exclude_filetypes = {
                 "python",
                 "matlab",
-                "julia",
+                -- "julia",
                 "vim",
                 "lua",
                 "markdown",
@@ -292,7 +293,9 @@ return {
             }
             -- to be extra explicit I specify a comma separated list of case 
             -- insensitive enabled languages
-            vim.g.gutentags_ctags_extra_args = {"--languages=asciidoc"}
+            vim.g.gutentags_ctags_extra_args = {
+                "--languages=asciidoc,julia",
+            }
         end,
     },
 
@@ -301,7 +304,7 @@ return {
 
     {
         'ggandor/leap.nvim',
-        keys = {'\\', '|'},
+        enabled = false,
         config=function()
             -- make s and S "unsafe", i.e. available immediately as a command
             -- add ' and ` as safe since it would be unlikely that I would want to jump to a mark right after a leap
@@ -312,12 +315,6 @@ return {
             vim.keymap.set({'n', 'x', 'o'}, "|", '<Plug>(leap-backward-to)', { desc="backward to (leap)" })
         end
     },
-
-    -- highlight letters for jumping with f/F/t/T
-    {"unblevable/quick-scope", enabled=false, config=function()
-        -- Trigger a highlight in the appropriate direction when pressing these keys:
-        vim.g.qs_highlight_on_keys = {'f', 'F', 't', 'T'}
-    end},
 
     -- when a hex or other color is defined, highlight the text with its color
     -- trying out mini hipatterns instead.
