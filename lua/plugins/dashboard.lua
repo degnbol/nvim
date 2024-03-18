@@ -12,8 +12,9 @@ return {
                 {desc = '󰱼 File',   group = '@property', action = 'Telescope find_files', key = 'f'},
                 {desc = '󱎸 Word',   group = '@property', action = 'Telescope live_grep',  key = 'w'},
                 {desc = ' Marks',  group = '@property', action = 'Telescope marks',      key = 'm'},
-                {desc = '󱐥 Lazy',   group = '@property', action = 'Lazy',                 key = 'l'},
                 {desc = ' New',    group = '@property', action = 'enew',                 key = 'n'},
+                {desc = ' Lazy',   group = '@property', action = 'Lazy',                 key = 'L'},
+                {desc = '󰢛 Mason',  group = '@property', action = 'Mason',                key = 'M'},
             },
             header = {
                 '⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣠⣤⣤⣴⣦⣤⣤⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ',
