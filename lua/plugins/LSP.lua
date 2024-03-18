@@ -82,9 +82,30 @@ return {
             -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 
             lsp.bashls.setup { filetypes = { "sh", "bash", "zsh" } }
+
             -- lsp.pyright.setup { }
             -- lsp.pylsp.setup { }
-            lsp.jedi_language_server.setup {}
+            -- lsp.jedi_language_server.setup {}
+            -- https://old.reddit.com/r/neovim/comments/1bh0kba/psa_new_python_lsp_that_supports_inlay_hints_and/
+            -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#basedpyright
+            -- TODO: Install with mason when merged: https://github.com/mason-org/mason-registry/pull/4996
+            lsp.basedpyright.setup {
+                settings = {
+                    python = {
+                        -- Has :PyrightSetPythonPath to set it on the fly
+                        pythonPath = "~/bin/mambaforge/bin/python",
+                    },
+                    basedpyright = {
+                        analysis = {
+                            -- defaults to complaining about unknown types, and we don't want to be reminded to specify types.
+                            -- Plus when using other's code that we can't change there will also be warnings about their lack of type declaration.
+                            -- https://detachhead.github.io/basedpyright/#/configuration
+                            typeCheckingMode = "standard",
+                        }
+                    }
+                }
+            }
+
             lsp.julials.setup {
                 cmd = {
                     "julia", "--startup-file=no", "--history-file=no",
