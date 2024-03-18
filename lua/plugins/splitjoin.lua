@@ -40,7 +40,7 @@ return {
             -- it is also a possibility to define them for treesj
             local fts_split = {
                 splitjoin = { tex=true, },
-                trevj = { julia=true, lua=true, },
+                trevj = { julia=true, lua=false, },
             }
             local fts_join  = {
                 splitjoin = { tex=true, },
