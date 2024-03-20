@@ -16,12 +16,10 @@
 
 ; highlight the : before a symbol
 (quote_expression
-  ":" @symbol-prefix)
+  ":" @punctuation)
 
-; (catch_clause
-;   ";" @punctuation.delimiter)
-
-; more focus to the dot that indicates a broadcast
+; more focus to the dot that indicates a broadcast.
+; Using @operator as opposed to e.g. @punctuation since operator is used for .|> and for julia regex syntax.
 (broadcast_call_expression
-  "." @punctuation.special)
+  "." @operator)
 

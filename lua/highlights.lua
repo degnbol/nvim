@@ -102,7 +102,6 @@ local function afterColorscheme()
     hl.link("@punctuation.bracket", "RainbowDelimiterViolet")
     hl.link("@punctuation.delimiter", "Delimiter")
     hl.link("@punctuation.special", "Special")
-    hl.mod("@punctuation.special", {bold=true})
     
     -- NonText shouldn't be exactly like comments
     if hl.get("Comment")['fg'] == hl.get("NonText")['fg'] then
