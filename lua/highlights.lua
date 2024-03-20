@@ -140,6 +140,15 @@ local function afterColorscheme()
         -- "$variable" will color variable as string with clear and as normal with this approach.
         hl.fg("@variable", hl.get("Normal")["fg"])
     end
+
+    -- extmarks
+    -- By default colors. Underline variants makes more sense.
+    hl.set("DiagnosticUnderlineInfo", {})
+    -- subtle. underline and underdashed are stronger but the warn is often 
+    -- wrong, e.g. missing reference to things LSP doesn't understand is 
+    -- imported.
+    hl.set("DiagnosticUnderlineWarn", {underdotted=true})
+    hl.set("DiagnosticUnderlineError", {undercurl=true})
 end
 
 -- local defaultDark = 'fluoromachine'
