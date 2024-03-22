@@ -1,9 +1,12 @@
 syntax match Operator /::=/
 syntax match Operator /\.\.\./
-syntax match Delimiter /[;|(){}\[\]]/
+syntax match Delimiter /[;|()\[\]]/
 syntax match Statement /^[A-Za-z0-9-]\+/
 syntax match Flag /--\?[A-Za-z0-9-]\+/
 syntax match Flag /++\?[A-Za-z0-9-]\+/
+" E.g. +<cmd> (vim flag)
+syntax match Flag /--\?\ze[<(\[]/
+syntax match Flag /++\?\ze[<(\[]/
 " String placed after flag, so it takes precidence over flags written in a 
 " string. We could also just say it can't be contained and all that.
 " skip anything that is escaped, it might be an escaped quotation mark.
