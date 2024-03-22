@@ -1,7 +1,9 @@
 syntax match Operator /::=/
 syntax match Operator /\.\.\./
 syntax match Delimiter /[;|()\[\]]/
-syntax match Statement /^[A-Za-z0-9-]\+/
+" Main command name that we are writing completion for.
+" Only making it italic leaves it the same colour as subcmds (uncoloured)
+syntax match Italic /^[A-Za-z0-9-]\+/
 syntax match Flag /--\?[A-Za-z0-9-]\+/
 syntax match Flag /++\?[A-Za-z0-9-]\+/
 " E.g. +<cmd> (vim flag)
