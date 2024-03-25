@@ -1,7 +1,7 @@
 -- add a line at the top with all the files open in the buffer
 return {
     "akinsho/nvim-bufferline.lua",
-    dependencies={"DaikyXendo/nvim-material-icon"},
+    dependencies={"nvim-tree/nvim-web-devicons"},
     init = function ()
         -- consider using [b and ]b instead. Then we could clear up tab in normal 
         -- mode for something related to completion.
