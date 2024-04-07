@@ -200,7 +200,13 @@ return {
                 }
             }
 
-            lsp.kotlin_language_server.setup { }
+            lsp.kotlin_language_server.setup {
+                -- assume project root is at git root.
+                -- Some imports don't work if unset.
+                -- If you have a project without git root at project root then 
+                -- search upwards for something else with this function.
+                root_dir = function() return vim.env.ROOT end
+            }
 
             -- scala. Linked as minimal setup from on nvim-metals git:
             -- https://github.com/scalameta/nvim-metals/discussions/39
