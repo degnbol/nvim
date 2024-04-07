@@ -1,3 +1,9 @@
+-- set global variable ROOT to git root
+local ROOT = vim.system({'git', 'root'}, {text=true}):wait().stdout:gsub("\n$", "")
+vim.g.ROOT = ROOT
+-- I have no idea why but it gets changed to ~/dotfiles ???
+vim.schedule(function () vim.g.ROOT = ROOT end)
+
 require "options"
 
 -- bootstrap lazy.nvim
