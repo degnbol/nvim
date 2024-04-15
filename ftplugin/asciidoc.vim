@@ -5,4 +5,5 @@ setlocal conceallevel=1
 " syntax beyond basic prose.
 " setlocal fo+=ar
 " setlocal sidescrolloff=0
+setlocal wrap
 
