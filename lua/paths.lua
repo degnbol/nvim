@@ -10,14 +10,14 @@ vim.env.ROOT = vim.system({'git', 'root'}, {text=true}):wait().stdout:gsub("\n$"
 -- but also add a reference to the top level root:
 vim.env.ROOTTOP = vim.fn.finddir('.git/..', vim.fn.expand('%:p:h') .. ';')
 
-if vim.env.ROOT ~= "" then
+if vim.env.ROOT ~= nil then
     vim.opt_local.path:prepend(vim.env.ROOT)
     vim.opt_local.path:append {
         vim.env.ROOT .. "/src",
         vim.env.ROOT .. "/src/*",
     }
 end
-if vim.env.ROOTTOP ~= "" then
+if vim.env.ROOTTOP ~= nil then
     -- will automatically not append if ROOTTOP == ROOT (no duplicate entries)
     vim.opt_local.path:append(vim.env.ROOTTOP)
 end
