@@ -16,3 +16,5 @@ vim.opt_local.list = false
 -- It matches == and ! in a conditional, which should not be italic.
 vim.api.nvim_set_hl(0, "shTestOpr", {link="Operator", default=true})
 
+-- stop continuing comments with o/O
+vim.opt_local.formatoptions:remove('o')
