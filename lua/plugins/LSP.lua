@@ -88,12 +88,11 @@ return {
             -- lsp.jedi_language_server.setup {}
             -- https://old.reddit.com/r/neovim/comments/1bh0kba/psa_new_python_lsp_that_supports_inlay_hints_and/
             -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#basedpyright
-            -- TODO: Install with mason when merged: https://github.com/mason-org/mason-registry/pull/4996
             lsp.basedpyright.setup {
                 settings = {
                     python = {
                         -- Has :PyrightSetPythonPath to set it on the fly
-                        pythonPath = "~/bin/mambaforge/bin/python",
+                        -- pythonPath = "~/bin/mambaforge/bin/python",
                     },
                     basedpyright = {
                         analysis = {
@@ -248,6 +247,7 @@ return {
                 "jedi_language_server",
                 "pyright",
                 "pylsp",
+                "basedpyright",
                 "julials",
                 -- "ltex", -- grammar check for latex, markdown, etc
                 "texlab",
