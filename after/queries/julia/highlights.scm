@@ -1,20 +1,6 @@
 ;extends
 
-
 "in" @repeat
-
-; fix syntax thinking `x |> f` is piping into a variable.
-; NOTE: has to be "lua-match" and not "match", since the latter will use | as OR operator.
-(binary_expression
-  (_)
-  (operator) @_pipe
-  (identifier) @function.call
-  (#any-of? @_pipe "|>" ".|>"))
-; TODO: maybe figure out how to set this as lower priority
-; (tried adding (#set! "priority" 0))
-; Since piping into types (e.g. x |> String) has the right highlights
-; (same as String(x)) but in the wrong order, so the color from builtin type is 
-; overruled by function.call.
 
 ; support @chain macro recognizing @function.call as well.
 (macrocall_expression
@@ -30,8 +16,10 @@
 
 ; highlight the : before a symbol
 (quote_expression
-  ":" @symbol-prefix)
+  ":" @punctuation)
 
-; (catch_clause
-;   ";" @punctuation.delimiter)
+; more focus to the dot that indicates a broadcast.
+; Using @operator as opposed to e.g. @punctuation since operator is used for .|> and for julia regex syntax.
+(broadcast_call_expression
+  "." @operator)
 

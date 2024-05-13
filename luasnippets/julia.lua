@@ -1,4 +1,3 @@
-#!/usr/bin/env lua
 -- should be unnessary but s keeps being understood as a bool set somewhere
 local ls = require "luasnip"
 local s = ls.s
@@ -21,6 +20,14 @@ s({trig="ROOT", dscr="Git root.", show_condition=conds.line_end},
 -- replace dumb pr -> print("<>") from one of the snippet bundles
 s({trig="pr", dscr="println"},
 {t"println(", i(1), t")"}),
+
+s({trig="amat", dscr="AbstractMatrix"}, {t"AbstractMatrix"}),
+s({trig="avec", dscr="AbstractVector"}, {t"AbstractVector"}),
+s({trig="astr", dscr="AbstractString"}, {t"AbstractString"}),
+-- for val::AbstractMatrix or T<:AbstractMatrix
+s({trig=":amat", dscr="AbstractMatrix", snippetType="autosnippet"}, {t":AbstractMatrix"}),
+s({trig=":avec", dscr="AbstractVector", snippetType="autosnippet"}, {t":AbstractVector"}),
+s({trig=":astr", dscr="AbstractString", snippetType="autosnippet"}, {t":AbstractString"}),
 
 }, {
 -- auto
@@ -69,5 +76,6 @@ end]], {i(1, "NAME"), i(2), i(3)})),
 -- TODO: not in comment, not when PlotlyJS isn't loaded.
 s({trig="={", wordTrig=false, dscr="PlotlyJS attributes, assuming a=attr has been called."},
 {t"=…(", i(1), t")"}),
+
 
 }

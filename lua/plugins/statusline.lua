@@ -53,7 +53,7 @@ return {"glepnir/galaxyline.nvim", enabled=false, config=function()
         DiffModified = {
             provider = "DiffModified",
             condition = checkwidth,
-            icon = "   ",
+            icon = "  ",
             highlight = {colors.grey_fg2, colors.darker_black}
         }
     }
@@ -88,7 +88,7 @@ return {"glepnir/galaxyline.nvim", enabled=false, config=function()
             provider = function()
                 local clients = vim.lsp.get_active_clients()
                 if next(clients) ~= nil then
-                    return " " .. "  " .. " LSP "
+                    return "    LSP "
                 else
                     return ""
                 end

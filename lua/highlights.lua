@@ -102,7 +102,7 @@ local function afterColorscheme()
     hl.link("@punctuation.bracket", "RainbowDelimiterViolet")
     hl.link("@punctuation.delimiter", "Delimiter")
     hl.link("@punctuation.special", "Special")
-    
+
     -- NonText shouldn't be exactly like comments
     if hl.get("Comment")['fg'] == hl.get("NonText")['fg'] then
         hl.mod("NonText", {fg="gray"})
@@ -127,6 +127,9 @@ local function afterColorscheme()
         -- remap things that were mapped to @constant to preserve their functioning highlights
         hl.link("@lsp.typemod.variable.global.lua", "Constant")
         hl.link("@lsp.typemod.variable.defaultLibrary.lua", "Constant")
+    elseif vim.bo.filetype == "sql" then
+        -- wrong highlight by treesitter
+        hl.set("@type.sql", {})
     end
 
     -- variable is the default capture for most things in code so we want it to 
@@ -140,6 +143,16 @@ local function afterColorscheme()
         -- "$variable" will color variable as string with clear and as normal with this approach.
         hl.fg("@variable", hl.get("Normal")["fg"])
     end
+
+    -- extmarks
+    -- By default colors. Underline variants makes more sense.
+    hl.set("DiagnosticUnderlineHint", {underdotted=true})
+    hl.set("DiagnosticUnderlineInfo", {underdotted=true})
+    -- subtle. underline and underdashed are stronger but the warn is often 
+    -- wrong, e.g. missing reference to things LSP doesn't understand is 
+    -- imported.
+    hl.set("DiagnosticUnderlineWarn", {underdotted=true})
+    hl.set("DiagnosticUnderlineError", {undercurl=true})
 end
 
 -- local defaultDark = 'fluoromachine'

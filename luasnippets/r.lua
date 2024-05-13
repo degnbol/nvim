@@ -1,4 +1,5 @@
-#!/usr/bin/env lua
+local ls = require "luasnip"
+local s = ls.s
 local lsu = require "utils/luasnip"
 local virt = lsu.virt
 
@@ -35,6 +36,11 @@ fmta([[<>[<>, on=c(<>="<>"), c("<>") := .(<>)]
 
 s({trig="DTmulti", dscr="Multiple column assignment"},
 {t'c("', i(1, 'COL'), t'"):=.(', i(2, 'COL'), t")"}),
+
+s({trig="DTagg", dscr="Aggregation with naming"},
+fmta([[<>[<>, .(<>=<>), by=c("<>")]
+]], {i(1, "dt"), i(2), i(3, "NAME"), i(4, "sum(COL)"), i(5, "BY")})),
+
 
 -- ggplot
 

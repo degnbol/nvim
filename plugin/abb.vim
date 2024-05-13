@@ -6,7 +6,7 @@ Abolish {let,there,here,who}s {}'s
 iabbrev THeres There's
 " I by itself is useful in regular text but i can be a variable, and also 
 " mentioned in comments, so i should only get abb to I in prose, if possible. 
-iabbrev im I'm
+" iabbrev im I'm " TODO: OMG!!! stop changing this in lua code when writing vim. ...
 iabbrev Im I'm
 iabbrev IM I'm
 iabbrev ive I've
@@ -44,7 +44,10 @@ Abolish dialog dialogue
 Abolish avail available
 Abolish bc because
 Abolish melb Melbourne
-Abolish intro introduction
+" TODO: only do some abbrevs in regular text
+" Abolish intro introduction
+Abolish prio priority
+Abolish prios priorities
 " auto-capitalization
 iabbrev english English
 iabbrev danish Danish
@@ -55,6 +58,7 @@ Abolish noone no one
 " i..e isn't valid as a keyword, so we have a snippet in luasnippets/all.lua 
 " for that kind of typo 
 Abolish ie i.e.
+Abolish unqiue unique
 
 " language specific, see lua/keymap
 " TODO: make this a bit more convenient, for autocorrecting language specific 

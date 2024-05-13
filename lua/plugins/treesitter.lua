@@ -53,6 +53,8 @@ return {
                         "vimdoc", -- treesitter version doesn't contain useful colors from :h group-name
                         "bash", -- spending too much time writing treesitter query. Also covers zsh.
                         "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
+                        "julia", -- to get semicolon highlight
+                        "sql", -- custom postgres highlight in syntax/sql.vim
                     },
                 },
                 indent = {

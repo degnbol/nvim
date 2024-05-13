@@ -1,3 +1,4 @@
+require "paths"
 require "options"
 
 -- bootstrap lazy.nvim
