@@ -215,3 +215,8 @@ much as possible of .vim files to lua. This will also make the repo a bit
 cleaner since you often have two files that are essentially filling the same 
 role, e.g. ftplugin/<lang>.{vim,lua}
 
+checkout
+https://github.com/gabrielpoca/replacer.nvim
+https://github.com/j-morano/buffer_manager.nvim
+https://github.com/danielfalk/smart-open.nvim
+
