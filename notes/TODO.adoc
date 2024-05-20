@@ -182,3 +182,9 @@ movement even along side your own shift-space.
 
 Maybe get cool postfix snippets etc for rust while learning it:
 https://github.com/TwIStOy/luasnip-snippets
+
+checkout
+https://github.com/gabrielpoca/replacer.nvim
+https://github.com/j-morano/buffer_manager.nvim
+https://github.com/danielfalk/smart-open.nvim
+
