@@ -167,8 +167,9 @@ fmta([[\begin{align*}
 \end{align*}
 ]], d(1, get_visual))),
 
-s({trig="(%a)-", dscr="p-value, n-dimensional, ...", regTrig=true, snippetType="autosnippet"},
-{t"$", re(1), t"$-"}),
+-- causing problems for e.g. writing fig. A-B
+-- s({trig="(%a)-", dscr="p-value, n-dimensional, ...", regTrig=true, snippetType="autosnippet"},
+-- {t"$", re(1), t"$-"}),
 
 s({trig="img", dscr="includegraphics", condition=conds.line_begin*conds.line_end, snippetType="autosnippet"},
 {t"\\includegraphics[width=\\textwidth]{./figures", i(1), t"}"}),
