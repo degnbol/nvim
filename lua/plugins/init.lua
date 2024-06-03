@@ -278,6 +278,7 @@ return {
                 "python",
                 "matlab",
                 -- "julia",
+                -- "java",
                 "vim",
                 "lua",
                 "markdown",
@@ -294,7 +295,7 @@ return {
             -- to be extra explicit I specify a comma separated list of case 
             -- insensitive enabled languages
             vim.g.gutentags_ctags_extra_args = {
-                "--languages=asciidoc,julia",
+                "--languages=asciidoc,julia,java",
             }
         end,
     },
