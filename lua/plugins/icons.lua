@@ -89,6 +89,10 @@ return {
                     cterm_color = "113",
                     name = "HDF5",
                 },
+                gz = {
+                    icon = "",
+                    name = "GZip",
+                },
                 mat = {
                     icon = "󰘨",
                     color = "#89e051",
@@ -100,6 +104,12 @@ return {
                     color = "#89e051",
                     cterm_color = "113",
                     name = "Numpy"
+                },
+                pdf = {
+                    icon = "",
+                    color = "#b30b00",
+                    ctermfg=124,
+                    name = "PortableDocumentFormat",
                 },
                 pkl = {
                     icon = "",
