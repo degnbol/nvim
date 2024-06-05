@@ -27,11 +27,15 @@ local function isComment(line, commentchar)
     return commentchar and commentchar ~= "" and line:match("^[\t%s]*" .. commentchar)
 end
 
+--- Takes a count, to override default number of lines to check for detecting column max lengths.
 local function updateWidths()
     local commentchar = getCommentChar()
     widths = {}
 
-    local lines = vim.api.nvim_buf_get_lines(0, 0, defaults.checklines, false)
+    local checklines = vim.v.count
+    if checklines == 0 then checklines = defaults.checklines end
+    local lines = vim.api.nvim_buf_get_lines(0, 0, checklines, false)
+
     for _, line in ipairs(lines) do
         -- ignore comment lines
         if not isComment(line, commentchar) then
