@@ -239,6 +239,12 @@ vim.keymap.set( {'n', 'v'}, 'zo',
     { desc="Unhide current column(s)" }
 )
 
+-- TODO: za to toggle
+vim.keymap.set( {'n', 'v'}, 'za',
+    function () print("Not implemented yet!") end,
+    { desc="Toggle hiding current column(s)" }
+)
+
 -- vim.keymap.set( {'n', 'v'}, '<Plug>TsvHideMore',
 vim.keymap.set( {'n', 'v'}, '{',
     function ()
@@ -278,7 +284,7 @@ vim.keymap.set( {'n', 'v'}, '}',
 local grp = vim.api.nvim_create_augroup("hide", {clear=true})
 -- this autocmd sets vartabstop on file save based on longest cell in each column.
 vim.api.nvim_create_autocmd(defaults.checkevents, {
-    pattern="*.tsv",
+    buffer=0, -- since the extension is not just .tsv but can also be .tab or .bed as defined in ftdetect/tsv.vim
     group=grp,
     callback = function()
         local commentchar = getCommentChar()
