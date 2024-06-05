@@ -16,7 +16,7 @@ local defaults = {
     checkevents = {"BufEnter", "BufWritePost"},
 }
 
-local widths -- set in BufEnter. Record of unhidden column widths excl gap.
+local widths -- Record of unhidden column widths excl gap.
 -- abililty to have different column widths and used for indicating if column is currently hidden
 local maxwidths = {}
 
@@ -25,6 +25,34 @@ local function getCommentChar()
 end
 local function isComment(line, commentchar)
     return commentchar and commentchar ~= "" and line:match("^[\t%s]*" .. commentchar)
+end
+
+local function updateWidths()
+    local commentchar = getCommentChar()
+    widths = {}
+
+    local lines = vim.api.nvim_buf_get_lines(0, 0, defaults.checklines, false)
+    for _, line in ipairs(lines) do
+        -- ignore comment lines
+        if not isComment(line, commentchar) then
+            local fields = vim.split(line, '\t', true)
+            -- when the line is shorter than or equal in length to a line seen so far
+            for i = 1, math.min(#widths, #fields) do
+                widths[i] = math.max(widths[i], fields[i]:len())
+            end
+            -- when the line is longer than any line seen so far
+            for i = #widths+1, #fields do
+                table.insert(widths, fields[i]:len())
+            end
+        end
+    end
+
+    -- min 2 visual spaces gap between columns
+    local vartabstop = {}
+    for i, width in ipairs(widths) do
+        vartabstop[i] = width+2
+    end
+    vim.opt_local.vartabstop = vartabstop
 end
 
 --- Not adding hidden text lengths.
@@ -74,7 +102,6 @@ end
 
 local hidden = {}
 
--- update vartabstop
 local function updateVartabstop()
     local vartabstop = {}
     for col, width in ipairs(widths) do
@@ -286,34 +313,11 @@ local grp = vim.api.nvim_create_augroup("hide", {clear=true})
 vim.api.nvim_create_autocmd(defaults.checkevents, {
     buffer=0, -- since the extension is not just .tsv but can also be .tab or .bed as defined in ftdetect/tsv.vim
     group=grp,
-    callback = function()
-        local commentchar = getCommentChar()
-        widths = {}
-
-        local lines = vim.api.nvim_buf_get_lines(0, 0, defaults.checklines, false)
-        for _, line in ipairs(lines) do
-            -- ignore comment lines
-            if not isComment(line, commentchar) then
-                local fields = vim.split(line, '\t', true)
-                -- when the line is shorter than or equal in length to a line seen so far
-                for i = 1, math.min(#widths, #fields) do
-                    widths[i] = math.max(widths[i], fields[i]:len())
-                end
-                -- when the line is longer than any line seen so far
-                for i = #widths+1, #fields do
-                    table.insert(widths, fields[i]:len())
-                end
-            end
-        end
-
-        -- min 2 visual spaces gap between columns
-        local vartabstop = {}
-        for i, width in ipairs(widths) do
-            vartabstop[i] = width+2
-        end
-        vim.opt_local.vartabstop = vartabstop
-    end
+    callback = updateWidths,
 })
+
+-- also set a manual call in case we don't want to save
+vim.keymap.set('n', '<leader><leader>a', updateWidths, { desc="Align columns" })
 
 -- unhide and rehide when saving as to always save the full text to file
 vim.api.nvim_create_autocmd("BufWritePre", {
