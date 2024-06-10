@@ -9,11 +9,12 @@ local util = require "utils/init"
 -- what if the last change was inside the hidden text? So, I think the best 
 -- option is to make an UndoEvent and RedoEvent and change the extmark along 
 -- with the buffer change (and update vartabstop)
+-- Hiding cuts through multi chars like €, so this might be a TODO
 
 local defaults = {
     maxwidth = 10, -- excl gap
     checklines = 100, -- max lines to look at to detect column widths
-    checkevents = {"BufEnter", "BufWritePost"},
+    checkevents = {"BufEnter", "FileType", "BufWritePost"},
 }
 
 local widths -- Record of unhidden column widths excl gap.
@@ -60,9 +61,10 @@ local function updateWidths()
 end
 
 --- Not adding hidden text lengths.
----@row number 1-indexed
----@col number 1-indexed
----@return (c1, c2) 0-indexed, inclusive or nil if the cell doesn't exist.
+---@param row integer 1-indexed table row
+---@param col integer 1-indexed table column
+---@return integer c1 0-indexed, inclusive or nil if the cell doesn't exist.
+---@return integer c2 0-indexed, inclusive, i.e. location of following tab/newline
 local function getCellRange(row, col)
     local line = util.get_line(row-1)
     local fields = vim.split(line, '\t')
@@ -218,19 +220,29 @@ local function hide(cols, maxwidth)
     updateVartabstop()
 end
 
----@r 0-indexed win column
----@c 0-indexed win column
----@return int 1-indexed for table column of the cursor.
+---@r 0-indexed line number
+---@c 0-indexed character column, or nil to get number of columns (max)
+---@return integer 1-indexed for table column of the cursor.
 local function getCol(r, c)
     local line = util.get_line(r)
     local _, nsub = line:sub(1,c):gsub('\t', '')
     return nsub+1
 end
 
----@return int 1-indexed for current table column of the cursor.
+---Get current cell row and column where the cursor is.
+---@return integer 1-indexed for current table column.
 local function getCurCol()
     local r, c = util.get_cursor()
     return getCol(r, c)
+end
+---@return integer r  0-indexed line number
+---@return integer c1 0-indexed char column
+---@return integer c2 0-indexed char column
+local function getCurCellRange()
+    local r, c = util.get_cursor()
+    local col = getCol(r, c)
+    local c1, c2 = getCellRange(r+1, col)
+    return r, c1, c2
 end
 
 local function allCols()
@@ -277,8 +289,7 @@ vim.keymap.set( {'n', 'v'}, 'za',
 )
 
 -- vim.keymap.set( {'n', 'v'}, '<Plug>TsvHideMore',
-vim.keymap.set( {'n', 'v'}, '{',
-    function ()
+vim.keymap.set( {'n', 'v'}, '{', function ()
         local count = vim.v.count
         if count == 0 then count = 1 end
         local cols = getCurCols()
@@ -292,8 +303,7 @@ vim.keymap.set( {'n', 'v'}, '{',
 )
 
 -- vim.keymap.set( {'n', 'v'}, '<Plug>TsvHideMore',
-vim.keymap.set( {'n', 'v'}, '}',
-    function ()
+vim.keymap.set( {'n', 'v'}, '}', function ()
         local count = vim.v.count
         if count == 0 then count = 1 end
         local cols = getCurCols()
@@ -325,21 +335,25 @@ vim.keymap.set('n', '<leader><leader>a', updateWidths, { desc="Align columns" })
 
 -- unhide and rehide when saving as to always save the full text to file
 vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = '*.tsv', group = grp, callback = function()
+    buffer = 0, group = grp, callback = function()
     unhide(allCols())
 end
 })
 vim.api.nvim_create_autocmd("BufWritePost", {
-    pattern = '*.tsv', group = grp, callback = function()
+    buffer = 0,
+    group = grp, callback = function()
     for col, maxwidth in pairs(maxwidths) do
         hide({col}, maxwidth)
     end
 end
 })
 
+-- FIXME: this causes StackOverflow in large file, e.g. yank and paste a line with hidden cells in
+-- /Users/cdmadsen/Documents/Topology/Chromatin/Pub/Hinch_2019/GSE124991_DMC1_and_H3K4me3_B6CASTF1.PRDM9hc.txt
 -- yank hidden text as well
 vim.api.nvim_create_autocmd("TextYankPost", {
-    pattern = "*.tsv", group = grp,
+    buffer = 0,
+    group = grp,
     callback = function ()
         if vim.tbl_isempty(hidden) then return end
         local lines = vim.v.event.regcontents
@@ -379,7 +393,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 
 -- redo the active hiding when pasting line(s)
 vim.api.nvim_create_autocmd("TextChanged", {
-    pattern = '*.tsv', group = grp,
+    buffer = 0, group = grp,
     callback = function ()
         if vim.tbl_isempty(hidden) then return end
         -- 0-ind
@@ -398,45 +412,66 @@ vim.api.nvim_create_autocmd("TextChanged", {
 vim.keymap.set('n', ']]', function ()
     local count = vim.v.count
     if count == 0 then count = 1 end
-    for _ = 1, count do
-        local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-        local line = vim.api.nvim_get_current_line()
-        local nextTab = line:sub(c+1):match('()\t')
-        if nextTab ~= nil then
-            vim.api.nvim_win_set_cursor(0, {r, c+nextTab})
-        end
-    end
+    local r, c = util.get_cursor()
+    local col = getCol(r, c)
+    local nCol = getCol(r, nil)
+    local c1, _ = getCellRange(r+1, math.min(nCol, col + count))
+    util.set_cursor(r, c1)
 end, { desc="Goto next start of cell", buffer=true })
 vim.keymap.set('n', '[[', function ()
     local count = vim.v.count
     if count == 0 then count = 1 end
-    for _ = 1, count do
-        local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-        if c == 0 then return end
-        local line = vim.api.nvim_get_current_line()
-        local prevTab = line:sub(1, c-1):match('\t?()[^\t]*$')
-        vim.api.nvim_win_set_cursor(0, {r, prevTab-1})
-    end
+    local r, c = util.get_cursor()
+    local col = getCol(r, c)
+    local c1, _ = getCellRange(r+1, math.max(1, col - count))
+    util.set_cursor(r, c1)
 end, { desc="Goto previous start of cell", buffer=true })
 vim.keymap.set('n', '][', function ()
     local count = vim.v.count
     if count == 0 then count = 1 end
-    for _ = 1, count do
-        local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-        local line = vim.api.nvim_get_current_line()
-        -- TODO
-    end
+    local r, c = util.get_cursor()
+    local col = getCol(r, c)
+    local nCol = getCol(r, nil)
+    local c1, c2 = getCellRange(r+1, math.min(nCol, col + count))
+    util.set_cursor(r, math.max(c2-1, c1))
 end, { desc="Goto next end of cell" })
 vim.keymap.set('n', '[]', function ()
     local count = vim.v.count
     if count == 0 then count = 1 end
-    for _ = 1, count do
-        local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-        if c == 0 then return end
-        local line = vim.api.nvim_get_current_line()
-        -- TODO
-    end
+    local r, c = util.get_cursor()
+    local col = getCol(r, c)
+    local c1, c2 = getCellRange(r+1, math.max(1, col - count))
+    util.set_cursor(r, math.max(c2-1, c1))
 end, { desc="Goto previous end of cell", buffer=true })
 
-
+vim.keymap.set('x', 'ax', function ()
+    local mode = util.get_mode()
+    local r, c1, c2 = getCurCellRange()
+    util.end_visual()
+    util.set_cursor(r, c1)
+    util.set_mode(mode)
+    util.set_cursor(r, c2)
+end, { desc="In cell" })
+vim.keymap.set('x', 'ix', function ()
+    local mode = util.get_mode()
+    local r, c1, c2 = getCurCellRange()
+    util.end_visual()
+    util.set_cursor(r, c1)
+    util.set_mode(mode)
+    util.set_cursor(r, c2-1)
+end, { desc="In cell" })
+vim.keymap.set('o', 'ax', function ()
+    local r, c1, c2 = getCurCellRange()
+    util.end_visual()
+    util.set_cursor(r, c1)
+    util.set_mode('v')
+    util.set_cursor(r, c2)
+end, { desc="In cell" })
+vim.keymap.set('o', 'ix', function ()
+    local r, c1, c2 = getCurCellRange()
+    util.end_visual()
+    util.set_cursor(r, c1)
+    util.set_mode('v')
+    util.set_cursor(r, c2-1)
+end, { desc="In cell" })
 

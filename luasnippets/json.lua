@@ -1,6 +1,9 @@
-#!/usr/bin/env lua
+local ls = require "luasnip"
+local s = ls.s
+
 local lsu = require "utils/luasnip"
 local re = lsu.re
+
 return {
 }, {
 -- autosnippets

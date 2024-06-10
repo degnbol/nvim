@@ -1,3 +1,6 @@
+local ls = require "luasnip"
+local s = ls.s
+
 return {
 --
 s({trig="priority", dscr="Set priority."},

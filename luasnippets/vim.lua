@@ -1,4 +1,6 @@
-#!/usr/bin/env lua
+local ls = require "luasnip"
+local s = ls.s
+
 return {
 -- not auto
 

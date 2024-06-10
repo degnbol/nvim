@@ -1,4 +1,5 @@
-#!/usr/bin/env lua
+local ls = require "luasnip"
+local s = ls.s
 local util = require "utils/luasnip"
 
 return {
@@ -40,6 +41,9 @@ fh:close()
 -- meta. snippet to write snippets.
 -- TODO: condition these on relevant path in the same way you did it for completions for configuring lazy.
 -- Also add all the allowed args from https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md
+
+s({trig="inspect", dscr="Print inspect", show_condition=conds.line_end},
+{t"print(vim.inspect(", i(1), t"))"}),
 
 s({trig="util", dscr="req utils", condition=conds.line_begin},
 {t[[local lsu = require "utils/]], i(1, "luasnip"), t'"'}),
@@ -142,7 +146,7 @@ fmta([[local <> = vim.api.nvim_create_augroup("<>", {clear=true})
 s({trig="cursor", dscr="get cursor position", condition=conds.line_begin},
 {t"local r, c = unpack(vim.api.nvim_win_get_cursor(0))"}),
 
-s({trig="[%a._]*set_cursor", dscr="set cursor", trigEngine='pattern', snippetType="autosnippet", condition=conds.line_begin},
+s({trig="vim.api.[%a._]*set_cursor", dscr="set cursor", trigEngine='pattern', snippetType="autosnippet", condition=conds.line_begin},
 {t"vim.api.nvim_win_set_cursor(0, {", i(1, "r, c"), t"})"}),
 
 s({trig="current", dscr="get current line text"},

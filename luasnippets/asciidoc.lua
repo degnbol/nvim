@@ -1,4 +1,5 @@
-#!/usr/bin/env lua
+local ls = require "luasnip"
+local s = ls.s
 
 -- show_conditions
 local isAttrLine = function (line_to_cursor)

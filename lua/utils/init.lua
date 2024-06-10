@@ -20,19 +20,19 @@ function M.end_visual()
     vim.api.nvim_feedkeys('\027', 'xt', false)
 end
 
----@return r1 int 0-index
----@return c1 int 0-index
----@return r2 int 0-index
----@return c2 int 0-index
+---@return integer r1 0-index
+---@return integer c1 0-index
+---@return integer r2 0-index
+---@return integer c2 0-index
 function M.last_changeyank_range()
     local r1, c1 = unpack(vim.api.nvim_buf_get_mark(0, "["))
     local r2, c2 = unpack(vim.api.nvim_buf_get_mark(0, "]"))
     return r1-1, c1, r2-1, c2
 end
----@return r1 int 0-index
----@return c1 int 0-index
----@return r2 int 0-index
----@return c2 int 0-index
+---@return integer r1 0-index
+---@return integer c1 0-index
+---@return integer r2 0-index
+---@return integer c2 0-index
 function M.last_visual_range()
     local r1, c1 = unpack(vim.api.nvim_buf_get_mark(0, "["))
     local r2, c2 = unpack(vim.api.nvim_buf_get_mark(0, "]"))
@@ -80,27 +80,45 @@ function M.before(r1, c1, r2, c2)
     return r1 < r2 or (r1 == r2 and c1 < c2)
 end
 
----@return r, c both 0-indexed
+---@return integer r 0-indexed
+---@return integer c 0-indexed
 function M.get_cursor()
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
     return r-1, c
 end
 
----@r int 0-indexed
+---@param r integer 0-indexed
+---@param c integer 0-indexed
+function M.set_cursor(r, c)
+    vim.api.nvim_win_set_cursor(0, {r+1, c})
+end
+
+
+---@param r integer 0-indexed
 function M.get_line(r)
     return vim.api.nvim_buf_get_lines(0, r, r+1, true)[1]
 end
 
----@r int 0-indexed
----@c1 int 0-indexed
----@c2 int 0-indexed
----@return get text from a single line
+---@param r  integer 0-indexed
+---@param c1 integer 0-indexed
+---@param c2 integer 0-indexed
+---@return string text Get text from a single line
 function M.get_text(r, c1, c2)
     return vim.api.nvim_buf_get_text(0, r, c1, r, c2, {})[1]
 end
 
+---Get current mode.
+---@return string mode "n", "v", "V", ^V, etc.
 function M.get_mode()
     return vim.api.nvim_get_mode().mode
+end
+
+---Set mode, assuming it is currently normal mode.
+---@param mode string "v", or "V", or ^V
+function M.set_mode(mode)
+    if mode ~= "n" then
+        vim.cmd.normal(mode)
+    end
 end
 
 -- open with the OS-specific shell command

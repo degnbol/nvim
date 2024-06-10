@@ -1,3 +1,5 @@
+local ls = require "luasnip"
+local s = ls.s
 local util = require "utils/luasnip"
 
 return {
