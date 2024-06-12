@@ -107,6 +107,34 @@ function M.get_text(r, c1, c2)
     return vim.api.nvim_buf_get_text(0, r, c1, r, c2, {})[1]
 end
 
+---Get char at r, c (and its beggining byte)
+---@param r integer 0-based
+---@param c integer 0-based
+---@return string char
+---@return integer c1 start of byte or multibyte char returned
+function M.get_char(r, c)
+    local char = vim.api.nvim_buf_get_text(0, r, c-1, r, c, {})[1]
+    -- if multibyte then char is only half the symbol and won't match a broad pattern like:
+    if char:match('[%w%p%s]') then
+        return char, c-1
+    else
+        return vim.api.nvim_buf_get_text(0, r, c-2, r, c, {})[1], c-2
+    end
+end
+
+---Get char right before cursor, i.e. most recently typed.
+---@return string char
+function M.get_current_char()
+    local r, c = M.get_cursor()
+    return M.get_char(r, c)
+end
+
+---Write char right after cursor.
+---@param char string
+function M.put_char(char)
+    vim.api.nvim_put({char}, "c", false, true)
+end
+
 ---Get current mode.
 ---@return string mode "n", "v", "V", ^V, etc.
 function M.get_mode()

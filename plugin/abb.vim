@@ -3,13 +3,14 @@ Abolish TH{ere,en,e,is} Th{}
 " lazy apostrophe
 Abolish {ca,is,are,do,does,did,has,have,had,was,were,would,should,could,wo}nt {}n't
 Abolish {let,there,here,who}s {}'s
+Abolish itøs it's
 iabbrev THeres There's
 " I by itself is useful in regular text but i can be a variable, and also 
 " mentioned in comments, so i should only get abb to I in prose, if possible. 
 " iabbrev im I'm " TODO: OMG!!! stop changing this in lua code when writing vim. ...
 iabbrev Im I'm
 iabbrev IM I'm
-iabbrev ive I've
+Abolish ive I've
 iabbrev Ill I'll
 iabbrev youll you'll
 " id is a word but I would never spell it Id by itself

@@ -243,7 +243,7 @@ return {
     -- the make command is optional: https://github.com/L3MON4D3/LuaSnip
     build="make install_jsregexp", },
     {'saadparwaiz1/cmp_luasnip', lazy=true,
-    dependencies={'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp"}, config=function() 
+    dependencies={'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp"}, config=function()
         local luasnip = require "luasnip"
         -- works better to put it here than directly with luasnip, since we need to 
         -- require ft_func and would then replace config anyways
@@ -276,11 +276,11 @@ return {
         vim.keymap.set({ "i", "s" }, "<C-k>", function ()
             -- including expand means ctrl+k will autocomplete the first visible snippet in completion menu
             if luasnip.expand_or_jumpable() then luasnip.expand_or_jump() end
-        end, { silent = true })
+        end, { silent=true })
 
         vim.keymap.set({ "i", "s" }, "<C-j>", function ()
             if luasnip.jumpable(-1) then luasnip.jump(-1) end
-        end, { silent = true })
+        end, { silent=true })
 
         vim.keymap.set({ "i", "s" }, "<C-l>", function ()
             if luasnip.choice_active() then
@@ -307,7 +307,7 @@ return {
                     rtp .. "/spell/custom.dic",
                     rtp .. "/spell/en.dic",
                 },
-                spelllang = { 
+                spelllang = {
                     da = rtp .. "/spell/da.dic",
                 }
             },

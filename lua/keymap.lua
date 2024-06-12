@@ -1,4 +1,5 @@
 #!/usr/bin/env lua
+local util = require "utils/init"
 local map = vim.keymap.set
 
 -- shift should have no effect on scroll
@@ -33,6 +34,36 @@ map({'n', 'x'}, "Å", "{", { remap=true })
 -- In Danglish I moved : and ; to the }] button
 -- But this messes with things when I'm not in Danglish.
 
+local function toggle_danish_imaps ()
+    local is_mapped = vim.g.danish_imaps
+    if not is_mapped then
+        vim.g.danish_imaps = true
+        vim.keymap.set('i', 'ae', 'æ', { desc="ae -> æ" })
+        vim.keymap.set('i', 'oe', 'ø', { desc="oe -> ø" })
+        vim.keymap.set('i', 'aa', 'å', { desc="aa -> å" })
+        vim.keymap.set('i', 'Ae', 'æ', { desc="ae -> æ" })
+        vim.keymap.set('i', 'Oe', 'ø', { desc="oe -> ø" })
+        vim.keymap.set('i', 'Aa', 'å', { desc="aa -> å" })
+        vim.keymap.set('i', 'AE', 'æ', { desc="ae -> æ" })
+        vim.keymap.set('i', 'OE', 'ø', { desc="oe -> ø" })
+        vim.keymap.set('i', 'AA', 'å', { desc="aa -> å" })
+    else
+        vim.g.danish_imaps = false
+        vim.keymap.del('i', 'ae')
+        vim.keymap.del('i', 'oe')
+        vim.keymap.del('i', 'aa')
+        vim.keymap.del('i', 'Ae')
+        vim.keymap.del('i', 'Oe')
+        vim.keymap.del('i', 'Aa')
+        vim.keymap.del('i', 'AE')
+        vim.keymap.del('i', 'OE')
+        vim.keymap.del('i', 'AA')
+    end
+end
+map('n', "<leader>ld", toggle_danish_imaps, {desc="Toggle Danish imaps"})
+map('i', "<C-S-6>",    toggle_danish_imaps, {desc="Toggle Danish imaps"})
+
+
 -- Mapping for function keys available on mechanical keyboard
 -- TODO: too far away for being useful for something like regular completion, 
 -- tab is more convenient. Find another use, e.g. snippet 
@@ -52,6 +83,31 @@ map('i', "<A-;>", ";")
 map('i', "<A-S-;>", ":")
 map('i', "<A-'>", "'")
 map('i', "<A-S-'>", '"')
+-- when writing text with Danish we might try to write : but the key is mapped to Æ.
+-- : is written at ends of word where we would never write capital Æ, so we can check if we are at end of word.
+-- The only exception would be if the entire word is uppercase. Currently choosing to ignore that edge case.
+map('i', "Æ", function ()
+    local char = util.get_current_char()
+    local put = char:match('[A-Åa-å.,!?]') and ':' or 'Æ'
+    util.put_char(put)
+end)
+-- similarly we often would want " instead of Ø, e.g. if we write ØØ it's to make "" and 
+map('i', "Ø", function ()
+    local r, c = util.get_cursor()
+    local char, c1 = util.get_char(r, c)
+    if char == 'Ø' then
+        vim.api.nvim_buf_set_text(0, r, c1, r, c, {'""'})
+    else
+        print(char)
+        local put = char:match('[A-Åa-å.,!?]') and '"' or 'Ø'
+        util.put_char(put)
+    end
+end)
+-- for å we might want [] or {}, but with <C-6> pressed they're mapped to å; and Å:,
+-- however it's a remap from ] and } so we write that.
+map('i', 'å]', '[]')
+map('i', 'Å}', '{}')
+
 -- And in case danglish keyboard is active:
 map('i', "<A-æ>", ";")
 map('i', "<A-S-æ>", ":")
@@ -74,6 +130,7 @@ vim.api.nvim_create_user_command("Q", "q", {})
 vim.api.nvim_create_user_command("X", "x", {})
 vim.api.nvim_create_user_command("WQ", "wq", {})
 vim.api.nvim_create_user_command("Wq", "wq", {})
+vim.api.nvim_create_user_command("Lw", "w", {})
 -- abbrev instead of command since command has to start with uppercase
 vim.cmd [[cnoreabbrev qq q]]
 
