@@ -108,7 +108,7 @@ fmta([[\begin{itemize}<>
 	\item <>
 \end{itemize}
 
-]], { c(1, {t("", virt("^l -> dash instead of bullet")), t"[label={--}]"}), i(2) }),
+]], { c(1, {t("", virt("^/ -> dash instead of bullet")), t"[label={--}]"}), i(2) }),
 {condition=conds.line_begin}),
 
 s({trig="desc", dscr="description", snippetType="autosnippet"},

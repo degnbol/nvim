@@ -47,6 +47,7 @@ local function toggle_danish_imaps ()
         vim.keymap.set('i', 'AE', 'Æ', { desc="AE -> Æ" })
         vim.keymap.set('i', 'OE', 'Ø', { desc="OE -> Ø" })
         vim.keymap.set('i', 'AA', 'Å', { desc="AA -> Å" })
+        print("ae -> æ, osv. AKTIVERET")
     else
         vim.g.danish_imaps = false
         vim.keymap.del('i', 'ae')
@@ -58,6 +59,7 @@ local function toggle_danish_imaps ()
         vim.keymap.del('i', 'AE')
         vim.keymap.del('i', 'OE')
         vim.keymap.del('i', 'AA')
+        print("ae -> æ, osv. DEAKTIVERET")
     end
 end
 map('n', "<leader>ld", toggle_danish_imaps, {desc="Toggle Danish imaps"})
@@ -227,11 +229,15 @@ map('n', '<leader>rn', [[:%s/<C-r><C-w>/]], { desc="Search/replace cword" })
 map('x', '<leader>rn', [["ry:%s/<C-r>r/]], { desc="Search/replace" })
 
 map('i', '<C-6>',
-    [[<C-^><C-\><C-o>:doautocmd User ToggleDansk<CR>]],
-    { silent=true, desc="Toggle dansk" }
+    function ()
+        util.press("<C-^>")
+        -- other related things to get triggered when toggling language
+        vim.api.nvim_exec_autocmds("User", {pattern="ToggleDansk"})
+    end,
+    { desc="Toggle dansk" }
 )
 -- Ins key was a bit useless just doing what i does so let's make it a language switch insertion:
-map('n', '<Ins>', 'i<C-6>', { silent=true, desc="Insert + Toggle dansk" })
+map('n', '<Ins>', 'i<C-6>', { remap=true, desc="Insert + Toggle dansk" })
 -- <sa = my keybind for enable setting autoformat
 -- gww = autoformat line
 -- 0   = goto column 0, so we scroll all the way back to the right

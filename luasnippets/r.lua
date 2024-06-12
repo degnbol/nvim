@@ -7,7 +7,7 @@ return {
 --
 s({trig="lib", dscr="library", snippetType="autosnippet"},
 {
-    c(1, {t("", virt("^l to suppress messages")),
+    c(1, {t("", virt("^/ to suppress messages")),
     t"suppressPackageStartupMessages("}),
     t"library(", i(2, "package"), t")",
     f(function (node_text)

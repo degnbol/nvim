@@ -123,7 +123,7 @@ return {
                     { mode = 'n', keys = '<leader>d', desc = "Diagnostic|Definition" },
                     { mode = 'n', keys = '<leader>f', desc = "Find|File" },
                     { mode = 'n', keys = '<leader>g', desc = "Git" },
-                    { mode = 'n', keys = '<leader>l', desc = "LSP" },
+                    { mode = 'n', keys = '<leader>l', desc = "LSP|Lang|Completion" },
                     -- UnconditionalPaste
                     { mode = 'n', keys = '<leader>p', desc = "Paste after" },
                     { mode = 'n', keys = '<leader>P', desc = "Paste before" },

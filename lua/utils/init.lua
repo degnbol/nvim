@@ -124,6 +124,7 @@ end
 
 ---Get char right before cursor, i.e. most recently typed.
 ---@return string char
+---@return integer c1 starting byte of char
 function M.get_current_char()
     local r, c = M.get_cursor()
     return M.get_char(r, c)
@@ -133,6 +134,20 @@ end
 ---@param char string
 function M.put_char(char)
     vim.api.nvim_put({char}, "c", false, true)
+end
+
+---Press keys
+---@param keys string e.g. "<C-^>"
+---@param noremap boolean set to true to make sure key is pressed like in default vim.
+function M.press(keys, opts)
+    local mode
+    if opts and (opts.noremap or opts.remap == false) then
+        mode = 'n'
+    else
+        mode = 'm'
+    end
+    local code = vim.api.nvim_replace_termcodes(keys, true, false, true)
+    vim.api.nvim_feedkeys(code, mode, false)
 end
 
 ---Get current mode.
