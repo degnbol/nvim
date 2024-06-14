@@ -66,6 +66,7 @@ Abolish unqiue unique
 " spelling errors in prose only
 function s:ToggleDanskAbbrev() abort
     if &iminsert
+        " echom 'Dansk abb'
         " Dansk
         abbrev feks f.eks.
         silent! unabbrev eg
@@ -74,13 +75,14 @@ function s:ToggleDanskAbbrev() abort
         silent! iunabbrev <buffer> ti
         silent! iunabbrev <buffer> i
     else
+        " echom 'English abb'
         " English
         " danish unabbrevs has to be silent! since they might not have been 
         " set yet so will give an error message
-        silent! iunabbrev feks
+        silent! iunabbrev <buffer> feks
         iabbrev eg e.g.
         iabbrev Eg E.g.
-        if &ft == "asciidoc"
+        if &ft == 'asciidoc'
             " for regular text where we wouldn't be talking about a variable i 
             " or in Danish where i is a word.
             iabbrev <buffer> i I

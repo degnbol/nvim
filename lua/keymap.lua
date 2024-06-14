@@ -91,8 +91,11 @@ local function toggle_danglish(silent)
     else
         util.press("<C-^>")
     end
-    -- other related things to get triggered when toggling language
-    vim.api.nvim_exec_autocmds("User", {pattern="ToggleDansk"})
+    -- other related things to get triggered when toggling language.
+    -- Has to be scheduled since it checks iminsert which isn't updated immediately.
+    vim.schedule(function ()
+        vim.api.nvim_exec_autocmds("User", {pattern="ToggleDansk"})
+    end)
 end
 
 local function toggle_danish_imaps(silent)
