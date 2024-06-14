@@ -99,8 +99,10 @@ map('i', "Ø", function ()
     local char, c1 = util.get_char(r, c)
     if char == 'Ø' then
         vim.api.nvim_buf_set_text(0, r, c1, r, c, {'""'})
+        -- try to see if it's ok, otherwise change to only looking for uppercase.
+    elseif util.get_char(r, c+1):match('[A-Åa-å]') then
+        util.put_char('"')
     else
-        print(char)
         local put = char:match('[A-Åa-å.,!?]') and '"' or 'Ø'
         util.put_char(put)
     end
@@ -109,6 +111,21 @@ end)
 -- however it's a remap from ] and } so we write that.
 map('i', 'å]', '[]')
 map('i', 'Å}', '{}')
+
+map('i', '<C-6>',
+    function ()
+        util.press("<C-^>")
+        -- other related things to get triggered when toggling language
+        vim.api.nvim_exec_autocmds("User", {pattern="ToggleDansk"})
+    end,
+    { desc="Toggle dansk" }
+)
+-- Ins key was a bit useless just doing what i does so let's make it a language switch insertion:
+map('n', '<Ins>', 'i<C-6>', { remap=true, desc="Insert + Toggle dansk" })
+
+-- switch to/from Danish æøå and to insert mode, which is convenient.
+-- remap in order to utilise the remapped <C-^> which updates the cmp dictionary
+map("n", "yod", "i<C-^>", { remap=true, desc="Danish (<C-^>)" })
 
 -- And in case danglish keyboard is active:
 map('i', "<A-æ>", ";")
@@ -190,10 +207,6 @@ end, {expr=true, desc="Move inside empty pair/triples or outside non-empty" })
 -- }
 vim.keymap.set('i', '<S-CR>', "<CR><Esc>O", { desc="Indented newline" })
 
--- switch to/from Danish æøå and to insert mode, which is convenient.
--- remap in order to utilise the remapped <C-^> which updates the cmp dictionary
-map("n", "yod", "i<C-^>", { remap=true, desc="Danish (<C-^>)" })
-
 -- small hack to remove excess whitespace possible since iw also captures 
 -- whitespace under cursor.
 map("n", "di ", "ciw <Esc>", { desc="Delete excess whitespace" })
@@ -228,16 +241,6 @@ map('n', '<leader>rn', [[:%s/<C-r><C-w>/]], { desc="Search/replace cword" })
 -- use a selection that isn't a perfect cword, or just to use the simple search/replace when LSP is attached etc.
 map('x', '<leader>rn', [["ry:%s/<C-r>r/]], { desc="Search/replace" })
 
-map('i', '<C-6>',
-    function ()
-        util.press("<C-^>")
-        -- other related things to get triggered when toggling language
-        vim.api.nvim_exec_autocmds("User", {pattern="ToggleDansk"})
-    end,
-    { desc="Toggle dansk" }
-)
--- Ins key was a bit useless just doing what i does so let's make it a language switch insertion:
-map('n', '<Ins>', 'i<C-6>', { remap=true, desc="Insert + Toggle dansk" })
 -- <sa = my keybind for enable setting autoformat
 -- gww = autoformat line
 -- 0   = goto column 0, so we scroll all the way back to the right
