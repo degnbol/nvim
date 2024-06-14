@@ -9,3 +9,12 @@
       value: (string)) @error))
  (#eq? @_choice "c"))
 
+; Mark it as error if t"" contains newline. Use t{"a", "b", "c"} instead.
+(function_call
+ name: (identifier) @_t
+ arguments: (arguments
+  (string content: (string_content) @error))
+ (#eq? @_t "t")
+ (#match? @error "\n"))
+
+
