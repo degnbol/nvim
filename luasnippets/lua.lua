@@ -217,14 +217,14 @@ s({
     dscr="call external cmd asynchronously",
     snippetType='autosnippet',
     condition=conds.line_begin,
-},
-{t'vim.system(', i(1, "{'echo', 'hello'}"), t[[, {text=true}, function(obj)
-    print(obj.code)
-    print(obj.signal)
-    print(obj.stdout)
-    print(obj.stderr)
-end
-)]]}),
+}, {t'vim.system(', i(1, "{'echo', 'hello'}"), t{
+', {text=true}, function(obj)',
+'    print(obj.code)',
+'    print(obj.signal)',
+'    print(obj.stdout)',
+'    print(obj.stderr)',
+'end)',
+}}),
 
 s({trig="cword", dscr="current word under cursor"},
 {t'vim.fn.expand("<cword>")'}),
