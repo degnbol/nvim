@@ -1,4 +1,3 @@
-local cmd = vim.cmd
 local opt = vim.opt
 local g   = vim.g
 local api = vim.api
@@ -15,12 +14,19 @@ opt.smartindent = true
 opt.breakindent = true -- when wrapping line, match indent on the wrapped line.
 -- opt.breakindentopt = "shift:2" -- indent to show line was wrapped.
 -- OR show "> "
-opt.showbreak = "> "
+-- opt.showbreak = " "
+-- opt.showbreak = " "
+opt.showbreak = " "
+-- opt.showbreak = " "
+-- opt.showbreak = " "
+-- opt.showbreak = "▒"
+-- opt.showbreak = "▋"
+-- opt.showbreak = "▉"
 opt.copyindent = true
 -- indent after words in cinwords (^for,^while,...) and stuff with {}. Should def not be active for normal text docs.
 opt.smartindent = false -- has to be set to false explicitly even though it is default probs because some plugin changes it.
 -- Has to be set for bufferline to work by hiding an open buffer when switching to another
-opt.hidden = true 
+opt.hidden = true
 opt.ignorecase = true -- search ignoring case. use \c \C anywhere in search pattern to force case-sensitivity.
 opt.smartcase = true -- only match case-insensitively is query is all lowercase
 opt.scrolloff = 4 -- number of lines of context to always keep above and below the cursorline
