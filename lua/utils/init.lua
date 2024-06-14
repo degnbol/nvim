@@ -17,6 +17,7 @@ end
 function M.end_visual()
     -- magic from
     -- https://github.com/neovim/neovim/issues/19770
+    -- alternatively call vim.cmd.stopinsert()
     vim.api.nvim_feedkeys('\027', 'xt', false)
 end
 
@@ -113,6 +114,7 @@ end
 ---@return string char
 ---@return integer c1 start of byte or multibyte char returned
 function M.get_char(r, c)
+    if c == 0 then return "", 0 end
     local char = vim.api.nvim_buf_get_text(0, r, c-1, r, c, {})[1]
     -- if multibyte then char is only half the symbol and won't match a broad pattern like:
     if char:match('[%w%p%s]') then
@@ -138,7 +140,7 @@ end
 
 ---Press keys
 ---@param keys string e.g. "<C-^>"
----@param noremap boolean set to true to make sure key is pressed like in default vim.
+---@param opts table remap: set to true to make sure key is pressed like in default vim.
 function M.press(keys, opts)
     local mode
     if opts and (opts.noremap or opts.remap == false) then
@@ -156,10 +158,15 @@ function M.get_mode()
     return vim.api.nvim_get_mode().mode
 end
 
----Set mode, assuming it is currently normal mode.
----@param mode string "v", or "V", or ^V
+---Set mode
+---@param mode string "i", "n", "v", or "V", or ^V
 function M.set_mode(mode)
-    if mode ~= "n" then
+    if vim.startswith(mode, "i") then
+        vim.cmd.startinsert()
+    elseif vim.startswith(mode, "n") then
+        -- also stops visual mode
+        vim.cmd.stopinsert()
+    else
         vim.cmd.normal(mode)
     end
 end

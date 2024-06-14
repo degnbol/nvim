@@ -3,11 +3,11 @@ local util = require "utils/init"
 local map = vim.keymap.set
 
 -- shift should have no effect on scroll
-counts = {"", "2-", "3-", "4-"}
-directions = {"Up", "Down", "Left", "Right"}
+local counts = {"", "2-", "3-", "4-"}
+local directions = {"Up", "Down", "Left", "Right"}
 for _, i in ipairs(counts) do
     for _, d in ipairs(directions) do
-        k = i .. "ScrollWheel" .. d
+        local k = i .. "ScrollWheel" .. d
         map({'n','v','o','i'}, '<S-' .. k .. '>', '<' .. k .. '>', {remap=true})
     end
 end
@@ -33,38 +33,6 @@ map({'n', 'x'}, "å", "[", { remap=true })
 map({'n', 'x'}, "Å", "{", { remap=true })
 -- In Danglish I moved : and ; to the }] button
 -- But this messes with things when I'm not in Danglish.
-
-local function toggle_danish_imaps ()
-    local is_mapped = vim.g.danish_imaps
-    if not is_mapped then
-        vim.g.danish_imaps = true
-        vim.keymap.set('i', 'ae', 'æ', { desc="ae -> æ" })
-        vim.keymap.set('i', 'oe', 'ø', { desc="oe -> ø" })
-        vim.keymap.set('i', 'aa', 'å', { desc="aa -> å" })
-        vim.keymap.set('i', 'Ae', 'Æ', { desc="Ae -> Æ" })
-        vim.keymap.set('i', 'Oe', 'Ø', { desc="Oe -> Ø" })
-        vim.keymap.set('i', 'Aa', 'Å', { desc="Aa -> Å" })
-        vim.keymap.set('i', 'AE', 'Æ', { desc="AE -> Æ" })
-        vim.keymap.set('i', 'OE', 'Ø', { desc="OE -> Ø" })
-        vim.keymap.set('i', 'AA', 'Å', { desc="AA -> Å" })
-        print("ae -> æ, osv. AKTIVERET")
-    else
-        vim.g.danish_imaps = false
-        vim.keymap.del('i', 'ae')
-        vim.keymap.del('i', 'oe')
-        vim.keymap.del('i', 'aa')
-        vim.keymap.del('i', 'Ae')
-        vim.keymap.del('i', 'Oe')
-        vim.keymap.del('i', 'Aa')
-        vim.keymap.del('i', 'AE')
-        vim.keymap.del('i', 'OE')
-        vim.keymap.del('i', 'AA')
-        print("ae -> æ, osv. DEAKTIVERET")
-    end
-end
-map('n', "<leader>ld", toggle_danish_imaps, {desc="Toggle Danish imaps"})
-map('i', "<C-S-6>",    toggle_danish_imaps, {desc="Toggle Danish imaps"})
-
 
 -- Mapping for function keys available on mechanical keyboard
 -- TODO: too far away for being useful for something like regular completion, 
@@ -112,20 +80,67 @@ end)
 map('i', 'å]', '[]')
 map('i', 'Å}', '{}')
 
-map('i', '<C-6>',
-    function ()
+local function toggle_danglish(silent)
+    if not silent then
+        if vim.bo.iminsert == 0 then print("Danglish")
+        else print("Code")
+        end
+    end
+    if util.get_mode() == 'n' then
+        util.press("a<C-^><Esc>")
+    else
         util.press("<C-^>")
-        -- other related things to get triggered when toggling language
-        vim.api.nvim_exec_autocmds("User", {pattern="ToggleDansk"})
-    end,
-    { desc="Toggle dansk" }
-)
+    end
+    -- other related things to get triggered when toggling language
+    vim.api.nvim_exec_autocmds("User", {pattern="ToggleDansk"})
+end
+
+local function toggle_danish_imaps(silent)
+    local is_mapped = vim.g.danish_imaps
+    if not is_mapped then
+        vim.g.danish_imaps = true
+        vim.keymap.set('i', 'ae', 'æ', { desc="ae -> æ" })
+        vim.keymap.set('i', 'oe', 'ø', { desc="oe -> ø" })
+        vim.keymap.set('i', 'aa', 'å', { desc="aa -> å" })
+        vim.keymap.set('i', 'Ae', 'Æ', { desc="Ae -> Æ" })
+        vim.keymap.set('i', 'Oe', 'Ø', { desc="Oe -> Ø" })
+        vim.keymap.set('i', 'Aa', 'Å', { desc="Aa -> Å" })
+        vim.keymap.set('i', 'AE', 'Æ', { desc="AE -> Æ" })
+        vim.keymap.set('i', 'OE', 'Ø', { desc="OE -> Ø" })
+        vim.keymap.set('i', 'AA', 'Å', { desc="AA -> Å" })
+        if not silent then print("ae -> æ, osv.   aktiveret") end
+    else
+        vim.g.danish_imaps = false
+        vim.keymap.del('i', 'ae')
+        vim.keymap.del('i', 'oe')
+        vim.keymap.del('i', 'aa')
+        vim.keymap.del('i', 'Ae')
+        vim.keymap.del('i', 'Oe')
+        vim.keymap.del('i', 'Aa')
+        vim.keymap.del('i', 'AE')
+        vim.keymap.del('i', 'OE')
+        vim.keymap.del('i', 'AA')
+        if not silent then print("ae -> æ, osv. DEaktiveret") end
+    end
+end
+
+map('i', '<C-6>', toggle_danglish, { desc="Toggle dansk" })
 -- Ins key was a bit useless just doing what i does so let's make it a language switch insertion:
 map('n', '<Ins>', 'i<C-6>', { remap=true, desc="Insert + Toggle dansk" })
-
 -- switch to/from Danish æøå and to insert mode, which is convenient.
--- remap in order to utilise the remapped <C-^> which updates the cmp dictionary
-map("n", "yod", "i<C-^>", { remap=true, desc="Danish (<C-^>)" })
+-- remap in order to utilise the remapped <C-6> which updates the cmp dictionary
+map("n", "yod", "i<C-6>", { remap=true, desc="Danish (<C-^>)" })
+
+map('i', "<C-S-6>",    toggle_danish_imaps, {desc="Toggle Danish imaps"})
+map('n', "<leader>ld", function ()
+    toggle_danish_imaps(true)
+    toggle_danglish(true)
+    if vim.g.danish_imaps then
+        print("Danglish + ae -> æ, osv.   aktiveret")
+    else
+        print("Code     + ae -> æ, osv. DEaktiveret")
+    end
+end, {desc="Toggle Danish imaps + Danglish"})
 
 -- And in case danglish keyboard is active:
 map('i', "<A-æ>", ";")
@@ -195,7 +210,7 @@ map({'i', 'n'}, bracketJumpCode, function ()
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
     return bracketJump(line, c)
 end, {expr=true, desc="Move inside empty pair/triples or outside non-empty"})
-vim.keymap.set('c', bracketJumpCode, function ()
+map('c', bracketJumpCode, function ()
     local line = vim.fn.getcmdline()
     local c = vim.fn.getcmdpos()
     return bracketJump(line, c-1)
@@ -205,7 +220,7 @@ end, {expr=true, desc="Move inside empty pair/triples or outside non-empty" })
 -- {
 --     |
 -- }
-vim.keymap.set('i', '<S-CR>', "<CR><Esc>O", { desc="Indented newline" })
+map('i', '<S-CR>', "<CR><Esc>O", { desc="Indented newline" })
 
 -- small hack to remove excess whitespace possible since iw also captures 
 -- whitespace under cursor.
@@ -267,8 +282,7 @@ map('n', "<leader>bn", "<Cmd>enew<CR>", { desc="New" })
 map('n', "<leader>bc", "<Cmd>tabclose<CR>", { desc="tabclose" })
 
 -- poor fix for cmp replacing capitlisation of buffer words.
--- default C-c is cancel, so exit to normal mode. Not very useful.
-map('i', "<C-c>", "<Esc>b~gi", { desc="Capitalise last word" })
+map('i', "<C-`>", "<Esc>b~gi", { desc="Capitalise last word" })
 
 -- tired for accidentally jumping really far when pressing shift+down
 map('v', "<S-down>", "<down>")
