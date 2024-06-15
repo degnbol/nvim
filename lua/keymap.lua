@@ -285,7 +285,8 @@ map('n', "<leader>bn", "<Cmd>enew<CR>", { desc="New" })
 map('n', "<leader>bc", "<Cmd>tabclose<CR>", { desc="tabclose" })
 
 -- poor fix for cmp replacing capitlisation of buffer words.
-map('i', "<C-`>", "<Esc>b~gi", { desc="Capitalise last word" })
+map('i', "<C-`>", "<Esc>viwo<Esc>~gvo<Esc>a", { desc="Capitalise last word" })
+map('n', "<C-`>",      "viwo<Esc>~gvo<Esc>",  { desc="Capitalise last word" })
 
 -- tired for accidentally jumping really far when pressing shift+down
 map('v', "<S-down>", "<down>")
