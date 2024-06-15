@@ -285,6 +285,7 @@ map('n', "<leader>bn", "<Cmd>enew<CR>", { desc="New" })
 map('n', "<leader>bc", "<Cmd>tabclose<CR>", { desc="tabclose" })
 
 -- poor fix for cmp replacing capitlisation of buffer words.
+-- This long form is used over e.g. b~ea since the shorter form doesn't work for 1 or 2 char long words.
 map('i', "<C-`>", "<Esc>viwo<Esc>~gvo<Esc>a", { desc="Capitalise last word" })
 map('n', "<C-`>",      "viwo<Esc>~gvo<Esc>",  { desc="Capitalise last word" })
 
