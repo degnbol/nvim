@@ -5,6 +5,7 @@ return {
     -- Y should yank to end of line which is consistent with other uppercase use, rather than yank whole line like yy which is for ancient vi compatibility.
     -- "tpope/vim-sensible",
     -- :Abolish is iabbrev which adds beginning Uppercase, whole word UPPERCASE and with {a,b} allowed for multiple combinations
+    -- coerce:
     -- crs: snake_case, crm: MixedCase, crc: camelCase, cru: UPPER_CASE, cr-: dash-case, cr.: dot.case, cr<SPACE>: space case, crt: Title Case
     "tpope/vim-abolish",
     {
@@ -71,7 +72,7 @@ return {
                 -- Keep record of the original value
                 sidescrolloff = vim.opt.sidescrolloff:get()
                 vim.opt.sidescrolloff = 0
-                notify = "fo+=a | sidescrolloff=0"
+                local notify = "fo+=a | sidescrolloff=0"
                 print(notify)
                 return notify
             end
@@ -82,7 +83,7 @@ return {
                 -- in a call to enable_autoformat, we set it to what is 
                 -- currently the default in lua/options.lua
                 vim.opt.sidescrolloff = sidescrolloff or 12
-                notify = "fo-=a | sidescrolloff=" .. vim.opt.sidescrolloff:get()
+                local notify = "fo-=a | sidescrolloff=" .. vim.opt.sidescrolloff:get()
                 print(notify)
                 return notify
             end
@@ -91,7 +92,7 @@ return {
                 -- also disable autoformat when wrapping
                 -- Keep record of the original value
                 autoformat = vim.opt.formatoptions:get()['a']
-                notify = disable_autoformat() .. " | wrap"
+                local notify = disable_autoformat() .. " | wrap"
                 print(notify)
                 return notify
             end
@@ -100,6 +101,7 @@ return {
                 -- reset autoformat.
                 -- if the script local var 'autoformat' hasn't been defined 
                 -- in a call to enable_wrap, we default to false
+                local notify
                 if autoformat then
                     notify = enable_autoformat() .. " | nowrap"
                 else
@@ -261,7 +263,7 @@ return {
         vim.api.nvim_set_keymap("v", "g<C-a>", require("dial.map").inc_gvisual(), {desc="Value incr"})
         vim.api.nvim_set_keymap("v", "g<C-x>", require("dial.map").dec_gvisual(), {desc="Value decr"})
     end},
-    
+
     "lervag/file-line", -- open a file on a line with vi filepath:linenumber
 
     {
