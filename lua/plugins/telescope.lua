@@ -15,7 +15,10 @@ return {
     {
         "nvim-telescope/telescope.nvim",
         cmd = "Telescope",
-        dependencies={"nvim-lua/plenary.nvim", "nvim-telescope/telescope-fzf-native.nvim"},
+        dependencies={
+            "nvim-lua/plenary.nvim",
+            "nvim-telescope/telescope-fzf-native.nvim",
+        },
         init = function ()
             vim.keymap.set("n", "<leader>fb", "<Cmd>Telescope buffers<CR>", { desc="Buffer" })
             vim.keymap.set("n", "<leader>ff", "<Cmd>Telescope find_files<CR>", { desc="File" })
@@ -81,4 +84,38 @@ return {
     --     dependencies = { "kkharji/sqlite.lua", "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim", "nvim-treesitter/nvim-treesitter", "nvim-telescope/telescope.nvim", "hrsh7th/nvim-cmp" },
     --     rocks="lyaml", config = function() require("papis").setup() end,
     -- },
+    {
+        "debugloop/telescope-undo.nvim",
+        dependencies = { -- note how they're inverted to above example
+            {
+                "nvim-telescope/telescope.nvim",
+                dependencies = { "nvim-lua/plenary.nvim" },
+            },
+        },
+        keys = {
+            { -- lazy style key map
+                "<leader>fu",
+                "<cmd>Telescope undo<CR>",
+                desc = "undo history",
+            },
+        },
+        opts = {
+            -- don't use `defaults = { }` here, do this in the main telescope spec
+            extensions = {
+                undo = {
+                    -- telescope-undo.nvim config, see below
+                },
+                -- no other extensions here, they can have their own spec too
+            },
+        },
+        config = function(_, opts)
+            -- Calling telescope's setup from multiple specs does not hurt, it will happily merge the
+            -- configs for us. We won't use data, as everything is in it's own namespace (telescope
+            -- defaults, as well as each extension).
+            require("telescope").setup(opts)
+            require("telescope").load_extension("undo")
+
+            vim.keymap.set("n", "<leader>fu", "<cmd>Telescope undo<CR>")
+        end,
+    },
 }
