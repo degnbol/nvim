@@ -51,12 +51,15 @@ return {
             -- some extra functions that I felt were missing
             -- To conceal or not, set by changing the conceallevel between 0 
             -- and a non-zero value.
+            local nzConcealLvl
             local toggle_conceal = function ()
                 if vim.opt.conceallevel:get() > 0 then
                     nzConcealLvl = vim.opt.conceallevel:get()
                     vim.opt.conceallevel = 0
+                    print("conceallevel = 0")
                 else
                     vim.opt.conceallevel = nzConcealLvl or 1
+                    print("conceallevel =", vim.opt.conceallevel:get())
                 end
             end
             local toggle_colcealcursor = function ()
@@ -66,6 +69,7 @@ return {
                     vim.opt.concealcursor:append('n')
                 end
             end
+            local sidescrolloff
             local enable_autoformat = function ()
                 vim.opt.formatoptions:append('a')
                 -- also remove sidescroll offset since there should be enough space on the screen
@@ -87,6 +91,7 @@ return {
                 print(notify)
                 return notify
             end
+            local autoformat
             local enable_wrap = function ()
                 vim.opt.wrap = true
                 -- also disable autoformat when wrapping
