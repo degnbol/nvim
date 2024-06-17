@@ -96,6 +96,9 @@ local function afterColorscheme()
     hl.mod("@function.builtin", {italic=true, bold=false})
     hl.mod("@constant.builtin", {italic=true})
     hl.mod("@type.builtin",     {italic=true})
+    -- no color
+    hl.link("@markup.italic", "Italic")
+    hl.link("@markup.strong", "Bold")
 
     -- delim. Currently using the default for parentheses.
     hl.link("Delimiter", "RainbowDelimiterViolet")

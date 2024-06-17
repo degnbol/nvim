@@ -13,3 +13,4 @@ hl.def("@lsp.type.pol", "@variable")
 hl.def("@lsp.type.string", "@string")
 hl.def("@lsp.type.heading", "@text.title")
 hl.def("@lsp.type.number", "@number")
+
