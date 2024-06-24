@@ -58,7 +58,7 @@ map('i', "<A-S-'>", '"')
 -- The only exception would be if the entire word is uppercase. Currently choosing to ignore that edge case.
 map('i', "Æ", function ()
     local char = util.get_current_char()
-    local put = char:match('[A-Åa-å.,!?]') and ':' or 'Æ'
+    local put = char:match('[A-Åa-å0-9.,!?]') and ':' or 'Æ'
     util.put_char(put)
 end)
 -- similarly we often would want " instead of Ø, e.g. if we write ØØ it's to make "" and 
@@ -241,8 +241,8 @@ map("n", "<leader>Sr", "<cmd>source $XDG_CONFIG_HOME/nvim/after/plugin/luasnip.l
 -- with git: https://github.com/gillescastel/latex-snippets
 -- "i_ctrl-g u" = something about undo history, probably to keep the edit part of the insert edit?
 -- [s = goto last misspelled, 1z= = replace with first spell suggestion. 
-map('i', '<C-s>', [[<c-g>u<Esc>[s1z=`]i<c-g>u]], { desc="Spell correct closest" })
-map('n', '<C-s>', [=[[s1z=``]=], { desc="Spell correct closest" })
+map('i', '<C-s>', [[<c-g>u<Esc>[s1z=ea<c-g>u]], { desc="Spell correct closest" })
+map('n', '<C-s>', [=[[s1z=e]=], { desc="Spell correct closest" })
 
 -- not the most elegant but it works.
 -- LeftMouse to move cursor to pressed location.
@@ -295,3 +295,4 @@ map('v', "<S-up>", "<up>")
 map('n', "<S-down>", "v<down>")
 map('n', "<S-up>", "v<up>")
 
+map('i', "<C-l>", "<right>", {desc="Right"})
