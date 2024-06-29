@@ -1,3 +1,5 @@
+Make TSV plugin, the hiding and aligning functionality is quite useful.
+
 lr in latex makes left right even in table header. Shouls only be in math.
 
 % isn't escaped when pasting tsv into latex, e.g. when indicating actual percentage.
@@ -187,4 +189,14 @@ checkout
 https://github.com/gabrielpoca/replacer.nvim
 https://github.com/j-morano/buffer_manager.nvim
 https://github.com/danielfalk/smart-open.nvim
+
+replace yoink with nvim version:
+https://github.com/gbprod/yanky.nvim
+
+It might be possible to get completion in pml files (pymol language).
+https://pymol.org/pymol-command-ref.html
+It's essentially python where the parenthesis are removed and string arguments don't need quotation marks. Then it just top level calls pymol.cmd.* functions.
+Would also be cool to make completion within strings that are selection algebra
+https://pymolwiki.org/index.php/Selection_Algebra
+This can be useful for both .pml and .py meant for pymol.
 
