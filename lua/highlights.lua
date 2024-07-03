@@ -133,6 +133,10 @@ local function afterColorscheme()
     elseif vim.bo.filetype == "sql" then
         -- wrong highlight by treesitter
         hl.set("@type.sql", {})
+    elseif vim.bo.filetype == "julia" then
+        -- has to be redone, LSP kills the old syntax hl for some reason
+        hl.link("JuliaSemicolon", "@punctuation.delimiter")
+        hl.link("JuliaComma", "@punctuation.delimiter")
     end
 
     -- variable is the default capture for most things in code so we want it to 
