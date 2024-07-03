@@ -67,7 +67,8 @@ return {
                 ['<C-e>'] = cmp.mapping.abort(),
                 ['<C-c>'] = cmp.mapping.abort(),
                 -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-                ['<CR>'] = cmp.mapping.confirm({select=false}),
+                -- Disable. It sometimes got in the way (julia autotrigger after comma) and we get the selection with <C-n> or tab and can use the more explicit <C-y>
+                -- ['<CR>'] = cmp.mapping.confirm({select=false}),
                 ["<Tab>"] = cmp.mapping(function(fallback)
                     if vim.bo.filetype == "tsv" then
                         fallback()
