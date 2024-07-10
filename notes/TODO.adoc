@@ -200,3 +200,5 @@ Would also be cool to make completion within strings that are selection algebra
 https://pymolwiki.org/index.php/Selection_Algebra
 This can be useful for both .pml and .py meant for pymol.
 
+Maybe prettier markdown
+https://github.com/OXY2DEV/markview.nvim

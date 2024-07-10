@@ -48,12 +48,12 @@ return {
                     disable = {
                         "vim", -- not perfect
                         "latex", -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$
-                    }, 
+                    },
                     additional_vim_regex_highlighting = {
                         "vimdoc", -- treesitter version doesn't contain useful colors from :h group-name
                         "bash", -- spending too much time writing treesitter query. Also covers zsh.
                         "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
-                        "julia", -- to get semicolon highlight
+                        -- "julia", -- Include to get semicolon highlight, however way too laggy in some files.
                         "sql", -- custom postgres highlight in syntax/sql.vim
                     },
                 },
