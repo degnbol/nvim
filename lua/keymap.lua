@@ -296,3 +296,7 @@ map('n', "<S-down>", "v<down>")
 map('n', "<S-up>", "v<up>")
 
 map('i', "<C-l>", "<right>", {desc="Right"})
+
+map('c', '<A-left>', "<s-left>", { desc="move back one word" })
+map('c', '<A-right>', "<s-right>", { desc="move forward one word" })
+
