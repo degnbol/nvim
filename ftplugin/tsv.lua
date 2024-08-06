@@ -13,7 +13,7 @@ local util = require "utils/init"
 
 local defaults = {
     maxwidth = 10, -- excl gap
-    checklines = 100, -- max lines to look at to detect column widths
+    checklines = 200, -- max lines to look at to detect column widths
     checkevents = {"BufEnter", "FileType", "BufWritePost"},
 }
 
@@ -93,13 +93,13 @@ end
 
 ---@row 1-index
 ---@col 1-index
----@return bool found Whether the extmark was found
+---@return boolean found Whether the extmark was found
 local function delExtmark(row, col)
     return vim.api.nvim_buf_del_extmark(0, ns[col], row)
 end
 
----@return int r 0-indexed
----@return int c 0-indexed
+---@return integer r 0-indexed
+---@return integer c 0-indexed
 ---@return # invalid
 local function getExtmark(row, col)
     local r, c, details = unpack(vim.api.nvim_buf_get_extmark_by_id(0, ns[col], row, {details=true}))
@@ -158,7 +158,7 @@ local function hideCell(row, col)
             text = util.get_text(row-1, c1, c2)
         end
     end
-    
+
     local cHidden = c1 + maxwidths[col]
     -- only hide if there is something to hide
     if cHidden >= c2 then
@@ -608,4 +608,6 @@ vim.keymap.set('v', '<leader><leader>h', function ()
 end, { desc="Set header to the selected range of lines" })
 
 
+-- FIXME: bug with header row where comment rows before it are excluded.
+-- when scrolling to side it jumps up one line.
 
