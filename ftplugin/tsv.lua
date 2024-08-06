@@ -475,3 +475,137 @@ vim.keymap.set('o', 'ix', function ()
     util.set_cursor(r, c2-1)
 end, { desc="In cell" })
 
+
+
+
+-- PERSISTENT HEADER
+
+local getopt = vim.api.nvim_get_option_value
+local setopt = vim.api.nvim_set_option_value
+
+local grp = vim.api.nvim_create_augroup("TSV-header", {clear=true})
+local grp_float = vim.api.nvim_create_augroup("TSV-header-float", {clear=true})
+local winid, winid_float
+
+---Open a float showing table header when scrolled away from top of file.
+---@param row integer? 1-indexed row of header, default=1
+---@param height integer? height of header, default=1 + number of comment lines.
+local function open_header(row, height)
+    row = row or 1
+    if height == nil then
+        -- height detected as number of comment lines plus 1
+        local commentchar = getCommentChar()
+        -- consider max 20 lines
+        local lines = vim.api.nvim_buf_get_lines(0, 0, 20, false)
+        for i, line in ipairs(lines) do
+            if not isComment(line, commentchar) then
+                height = i
+                break
+            end
+        end
+    end
+
+    winid = vim.api.nvim_get_current_win()
+    winid_float = vim.api.nvim_open_win(0, false, {
+        relative = 'win',
+        width = vim.api.nvim_win_get_width(0),
+        height = height,
+        row = 0,
+        col = 0,
+        bufpos = {row-1, 0},
+        focusable = false,
+        noautocmd = true,
+    })
+
+    -- scrollbind horizontally
+    setopt("scrollbind", true, {win=winid})
+    setopt("scrollbind", true, {win=winid_float})
+    setopt("scrollopt", "hor", {})
+    -- if we have multiple header rows the wrong lines will be shown if scrolloff > 0
+    setopt("scrolloff", 0, {win=winid_float})
+    -- WARNING: hacky solution here
+    -- for multiline header when some lines aren't visible the float will show the wrong lines if we simply move its cursor to the final header line.
+    -- Therefore we have to scroll the view, but there is no lua function for this currently. 
+    -- We scroll by moving cursor twice, first to the first row then to the last row.
+    -- There are other ways to scroll, e.g. set win with api then call zb or <C-y> but they end up moving the main buffer window.
+    vim.api.nvim_win_set_cursor(winid_float, {row, vim.api.nvim_win_get_cursor(winid_float)[2]})
+    vim.api.nvim_win_set_cursor(winid_float, {row+height-1, vim.api.nvim_win_get_cursor(winid_float)[2]})
+    -- Due to moving the cursor to the first row for the sake of scrolling we now have to potentially fix wrong horizontal scroll, if the first row was shorter than the last.
+    -- We do this by triggering a response to update the horizontal scroll but the trick here is we don't actually want to change the view.
+    -- I tried with `vim.cmd.doautocmd "WinScrolled"` and tried setting vim.v.event but didn't trigger any update to header scroll.
+    -- I trigger scroll event by moving down and up. Was the best option among left/right or up then down for no movement of view in edge cases.
+    -- The cursor may still move so mark h, then jump to mark h makes sure the cursor doesn't move.
+    util.press("mh<C-e><C-y>`h", {remap=false})
+
+    -- map CursorLineNr to regular LineNr since there is no cursor in float
+    setopt("winhighlight", "CursorLineNr:LineNr", {win=winid_float})
+    -- hide LineNrs since they are inconsistent with relativenumber=on
+    vim.api.nvim_win_set_hl_ns(winid_float, 1)
+    vim.defer_fn(function ()
+        local bg = vim.api.nvim_get_hl(0, {name="NormalFloat", link=false})["bg"]
+        vim.api.nvim_set_hl(1, "CursorLineNr", {fg=bg})
+        vim.api.nvim_set_hl(1, "LineNr", {fg=bg})
+    end, 500)
+
+    vim.api.nvim_create_autocmd("OptionSet", {
+        pattern = {"*number", "signcolumn"},
+        group = grp_float,
+        callback = function (ev)
+            local setto
+            if ev.match:match(".*number$") then
+                -- relativenumber makes little sense for the header since it would 
+                -- show relative to non-existing cursor in the float, plus it 
+                -- shifts the text incorrectly since there might only be 1 column 
+                -- for numbering in header while there is usually two or more in a 
+                -- normally sized buffer.
+                ev.match = "number"
+                setto = getopt("number", {win=winid}) or getopt("relativenumber", {win=winid})
+            else
+                setto = getopt(ev.match, {win=winid})
+            end
+            setopt(ev.match, setto, {win=winid_float})
+        end
+    })
+end
+
+local function close_header()
+    vim.api.nvim_win_close(winid_float, false)
+    vim.api.nvim_clear_autocmds({group=grp_float})
+    winid_float = nil
+end
+
+-- TODO: make config and have an if statement whether we want header by default
+if false then
+    vim.api.nvim_create_autocmd("BufEnter", {
+        pattern = "*.tsv",
+        group = grp,
+        callback = open_header,
+    })
+end
+
+vim.keymap.set('n', '<leader><leader>h', function ()
+    if vim.v.count == 0 then
+        -- toggle
+        if winid_float == nil then
+            open_header()
+        else
+            close_header()
+        end
+    else
+        -- set size using count
+        if winid_float == nil then
+            open_header(1, vim.v.count)
+        else
+            vim.api.nvim_win_set_config(winid_float, {height=vim.v.count})
+        end
+    end
+end, { desc="Toggle header or set its size with count" })
+vim.keymap.set('v', '<leader><leader>h', function ()
+    local r1, _, r2, _ = util.get_visual_range()
+    -- close then reopen if already open
+    if winid_float ~= nil then close_header() end
+    open_header(r1, r2 - r1 + 1)
+end, { desc="Set header to the selected range of lines" })
+
+
+
