@@ -15,3 +15,6 @@ hi.bg("Visual", "#6a3b6a")
 -- special hl with a different color.
 hi.link("Special", "@string.special")
 
+-- It's green by default which I associate with line added
+hi.set("CursorLineNr", {fg="white", bold=true})
+
