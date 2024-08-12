@@ -35,8 +35,8 @@ end
 ---@return integer r2 0-index
 ---@return integer c2 0-index
 function M.last_visual_range()
-    local r1, c1 = unpack(vim.api.nvim_buf_get_mark(0, "["))
-    local r2, c2 = unpack(vim.api.nvim_buf_get_mark(0, "]"))
+    local r1, c1 = unpack(vim.api.nvim_buf_get_mark(0, "<"))
+    local r2, c2 = unpack(vim.api.nvim_buf_get_mark(0, ">"))
     return r1-1, c1, r2-1, c2
 end
 
@@ -140,7 +140,7 @@ end
 
 ---Press keys
 ---@param keys string e.g. "<C-^>"
----@param opts table remap: set to true to make sure key is pressed like in default vim.
+---@param opts table remap: set to false to make sure key is pressed like in stock vim.
 function M.press(keys, opts)
     local mode
     if opts and (opts.noremap or opts.remap == false) then
