@@ -282,7 +282,9 @@ return {
 
             -- like pressing > which looks like forward arrow
             vim.keymap.set({ "i", "s" }, "<C-.>", function ()
-                if luasnip.jumpable() then luasnip.jump() end
+                -- including expand means this will autocomplete the first visible snippet in completion menu
+                -- if luasnip.expand_or_jumpable() then luasnip.expand_or_jump() end
+                if luasnip.jumpable(1) then luasnip.jump(1) end
             end, { silent=true })
 
             -- like pressing < which looks like backwards arrow
