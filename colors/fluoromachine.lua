@@ -5,3 +5,4 @@ require "fluoromachine".setup {
         ['Comment'] = { italic = false },
     }
 }
+require('fluoromachine.config').load()
