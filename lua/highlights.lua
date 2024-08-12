@@ -78,7 +78,7 @@ local function afterColorscheme()
     hi.mod("Number", {italic=false})
     -- vim in lua is @lsp.typemod.variable.global.lua linked to Constant.
     -- If you find other constants that you don't want to make italic then mod the semantic @lsp global instead.
-    hi.mod("Constant", {italic=true})
+    hi.set("Constant", {italic=true})
     hi.mod("Exception", {italic=true})
     hi.mod("@include", {italic=true})
     hi.link("@keyword", "Keyword")
