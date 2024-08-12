@@ -29,6 +29,10 @@ s({trig=":amat", dscr="AbstractMatrix", snippetType="autosnippet"}, {t":Abstract
 s({trig=":avec", dscr="AbstractVector", snippetType="autosnippet"}, {t":AbstractVector"}),
 s({trig=":astr", dscr="AbstractString", snippetType="autosnippet"}, {t":AbstractString"}),
 
+
+s({trig="agg", dscr="Aggregate DataFrame", condition=conds.line_end},
+{t"combine(groupby(", i(1,"df"), t", ", i(2, ":COL"), t"), ", i(3, ":COL2 => sum"), t")"}),
+
 }, {
 -- auto
 
@@ -67,7 +71,7 @@ s({trig=">=", dscr="Greater than."}, {t"≥"}),
 -- s({trig="!=", dscr="Not equal."}, {t"≠"}),
 s({trig=".in", dscr="Each in"}, {t".∈ Ref(", i(1), t")"}),
 
-s({trig="use", dscr="Using.", condition=conds.line_begin}, {t"using "}),
+s({trig="use", dscr="Using.", condition=conds.line_begin * conds.line_end}, {t"using "}),
 
 s({trig="func", dscr="Function.", condition=conds.line_begin * conds.line_end},
 fmta([[function <>(<>)<>
