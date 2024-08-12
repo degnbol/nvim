@@ -1,6 +1,8 @@
 local ls = require "luasnip"
-local s = ls.s
 local util = require "utils/luasnip"
+local s = ls.s
+local t = ls.t
+local i = ls.i
 
 return {
 -- core lang snippets similar to other bracket related ones found in all.lua
@@ -68,7 +70,10 @@ s({trig="wordTrig", dscr="Word trigger?"},
 s({trig="trigEngine", dscr="Set trigger engine."},
 {t'trigEngine="', c(1, {t"pattern", t"vim", t"ecma", t"plain"}), t'"'}),
 
-s({trig="show_condition", dscr="Set show_condition for luasnip."},
+s({trig="condition", dscr="Set condition for autosnippet."},
+{t'condition=', i(1, 'conds.line_begin')}),
+
+s({trig="show_condition", dscr="Set show_condition for non-auto snippet."},
 {t'show_condition=', i(1, 'conds.line_end')}),
 
 s({trig="fmta", dscr="Convenience function for formatting snippets, especially multi line snippets."},
@@ -125,6 +130,9 @@ s({trig="count", dscr="Count prefix for functions."},
 {t{"local count = vim.v.count", "if count == 0 then count = 1 end"}}),
 
 -- api
+
+s({trig="nvim", dscr="Api functions", trigEngine="pattern", snippetType='autosnippet', condition=conds.line_begin},
+{t"vim.api.nvim"}),
 
 s({trig="aucmd", snippetType="autosnippet" },
 fmta([[
