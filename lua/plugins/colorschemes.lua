@@ -23,18 +23,17 @@ return {
     {
         "NTBBloodbath/sweetie.nvim",
         event = "User ColorSchemeLoad",
-        opts = {
-            overrides = {
+        config = function ()
+            vim.g.sweetie = { overrides = {
                 Comment = { italic = false },
                 CommentBold = { italic = false, },
-            },
-        },
+            }}
+        end,
     },
 
     {
         'maxmx03/fluoromachine.nvim',
-        -- simply loading this will set it. We define code in colors/ instead of the config here.
-        event = "User ColorSchemeLoadDark", -- see whichkey
+        event = "User ColorSchemeLoadDark",
     },
 
     {

@@ -107,3 +107,13 @@ vim.diagnostic.config {
     virtual_text = {severity = vim.diagnostic.severity.ERROR}
 }
 
+-- custom foldtext function that shows <first line> … <lines hidden> … <last line>
+function FoldText()
+    local linestart = vim.fn.getline(vim.v.foldstart)
+    local lineend = vim.fn.getline(vim.v.foldend)
+    local line_count = vim.v.foldend - vim.v.foldstart + 1
+    return linestart .. " … " .. line_count .. " … " .. lineend:match("%s*(.*)%s*")
+end
+vim.opt.foldtext = "v:lua.FoldText()"
+vim.opt.fillchars = 'fold: '
+
