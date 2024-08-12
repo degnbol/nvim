@@ -6,12 +6,12 @@ local function afterColorscheme()
     -- vim.cmd 'silent Lazy reload telescope.nvim'
 
     ---- git signs link to Gitsigns equivalent which gets defined
-    hl.def("DiffAddNr", "GitsignsAddLn")
-    hl.def("DiffChangeNr", "GitsignsChangeLn")
-    hl.def("DiffTopDeleteNr", "GitsignsDeleteVirtLn") -- edge-case where first line(s) of file is deleted
-    hl.def("DiffChangeDeleteNr", "GitsignsChangedeleteLn")
-    -- special decides the color for the underline
-    hl.set("DiffDeleteNr", {underline=true, special=hl.get("DiffDelete")["fg"], fg=nil})
+    -- hl.def("DiffAddNr", "GitsignsAddLn")
+    -- hl.def("DiffChangeNr", "GitsignsChangeLn")
+    -- hl.def("DiffTopDeleteNr", "GitsignsDeleteVirtLn") -- edge-case where first line(s) of file is deleted
+    -- hl.def("DiffChangeDeleteNr", "GitsignsChangedeleteLn")
+    -- -- special decides the color for the underline
+    -- hl.set("DiffDeleteNr", {underline=true, special=hl.get("DiffDelete")["fg"], fg=nil})
 
     local spellBad = hl.get("spellBad")
     -- the default already has red undercurl so we don't wanna mess with that but 
@@ -32,9 +32,10 @@ local function afterColorscheme()
     hl.set("CurSearch", {fg="gray", bg=hl.get("IncSearch")["fg"], standout=true, bold=true})
     -- hl.mod("CurSearch", {standout=true})
 
-    -- highlight bg defeats the purpose of folding for me.
-    -- It is still plenty clear that text is folded.
-    hl.bg("Folded", nil)
+    -- Default is comment fg and similar strong bg for the whole line. It grabs too much attention.
+    -- NonText is bold gray. It feels like a good balance of attention grabbing.
+    -- Treesitter hl with NonText "… 35 …" could be too little attention and get overlooked.
+    hl.link("Folded", "NonText")
 
     ---- bufferline
     -- bold instead of italic+bold selected
@@ -160,6 +161,9 @@ local function afterColorscheme()
     -- imported.
     hl.set("DiagnosticUnderlineWarn", {underdotted=true})
     hl.set("DiagnosticUnderlineError", {undercurl=true})
+
+    -- Make a hl group we can link to that hides text
+    hl.hide("Background")
 end
 
 -- local defaultDark = 'fluoromachine'
