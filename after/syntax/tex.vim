@@ -25,3 +25,10 @@ hi link textgreek SpecialChar
 
 hi texItalStyle gui=italic
 
+" redefine to add conceal (and thinrule)
+syntax match texCmdBooktabs "\\\%(top\|mid\|bottom\|thin\)rule\>" conceal cchar=━
+
+" conceal table cell
+syn match texCell "\\makecell\[\a\+\]" conceal cchar=☐
+hi def link texCell texCmd
+
