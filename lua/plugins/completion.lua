@@ -63,12 +63,18 @@ return {
                 ['<down>'] = cmp.mapping.closeFallback(),
                 ['<C-b>'] = cmp.mapping.scroll_docs(-4),
                 ['<C-f>'] = cmp.mapping.scroll_docs(4),
-                ['<C-space>'] = cmp.mapping.complete(),
+                -- complete with c-space instead of ctrl+y or tab. Prefer ctrl-n and -p and ctrl-space.
+                ['<C-space>'] = cmp.mapping(function(fallback)
+                    if cmp.visible() then
+                        cmp.confirm({select=true})
+                    else
+                        cmp.complete()
+                    end
+                end, {"i", "s"}),
                 ['<C-e>'] = cmp.mapping.abort(),
                 ['<C-c>'] = cmp.mapping.abort(),
                 -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
                 -- Disable. It sometimes got in the way (julia autotrigger after comma) and we get the selection with <C-n> or tab and can use the more explicit <C-y>
-                -- ['<CR>'] = cmp.mapping.confirm({select=false}),
                 ["<Tab>"] = cmp.mapping(function(fallback)
                     if vim.bo.filetype == "tsv" then
                         fallback()
