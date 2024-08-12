@@ -1,4 +1,5 @@
 #!/usr/bin/env lua
+local hi = require "utils/highlights"
 return {
     {
         -- :Git and similar commands
@@ -31,11 +32,10 @@ return {
             vim.keymap.set('n', '<leader>gn', "<Cmd>Neogit<CR>", { desc="Neogit" })
         end,
         config = function ()
-            local hi = require "utils.highlights"
-            hi.link("NeogitDiffAdd", "GitSignsAdd")
-            hi.link("NeogitDiffAddHighlight", "GitSignsAdd")
-            hi.link("NeogitDiffDelete", "GitSignsDelete")
-            hi.link("NeogitDiffDeleteHighlight", "GitSignsDelete")
+            hi.link("NeogitDiffAdd", "DiffAdd")
+            hi.link("NeogitDiffAddHighlight", "DiffAdd")
+            hi.link("NeogitDiffDelete", "DiffDelete")
+            hi.link("NeogitDiffDeleteHighlight", "DiffDelete")
 
             require"neogit".setup {
                 -- go directly to insert mode after pressing cc for commit, if the commit message is empty
@@ -84,21 +84,24 @@ return {
             -- Text object
             map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>', {desc="Hunk"})
         end,
-        opts={
-            signs = {
-                add          = {hl = "DiffAdd",    text = "▌", numhl = "DiffAddNr"},
-                change       = {hl = "DiffChange", text = "▌", numhl = "DiffChangeNr"},
-                delete       = {hl = "DiffDelete", text = "_", numhl = "DiffDeleteNr"},
-                topdelete    = {hl = "DiffDelete", text = "‾", numhl = "DiffTopDeleteNr"},
-                changedelete = {hl = "DiffChange", text = "~", numhl = "DiffChangeDeleteNr"}
-            },
-            -- highlight in signcolumn to the left of numbers, although :set signcolumn=no means this is suppressed.
-            signcolumn = true, 
-            numhl = true, -- highlight line number
-            watch_gitdir = { interval = 100 },
-            sign_priority = 5,
-            status_formatter = nil -- Use default
-        },
+        config = function ()
+            -- hl group links for number highlights. Link to Diffview hl groups
+            for from, to in pairs {
+                Add="Add",
+                Change="Change",
+                Delete="Delete",
+                Changedelete="Changedelete",
+                Topdelete="Delete",
+            } do
+                hi.link("GitSigns" .. from, "Diff" .. to)
+                hi.link("GitSigns" .. from .. "Nr", "Diff" .. to .. "Nr")
+            end
+            require"gitsigns".setup {
+                numhl = true, -- highlight line number
+                watch_gitdir = { interval = 100 },
+                sign_priority = 5,
+            }
+        end,
     },
     -- :DiffviewOpen (<leader>gd) and other commands for seeing git diff and git history for files.
     {
