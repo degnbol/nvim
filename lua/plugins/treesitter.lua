@@ -53,7 +53,10 @@ return {
                         "vimdoc", -- treesitter version doesn't contain useful colors from :h group-name
                         "bash", -- spending too much time writing treesitter query. Also covers zsh.
                         "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
-                        -- "julia", -- Include to get semicolon highlight, however way too laggy in some files.
+                        -- Semicolon isn't currently highlighted in all cases by TS so we want to incl vim regex hl for jl.
+                        -- However, jl can get slowed down a lot in certain files from the syntax hl. The solution:
+                        -- We enable it, but avoid any default syntax hl and only set custom syntax hl in syntax/julia.vim.
+                        "julia",
                         "sql", -- custom postgres highlight in syntax/sql.vim
                     },
                 },
