@@ -99,6 +99,9 @@ local function afterColorscheme()
     hi.mod("@function.builtin", {italic=true, bold=false})
     hi.mod("@constant.builtin", {italic=true})
     hi.mod("@type.builtin",     {italic=true})
+    -- By default links to Keyword which we highlights with both italic and background glow in current theme.
+    -- Making documentation text stand out more than normal comments is fine, but not that much, and def not italic, since doc is there to be read as long text.
+    hi.fg("@string.documentation", hi.get("Keyword")['fg'])
     -- no color
     hi.link("@markup.italic", "Italic")
     hi.link("@markup.strong", "Bold")
