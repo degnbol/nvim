@@ -12,12 +12,12 @@ return {
     {"numToStr/Comment.nvim", opts={ mappings={ basic=false, } }},
     -- julia support, colors and unicode substitution. CANNOT use ft=julia
     {"JuliaEditorSupport/julia-vim",
-    config=function()
-        -- this was necessary, random lhs rhs messages was appearing 
-        vim.g.latex_to_unicode_tab = "off"
-        -- auto insert latex if moving on with e.g. space or other writing that is not part of a unicode char
-        -- Super useful for e.g. completing \notin if LSP can't be used for completing it.
-        vim.g.latex_to_unicode_auto = true
+        config=function()
+            -- this was necessary, random lhs rhs messages was appearing 
+            vim.g.latex_to_unicode_tab = "off"
+            -- auto insert latex if moving on with e.g. space or other writing that is not part of a unicode char
+            -- Super useful for e.g. completing \notin if LSP can't be used for completing it.
+            vim.g.latex_to_unicode_auto = true
     end},
     -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
     {"jeetsukumaran/vim-pythonsense", ft='python'},
