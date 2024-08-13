@@ -1,5 +1,4 @@
 #!/usr/bin/env lua
-local hi = require "utils/highlights"
 return {
     {
         -- :Git and similar commands
@@ -32,14 +31,12 @@ return {
             vim.keymap.set('n', '<leader>gn', "<Cmd>Neogit<CR>", { desc="Neogit" })
         end,
         config = function ()
-            hi.link("NeogitDiffAdd", "DiffAdd")
-            hi.link("NeogitDiffAddHighlight", "DiffAdd")
-            hi.link("NeogitDiffDelete", "DiffDelete")
-            hi.link("NeogitDiffDeleteHighlight", "DiffDelete")
-
+            -- it seems NeogitDiffAdd and Delete are set to color fg + no bg version of DiffAdd and DiffDelete (DiffAdd by default is the same but DiffDelete has bg and no fg).
+            -- So: no need to do anything to coordinate colors.
             require"neogit".setup {
                 -- go directly to insert mode after pressing cc for commit, if the commit message is empty
                 disable_insert_on_commit = "auto",
+                disable_context_highlighting = true,
                 signs = {
                     -- { CLOSED, OPENED }
                     section = { "", "" },
@@ -84,24 +81,22 @@ return {
             -- Text object
             map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>', {desc="Hunk"})
         end,
-        config = function ()
-            -- hl group links for number highlights. Link to Diffview hl groups
-            for from, to in pairs {
-                Add="Add",
-                Change="Change",
-                Delete="Delete",
-                Changedelete="Changedelete",
-                Topdelete="Delete",
-            } do
-                hi.link("GitSigns" .. from, "Diff" .. to)
-                hi.link("GitSigns" .. from .. "Nr", "Diff" .. to .. "Nr")
-            end
-            require"gitsigns".setup {
-                numhl = true, -- highlight line number
-                watch_gitdir = { interval = 100 },
-                sign_priority = 5,
-            }
-        end,
+        opts = {
+            -- by default they are '~' to indicate that try to be compromise between bar and underscore.
+            -- We can show underline instead as a better compromise. See lua/highlights
+            -- We set delete to nothing, istead of default underscore, and use underline there as well for consistency.
+            signs        = {
+                changedelete = { text = '┃' },
+                delete       = { text = ' ' },
+            },
+            signs_staged = {
+                changedelete = { text = '┃' },
+                delete       = { text = ' ' },
+            },
+            numhl = true, -- highlight line number
+            watch_gitdir = { interval = 100 },
+            sign_priority = 5,
+        },
     },
     -- :DiffviewOpen (<leader>gd) and other commands for seeing git diff and git history for files.
     {

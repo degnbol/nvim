@@ -129,9 +129,59 @@ return {
                     enable_wrap()
                 end
             end
+            -- %#CursorLineNr# set hl group "CursorLineNr"
+            -- %## reset hl group, i.e. the group that was active for the line number by default (e.g. set by gitsigns)
+            -- v:lnum==line(".") line number about to be drawn is cursor line number
+            -- v:virtnum==0 line number about to be drawn is for buffer line, not virtual line or wrapped line
+            -- %= right align the following by prepending spaces
+            -- By setting hl group LineNr on line numbers we overwrite the 
+            -- gitsigns hl group but only for the number itself, which allows 
+            -- us to still use the gitsigns hl group for the following 
+            -- whitespace, which gives the impression there is 1 single line 
+            -- signcolumn.
+            -- https://old.reddit.com/r/neovim/comments/1dto43b/use_cursorlinenr_highlight_instead_of_gitsigns/
+            local statuscolumn_relativenumber = '%#CursorLineNr#%{v:lnum==line(".")&&v:virtnum==0?v:lnum:""}%#LineNr#%=%{v:lnum!=line(".")&&v:virtnum==0?v:relnum:""}%## '
+            local statuscolumn_number         = '%#LineNr#%=%{v:lnum!=line(".")&&v:virtnum==0?v:lnum:""}%#CursorLineNr#%{v:lnum==line(".")&&v:virtnum==0?v:lnum:""}%## '
+            -- local statuscolumn_signcolumn     = ' '
+            local function toggle_number()
+                if vim.opt.number:get() then
+                    if vim.opt.relativenumber:get() then
+                        vim.opt.statuscolumn = statuscolumn_relativenumber
+                    else
+                        vim.opt.statuscolumn = ''
+                    end
+                    vim.opt.number = false
+                    print("nonumber")
+                else
+                    if vim.opt.relativenumber:get() then
+                        vim.opt.statuscolumn = statuscolumn_relativenumber
+                    else
+                        vim.opt.statuscolumn = statuscolumn_number
+                    end
+                    vim.opt.number = true
+                    print("number")
+                end
+            end
+            local function toggle_relativenumber()
+                if vim.opt.relativenumber:get() then
+                    if vim.opt.number:get() then
+                        vim.opt.statuscolumn = statuscolumn_number
+                    else
+                        vim.opt.statuscolumn = ''
+                    end
+                    vim.opt.relativenumber = false
+                    print("norelativenumber")
+                else
+                    vim.opt.statuscolumn = statuscolumn_relativenumber
+                    vim.opt.relativenumber = true
+                    print("relativenumber")
+                end
+            end
 
             -- default for yoc is another binding for cursorline which is a lot 
             -- less useful than conceal
+            -- TODO: don't toggle cursorline with yo_ and yo-, since it toggles cursor line shown in linenumber, which we always want.
+            -- Instead make it toggle cursorlineopt +/-= line
             vim.keymap.set('n', 'yoc', toggle_conceal, { desc="conceal" })
             vim.keymap.set('n', '=sc', toggle_conceal, { desc="conceal" })
             vim.keymap.set('n', 'yoC', toggle_colcealcursor, { desc="concealcursor" })
@@ -144,6 +194,8 @@ return {
             vim.keymap.set('n', '=sw', toggle_wrap, { desc="wrap" })
             vim.keymap.set('n', '<sw', enable_wrap, { desc="wrap" })
             vim.keymap.set('n', '>sw', disable_wrap, { desc="wrap" })
+            vim.keymap.set('n', 'yon', toggle_number, { desc="number" })
+            vim.keymap.set('n', 'yor', toggle_relativenumber, { desc="relativenumber" })
         end,
     },
     {

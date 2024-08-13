@@ -8,6 +8,10 @@ local function afterColorscheme()
     -- GitSigns
     local linenr = hi.get("LineNr")['fg']
     local delete = hi.get("DiffDelete")["bg"]
+    -- for the sake of consistency with Changedelete
+    hi.mod("GitSignsDelete", {underline=true, special=delete})
+    -- bar and underline better than tilde
+    hi.mod("GitSignsChangedelete", {underline=true, special=delete})
     hi.set("GitSignsAddNr", {fg=linenr, bg=hi.get("DiffAdd")['fg']})
     hi.set("GitSignsChangeNr", {fg=linenr, bg=hi.get("DiffChange")['fg']})
     hi.set("GitSignsChangedeleteNr", {fg=linenr, bg=hi.get("DiffChange")['fg'], underline=true, special=delete})
