@@ -3,21 +3,18 @@ return {
     "akinsho/nvim-bufferline.lua",
     dependencies={"nvim-tree/nvim-web-devicons"},
     init = function ()
-        -- consider using [b and ]b instead. Then we could clear up tab in normal 
-        -- mode for something related to completion.
-        -- vim.keymap.set("n", "<TAB>", "<Cmd>BufferLineCycleNext<CR>", {desc="Next buffer"})
-        -- vim.keymap.set("n", "<S-TAB>", "<Cmd>BufferLineCyclePrev<CR>", {desc="Previous buffer"})
-        vim.keymap.set("n", "<leader>1",       "<Cmd>BufferLineGoToBuffer 1<CR>", {desc="Buffer 1"})
-        vim.keymap.set("n", "<leader>2",       "<Cmd>BufferLineGoToBuffer 2<CR>", {desc="Buffer 2"})
-        vim.keymap.set("n", "<leader>3",       "<Cmd>BufferLineGoToBuffer 3<CR>", {desc="Buffer 3"})
-        vim.keymap.set("n", "<leader>4",       "<Cmd>BufferLineGoToBuffer 4<CR>", {desc="Buffer 4"})
-        vim.keymap.set("n", "<leader>5",       "<Cmd>BufferLineGoToBuffer 5<CR>", {desc="Buffer 5"})
-        vim.keymap.set("n", "<leader>6",       "<Cmd>BufferLineGoToBuffer 6<CR>", {desc="Buffer 6"})
-        vim.keymap.set("n", "<leader>7",       "<Cmd>BufferLineGoToBuffer 7<CR>", {desc="Buffer 7"})
-        vim.keymap.set("n", "<leader>8",       "<Cmd>BufferLineGoToBuffer 8<CR>", {desc="Buffer 8"})
-        vim.keymap.set("n", "<leader>9",       "<Cmd>BufferLineGoToBuffer 9<CR>", {desc="Buffer 9"})
-        vim.keymap.set("n", "<leader>b<left>", "<Cmd>BufferLineMovePrev<CR>",     {desc="Move left"})
-        vim.keymap.set("n", "<leader>b<right>","<Cmd>BufferLineMoveNext<CR>",     {desc="Move right"})
+        vim.keymap.set("n", "<leader>1",  function () require('bufferline').go_to(1,true) end, {desc="Buffer 1"})
+        vim.keymap.set("n", "<leader>2",  function () require('bufferline').go_to(2,true) end, {desc="Buffer 2"})
+        vim.keymap.set("n", "<leader>3",  function () require('bufferline').go_to(3,true) end, {desc="Buffer 3"})
+        vim.keymap.set("n", "<leader>4",  function () require('bufferline').go_to(4,true) end, {desc="Buffer 4"})
+        vim.keymap.set("n", "<leader>5",  function () require('bufferline').go_to(5,true) end, {desc="Buffer 5"})
+        vim.keymap.set("n", "<leader>6",  function () require('bufferline').go_to(6,true) end, {desc="Buffer 6"})
+        vim.keymap.set("n", "<leader>7",  function () require('bufferline').go_to(7,true) end, {desc="Buffer 7"})
+        vim.keymap.set("n", "<leader>8",  function () require('bufferline').go_to(8,true) end, {desc="Buffer 8"})
+        vim.keymap.set("n", "<leader>9",  function () require('bufferline').go_to(9,true) end, {desc="Buffer 9"})
+        vim.keymap.set("n", "<leader>bb", function () require('bufferline').go_to(vim.v.count,true) end, {desc="Buffer N"})
+        vim.keymap.set("n", "<leader>b<left>", "<Cmd>BufferLineMovePrev<CR>", {desc="Move left"})
+        vim.keymap.set("n", "<leader>b<right>","<Cmd>BufferLineMoveNext<CR>", {desc="Move right"})
     end,
     opts = {
         options = {
