@@ -142,13 +142,30 @@ return {
             -- https://old.reddit.com/r/neovim/comments/1dto43b/use_cursorlinenr_highlight_instead_of_gitsigns/
             local statuscolumn_relativenumber = '%#CursorLineNr#%{v:lnum==line(".")&&v:virtnum==0?v:lnum:""}%#LineNr#%=%{v:lnum!=line(".")&&v:virtnum==0?v:relnum:""}%## '
             local statuscolumn_number         = '%#LineNr#%=%{v:lnum!=line(".")&&v:virtnum==0?v:lnum:""}%#CursorLineNr#%{v:lnum==line(".")&&v:virtnum==0?v:lnum:""}%## '
-            -- local statuscolumn_signcolumn     = ' '
+            local signcolumn = false -- single column signcolumn by itself
+            local function toggle_signcolumn()
+                if signcolumn then
+                    signcolumn = false
+                    -- only if presently set by a recent call to toggle_git
+                    if vim.opt.statuscolumn:get() == ' ' then
+                        vim.opt.statuscolumn = ''
+                    end
+                    print("no git signcolumn")
+                else
+                    signcolumn = true
+                    -- only if not already set by number and relativenumber
+                    if vim.opt.statuscolumn:get() == '' then
+                        vim.opt.statuscolumn = ' '
+                    end
+                    print("git signcolumn")
+                end
+            end
             local function toggle_number()
                 if vim.opt.number:get() then
                     if vim.opt.relativenumber:get() then
                         vim.opt.statuscolumn = statuscolumn_relativenumber
                     else
-                        vim.opt.statuscolumn = ''
+                        vim.opt.statuscolumn = signcolumn and ' ' or ''
                     end
                     vim.opt.number = false
                     print("nonumber")
@@ -167,7 +184,7 @@ return {
                     if vim.opt.number:get() then
                         vim.opt.statuscolumn = statuscolumn_number
                     else
-                        vim.opt.statuscolumn = ''
+                        vim.opt.statuscolumn = signcolumn and ' ' or ''
                     end
                     vim.opt.relativenumber = false
                     print("norelativenumber")
@@ -196,6 +213,7 @@ return {
             vim.keymap.set('n', '>sw', disable_wrap, { desc="wrap" })
             vim.keymap.set('n', 'yon', toggle_number, { desc="number" })
             vim.keymap.set('n', 'yor', toggle_relativenumber, { desc="relativenumber" })
+            vim.keymap.set('n', 'yog', toggle_signcolumn, { desc="git signcolumn" })
         end,
     },
     {
