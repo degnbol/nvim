@@ -13,7 +13,7 @@ local util = require "utils/init"
 
 local defaults = {
     maxwidth = 10, -- excl gap
-    checklines = 200, -- max lines to look at to detect column widths
+    checklines = 1000, -- max lines to look at to detect column widths
     checkevents = {"BufEnter", "FileType", "BufWritePost"},
 }
 
