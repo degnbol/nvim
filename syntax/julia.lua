@@ -9,4 +9,3 @@ hl.def("JuliaComma", "@punctuation.delimiter")
 -- We prefer @punctuation.special for ... since operator will highlight the dots like a broadcast dot, and they are very different.
 hl.def("JuliaOperator", "Normal")
 hl.def("JuliaTypeOperator", "Normal")
-

@@ -8,16 +8,23 @@ local function afterColorscheme()
     -- GitSigns
     local linenr = hi.get("LineNr")['fg']
     local delete = hi.get("DiffDelete")["bg"]
+    local stageddelete = hi.get("GitSignsDelete")['fg']
     -- for the sake of consistency with Changedelete
+    -- special decides the color for the underline
     hi.mod("GitSignsDelete", {underline=true, special=delete})
     -- bar and underline better than tilde
     hi.mod("GitSignsChangedelete", {underline=true, special=delete})
     hi.set("GitSignsAddNr", {fg=linenr, bg=hi.get("DiffAdd")['fg']})
+    hi.set("GitSignsStagedAddNr", {fg=linenr, bg=hi.get("GitSignsStagedAdd")['fg']})
     hi.set("GitSignsChangeNr", {fg=linenr, bg=hi.get("DiffChange")['fg']})
+    hi.set("GitSignsStagedChangeNr", {fg=linenr, bg=hi.get("GitSignsChangeAdd")['fg']})
     hi.set("GitSignsChangedeleteNr", {fg=linenr, bg=hi.get("DiffChange")['fg'], underline=true, special=delete})
-    hi.set("GitSignsTopDeleteNr", {fg=linenr, bg=delete}) -- edge-case where first line(s) of file is deleted
-    -- -- special decides the color for the underline
+    hi.set("GitSignsStagedChangedeleteNr", {fg=linenr, bg=hi.get("GitSignsChangedelete")['fg'], underline=true, special=stageddelete})
+    -- edge-case where first line(s) of file is deleted
+    hi.set("GitSignsTopDeleteNr", {fg=linenr, bg=delete})
+    hi.set("GitSignsStagedTopDeleteNr", {fg=linenr, bg=stageddelete})
     hi.set("GitSignsDeleteNr", {fg=linenr, underline=true, special=delete})
+    hi.set("GitSignsStagedDeleteNr", {fg=linenr, underline=true, special=stageddelete})
 
     local spellBad = hi.get("spellBad")
     -- the default already has red undercurl so we don't wanna mess with that but 
@@ -144,9 +151,9 @@ local function afterColorscheme()
         -- wrong highlight by treesitter
         hi.set("@type.sql", {})
     elseif vim.bo.filetype == "julia" then
-        -- has to be redone, LSP kills the old syntax hl for some reason
-        hi.link("JuliaSemicolon", "@punctuation.delimiter")
-        hi.link("JuliaComma", "@punctuation.delimiter")
+        -- symbols in julia are differentiated clearly enough by a preceding colon colored according to delimiters.
+        -- We clear its default link here to Constant, since we don't want it italic.
+        hi.clear("@string.special.symbol.julia")
     end
 
     -- variable is the default capture for most things in code so we want it to 
