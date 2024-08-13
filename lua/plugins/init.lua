@@ -147,50 +147,50 @@ return {
                 if signcolumn then
                     signcolumn = false
                     -- only if presently set by a recent call to toggle_git
-                    if vim.opt.statuscolumn:get() == ' ' then
-                        vim.opt.statuscolumn = ''
+                    if vim.opt_local.statuscolumn:get() == ' ' then
+                        vim.opt_local.statuscolumn = ''
                     end
                     print("no git signcolumn")
                 else
                     signcolumn = true
                     -- only if not already set by number and relativenumber
-                    if vim.opt.statuscolumn:get() == '' then
-                        vim.opt.statuscolumn = ' '
+                    if vim.opt_local.statuscolumn:get() == '' then
+                        vim.opt_local.statuscolumn = ' '
                     end
                     print("git signcolumn")
                 end
             end
             local function toggle_number()
-                if vim.opt.number:get() then
-                    if vim.opt.relativenumber:get() then
-                        vim.opt.statuscolumn = statuscolumn_relativenumber
+                if vim.opt_local.number:get() then
+                    if vim.opt_local.relativenumber:get() then
+                        vim.opt_local.statuscolumn = statuscolumn_relativenumber
                     else
-                        vim.opt.statuscolumn = signcolumn and ' ' or ''
+                        vim.opt_local.statuscolumn = signcolumn and ' ' or ''
                     end
-                    vim.opt.number = false
+                    vim.opt_local.number = false
                     print("nonumber")
                 else
-                    if vim.opt.relativenumber:get() then
-                        vim.opt.statuscolumn = statuscolumn_relativenumber
+                    if vim.opt_local.relativenumber:get() then
+                        vim.opt_local.statuscolumn = statuscolumn_relativenumber
                     else
-                        vim.opt.statuscolumn = statuscolumn_number
+                        vim.opt_local.statuscolumn = statuscolumn_number
                     end
-                    vim.opt.number = true
+                    vim.opt_local.number = true
                     print("number")
                 end
             end
             local function toggle_relativenumber()
-                if vim.opt.relativenumber:get() then
-                    if vim.opt.number:get() then
-                        vim.opt.statuscolumn = statuscolumn_number
+                if vim.opt_local.relativenumber:get() then
+                    if vim.opt_local.number:get() then
+                        vim.opt_local.statuscolumn = statuscolumn_number
                     else
-                        vim.opt.statuscolumn = signcolumn and ' ' or ''
+                        vim.opt_local.statuscolumn = signcolumn and ' ' or ''
                     end
-                    vim.opt.relativenumber = false
+                    vim.opt_local.relativenumber = false
                     print("norelativenumber")
                 else
-                    vim.opt.statuscolumn = statuscolumn_relativenumber
-                    vim.opt.relativenumber = true
+                    vim.opt_local.statuscolumn = statuscolumn_relativenumber
+                    vim.opt_local.relativenumber = true
                     print("relativenumber")
                 end
             end
