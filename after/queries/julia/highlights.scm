@@ -23,3 +23,5 @@
 (broadcast_call_expression
   "." @operator)
 
+((identifier) @type
+  (#eq? @type "DataFrame"))
