@@ -12,6 +12,7 @@ return {
         vim.keymap.set("n", "<leader>7",  function () require('bufferline').go_to(7,true) end, {desc="Buffer 7"})
         vim.keymap.set("n", "<leader>8",  function () require('bufferline').go_to(8,true) end, {desc="Buffer 8"})
         vim.keymap.set("n", "<leader>9",  function () require('bufferline').go_to(9,true) end, {desc="Buffer 9"})
+        vim.keymap.set("n", "<leader>0",  function () require('bufferline').go_to(-1,true) end, {desc="Buffer last"})
         vim.keymap.set("n", "<leader>bb", function () require('bufferline').go_to(vim.v.count,true) end, {desc="Buffer N"})
         vim.keymap.set("n", "<leader>b<left>", "<Cmd>BufferLineMovePrev<CR>", {desc="Move left"})
         vim.keymap.set("n", "<leader>b<right>","<Cmd>BufferLineMoveNext<CR>", {desc="Move right"})
