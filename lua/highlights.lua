@@ -121,7 +121,6 @@ local function afterColorscheme()
     hi.link("Delimiter", "RainbowDelimiterViolet")
     hi.link("@punctuation.bracket", "RainbowDelimiterViolet")
     hi.link("@punctuation.delimiter", "Delimiter")
-    hi.link("@punctuation.special", "Special")
 
     -- NonText shouldn't be exactly like comments
     if hi.get("Comment")['fg'] == hi.get("NonText")['fg'] then
