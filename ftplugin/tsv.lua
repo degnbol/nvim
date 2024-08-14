@@ -487,6 +487,12 @@ local grp = vim.api.nvim_create_augroup("TSV-header", {clear=true})
 local grp_float = vim.api.nvim_create_augroup("TSV-header-float", {clear=true})
 local winid, winid_float
 
+local function close_header()
+    vim.api.nvim_win_close(winid_float, false)
+    vim.api.nvim_clear_autocmds({group=grp_float})
+    winid_float = nil
+end
+
 ---Open a float showing table header when scrolled away from top of file.
 ---@param row integer? 1-indexed row of header, default=1
 ---@param height integer? height of header, default=1 + number of comment lines.
@@ -505,7 +511,7 @@ local function open_header(row, height)
         end
     end
 
-    winid = vim.api.nvim_get_current_win()
+    -- open minimal float
     winid_float = vim.api.nvim_open_win(0, false, {
         relative = 'win',
         width = vim.api.nvim_win_get_width(0),
@@ -516,6 +522,9 @@ local function open_header(row, height)
         focusable = false,
         noautocmd = true,
     })
+
+    winid = vim.api.nvim_get_current_win()
+    local bufid = vim.api.nvim_win_get_buf(winid)
 
     -- scrollbind horizontally
     setopt("scrollbind", true, {win=winid})
@@ -566,12 +575,23 @@ local function open_header(row, height)
             setopt(ev.match, setto, {win=winid_float})
         end
     })
-end
-
-local function close_header()
-    vim.api.nvim_win_close(winid_float, false)
-    vim.api.nvim_clear_autocmds({group=grp_float})
-    winid_float = nil
+    vim.api.nvim_create_autocmd("BufLeave", {
+        buffer = bufid,
+        group = grp_float,
+        callback = function ()
+            close_header()
+            -- open again if we come back
+            vim.api.nvim_create_autocmd("BufEnter", {
+                buffer = bufid,
+                group = grp,
+                callback = function ()
+                    open_header(row, height)
+                    -- remove this aucmd after running it, since we make a new in the open_header call
+                    return true
+                end
+            })
+        end
+    })
 end
 
 -- TODO: make config and have an if statement whether we want header by default
