@@ -153,6 +153,11 @@ local function afterColorscheme()
         -- symbols in julia are differentiated clearly enough by a preceding colon colored according to delimiters.
         -- We clear its default link here to Constant, since we don't want it italic.
         hi.clear("@string.special.symbol.julia")
+    elseif vim.bo.filetype == "rust" then
+        -- By default it's linked to Keyword which gives it builtin color and italic.
+        -- Highlight like regular function is clear enough that it's macro, since it ends in !.
+        -- We link to @function.call, not @function since we use the latter for function definition, which are in bold.
+        hi.link("@lsp.type.macro.rust", "@function.call")
     end
 
     -- variable is the default capture for most things in code so we want it to 
