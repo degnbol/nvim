@@ -2,9 +2,6 @@
 local hi = require "utils/highlights"
 
 local function afterColorscheme()
-    -- fix issue where colorscheme change removes all telescope highlight groups
-    -- vim.cmd 'silent Lazy reload telescope.nvim'
-
     -- GitSigns
     local linenr = hi.get("LineNr")['fg']
     local delete = hi.get("DiffDelete")["bg"]
@@ -140,37 +137,33 @@ local function afterColorscheme()
     hi.link("@lsp.type.method", "@function.call")
     hi.link("@lsp.type.string", "@string")
 
-    --- Fix lua. Colon before function call is captured by @constant making it italic.
-    if vim.bo.filetype == "lua" then
-        hi.set("@constant", {})
-        -- remap things that were mapped to @constant to preserve their functioning highlights
-        hi.link("@lsp.typemod.variable.global.lua", "Constant")
-        hi.link("@lsp.typemod.variable.defaultLibrary.lua", "Constant")
-    elseif vim.bo.filetype == "sql" then
-        -- wrong highlight by treesitter
-        hi.set("@type.sql", {})
-    elseif vim.bo.filetype == "julia" then
-        -- symbols in julia are differentiated clearly enough by a preceding colon colored according to delimiters.
-        -- We clear its default link here to Constant, since we don't want it italic.
-        hi.clear("@string.special.symbol.julia")
-    elseif vim.bo.filetype == "rust" then
-        -- By default it's linked to Keyword which gives it builtin color and italic.
-        -- Highlight like regular function is clear enough that it's macro, since it ends in !.
-        -- We link to @function.call, not @function since we use the latter for function definition, which are in bold.
-        hi.link("@lsp.type.macro.rust", "@function.call")
-    end
+    --- Colon before function call is captured by @constant making it italic.
+    hi.clear("@constant.lua")
+    -- remap things that were mapped to @constant to preserve their functioning highlights
+    hi.link("@lsp.typemod.variable.global.lua", "Constant")
+    hi.link("@lsp.typemod.variable.defaultLibrary.lua", "Constant")
+    -- wrong highlight by treesitter
+    hi.set("@type.sql", {})
+    -- symbols in julia are differentiated clearly enough by a preceding colon colored according to delimiters.
+    -- We clear its default link here to Constant, since we don't want it italic.
+    hi.clear("@string.special.symbol.julia")
+    -- By default it's linked to Keyword which gives it builtin color and italic.
+    -- Highlight like regular function is clear enough that it's macro, since it ends in !.
+    -- We link to @function.call, not @function since we use the latter for function definition, which are in bold.
+    hi.link("@lsp.type.macro.rust", "@function.call")
 
     -- variable is the default capture for most things in code so we want it to 
-    -- be neutral, although not if the language is markdown etc.
-    local showVar = {typst=true, markdown=true, asciidoc=true, latex=true}
-    if showVar[vim.bo.filetype] then
-        hi.fg("@variable", hi.get("@variable.builtin")["fg"])
-    else
-        -- I set it to copy normal instead of using clear since if I clear it will 
-        -- be overrideen by other colors, but I want it to appear. Example in julia:
-        -- "$variable" will color variable as string with clear and as normal with this approach.
-        hi.fg("@variable", hi.get("Normal")["fg"])
+    -- be neutral
+    -- I set it to copy normal instead of using clear since if I clear it will 
+    -- be overrideen by other colors, but I want it to appear. Example in julia:
+    -- "$variable" will color variable as string with clear and as normal with this approach.
+    hi.fg("@variable", hi.get("Normal")["fg"])
+    -- Except for some languages where variable shouldn't be neutral:
+    for _, showVar in ipairs{"typst", "markdown", "asciidoc", "latex"} do
+        hi.fg("@variable." .. showVar, hi.get("@variable.builtin")["fg"])
     end
+    -- wrong double annotation as variable for functions
+    hi.clear("@variable.wgsl")
 
     -- extmarks
     -- By default colors. Underline variants makes more sense.
