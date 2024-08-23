@@ -144,6 +144,9 @@ local function afterColorscheme()
     hi.link("@lsp.typemod.variable.defaultLibrary.lua", "Constant")
     -- wrong highlight by treesitter
     hi.set("@type.sql", {})
+    -- default links to constant which we make italic so no thanks.
+    -- @string.special -> Special -> same fg as function call. This works well since @string.special is for e.g. `` cmd in julia.
+    hi.link("@string.special", "Special")
     -- symbols in julia are differentiated clearly enough by a preceding colon colored according to delimiters.
     -- We clear its default link here to Constant, since we don't want it italic.
     hi.clear("@string.special.symbol.julia")
