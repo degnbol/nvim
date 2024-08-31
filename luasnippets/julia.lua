@@ -29,6 +29,8 @@ s({trig=":amat", dscr="AbstractMatrix", snippetType="autosnippet"}, {t":Abstract
 s({trig=":avec", dscr="AbstractVector", snippetType="autosnippet"}, {t":AbstractVector"}),
 s({trig=":astr", dscr="AbstractString", snippetType="autosnippet"}, {t":AbstractString"}),
 
+s({trig="SparseMatrix", dscr="Sparse matrix"}, {t"SparseMatrixCSC"}),
+
 
 s({trig="agg", dscr="Aggregate DataFrame", condition=conds.line_end},
 {t"combine(groupby(", i(1,"df"), t", ", i(2, ":COL"), t"), ", i(3, ":COL2 => sum"), t")"}),
