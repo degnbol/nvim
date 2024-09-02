@@ -58,6 +58,7 @@ return {
                         -- We enable it, but avoid any default syntax hl and only set custom syntax hl in syntax/julia.vim.
                         "julia",
                         "sql", -- custom postgres highlight in syntax/sql.vim
+                        "wgsl", -- custom in syntax/wgsl.vim
                     },
                 },
                 indent = {
