@@ -108,6 +108,7 @@ vim.diagnostic.config {
 }
 
 -- custom foldtext function that shows <first line> … <lines hidden> … <last line>
+-- FIXME: when we scroll and are not seeing the beginning of the line the text moves
 function FoldText()
     local linestart = vim.fn.getline(vim.v.foldstart)
     local lineend = vim.fn.getline(vim.v.foldend)
