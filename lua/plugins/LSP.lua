@@ -188,6 +188,9 @@ return {
 
             lsp.rust_analyzer.setup {}
 
+            -- doesn't seem to do anything
+            lsp.wgsl_analyzer.setup {}
+
             -- MasonInstall typescript-language-server
             -- Used on javascript as well.
             lsp.tsserver.setup {}
@@ -251,10 +254,10 @@ return {
                 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#omnisharp
                 -- "csharp_ls", -- instead see install/csharp.sh. There's also omnisharp on other LSPs on Mason.
                 -- python:
-                    -- "jedi_language_server",
-                    -- "pyright",
-                    -- "pylsp",
-                    "basedpyright",
+                -- "jedi_language_server",
+                -- "pyright",
+                -- "pylsp",
+                "basedpyright",
 
                 "julials",
                 -- "ltex", -- grammar check for latex, markdown, etc
@@ -273,9 +276,9 @@ return {
                 -- "awk_ls",
                 -- "cypher_ls", -- neo4j
                 -- spell check/autocorrectors:
-                    -- "misspell",
-                    -- "typos",
-                    -- "typos_lsp",
+                -- "misspell",
+                -- "typos",
+                -- "typos_lsp",
             }
         }
     },
@@ -300,5 +303,56 @@ return {
                 lsp = require "lspconfig".util.default_config
             }
         end
-    }
+    },
+
+    {
+        'saecki/crates.nvim',
+        event = { "BufRead Cargo.toml" },
+        config = function ()
+            local crates = require"crates"
+            crates.setup {
+                completion = {
+                    cmp = {enabled = false},
+                    crates = {
+                        enabled = true,
+                        max_results = 8, -- The maximum number of search results to display
+                        min_chars = 3, -- The minimum number of charaters to type before completions begin appearing
+                    },
+                },
+                lsp = {
+                    enabled = true,
+                    on_attach = function(client, bufnr)
+                        -- the same on_attach function as for your other lsp's
+                    end,
+                    actions = true,
+                    completion = true,
+                    hover = true,
+                },
+            }
+
+            vim.keymap.set("n", "<leader><leader>t", crates.toggle, {desc="Toggle crates"})
+            vim.keymap.set("n", "<leader><leader>r", crates.reload, {desc="Reload crates"})
+
+            vim.keymap.set("n", "<leader><leader>v", crates.show_versions_popup, {desc="Show versions"})
+            vim.keymap.set("n", "<leader><leader>f", crates.show_features_popup, {desc="Show features"})
+            vim.keymap.set("n", "<leader><leader>d", crates.show_dependencies_popup, {desc="Show dependencies"})
+
+            vim.keymap.set("n", "<leader><leader>u", crates.update_crate, {desc="Update"})
+            vim.keymap.set("v", "<leader><leader>u", crates.update_crates, {desc="Update"})
+            vim.keymap.set("n", "<leader><leader>a", crates.update_all_crates, {desc="Update all"})
+            vim.keymap.set("n", "<leader><leader>U", crates.upgrade_crate, {desc="Upgrade"})
+            vim.keymap.set("v", "<leader><leader>U", crates.upgrade_crates, {desc="Upgrade"})
+            vim.keymap.set("n", "<leader><leader>A", crates.upgrade_all_crates, {desc="Upgrade all"})
+
+            vim.keymap.set("n", "<leader><leader>x", crates.expand_plain_crate_to_inline_table, {desc="Plain crate -> inline table"})
+            vim.keymap.set("n", "<leader><leader>X", crates.extract_crate_into_table, {desc="Crate -> table"})
+
+            vim.keymap.set("n", "<leader><leader>H", crates.open_homepage, {desc="Homepage"})
+            vim.keymap.set("n", "<leader><leader>R", crates.open_repository, {desc="Repo"})
+            vim.keymap.set("n", "<leader><leader>D", crates.open_documentation, {desc="Documentation"})
+            vim.keymap.set("n", "<leader><leader>C", crates.open_crates_io, {desc="crates.io"})
+            vim.keymap.set("n", "<leader><leader>L", crates.open_lib_rs, {desc="lib.rs"})
+        end,
+    },
+
 }
