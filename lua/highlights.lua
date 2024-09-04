@@ -103,11 +103,16 @@ local function afterColorscheme()
     hi.mod("@repeat", {italic=true, bold=false})
     hi.link("@boolean", "Boolean")
     hi.mod("Boolean", {italic=true, bold=false})
-    hi.mod("@variable.builtin", {italic=true})
-    hi.mod("@function.builtin", {italic=true, bold=false})
-    hi.mod("@constant.builtin", {italic=true})
-    hi.mod("@type.builtin",     {italic=true})
+    -- italic is enough distinction, and fits with the pattern. No need for a different colour.
+    hi.set("@variable.builtin", {italic=true, fg=hi.get("@variable")['fg']})
+    hi.mod("@variable.parameter.builtin", {italic=true})
+    hi.set("@function.builtin", {italic=true, fg=hi.get("@function.call")['fg']})
+    hi.mod("@constant.builtin", {italic=true, fg=hi.get("@constant")['fg']})
+    hi.set("@type.builtin",     {italic=true, fg=hi.get("@type")['fg']})
+    hi.mod("@module.builtin",   {italic=true, fg=hi.get("@module")['fg']})
+    hi.mod("@tag.builtin",      {italic=true})
     hi.mod("@markup.link.url",  {italic=false}) -- underscore is enough distinction
+    hi.mod("@string.special.url",  {italic=false}) -- underscore is enough distinction
     -- By default links to Keyword which we highlights with both italic and background glow in current theme.
     -- Making documentation text stand out more than normal comments is fine, but not that much, and def not italic, since doc is there to be read as long text.
     hi.fg("@string.documentation", hi.get("Keyword")['fg'])
@@ -168,6 +173,9 @@ local function afterColorscheme()
     end
     -- wrong double annotation as variable for functions
     hi.clear("@variable.wgsl")
+
+    -- we want members to be neutral colour as well
+    hi.link("@variable.member", "@variable")
 
     -- extmarks
     -- By default colors. Underline variants makes more sense.
