@@ -118,3 +118,7 @@ end
 vim.opt.foldtext = "v:lua.FoldText()"
 vim.opt.fillchars = 'fold: '
 
+-- disable coding ligatures for some filetypes that aren't code, e.g. we don't want == ligature when it is used for heading levels.
+local kitty = require "utils/kitty"
+kitty.ligatures_pattern(false, {"*.typ", "*.adoc"})
+
