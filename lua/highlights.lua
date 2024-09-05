@@ -97,6 +97,7 @@ local function afterColorscheme()
     hi.mod("@parameter", {italic=false})
     hi.mod("@function", {italic=false, bold=true})
     hi.mod("@function.call", {bold=false})
+    hi.link("@function.method.call", "function.call")
     hi.link("@function.macro", "@function.call")
     hi.mod("@conditional", {italic=true, bold=false})
     hi.mod("@conditional.ternary", {italic=false})
@@ -174,8 +175,9 @@ local function afterColorscheme()
     -- wrong double annotation as variable for functions
     hi.clear("@variable.wgsl")
 
-    -- we want members to be neutral colour as well
+    -- we want members and properties to be neutral colour as well
     hi.link("@variable.member", "@variable")
+    hi.link("@property", "@variable")
 
     -- extmarks
     -- By default colors. Underline variants makes more sense.
@@ -193,7 +195,7 @@ end
 
 -- local defaultDark = 'fluoromachine'
 -- local defaultDark = 'delta'
-local defaultDark = 'carbonfox'
+local defaultDark = 'terafox'
 -- local defaultDark = 'neutral'
 local defaultLight = 'kanagawa-lotus'
 
