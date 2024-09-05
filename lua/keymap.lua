@@ -300,3 +300,9 @@ map('i', "<C-l>", "<right>", {desc="Right"})
 map('c', '<A-left>', "<s-left>", { desc="move back one word" })
 map('c', '<A-right>', "<s-right>", { desc="move forward one word" })
 
+-- TODO: decide on how to paste before vs after and do it without remap
+map('n', '<D-v>', 'P<C-=>', {desc="Paste before, auto-indent, place cursor after", remap=true})
+map('i', '<D-v>', '<C-o>P<Esc>V`[`]=a', {desc="Paste before, auto-indent, place cursor after"})
+
+
+
