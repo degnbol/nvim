@@ -299,10 +299,17 @@ map('i', "<C-l>", "<right>", {desc="Right"})
 
 map('c', '<A-left>', "<s-left>", { desc="move back one word" })
 map('c', '<A-right>', "<s-right>", { desc="move forward one word" })
+map('c', '<A-BS>', "<C-w>", { desc="Delete back one word" })
+-- Doesn't work well since we go one WORD to the right but only delete one word back.
+map('c', '<A-delete>', "<S-right><C-w>", { desc="Delete next word" })
+-- this ignored if kitty handles it.
+map('c', '<D-BS>', "<C-u>", { desc="Delete to beginning of line" })
+
 
 -- TODO: decide on how to paste before vs after and do it without remap
 map('n', '<D-v>', 'P<C-=>', {desc="Paste before, auto-indent, place cursor after", remap=true})
 map('i', '<D-v>', '<C-o>P<Esc>V`[`]=a', {desc="Paste before, auto-indent, place cursor after"})
+map('c', '<D-v>', '<C-r>0', {desc="Paste before, auto-indent, place cursor after"})
 
 
 
