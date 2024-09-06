@@ -1,3 +1,6 @@
+-- TODO: p = default
+-- gp to paste after.
+
 return {
     -- add substitution functions to e.g. replace a word with clipboard content by writing siw
     {
@@ -27,7 +30,7 @@ return {
             -- yoink integration with cutlass
             vim.g.yoinkIncludeDeleteOperations = 1
             -- add yanks to numbered register
-            vim.g.yoinkSyncNumberedRegisters = 1 
+            vim.g.yoinkSyncNumberedRegisters = 1
             -- move cursor to end instead of start of multi-line paste
             vim.g.yoinkMoveCursorToEndOfPaste = 0
             -- preserve yank between neovim sessions
@@ -41,6 +44,8 @@ return {
             vim.keymap.set({'n', 'x'}, 'y', "<plug>(YoinkYankPreserveCursorPosition)", { desc="Yoink" })
             vim.keymap.set("n", "[p", "<Plug>(YoinkPostPasteSwapBack)", { desc="Swap paste" })
             vim.keymap.set("n", "]p", "<Plug>(YoinkPostPasteSwapForward)", { desc="Swap paste forward" })
+            vim.keymap.set("n", "[y", "<Plug>(YoinkRotateBack)", { desc="Swap yank" })
+            vim.keymap.set("n", "]y", "<Plug>(YoinkRotateForward)", { desc="Swap yank forward" })
             vim.keymap.set("n", "<C-=>", "<Plug>(YoinkPostPasteToggleFormat)", { desc="Toggle pasted indent" })
             -- esc, reindent back til start of paste, jump back to where we 
             -- just jumped from (`] has been changed by the reindent), then 
