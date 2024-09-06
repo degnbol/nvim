@@ -1,5 +1,5 @@
 #!/usr/bin/env lua
-M = {}
+local M = {}
 
 function M.readtext(path)
     local file = io.open(path, "rb") -- r read mode and b binary mode
