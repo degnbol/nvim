@@ -309,7 +309,7 @@ map('c', '<D-BS>', "<C-u>", { desc="Delete to beginning of line" })
 -- TODO: decide on how to paste before vs after and do it without remap
 map('n', '<D-v>', 'P<C-=>', {desc="Paste before, auto-indent, place cursor after", remap=true})
 map('i', '<D-v>', '<C-o>P<Esc>V`[`]=a', {desc="Paste before, auto-indent, place cursor after"})
-map('c', '<D-v>', '<C-r>0', {desc="Paste before, auto-indent, place cursor after"})
+map('c', '<D-v>', '<C-r>+', {desc="Paste before, auto-indent, place cursor after"})
 
 
 
