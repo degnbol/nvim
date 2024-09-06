@@ -72,7 +72,7 @@ local function afterColorscheme()
     -- the color with italic. Before making changes look at test files in 
     -- testfiles/
     hi.mod("Comment", {italic=false})
-    hi.mod("Operator", {bold=true})
+    hi.set("Operator", {bold=true, fg=hi.get("Keyword")['fg']})
     hi.mod("Include", {italic=true})
     hi.mod("Repeat", {italic=true})
     hi.mod("Label", {italic=true})
@@ -123,7 +123,7 @@ local function afterColorscheme()
 
     -- delim. Currently using the default for parentheses.
     hi.link("Delimiter", "RainbowDelimiterViolet")
-    hi.link("@punctuation.bracket", "RainbowDelimiterViolet")
+    hi.link("@punctuation.bracket", "Delimiter")
     hi.link("@punctuation.delimiter", "Delimiter")
 
     -- NonText shouldn't be exactly like comments
