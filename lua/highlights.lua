@@ -112,7 +112,9 @@ local function afterColorscheme()
     hi.set("@type.builtin",     {italic=true, fg=hi.get("@type")['fg']})
     hi.mod("@module.builtin",   {italic=true, fg=hi.get("@module")['fg']})
     hi.mod("@tag.builtin",      {italic=true})
-    hi.set("@markup.link",  {underline=true, fg=hi.get("@markup.link.label")['fg']}) -- better in typst: underscore instead of bold, same color as label def instead of same as keyword.
+    hi.mod("@lsp.type.ref", {underline=true})
+    hi.mod("@lsp.type.link", {underline=true})
+    hi.set("@markup.link",  {underline=true, fg=hi.get("@markup.link.label")['fg']})
     hi.mod("@markup.link.url",  {italic=false}) -- underscore is enough distinction
     hi.mod("@markup.link.url",  {italic=false}) -- underscore is enough distinction
     hi.mod("@string.special.url",  {italic=false}) -- underscore is enough distinction
@@ -127,6 +129,10 @@ local function afterColorscheme()
     hi.link("Delimiter", "RainbowDelimiterViolet")
     hi.link("@punctuation.bracket", "Delimiter")
     hi.link("@punctuation.delimiter", "Delimiter")
+    -- Was overwriting the rainbow ext marks:
+    hi.clear("@lsp.type.punct.typst")
+    -- Not sure what "pol" is but it was lined to @variable which is neutral color globally but not for typst.
+    hi.link("@lsp.type.pol.typst", "@variable.typst")
 
     -- NonText shouldn't be exactly like comments
     if hi.get("Comment")['fg'] == hi.get("NonText")['fg'] then
@@ -145,9 +151,11 @@ local function afterColorscheme()
     hi.link("@lsp.type.function", "@function.call")
     hi.link("@lsp.type.method", "@function.call")
     hi.link("@lsp.type.string", "@string")
+    hi.link("@function.typst", "@function.call")
 
     --- Colon before function call is captured by @constant making it italic.
     hi.clear("@constant.lua")
+    hi.link("@constant.numeric", "Number") -- typst. Remove italic.
     -- remap things that were mapped to @constant to preserve their functioning highlights
     hi.link("@lsp.typemod.variable.global.lua", "Constant")
     hi.link("@lsp.typemod.variable.defaultLibrary.lua", "Constant")
@@ -169,14 +177,15 @@ local function afterColorscheme()
     hi.set("Title", {bold=true, underdouble=true, fg=hi.get("Normal")['fg']})
 
     -- variable is the default capture for most things in code so we want it to 
-    -- be neutral
-    -- I set it to copy normal instead of using clear since if I clear it will 
+    -- be neutral. I set it to copy normal instead of using clear since if I clear it will 
     -- be overrideen by other colors, but I want it to appear. Example in julia:
     -- "$variable" will color variable as string with clear and as normal with this approach.
+    -- local variable = hi.get("@variable")["fg"]
+    local variable = hi.get("@parameter")["fg"]
     hi.fg("@variable", hi.get("Normal")["fg"])
     -- Except for some languages where variable shouldn't be neutral:
     for _, showVar in ipairs{"typst", "markdown", "asciidoc", "latex"} do
-        hi.fg("@variable." .. showVar, hi.get("@variable.builtin")["fg"])
+        hi.fg("@variable." .. showVar, variable)
     end
     -- wrong double annotation as variable for functions
     hi.clear("@variable.wgsl")
