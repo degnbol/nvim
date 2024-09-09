@@ -112,6 +112,8 @@ local function afterColorscheme()
     hi.set("@type.builtin",     {italic=true, fg=hi.get("@type")['fg']})
     hi.mod("@module.builtin",   {italic=true, fg=hi.get("@module")['fg']})
     hi.mod("@tag.builtin",      {italic=true})
+    hi.set("@markup.link",  {underline=true, fg=hi.get("@markup.link.label")['fg']}) -- better in typst: underscore instead of bold, same color as label def instead of same as keyword.
+    hi.mod("@markup.link.url",  {italic=false}) -- underscore is enough distinction
     hi.mod("@markup.link.url",  {italic=false}) -- underscore is enough distinction
     hi.mod("@string.special.url",  {italic=false}) -- underscore is enough distinction
     -- By default links to Keyword which we highlights with both italic and background glow in current theme.
@@ -161,6 +163,10 @@ local function afterColorscheme()
     -- Highlight like regular function is clear enough that it's macro, since it ends in !.
     -- We link to @function.call, not @function since we use the latter for function definition, which are in bold.
     hi.link("@lsp.type.macro.rust", "@function.call")
+
+    -- fixes typst highlighting operator in == heading
+    hi.link("@text.title", "Title")
+    hi.set("Title", {bold=true, underdouble=true, fg=hi.get("Normal")['fg']})
 
     -- variable is the default capture for most things in code so we want it to 
     -- be neutral
