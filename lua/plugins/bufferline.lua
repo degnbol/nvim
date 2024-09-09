@@ -36,6 +36,12 @@ return {
             always_show_bufferline = false, -- hide if only one file is open
             show_buffer_close_icons = false,
             show_close_icon = false,
+            -- hide quickfix from bufferline:
+            custom_filter = function(buf_number, buf_numbers)
+                if vim.bo[buf_number].filetype ~= "qf" then
+                    return true
+                end
+            end
         }
     }
 }
