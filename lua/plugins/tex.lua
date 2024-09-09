@@ -34,7 +34,7 @@ return {
     },
     {
         "lervag/vimtex",
-        init=function() 
+        init=function()
             -- instead of <localleader>l
             -- We want <localleader>l for LSP and double leader for filetype specific mappings.
             g.vimtex_mappings_prefix = "<localleader><localleader>"
@@ -88,6 +88,11 @@ return {
                 mode = 4, -- the only mode that works
                 -- layers = {'content', 'todo', 'include'}, -- don't list labels
             }
+
+            -- Since we use function as bold func def and function.call as unbold, we relink:
+            vim.defer_fn(function ()
+                vim.api.nvim_set_hl(0, "texCmd", {link="@function.call", force=true})
+            end, 1000)
         end,
     },
 }
