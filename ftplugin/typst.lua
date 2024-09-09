@@ -1,4 +1,3 @@
-
 -- assume using typst.vim
 vim.keymap.set('n', '<leader>cc', "<Cmd>TypstWatch<CR>", { desc="Compile continuously", buffer=true })
 vim.keymap.set('n', '<leader>cv', "!open -a sioyek<CR>", { desc="Compile view", buffer=true, silent=true, })
@@ -21,4 +20,6 @@ end, { desc="Toggle update on type" })
 
 vim.opt_local.wrap = true
 vim.opt_local.sidescrolloff = 0
-
+-- definitely don't break at @ in typst (when wrapping with linebreak). 
+-- It is used right before citations and is not a place to break.
+vim.opt_local.breakat:remove('@')

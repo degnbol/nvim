@@ -40,7 +40,11 @@ opt.wildcharm = 9 -- enables cmdline tab completion when recording macro. 9 is t
 opt.clipboard = 'unnamed,unnamedplus' -- share clipboard between copy paste and yank
 opt.wrap = false -- something run before init.lua is changing the default so we change it back here.
 opt.smoothscroll = true -- if we wrap lines, then show partial start
-opt.linebreak = true -- if I sometimes were to wrap lines, do it at whitespaces and other characters indicated in breakat
+-- Whether to break lines when wrapping at whitespace etc. instead of middle of word.
+-- It might seem like that would be nice but breaking in the middle of word 
+-- means only breaking at the end of the screen, so it is much more clear that 
+-- a linebreak has been forced.
+-- opt.linebreak = true
 opt.numberwidth = 2 -- reduce default numbering from starting as 3 characters wide to 2
 opt.mouse = "a" -- activate the mouse, i.e. click to move cursor, drag to visual select and scroll to scroll window instead of cursor
 opt.mousescroll = "ver:1,hor:1"
