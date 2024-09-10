@@ -201,11 +201,35 @@ return {
                 }}}
             }
 
-            lsp.typst_lsp.setup {
-                settings = {
-                    exportPdf = "never" -- Choose onType, onSave or never. Toggle in ftplugin/typst.lua
-                    -- serverPath = "" -- Normally, there is no need to uncomment it.
-                }
+            -- Doesn't work as well as tinymist, e.g. for multiple files and goto def.
+            -- lsp.typst_lsp.setup {
+            --     settings = {
+            --         exportPdf = "never", -- Choose onType, onSave or never. Toggle in ftplugin/typst.lua
+            --         -- serverPath = "", -- Normally, there is no need to uncomment it.
+            --     },
+            --     -- LSP can only understand multiple files if main.typ is opened first and then other files after.
+            --     -- Tried pinning the main:
+            --     -- https://github.com/nvarner/typst-lsp/issues/366
+            -- }
+
+            -- https://github.com/Myriad-Dreamin/tinymist/blob/main/editors/neovim/Configuration.md
+            lsp.tinymist.setup {
+                on_attach = function (client, bufnr)
+                    -- Don't override default on_attach
+                    lsp.util.default_config.on_attach(client, bufnr)
+
+                    local function pinMain(fname)
+                        return vim.lsp.buf.execute_command({ command = 'tinymist.pinMain', arguments = { fname } })
+                    end
+                    vim.keymap.set('n', '<leader><leader>p', function ()
+                        return pinMain(vim.api.nvim_buf_get_name(0))
+                    end, { desc="Pin buffer as main" })
+                    -- search upwards for a main.typ
+                    local main_file = vim.fs.find("main.typ", { path = vim.fn.getcwd(), type = "file", upwards=true })[1]
+                    if main_file ~= nil then
+                        vim.lsp.buf.execute_command({ command = 'tinymist.pinMain', arguments = { main_file } })
+                    end
+                end
             }
 
             lsp.kotlin_language_server.setup {
