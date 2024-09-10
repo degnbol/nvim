@@ -281,19 +281,19 @@ return {
             }
 
             -- like pressing > which looks like forward arrow
-            vim.keymap.set({ "i", "s" }, "<C-.>", function ()
+            vim.keymap.set({ "i", "s", "n" }, "<C-.>", function ()
                 -- including expand means this will autocomplete the first visible snippet in completion menu
                 -- if luasnip.expand_or_jumpable() then luasnip.expand_or_jump() end
                 if luasnip.jumpable(1) then luasnip.jump(1) end
             end, { silent=true })
 
             -- like pressing < which looks like backwards arrow
-            vim.keymap.set({ "i", "s" }, "<C-,>", function ()
+            vim.keymap.set({ "i", "s", "n" }, "<C-,>", function ()
                 if luasnip.jumpable(-1) then luasnip.jump(-1) end
             end, { silent=true })
 
             -- like pressing ? for choices
-            vim.keymap.set({ "i", "s" }, "<C-/>", function ()
+            vim.keymap.set({ "i", "s", "n" }, "<C-/>", function ()
                 if luasnip.choice_active() then
                     luasnip.change_choice(1)
                 end
