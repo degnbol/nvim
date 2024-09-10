@@ -18,7 +18,6 @@ return {
                     "julia",
                     "matlab",
                     "latex",
-                    "typst",
                     -- "java",
                     -- "kotlin",
                     "vimdoc",
@@ -118,8 +117,20 @@ return {
                 local type = node:type()
                 print(text, "type=", type)
             end, { desc="parent" })
+
+            -- Add custom parsers.
+            -- Typst parser and queries not up-to-date on https://github.com/nvim-treesitter/nvim-treesitter
+            local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+            parser_config.typst = {
+                install_info = {
+                    url = "https://github.com/uben0/tree-sitter-typst",
+                    files = {"src/parser.c", "src/scanner.c"},
+                }
+            }
         end
     },
+    -- The queries aren't up to date from TS above so we also need the repo here so we overwrite queries/typst/.
+    "uben0/tree-sitter-typst",
     -- refactor
     {
         "nvim-treesitter/nvim-treesitter-refactor",
