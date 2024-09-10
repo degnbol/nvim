@@ -105,8 +105,15 @@ return {
                 -- This means we have red from the palette freed up to show 
                 -- something else so we change all the special hl groups to 
                 -- red from a blue that is used for function.
-                carbonfox = { Special = {fg="palette.red"}, },
-                terafox = { Special = {fg="palette.red"}, }
+                carbonfox = {
+                    Special = {fg="palette.red"},
+                },
+                -- For terafox the red looks too aggressive and there is an underutilized pink.
+                terafox = {
+                    Special = {fg="palette.pink"},
+                    -- @tag has color like keyword. We link it to Tag which is linked to Special which makes it pink.
+                    ["@tag"] = {link="Tag"},
+                }
             }
         }
     },
