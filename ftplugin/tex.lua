@@ -48,7 +48,7 @@ set_keymap_desc('n', '<leader><leader>e', "Errors")
 -- opens the quickfix in a nicer view.
 vim.keymap.set('n', '<space>E', "<Cmd>VimtexErrors<CR>|:cclose|<Cmd>Telescope quickfix<CR>", { buffer=true, desc="Errors"})
 vim.keymap.set('n', '<leader><leader>g', function ()
-    vim.system({"makeglossaries", "main"}, {text=true, cwd=vim.uv.cwd() .. "/aux"}):wait()
+    local obj = vim.system({"makeglossaries", "main"}, {text=true, cwd=vim.uv.cwd() .. "/aux"}):wait()
     -- make sure we notice it since only last line of messages is visible
     local stderr = obj.stderr:gsub("\n$", "")
     print(stderr)

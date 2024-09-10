@@ -1,9 +1,13 @@
 % Manual compile (keymap leader leader g)
 \usepackage[toc,acronym]{glossaries-extra} % add option "nomain" if only using acronyms
-\setabbreviationstyle[acronym]{long-short}
 \makeglossaries
 % glossaries{,-extra} uses:
 % \newacronym{tf}{TF}{Transcription Factor}. \gls, \glspl, \glspl*, ...
 % where * removes link.
 % \printglossaries
 % \printglossary[type=\acronymtype]
+% Differences to glossaries (no extra):
+% It's from the same developers. It has acronyms split into \newacronym and 
+% \newabbreviation where acronym now will show up first as short (long) and 
+% abbreviation will do what acronym did in the noextra version, which is 
+% showing up as short (long).
