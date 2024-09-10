@@ -25,4 +25,5 @@ require "highlights"
 require "keymap"
 require "blockim"
 require "autocmds"
+require "kitty"
 
