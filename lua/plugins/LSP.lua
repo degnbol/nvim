@@ -225,9 +225,9 @@ return {
                         return pinMain(vim.api.nvim_buf_get_name(0))
                     end, { desc="Pin buffer as main" })
                     -- search upwards for a main.typ
-                    local main_file = vim.fs.find("main.typ", { path = vim.fn.getcwd(), type = "file", upwards=true })[1]
-                    if main_file ~= nil then
-                        vim.lsp.buf.execute_command({ command = 'tinymist.pinMain', arguments = { main_file } })
+                    local mainfile = vim.fs.find("main.typ", {type="file", upward=true})[1]
+                    if mainfile ~= nil then
+                        vim.lsp.buf.execute_command({ command = 'tinymist.pinMain', arguments = { mainfile } })
                     end
                 end
             }
