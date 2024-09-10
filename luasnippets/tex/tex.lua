@@ -146,13 +146,14 @@ s({trig="- ", dscr="item", snippetType="autosnippet"},
 {t"\\item[", i(1), t"] "}, {condition=conds.line_begin*cond_description}),
 
 
-s({trig="mm", dscr="inline math", snippetType="autosnippet"},
-{t"$", d(1, get_visual), t"$" },
-{condition=conds.line_begin}),
+-- Can't use this since we have e.g. mm10 mouse reference genome.
+-- s({trig="mm", dscr="inline math", snippetType="autosnippet"},
+-- {t"$", d(1, get_visual), t"$" },
+-- {condition=conds.line_begin}),
 -- Making sure to not allow alphanumeric prefix, since it will ruin words that contain mm,
 -- and not numbers either since it will ruin e.g. 4mm when writing units for tikz.
-s({trig="([^%w])mm", dscr="inline math", wordTrig=false, regTrig=true, snippetType="autosnippet"},
-{re(1), t"$", d(1, get_visual), t"$" }),
+-- s({trig="([^%w])mm", dscr="inline math", wordTrig=false, regTrig=true, snippetType="autosnippet"},
+-- {re(1), t"$", d(1, get_visual), t"$" }),
 
 s({trig="dm", snippetType="autosnippet", condition=conds.line_begin*conds.line_end},
 fmta([[\[
