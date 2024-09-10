@@ -59,9 +59,16 @@ return {
             -- defaults at :h vimtex_compiler_latexmk
             g.vimtex_compiler_latexmk = {
                 aux_dir = "aux",
+                -- options = {
+                --     '-pdf',
+                --     '-pvc',
+                --     -- "-e '$latex=q/latex %O -shell-escape %S/'",
+                -- },
             }
             -- set default latex engine to the modern lualatex over pdflatex
-            g.vimtex_compiler_latexmk_engines = { _="-lualatex" }
+            -- g.vimtex_compiler_latexmk_engines = {
+            --     _="-lualatex",
+            -- }
 
             g.vimtex_syntax_conceal = {
                 sections = true, -- all other conceals are enabled by default
@@ -93,6 +100,17 @@ return {
             vim.defer_fn(function ()
                 vim.api.nvim_set_hl(0, "texCmd", {link="@function.call", force=true})
             end, 1000)
+
+            -- Set tex main file by looking for a file upwards named "main.tex"
+            local grp = vim.api.nvim_create_augroup("TexMain", {clear=true})
+            vim.api.nvim_create_autocmd("BufReadPre", {
+                pattern = "*.tex",
+                group = grp,
+                callback = function ()
+                    local mainfile = vim.fs.find("main.tex", {type="file", upward=true})[1]
+                    if mainfile ~= nil then vim.b.vimtex_main = mainfile end
+                end
+            })
         end,
     },
 }
