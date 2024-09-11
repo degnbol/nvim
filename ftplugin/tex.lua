@@ -70,8 +70,10 @@ set_keymap_desc('n', '<leader><leader>x', "Reload")
 set_keymap_desc('n', '<leader><leader>X', "Reload state")
 vim.keymap.set('n', '<leader>ck', '<Plug>(vimtex-stop)', {buffer=true, desc="Stop"})
 vim.keymap.set('n', '<leader>cK', '<Plug>(vimtex-stop-all)', {buffer=true, desc="Stop all"})
-vim.keymap.set('n', '<leader>cc', '<Plug>(vimtex-compile)', {buffer=true, desc="Compile"})
+-- single shot compilation
+vim.keymap.set('n', '<leader>cc', '<Plug>(vimtex-compile-ss)', {buffer=true, desc="Compile single shot"})
 vim.keymap.set('x', '<leader>cc', '<Plug>(vimtex-compile-selected)', {buffer=true, desc="Compile selected"})
+vim.keymap.set('n', '<leader>cC', '<Plug>(vimtex-compile)', {buffer=true, desc="Compile continuously"})
 -- TODO: maybe take inspo from these insert mode mappings and make 
 -- snippet equivalents then disable them? Or use them if they are useful.
 set_keymap_desc('n', '<leader><leader>m', "imaps list")
