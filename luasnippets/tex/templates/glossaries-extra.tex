@@ -1,13 +1,45 @@
-% Manual compile (keymap leader leader g)
-\usepackage[toc,acronym]{glossaries-extra} % add option "nomain" if only using acronyms
+% Use glossaries{,-extra} over e.g. acro since the former is more established and is recompiled separately.
+% This means compilation should be faster since we can separate glossary compilation (with leader-leader-g) and text compl.
+% toc = add glossary to table of contents.
+% postdot = add a dot/period after each entry in the printing of the glossary. 
+% We do this since we also have option for a text description and page number 
+% of term usage.
+% We use -extra since it adds categories so we can have different print styles and different abbreviation styles per category.
+\usepackage[toc,postdot]{glossaries-extra}
+% Disable links from terms as they are used to the glossary but not the other way.
+\setkeys{glslink}{hyper=false}
+
+% the -extra package has options for categories acronym, etc. that can be 
+% treated separately, with different abbreviationstyles and can be printed to 
+% separate groupings.
+% We only want them to have separate styles for how they are displayed on first 
+% usage so we only take advantage of the category concept and define our own:
+\setabbreviationstyle[acronym]{short-long}
+\setabbreviationstyle[withdesc]{long-short-desc}
+% Then we make shorthand commands for each:
+\renewcommand{\newacronym}[3]{\newabbreviation[category=acronym]{#1}{#2}{#3}}
+\newcommand{\newabbreviationdesc}[4]{\newabbreviation[category=withdesc,description={#4}]{#1}{#2}{#3}}
+% There gives us 4 options for making an entry:
+% \newabbreviation using default long-short
+% \newabbreviationdesc using long-short-desc
+% \newacronym using short-long
+% \newglossaryentry using name-desc aka short-nolong-desc (?)
+
+% The long-short-desc has a different print style than long-short, i.e. instead of <SHORT> <LONG> it prints <LONG> (<SHORT>) <DESC>.
+% We change that here so they are consistent: <SHORT> <LONG> <DESC>
+% I found the default sorting and naming for it in the glossaries-extra manual as: \glsxtrlongshortdescsort and \glsxtrlongshortdescname
+% Then just modified them to swap short and long and unbold, remove parenthesis, add a dot.
+\renewcommand{\glsxtrlongshortdescsort}{\expandonce\glsxtrorgshort\space (\expandonce\glsxtrorglong)}
+\renewcommand{\glsxtrlongshortdescname}{
+\glsxpabbrvfont{\the\glsshorttok}{\glscategorylabel}%
+\protect\glsxtrfullsep{\the\glslabeltok}%
+\normalfont % Don't make it bold
+\protect
+\glsxplongfont{\the\glslongtok}{\glscategorylabel}. % notice a period is added.
+}
+
+% The following creates a cmd \itag that can be used in the "long" to underline the letters that are used in an acronym.
+\GlsXtrEnableInitialTagging{acronym,abbreviation,withdesc}{\itag}
+
 \makeglossaries
-% glossaries{,-extra} uses:
-% \newacronym{tf}{TF}{Transcription Factor}. \gls, \glspl, \glspl*, ...
-% where * removes link.
-% \printglossaries
-% \printglossary[type=\acronymtype]
-% Differences to glossaries (no extra):
-% It's from the same developers. It has acronyms split into \newacronym and 
-% \newabbreviation where acronym now will show up first as short (long) and 
-% abbreviation will do what acronym did in the noextra version, which is 
-% showing up as short (long).
+\loadglsentries{glossary}

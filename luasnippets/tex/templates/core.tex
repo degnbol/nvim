@@ -1,9 +1,15 @@
+\usepackage{xcolor} % define colors
 \usepackage{hyperref}
+\hypersetup{ % use colored link text rather than neon boxes.
+	colorlinks,
+	linkcolor={red!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}
+}
 \usepackage{graphicx}
 \usepackage{float}
 % makes figures and tables stay in their section
 \usepackage[section]{placeins}
-\usepackage{xcolor} % define colors
 % line break long urls
 \usepackage{xurl}
 \usepackage{xspace} % \xspace at end of newcommand allows "\CUSTOM " instead of "\CUSTOM\ "
@@ -27,3 +33,5 @@
 % \renewcommand{\labelitemiii}{\textbullet}
 % \renewcommand{\labelitemiv}{\textendash}
 % \usepackage{outlines}
+% pdf bookmarks replacement for hyperref-based that can be made in one run.
+\usepackage{bookmark}
