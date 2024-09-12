@@ -51,6 +51,7 @@ return {
             g.vimtex_log_ignore = { "Underfull", "Overfull" }
             g.vimtex_quickfix_ignore_filters = { "Underfull", "Overfull" }
             g.vimtex_quickfix_open_on_warning = false
+            g.vimtex_quickfix_autoclose_after_keystrokes = 1
 
             -- :h vimtex-af-enhanced-matchparen
             -- wrong matching for some {} with this on:
@@ -93,15 +94,16 @@ return {
 
             -- if in a subfile, by default we compile only that.
             -- <leader><leader>m to toggle compiling main instead.
-            g.vimtex_subfile_start_local = true
+            g.vimtex_subfile_start_local = true -- doesn't seem to work.
+            -- Also toggling is inconsistent so just use it and look at the message.
 
             -- Since we use function as bold func def and function.call as unbold, we relink:
             vim.defer_fn(function ()
                 vim.api.nvim_set_hl(0, "texCmd", {link="@function.call", force=true})
             end, 1000)
 
-            -- Set tex main file by looking for a file upwards named "main.tex"
             local grp = vim.api.nvim_create_augroup("TexMain", {clear=true})
+            -- Set tex main file by looking for a file upwards named "main.tex"
             vim.api.nvim_create_autocmd("BufReadPre", {
                 pattern = "*.tex",
                 group = grp,

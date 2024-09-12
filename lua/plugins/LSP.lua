@@ -175,13 +175,11 @@ return {
             }
             lsp.matlab_ls.setup {}
             lsp.marksman.setup { filetypes = { "markdown" } }
-            -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
+            -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#texlab
             lsp.texlab.setup {
-                latexFormatter = "latexindent",
-                latexindent = {
-                    -- modifyLineBreaks = false,
-                }
+                settings = { texlab = { }}
             }
+
             lsp.csharp_ls.setup {
                 -- AutomaticWorkspaceInit = true,
             }
