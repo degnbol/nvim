@@ -1,4 +1,4 @@
-syn match qfFileName /^[^│]*/ nextgroup=qfSeparatorLeft
+syn match qfFileName /^[^│ ]*/ nextgroup=qfSeparatorLeft
 syn match qfSeparatorLeft /│/ contained nextgroup=qfLineNr
 syn match qfLineNr /[^│]*/ contained nextgroup=qfSeparatorRight
 syn match qfSeparatorRight '│' contained nextgroup=qfError,qfWarning,qfInfo,qfNote
