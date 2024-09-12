@@ -91,6 +91,10 @@ return {
                 -- layers = {'content', 'todo', 'include'}, -- don't list labels
             }
 
+            -- if in a subfile, by default we compile only that.
+            -- <leader><leader>m to toggle compiling main instead.
+            g.vimtex_subfile_start_local = true
+
             -- Since we use function as bold func def and function.call as unbold, we relink:
             vim.defer_fn(function ()
                 vim.api.nvim_set_hl(0, "texCmd", {link="@function.call", force=true})
