@@ -115,6 +115,7 @@ local function afterColorscheme()
     hi.mod("@tag.builtin",      {italic=true})
     hi.mod("@lsp.type.ref", {underline=true})
     hi.mod("@lsp.type.link", {underline=true})
+    hi.set("@markup.raw",  {underline=false, fg=hi.get("@markup.raw")['fg']}) -- trying to just remove italic
     hi.set("@markup.link",  {underline=true, fg=hi.get("@markup.link.label")['fg']})
     hi.mod("@markup.link.url",  {italic=false}) -- underscore is enough distinction
     hi.mod("@markup.link.url",  {italic=false}) -- underscore is enough distinction

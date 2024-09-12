@@ -1,4 +1,9 @@
+Map insert mode cmd+v (<D-v> doesn't seem to work) to align after pasting linewise.
+Once again, the logic is I'm more opposed to changing default vim normal cmds than things like cmd+v and arrows that aren't vim.
+
 Make TSV plugin, the hiding and aligning functionality is quite useful.
+
+TSV plugin optional: have title row stay in view when you scroll down into large table. Togglable.
 
 lr in latex makes left right even in table header. Shouls only be in math.
 
@@ -149,6 +154,11 @@ But the normal mode gu and gU works just fine as well and we again never use thi
 
 try out https://github.com/folke/flash.nvim
 instead of leap, or the mini version
+https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-jump2d.md
+Other mini repos to consider:
+https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-bracketed.md
+https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-operators.md
+https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-align.md
 
 abb hic to Hi-C shouldn't happen in code, maybe have abbrevs you set for prose 
 filetypes only or do something with snippets that only expand in prose or 
@@ -202,3 +212,17 @@ This can be useful for both .pml and .py meant for pymol.
 
 Maybe prettier markdown
 https://github.com/OXY2DEV/markview.nvim
+
+Kitty now has ability to have window specific mappings, so e.g. something different happens when pressing something while in neovim vs outside it.
+https://sw.kovidgoyal.net/kitty/mapping/#conditional-mappings-depending-on-the-state-of-the-focused-window
+It can also set kitty env vars from neovim.
+We could make cmd+enter faster at toggling between REPL and editor by setting env var and not having to search for the other window each time.
+
+
+Completion for kitty conf would be cool, e.g. parse
+https://sw.kovidgoyal.net/kitty/actions/
+
+
+tex:
+align & in math align env and cases.
+copy paste table content and reformat to/from tsv.
