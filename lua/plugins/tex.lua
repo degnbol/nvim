@@ -51,7 +51,6 @@ return {
             g.vimtex_log_ignore = { "Underfull", "Overfull" }
             g.vimtex_quickfix_ignore_filters = { "Underfull", "Overfull" }
             g.vimtex_quickfix_open_on_warning = false
-            g.vimtex_quickfix_autoclose_after_keystrokes = 1
 
             -- :h vimtex-af-enhanced-matchparen
             -- wrong matching for some {} with this on:
@@ -64,10 +63,6 @@ return {
             -- set default latex engine to the modern lualatex over pdflatex
             g.vimtex_compiler_latexmk_engines = {
                 _="-lualatex",
-            }
-
-            g.vimtex_syntax_conceal = {
-                sections = true, -- all other conceals are enabled by default
             }
 
             -- formatter when calling gq, but note that autoformatting calls the 
