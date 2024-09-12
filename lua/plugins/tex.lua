@@ -59,6 +59,7 @@ return {
             -- defaults at :h vimtex_compiler_latexmk
             g.vimtex_compiler_latexmk = {
                 aux_dir = "aux",
+                out_dir = "aux",
             }
             -- set default latex engine to the modern lualatex over pdflatex
             g.vimtex_compiler_latexmk_engines = {
