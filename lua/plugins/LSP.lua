@@ -177,7 +177,11 @@ return {
             lsp.marksman.setup { filetypes = { "markdown" } }
             -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#texlab
             lsp.texlab.setup {
-                settings = { texlab = { }}
+                settings = { texlab = { experimental = {
+                    -- custom citation function completion.
+                    -- In some projects I use \citea{...} as \citeauthor{...}~\cite{...}
+                    citationCommands = {"citea"}
+                }}}
             }
 
             lsp.csharp_ls.setup {
