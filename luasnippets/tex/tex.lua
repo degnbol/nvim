@@ -3,9 +3,15 @@
 -- https://www.ejmastnak.com/tutorials/vim-latex/luasnip
 -- https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets
 
+local ls = require "luasnip"
 local lsu = require "utils/luasnip"
 local vtu = require "utils/vimtex"
-
+local sn = ls.sn
+local s = ls.s
+local t = ls.t
+local i = ls.i
+local d = ls.d
+local c = ls.c
 local get_visual = lsu.get_visual
 local virt = lsu.virt
 local re = lsu.re
@@ -20,6 +26,18 @@ local function fUpper(i)
     return f(function (args, parent, user_args)
         return args[1][1]:upper()
     end, {i})
+end
+---https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md#dynamicnode
+local function _dUpper(args)
+    -- the returned snippetNode doesn't need a position; it's inserted
+    -- "inside" the dynamicNode.
+    return sn(nil, {
+        -- jump-indices are local to each snippetNode, so restart at 1.
+        i(1, args[1][1]:upper())
+    })
+end
+local function dUpper(jump_index, node_reference)
+    return d(jump_index, _dUpper, {node_reference})
 end
 
 return {
@@ -111,7 +129,7 @@ fmta([[\begin{itemize}<>
 ]], { c(1, {t("", virt("^/ -> dash instead of bullet")), t"[label={--}]"}), i(2) }),
 {condition=conds.line_begin}),
 
-s({trig="desc", dscr="description", snippetType="autosnippet"},
+s({trig="description", dscr="description"},
 fmta([[\begin{description}
 	\item[<>] <>
 \end{description}
@@ -254,16 +272,44 @@ s(
     {re(1), t"\\linewidth"}
 ),
 
+-- if using the acro package
+-- s({trig="acro", dscr="Define new acronym", snippetType="autosnippet", condition=conds.line_begin},
+--     fmta([[\DeclareAcronym{<>}{short=<>,long=<>}]], {
+--         i(1), dUpper(2, 1), dUpper(3, 1),
+--     })
+-- ),
+-- s({trig="glos", dscr="Define new glossary entry", snippetType="autosnippet", condition=conds.line_begin},
+--     fmta([[\DeclareAcronym{<>}{preset=glossary,short=<>,long=<>,list=<>}]], {
+--         i(1), dUpper(2, 1), dUpper(3, 1), i(4),
+--     })
+-- ),
+-- if using the glossaries or glossaries-extra package
 s({trig="acro", dscr="Define new acronym", snippetType="autosnippet", condition=conds.line_begin},
-    fmta([[\DeclareAcronym{<>}{short=<>,long=<>}]], {
-        i(1), fUpper(1), i(2),
+    fmta([[\newacronym<>{<>}{<>}{<>}]], {
+            c(4, {t"", {t"[see={[glossary:]{gls-", i(1), t"}}]"}}),
+            i(1),
+            dUpper(2, 1),
+            dUpper(3, 1),
+    })
+),
+s({trig="glos", dscr="Define new glossary entry", snippetType="autosnippet", condition=conds.line_begin},
+    fmta([[\newglossaryentry{<>}{
+    name={<>},
+    description={<>}
+}]], {
+        i(1), dUpper(2, 1), dUpper(3, 1),
     })
 ),
 
-s({trig="glos", dscr="Define new glossary entry", snippetType="autosnippet", condition=conds.line_begin},
-    fmta([[\DeclareAcronym{<>}{preset=glossary,short=<>,long=<>,list=<>}]], {
-        i(1), fUpper(1), fUpper(1), i(2),
-    })
-),
+s({trig="newcommand", dscr="Define new command."},
+fmta(
+    [[\newcommand{\<>}[<>]<>{<>}]],
+    {
+        i(1, "NEWNAME"),
+        i(2, "NUMBER OF ARGS INCL OPTIONALS"),
+        c(3, {t"", t"[OPTIONAL DEFAULT VAL]"}),
+        i(4, "BODY WITH #1 (FIRST OPT), #2, ..."),
+    }
+)),
 
 }
