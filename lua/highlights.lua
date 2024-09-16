@@ -93,7 +93,8 @@ local function afterColorscheme()
     hi.mod("Keyword", {italic=true, bold=false})
     hi.mod("@keyword.function", {italic=true})
     hi.mod("@keyword.return", {italic=true})
-    hi.mod("@keyword.operator", {italic=true})
+    -- all same as  keyword except bold since operators are bold.
+    hi.set("@keyword.operator", {italic=true, bold=true, fg=hi.get("Keyword")['fg']})
     hi.mod("@parameter", {italic=false})
     hi.mod("@function", {italic=false, bold=true})
     hi.mod("@function.call", {bold=false})
@@ -214,7 +215,8 @@ end
 -- local defaultDark = 'delta'
 local defaultDark = 'terafox'
 -- local defaultDark = 'neutral'
-local defaultLight = 'kanagawa-lotus'
+-- local defaultLight = 'kanagawa-lotus'
+local defaultLight = 'dawnfox'
 
 local grp = vim.api.nvim_create_augroup("afterColorscheme", {clear=true})
 vim.api.nvim_create_autocmd("Colorscheme", {
