@@ -7,3 +7,4 @@ syntax match Number /\<-\?[0-9]*\.[0-9]\+\ze[^ ]/ containedin=texArg,texConceale
 " Fix missing recognition of beamer arg in e.g. \uncover<5->
 syntax region texBeamerOpt matchgroup=texBeamerDelim start='<' end='>' containedin=texGroup
 
+hi def link texItemLabelDelim Delimiter
