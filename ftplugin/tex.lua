@@ -40,15 +40,15 @@ vim.keymap.set('n', '<leader><leader><left>', "<Plug>TableGoLeft", { buffer=true
 vim.keymap.set('n', '<leader><leader><right>', "<Plug>TableGoRight", { buffer=true, desc="Goto right cell"})
 vim.keymap.set('n', '<leader><leader><up>', "<Plug>TableGoUp", { buffer=true, desc="Goto up cell"})
 vim.keymap.set('n', '<leader><leader><down>', "<Plug>TableGoDown", { buffer=true, desc="Goto down cell"})
-set_keymap_desc('n', '<leader><leader>c', "Clean")
-set_keymap_desc('n', '<leader><leader>C', "Clean all")
+vim.keymap.set('n', '<leader><leader><del>', "Clean", { buffer=true, desc="Clean (rm aux)"})
+vim.keymap.set('n', '<leader><leader><S-del>', "Clean all", { buffer=true, desc="Clean all (rm aux+out)"})
 set_keymap_desc('n', '<leader><leader>e', "Errors")
 -- hacky. VimtexErrors puts errors found by Vimtex in quickfix (should be
 -- running, use <leader>Lb) then cclose closes quickfix, and then Telescope
 -- opens the quickfix in a nicer view.
 vim.keymap.set('n', '<space>E', "<Cmd>VimtexErrors<CR>|:cclose|<Cmd>Telescope quickfix<CR>", { buffer=true, desc="Errors"})
 vim.keymap.set('n', '<leader><leader>g', function ()
-    local obj = vim.system({"makeglossaries", "main"}, {text=true, cwd=vim.uv.cwd() .. "/aux"}):wait()
+    local obj = vim.system({"makeglossaries", "main"}, {text=true, cwd=vim.fs.find("aux", {upward=true, limit=5})}):wait()
     -- make sure we notice it since only last line of messages is visible
     local stderr = obj.stderr:gsub("\n$", "")
     print(stderr)
@@ -60,7 +60,7 @@ set_keymap_desc('n', '<leader><leader>I', "Info full")
 set_keymap_desc('n', '<leader><leader>q', "Log")
 -- j for jump. Not using p for preamble since I want to use it for pasting tables.
 vim.keymap.set("n", "<leader><leader>j", "<Plug>TableJumpPre", { buffer=true, desc="goto/from preamble (table)" })
-vim.keymap.set('n', '<leader><leader>M', "<Plug>(vimtex-toggle-main)", { buffer=true, desc="Toggle compiling main vs current" })
+vim.keymap.set('n', '<leader><leader>m', "<Plug>(vimtex-toggle-main)", { buffer=true, desc="Toggle compiling main vs subfile" })
 set_keymap_desc('n', '<leader><leader>t', "TOC open")
 set_keymap_desc('n', '<leader><leader>T', "TOC toggle")
 vim.keymap.set({"n", "x"}, "<leader><leader>u", "<Plug>Latex2Unicode", { buffer=true, desc="TeX -> unicode" })
@@ -72,12 +72,11 @@ vim.keymap.set('n', '<leader>ck', '<Plug>(vimtex-stop)', {buffer=true, desc="Sto
 vim.keymap.set('n', '<leader>cK', '<Plug>(vimtex-stop-all)', {buffer=true, desc="Stop all"})
 -- single shot compilation
 vim.keymap.set('n', '<leader>cc', '<Plug>(vimtex-compile-ss)', {buffer=true, desc="Compile single shot"})
-vim.keymap.set('x', '<leader>cc', '<Plug>(vimtex-compile-selected)', {buffer=true, desc="Compile selected"})
+vim.keymap.set('n', '<leader><leader>c', '<Plug>(vimtex-compile-ss)', {buffer=true, desc="Compile single shot"})
 vim.keymap.set('n', '<leader>cC', '<Plug>(vimtex-compile)', {buffer=true, desc="Compile continuously"})
--- TODO: maybe take inspo from these insert mode mappings and make 
--- snippet equivalents then disable them? Or use them if they are useful.
-set_keymap_desc('n', '<leader><leader>m', "imaps list")
+vim.keymap.set('n', '<leader><leader>C', '<Plug>(vimtex-compile)', {buffer=true, desc="Compile continuously"})
 vim.keymap.set('n', '<leader>cl', '<Plug>(vimtex-compile-output)', {buffer=true, desc="Output"})
+vim.keymap.set('x', '<leader>cc', '<Plug>(vimtex-compile-selected)', {buffer=true, desc="Compile selected"})
 
 -- e.g. \section*{}
 set_keymap_desc('n', 'tsc', "Cmd/Star")
