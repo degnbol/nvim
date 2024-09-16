@@ -9,8 +9,10 @@ setlocal fo-=n
 " to the edge.
 setlocal sidescrolloff=0
 
-" vimtex has a lot of nice default conceals, e.g. greek in maths, \textbf, etc.
-setlocal conceallevel=2
+" vimtex has a lot of nice default conceals, e.g. greek in maths, \textbf, etc. but it moves the text too much and hides \vspace etc.
+setlocal conceallevel=0
+
+setlocal wrap
 
 " in_mathzone and others call stack under the hood:
 " https://github.com/lervag/vimtex/blob/c2f38c25375e6fb06654c3de945995c925b286e6/autoload/vimtex/syntax.vim
