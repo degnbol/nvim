@@ -8,3 +8,4 @@ vim.api.nvim_create_autocmd("BufNewFile", {
         vim.api.nvim_put({";extends"}, "l", false, true)
     end
 })
+
