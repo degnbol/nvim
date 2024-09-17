@@ -71,7 +71,7 @@ fmta([[
         "core",
         "fonts",
         "math",
-        "subfig",
+        "captions",
         "tables",
         "cleveref",
         "acro", -- or "glossaries",

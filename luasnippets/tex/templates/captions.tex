@@ -1,10 +1,18 @@
-% Subfigures
-% "skip" == spacing between subfigures.
+% Captions of figures, tables and subfigures.
+% skip=0pt: no spacing between subfigures.
 \usepackage[skip=0pt]{subcaption}
+\captionsetup[figure]{
+	margin=15pt
+}
+\captionsetup[table]{
+	margin=15pt
+}
 % Use uppercase instead of lowercase letters for sub-figure numbering
 % (Per default \thesubfigure is defined as \alph{subfigure}, i.e. lowercase letters)
 \renewcommand\thesubfigure{\Alph{subfigure}}
 \renewcommand\thesubtable{\Alph{subtable}}
+% subfigure caption that looks like what publications typically insert in the 
+% subfigures.
 \captionsetup[subfigure]{
 	justification=raggedright, % ragged right means left aligned
 	% singlelinecheck=off means that the justification setting is used even when 
@@ -14,6 +22,5 @@
 	labelfont={bf,sf}, % bold, sans-serif
 	font=Large,
 	labelformat=simple, % remove () around subfig numbering
-	labelsep=colon % since no parenthesis
+	labelsep=colon, % since no parenthesis
 }
-
