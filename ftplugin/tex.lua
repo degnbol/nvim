@@ -147,7 +147,11 @@ vim.api.nvim_create_autocmd("Colorscheme", {
         hi.set("texCmdRefConcealed", {fg=gray, italic=true}) -- italic \cite
         hi.set("texCmdRef", {fg=gray, italic=true})
         hi.set("texCmdCRef", {fg=gray, italic=true})
+        hi.link("texCmdPackage", "@function.builtin") -- italic \package
         hi.link("texCmdInput", "@function.builtin") -- italic \inputgraphics
+        hi.link("texCmdTitle", "@function.builtin") -- italic \title
+        hi.link("texCmdAuthor", "@function.builtin") -- italic \author
+        hi.link("texCmdLet", "@function.builtin") -- italic \let
         hi.mod("texMatcher", {underline=true}) -- matched parenthesis, \underline body, etc.
         hi.link("texEnvArgName", "@method") -- bold and shine instead of nothing
         hi.link("texCmdBeamer", "@function")
@@ -162,6 +166,7 @@ vim.api.nvim_create_autocmd("Colorscheme", {
         hi.link("superscript", "Type") -- like \huge, \normalsize etc
         hi.link("subscript", "Type") -- like \huge, \normalsize etc
         hi.set("texRefConcealedArg", {fg=hi.getfg("TexFileArg"), underline=true}) -- body of \cite{...}
+        hi.link("texTitleArg", "Title")
         hi.link("texPartArgTitle", "Title")
         hi.link("texRefArg", "@tag") -- body of \label
         hi.fg("texSpecialChar", gray) -- unbreakable space ~
@@ -174,6 +179,10 @@ vim.api.nvim_create_autocmd("Colorscheme", {
         hi.link("texCmdLigature", "@function.call")
         hi.mod("texCmdLigature", {italic=true})
         hi.link("texTabularChar", "Operator") -- & and \\ in tables. Could also use Delimiter but this makes them bold.
+        hi.mod("texCmdClass", {italic=true, bold=true})
+        hi.link("texOptSep", "Delimiter")
+        hi.mod("texCmdNewcmd", {bold=true, italic=true}) -- an actual function definition
+        hi.link("texNewcmdArgName", "@parameter")
     end
 })
 
