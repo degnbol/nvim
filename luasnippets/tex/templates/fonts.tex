@@ -1,4 +1,12 @@
-\usepackage{fontspec}
+\usepackage{ifluatex}
+\ifluatex
 % don't \usepackage{lmodern}, see tex/testfiles/fonts.tex for details.
-\setmainfont{New Computer Modern 10}
-% \usepackage{csquotes} % change how quotes look
+% \usepackage{fontspec}
+% \setmainfont{New Computer Modern 10}
+% experimental support for unicode in math
+\usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+\else
+% allow utf8 input
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\fi
