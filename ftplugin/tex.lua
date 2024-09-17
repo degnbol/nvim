@@ -3,6 +3,7 @@ require "tex.overleaf"
 local tbl = require "tex.tables"
 require "tex.cmds"
 require "tex.textcolor"
+local hi = require "utils/highlights"
 
 -- also defined in lua/plugins/mini.lua as shift+` but we can just use ` since 
 -- I don't think it has use in latex, maybe except in some verbatim code block or something?
@@ -132,20 +133,46 @@ vim.api.nvim_create_autocmd("Colorscheme", {
     buffer = 0,
     group = grp,
     callback = function ()
-        vim.api.nvim_set_hl(0, "texCmd",         {link="@function"})
-        vim.api.nvim_set_hl(0, "texCmdEnv",      {link="@keyword.function"}) -- italic instead of bold for begin end
-        vim.api.nvim_set_hl(0, "texEnvArgName",  {link="@method"}) -- bold and shine instead of nothing
-        vim.api.nvim_set_hl(0, "texCmdBeamer",   {link="@function"})
-        vim.api.nvim_set_hl(0, "texOpt",         {link="@parameter"})
-        vim.api.nvim_set_hl(0, "texBeamerOpt",   {link="@parameter"})
-        vim.api.nvim_set_hl(0, "texOptEqual",    {link="@operator"})
-        vim.api.nvim_set_hl(0, "texArg",         {link="@parameter"})
-        vim.api.nvim_set_hl(0, "texFileArg",     {link="@string"})
-        vim.api.nvim_set_hl(0, "texFilesArg",    {link="@string"})
-        vim.api.nvim_set_hl(0, "texFileOpt",     {link="@parameter"})
-        vim.api.nvim_set_hl(0, "TexBeamerDelim", {link="Delimiter"})
-        vim.api.nvim_set_hl(0, "superscript",    {link="Type"}) -- like \huge, \normalsize etc
-        vim.api.nvim_set_hl(0, "subscript",      {link="Type"}) -- like \huge, \normalsize etc
+        -- Pick a reduced colour for removing emphasis on things like \cite{...} where the body's color and underline gives it emphasis by itself.
+        -- We want to differentiate from comment and nontext, and nontext is bold so the fg with italic should be enough differentiation, plus we would write comments more that using nontext.
+        local gray = hi.getfg("NonText")
+        hi.link("texCmd", "@function.call")
+        hi.link("texCmdEnv", "@keyword.function") -- italic instead of bold for begin end
+        hi.link("texCmdRef", "@function.builtin") -- italic
+        -- italic \section{...}, bold etc. Gray a bit since the "..." shows aesthetic
+        hi.set("texCmdPart", {fg=gray, italic=true})
+        hi.set("texCmdStyleBold", {fg=gray, italic=true})
+        hi.set("texCmdStyleItal", {fg=gray, italic=true})
+        hi.set("texTypeStyle", {fg=gray, italic=true}) -- e.g. \underline
+        hi.set("texCmdRefConcealed", {fg=gray, italic=true}) -- italic \cite
+        hi.set("texCmdRef", {fg=gray, italic=true})
+        hi.set("texCmdCRef", {fg=gray, italic=true})
+        hi.link("texCmdInput", "@function.builtin") -- italic \inputgraphics
+        hi.mod("texMatcher", {underline=true}) -- matched parenthesis, \underline body, etc.
+        hi.link("texEnvArgName", "@method") -- bold and shine instead of nothing
+        hi.link("texCmdBeamer", "@function")
+        hi.link("texOpt", "@parameter")
+        hi.link("texBeamerOpt", "@parameter")
+        hi.link("texOptEqual", "@operator")
+        hi.link("texArg", "@parameter")
+        hi.link("texFileArg", "@string")
+        hi.link("texFilesArg", "@string")
+        hi.link("texFileOpt", "@parameter")
+        hi.link("TexBeamerDelim", "Delimiter")
+        hi.link("superscript", "Type") -- like \huge, \normalsize etc
+        hi.link("subscript", "Type") -- like \huge, \normalsize etc
+        hi.set("texRefConcealedArg", {fg=hi.getfg("TexFileArg"), underline=true}) -- body of \cite{...}
+        hi.link("texPartArgTitle", "Title")
+        hi.link("texRefArg", "@tag") -- body of \label
+        hi.fg("texSpecialChar", gray) -- unbreakable space ~
+        hi.link("texMathZone", "@number") -- Most of tex math zone that isn't captured by anything else (such as math functions) is numbers and we don't use numbers much elsewhere.
+        hi.set("texMathCmdText", {fg=gray, italic=true}) -- italic \text in math mode
+        hi.set("texMathSymbol", {fg=hi.getfg("@type"), italic=true}) -- type is similar colour to number
+        hi.set("texMathSymbol", {fg=hi.getfg("@type"), italic=true}) -- 
+        hi.link("texSICmd", "@number") -- not bold SI. Color like math mode
+        hi.set("texLigature", {bold=true}) -- bold instead of strong color to only give subtle focus to ``'', --, and the ' in don't
+        hi.link("texCmdLigature", "@function.call")
+        hi.mod("texCmdLigature", {italic=true})
     end
 })
 

@@ -113,7 +113,12 @@ local function afterColorscheme()
     hi.mod("@constant.builtin", {italic=true, fg=hi.get("@constant")['fg']})
     hi.set("@type.builtin",     {italic=true, fg=hi.get("@type")['fg']})
     hi.mod("@module.builtin",   {italic=true, fg=hi.get("@module")['fg']})
-    hi.mod("@tag.builtin",      {italic=true})
+    -- underline tags since they are kinda like links
+    hi.mod("Tag",      {underline=true})
+    hi.mod("@tag",      {underline=true})
+    hi.mod("@tag.builtin",      {underline=true, italic=true})
+    hi.mod("@tag.attribute",      {underline=true})
+    hi.mod("@tag.delimiter",      {underline=true})
     hi.mod("@lsp.type.ref", {underline=true})
     hi.mod("@lsp.type.link", {underline=true})
     hi.set("@markup.raw",  {underline=false, fg=hi.get("@markup.raw")['fg']}) -- trying to just remove italic
