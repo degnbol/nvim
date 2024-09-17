@@ -4,7 +4,6 @@ local s = ls.s
 local t = ls.t
 local i = ls.i
 local d = ls.d
-local fmta = ls.fmta
 
 ---https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md#dynamicnode
 local function _dUpper(args)
