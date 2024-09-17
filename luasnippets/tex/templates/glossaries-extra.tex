@@ -5,7 +5,8 @@
 % We do this since we also have option for a text description and page number 
 % of term usage.
 % We use -extra since it adds categories so we can have different print styles and different abbreviation styles per category.
-\usepackage[toc,postdot]{glossaries-extra}
+% shortcuts=ac means we can write \ac, \acp, \Aclp instead of \cgls, \cglspl, \Glsxtrlongpl. \cgls as opposed to \gls means ability to use optional entry counting that we don't currently use.
+\usepackage[toc,postdot,shortcuts=ac]{glossaries-extra}
 % Disable links from terms as they are used to the glossary but not the other way.
 \setkeys{glslink}{hyper=false}
 
@@ -15,22 +16,33 @@
 % We only want them to have separate styles for how they are displayed on first 
 % usage so we only take advantage of the category concept and define our own:
 \setabbreviationstyle[acronym]{short-long}
-\setabbreviationstyle[withdesc]{long-short-desc}
+\setabbreviationstyle[acronymdesc]{short-long-desc}
+\setabbreviationstyle[abbreviationdesc]{long-short-desc}
 % Then we make shorthand commands for each:
 \renewcommand{\newacronym}[3]{\newabbreviation[category=acronym]{#1}{#2}{#3}}
-\newcommand{\newabbreviationdesc}[4]{\newabbreviation[category=withdesc,description={#4}]{#1}{#2}{#3}}
-% There gives us 4 options for making an entry:
+\newcommand{\newacronymdesc}[4]{\newabbreviation[category=acronymdesc,description={#4}]{#1}{#2}{#3}}
+\newcommand{\newabbreviationdesc}[4]{\newabbreviation[category=abbreviationdesc,description={#4}]{#1}{#2}{#3}}
+% There gives us 5 options for making an entry:
 % \newabbreviation using default long-short
 % \newabbreviationdesc using long-short-desc
 % \newacronym using short-long
+% \newacronymdesc using short-long-desc
 % \newglossaryentry using name-desc aka short-nolong-desc (?)
 
 % The long-short-desc has a different print style than long-short, i.e. instead of <SHORT> <LONG> it prints <LONG> (<SHORT>) <DESC>.
 % We change that here so they are consistent: <SHORT> <LONG> <DESC>
 % I found the default sorting and naming for it in the glossaries-extra manual as: \glsxtrlongshortdescsort and \glsxtrlongshortdescname
 % Then just modified them to swap short and long and unbold, remove parenthesis, add a dot.
-\renewcommand{\glsxtrlongshortdescsort}{\expandonce\glsxtrorgshort\space (\expandonce\glsxtrorglong)}
+\renewcommand{\glsxtrlongshortdescsort}{\expandonce\glsxtrorgshort\space \expandonce\glsxtrorglong}
+\renewcommand{\glsxtrshortlongdescsort}{\expandonce\glsxtrorgshort\space \expandonce\glsxtrorglong}
 \renewcommand{\glsxtrlongshortdescname}{
+\glsxpabbrvfont{\the\glsshorttok}{\glscategorylabel}%
+\protect\glsxtrfullsep{\the\glslabeltok}%
+\normalfont % Don't make it bold
+\protect
+\glsxplongfont{\the\glslongtok}{\glscategorylabel}. % notice a period is added.
+}
+\renewcommand{\glsxtrshortlongdescname}{
 \glsxpabbrvfont{\the\glsshorttok}{\glscategorylabel}%
 \protect\glsxtrfullsep{\the\glslabeltok}%
 \normalfont % Don't make it bold
@@ -39,7 +51,10 @@
 }
 
 % The following creates a cmd \itag that can be used in the "long" to underline the letters that are used in an acronym.
-\GlsXtrEnableInitialTagging{acronym,abbreviation,withdesc}{\itag}
+\GlsXtrEnableInitialTagging{acronym,abbreviation,acronymdesc,abbreviationdesc}{\itag}
 
 \makeglossaries
 \loadglsentries{glossary}
+% Use this instead for subfiles package:
+% \loadglsentries{\subfix{glossary}}
+
