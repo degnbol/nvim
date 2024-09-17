@@ -173,6 +173,7 @@ vim.api.nvim_create_autocmd("Colorscheme", {
         hi.set("texLigature", {bold=true}) -- bold instead of strong color to only give subtle focus to ``'', --, and the ' in don't
         hi.link("texCmdLigature", "@function.call")
         hi.mod("texCmdLigature", {italic=true})
+        hi.link("texTabularChar", "Operator") -- & and \\ in tables. Could also use Delimiter but this makes them bold.
     end
 })
 

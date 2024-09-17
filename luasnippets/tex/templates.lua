@@ -69,8 +69,8 @@ fmta([[
 ]], {
     putfilenode {
         "core",
-        "fonts",
         "math",
+        "fonts",
         "captions",
         "tables",
         "cleveref",

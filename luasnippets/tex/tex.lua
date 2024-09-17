@@ -46,7 +46,10 @@ return {
 s({trig="\\newcommand", dscr="New command", show_condition=conds.line_end},
 {t"\\newcommand{\\", i(1), t"}{", i(2), t"}"}),
 
-    
+
+s({trig="%!", dscr="TEX directive", condition=conds.line_begin, snippetType="autosnippet"},
+{t"% !TEX ", c(1, {t"TS-program", t"encoding", t"root", t"spellcheck"}), t" = ", i(2, "VALUE")}),
+
 s({trig="pdflatex", dscr="Use PdfLaTeX", condition=conds.line_begin},
 t{"% !TEX program = PdfLaTeX", ""}),
 
