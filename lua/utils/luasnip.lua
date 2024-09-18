@@ -7,6 +7,7 @@ local s = ls.snippet
 local sn = ls.snippet_node
 local i = ls.insert_node
 local f = ls.f
+local d = ls.d
 
 function M.get_visual(args, parent)
     -- Summary: When `SELECT_RAW` is populated with a visual selection, the function
@@ -54,6 +55,46 @@ function M.match_ahead(n)
             return nil
         end
     end
+end
+
+---Get functionnode that uppercases the text in node i
+---@i int the index of another node
+---@return functionnode upper
+function M.upper(i)
+    return f(function (args, parent, user_args)
+        return args[1][1]:upper()
+    end, {i})
+end
+---https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md#dynamicnode
+local function rep_jump(args)
+    -- the returned snippetNode doesn't need a position; it's inserted
+    -- "inside" the dynamicNode.
+    return sn(nil, {
+        -- jump-indices are local to each snippetNode, so restart at 1.
+        i(1, args[1][1])
+    })
+end
+---Like the extras.rep node, but allows a jump so the repeated text can be changed.
+---@param jump_index integer when the cursor will jump here in the progression through a snippet.
+---@param node_reference integer jump_index of another node for which to copy the text.
+---@return dynamicnode
+function M.rep_jump(jump_index, node_reference)
+    return d(jump_index, rep_jump, {node_reference})
+end
+local function upper_jump(args)
+    -- the returned snippetNode doesn't need a position; it's inserted
+    -- "inside" the dynamicNode.
+    return sn(nil, {
+        -- jump-indices are local to each snippetNode, so restart at 1.
+        i(1, args[1][1]:upper())
+    })
+end
+---Uppercase node with jump.
+---@param jump_index integer when the cursor will jump here in the progression through a snippet.
+---@param node_reference integer jump_index of another node for which to copy the text and uppercase it.
+---@return dynamicnode
+function M.upper_jump(jump_index, node_reference)
+    return d(jump_index, upper_jump, {node_reference})
 end
 
 return M

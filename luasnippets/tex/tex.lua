@@ -18,27 +18,7 @@ local re = lsu.re
 local in_text = vtu.in_text
 local cond_itemize = vtu.cond_itemize
 local cond_description = vtu.cond_description
-
---- Get functionnode that uppercases the text in node i
----@i int the index of another node
----@return functionnode upper
-local function fUpper(i)
-    return f(function (args, parent, user_args)
-        return args[1][1]:upper()
-    end, {i})
-end
----https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md#dynamicnode
-local function _dUpper(args)
-    -- the returned snippetNode doesn't need a position; it's inserted
-    -- "inside" the dynamicNode.
-    return sn(nil, {
-        -- jump-indices are local to each snippetNode, so restart at 1.
-        i(1, args[1][1]:upper())
-    })
-end
-local function dUpper(jump_index, node_reference)
-    return d(jump_index, _dUpper, {node_reference})
-end
+local fmta = require("luasnip.extras.fmt").fmta
 
 return {
 --
@@ -291,8 +271,8 @@ s({trig="acro", dscr="Define new acronym", snippetType="autosnippet", condition=
     fmta([[\newacronym<>{<>}{<>}{<>}]], {
             c(4, {t"", {t"[see={[glossary:]{gls-", i(1), t"}}]"}}),
             i(1),
-            dUpper(2, 1),
-            dUpper(3, 1),
+            lsu.upper_jump(2, 1),
+            lsu.upper_jump(3, 1),
     })
 ),
 s({trig="glos", dscr="Define new glossary entry", snippetType="autosnippet", condition=conds.line_begin},
@@ -300,7 +280,7 @@ s({trig="glos", dscr="Define new glossary entry", snippetType="autosnippet", con
     name={<>},
     description={<>}
 }]], {
-        i(1), dUpper(2, 1), dUpper(3, 1),
+        i(1), lsu.rep_jump(2, 1), lsu.upper_jump(3, 1),
     })
 ),
 
