@@ -192,7 +192,6 @@ local function bracketJump(line, c)
         return "<left><left><left>"
     elseif vim.tbl_contains(triples, line:sub(c+1,c+3)) then
         return "<right><right><right>"
-    -- NOTE: we no longer just go left here if end of line, since we were sometimes accidentally still holding shift while trying to insert a space.
     -- left priority over right for pairs so we go back first for e.g. Matrix{}|[]
     elseif vim.tbl_contains(pairs, line:sub(c-1,c)) then
         return "<left>"
@@ -204,8 +203,8 @@ local function bracketJump(line, c)
         return "<right>"
     elseif vim.tbl_contains(singles, line:sub(c,c)) then
         return "<left>"
-    else
-        return "<right>"
+    else -- maybe accidentally still held shift
+        return " "
     end
 end
 map({'i', 'n'}, bracketJumpCode, function ()
