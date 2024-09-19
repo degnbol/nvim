@@ -304,11 +304,20 @@ map('c', '<A-delete>', "<S-right><C-w>", { desc="Delete next word" })
 -- this ignored if kitty handles it.
 map('c', '<D-BS>', "<C-u>", { desc="Delete to beginning of line" })
 
-
--- TODO: decide on how to paste before vs after and do it without remap
-map('n', '<D-v>', 'P<C-=>', {desc="Paste before, auto-indent, place cursor after", remap=true})
-map('i', '<D-v>', '<C-o>P<Esc>V`[`]=a', {desc="Paste before, auto-indent, place cursor after"})
-map('c', '<D-v>', '<C-r>+', {desc="Paste before, auto-indent, place cursor after"})
-
-
+map('n', '<D-v>', 'p<C-=>', {desc="Paste after, auto-indent, place cursor after", remap=true})
+map('n', '<S-D-v>', 'P<C-=>', {desc="Paste before, auto-indent, place cursor after", remap=true})
+map('i', '<D-v>', function ()
+    -- get clipboard lines
+    local lines = vim.split(vim.fn.getreg('+'), '\n')
+    -- insert clipboard content charwise at cursor location placing cursor after
+    vim.api.nvim_put(lines, 'c', false, true)
+    -- auto-indent pasted lines if whole lines were pasted
+    if #lines > 1 then
+        -- remember cursor location since I don't know a way to auto indent without moving cursor (in all cases)
+        local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+        vim.cmd.normal "=`["
+        vim.api.nvim_win_set_cursor(0, {r, c})
+    end
+end, {desc="Paste, auto-indent, place cursor after"})
+map('c', '<D-v>', '<C-r>+', {desc="Paste, place cursor after"})
 
