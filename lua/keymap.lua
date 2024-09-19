@@ -307,8 +307,7 @@ map('c', '<D-BS>', "<C-u>", { desc="Delete to beginning of line" })
 map('n', '<D-v>', 'p<C-=>', {desc="Paste after, auto-indent, place cursor after", remap=true})
 map('n', '<S-D-v>', 'P<C-=>', {desc="Paste before, auto-indent, place cursor after", remap=true})
 map('i', '<D-v>', function ()
-    -- get clipboard lines
-    local lines = vim.split(vim.fn.getreg('+'), '\n')
+    local lines = util.get_clipboard()
     -- insert clipboard content charwise at cursor location placing cursor after
     vim.api.nvim_put(lines, 'c', false, true)
     -- auto-indent pasted lines if whole lines were pasted

@@ -152,6 +152,12 @@ function M.press(keys, opts)
     vim.api.nvim_feedkeys(code, mode, false)
 end
 
+---Get clipboard content as lines
+---@return table lines
+function M.get_clipboard()
+    return vim.split(vim.fn.getreg('+'), '\n')
+end
+
 ---Get current mode.
 ---@return string mode "n", "v", "V", ^V, etc.
 function M.get_mode()
