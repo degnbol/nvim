@@ -169,7 +169,7 @@ vim.api.nvim_create_autocmd("Colorscheme", {
         hi.link("texTitleArg", "Title")
         hi.link("texPartArgTitle", "Title")
         hi.link("texRefArg", "@tag") -- body of \label
-        hi.fg("texSpecialChar", gray) -- unbreakable space ~
+        hi.link("texSpecialChar", "@comment") -- unbreakable space ~, and \&
         hi.link("texMathZone", "@number") -- Most of tex math zone that isn't captured by anything else (such as math functions) is numbers and we don't use numbers much elsewhere.
         hi.set("texMathCmdText", {fg=gray, italic=true}) -- italic \text in math mode
         hi.set("texMathSymbol", {fg=hi.getfg("@type"), italic=true}) -- type is similar colour to number
@@ -181,7 +181,8 @@ vim.api.nvim_create_autocmd("Colorscheme", {
         hi.link("texTabularChar", "Operator") -- & and \\ in tables. Could also use Delimiter but this makes them bold.
         hi.mod("texCmdClass", {italic=true, bold=true})
         hi.link("texOptSep", "Delimiter")
-        hi.mod("texCmdNewcmd", {bold=true, italic=true}) -- an actual function definition
+        hi.mod("texCmdDef", {bold=true, italic=true}) -- an actual function definition. \def. TeX primitive.
+        hi.mod("texCmdNewcmd", {bold=true, italic=true}) -- an actual function definition. \newcommand. LaTeX wrapper on def.
         hi.link("texNewcmdArgName", "@parameter")
     end
 })
