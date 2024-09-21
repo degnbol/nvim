@@ -57,3 +57,11 @@ xmap <buffer> <plug>Unicode2Latex_visual :!$XDG_CONFIG_HOME/nvim/tex/unicode/uni
 let @u=']4 lu'
 let @l=']4 lU'
 
+" We aren't using em-dashes much at all in latex due to style guide suggesting 
+" spaced en-dash
+" https://www.stylemanual.gov.au/grammar-punctuation-and-conventions/punctuation/dashes
+" abbrev correction is also very nice in that I have to add a space afterwards 
+" so if I really want --- then I can still get it.
+" The unicode em-dash can then be mapped with the newunicodechar package
+iabbrev --- ⎯
+
