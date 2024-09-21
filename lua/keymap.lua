@@ -307,11 +307,16 @@ map('c', '<D-BS>', "<C-u>", { desc="Delete to beginning of line" })
 map('n', '<D-v>', 'p<C-=>', {desc="Paste after, auto-indent, place cursor after", remap=true})
 map('n', '<S-D-v>', 'P<C-=>', {desc="Paste before, auto-indent, place cursor after", remap=true})
 map('i', '<D-v>', function ()
-    local lines = util.get_clipboard()
-    -- insert clipboard content charwise at cursor location placing cursor after
+    local clipboard = vim.fn.getreg('+')
+    -- whether part of line vs one or more whole lines
+    local linewise = clipboard:match('\n')
+    -- disregard blank lines and split
+    local lines = vim.split(clipboard:gsub('\n*$',''), '\n')
+    -- insert charwise at cursor location placing cursor after
     vim.api.nvim_put(lines, 'c', false, true)
     -- auto-indent pasted lines if whole lines were pasted
-    if #lines > 1 then
+    if linewise then
+        -- TODO: when autoindent increases indent the c is off
         -- remember cursor location since I don't know a way to auto indent without moving cursor (in all cases)
         local r, c = unpack(vim.api.nvim_win_get_cursor(0))
         vim.cmd.normal "=`["
@@ -319,4 +324,3 @@ map('i', '<D-v>', function ()
     end
 end, {desc="Paste, auto-indent, place cursor after"})
 map('c', '<D-v>', '<C-r>+', {desc="Paste, place cursor after"})
-
