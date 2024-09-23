@@ -182,8 +182,9 @@ return {
                     -- custom citation function completion.
                     -- In some projects I use \citea{...} as \citeauthor{...}~\cite{...}
                     citationCommands = {"citea"},
-                    -- In some projects I use \see{...} as (see~\cref{...})
-                    labelReferenceCommands = {"see"},
+                    -- \subref from the subpcation package.
+                    -- In some projects I use \see[...]{...} as (see~\cref{...}...)
+                    labelReferenceCommands = {"subref", "see"},
                 }}}
             }
 
