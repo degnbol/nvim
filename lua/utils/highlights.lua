@@ -25,6 +25,9 @@ end
 function M.get(name)
     return vim.api.nvim_get_hl(0, {name=name, link=false})
 end
+function M.getfg(name)
+    return vim.api.nvim_get_hl(0, {name=name, link=false})['fg']
+end
 -- update subset of settings for a highlight group instead of replacing them all
 function M.mod(name, val)
     M.set(name, vim.tbl_extend("force", M.get(name), val))
