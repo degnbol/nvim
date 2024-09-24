@@ -6,7 +6,7 @@ local get_visual = lsu.get_visual
 
 -- conditions can be set from either first arg of s or third, but shouldn't be set from both.
 -- Source: :h luasnip-snippets
-optm = {condition=in_math}
+local optm = {condition=in_math}
 
 return {},{
 -- all snippets here are expected to be called within a math env
@@ -68,7 +68,8 @@ s({trig="...", descr="ellipses", wordTrig=false, priority=100}, t"…", optm),
 s({trig="c...", descr="center dots", wordTrig=true}, t"⋯", optm),
 s({trig="v...", descr="vertical dots", wordTrig=true}, t"⋮", optm),
 
-s({trig="\\circ", dscr="Circle/degrees"}, t"∘", optm),
+-- don't auto, since we use e.g. \circa
+s({trig="\\circ", dscr="Circle/degrees", snippetType="snippet"}, t"∘", optm),
 s({trig="deg", dscr="degrees", snippetType="snippet"}, t"^∘\\text{C}", optm),
 s({trig="degc", dscr="degrees", wordTrig=false}, t"^∘\\text{C}", optm),
 
