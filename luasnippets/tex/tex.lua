@@ -301,7 +301,7 @@ s({trig="acro", dscr="Define new acronym", snippetType="autosnippet", condition=
 s({trig="glos", dscr="Define new glossary entry", snippetType="autosnippet", condition=conds.line_begin},
     fmta([[\newglossaryentry{<>}{
     name={<>},
-    description={<>}
+    description={<>},
 }]], {
         i(1), lsu.rep_jump(2, 1), lsu.upper_jump(3, 1),
     })
