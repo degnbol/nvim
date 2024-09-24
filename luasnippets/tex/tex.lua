@@ -20,6 +20,29 @@ local cond_itemize = vtu.cond_itemize
 local cond_description = vtu.cond_description
 local fmta = require("luasnip.extras.fmt").fmta
 
+---For use with f(acro, {})
+---@param _ table args, unused
+---@param snip table
+---@return string replacement
+local function acro(_, snip)
+    local text = snip.captures[1]
+    local cmd
+    -- dsb -> \ac
+    -- Dsb -> \Ac
+    if text:sub(1,1):match("%u") and text:match("%l") then
+        cmd='\\Ac'
+        text=text:sub(1,1):lower() .. text:sub(2)
+    else
+        cmd='\\ac'
+    end
+    -- dsbs -> \acp (if you need s at end, make without postfix, or postfix, then add s)
+    if text:sub(-1):match("s") then
+        cmd=cmd..'p'
+        text=text:sub(1,-2)
+    end
+    return cmd .. '{' .. text .. '}'
+end
+
 return {
 --
 
@@ -294,5 +317,9 @@ fmta(
         i(4, "BODY WITH #1 (FIRST OPT), #2, ..."),
     }
 )),
+
+-- use @ to convert to acronym/glossary, either before or after identifier
+s({trig="@(%w+)(%W)", trigEngine="pattern", snippetType="autosnippet"}, { f(acro, {}), re(2)}),
+s({trig="(%w+)@", trigEngine="pattern", snippetType="autosnippet"}, { f(acro, {})}),
 
 }
