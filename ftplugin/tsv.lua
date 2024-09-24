@@ -11,6 +11,8 @@ local util = require "utils/init"
 -- with the buffer change (and update vartabstop)
 -- Hiding cuts through multi chars like €, so this might be a TODO
 
+-- FIXME: when having two buffers, leaving the tsv the other buffer will have its zc work for columns in the other file.
+
 local defaults = {
     maxwidth = 10, -- excl gap
     checklines = 1000, -- max lines to look at to detect column widths
