@@ -246,5 +246,21 @@ end, <>)
 s({trig="mode", dscr="Get mode (normal or visual etc)", show_condition=conds.line_end},
 {t"local mode = vim.api.nvim_get_mode().mode"}),
 
+s({trig="dynamic", dscr="Dynamic node"},
+fmta([[d(<>, function (args<>)
+    -- https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md#dynamicnode
+    -- the returned snippetNode doesn't need a position; it's inserted "inside" the dynamicNode.
+    return sn(nil, {
+        -- jump-indices are local to each snippetNode, so restart at 1.
+        i(1, args[1][1])
+    })
+end, {<>}<>)
+]], {
+    i(1, "JUMP"),
+    c(3, {t"", t", parent, old_state, user_args"}),
+    i(2, "NODEREF"),
+    c(4, {t"", t", {user_args={}}"}),
+})),
+
 }
 
