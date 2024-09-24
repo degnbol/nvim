@@ -19,7 +19,6 @@ syn match textgreek /\\textpi/ conceal cchar=π
 syn match textgreek /\\textpsi/ conceal cchar=ψ
 syn match textgreek /\\texttau/ conceal cchar=τ
 " and so on...
-
 " same as e.g. \AA angstrom
 hi link textgreek SpecialChar
 
@@ -31,4 +30,9 @@ syntax match texCmdBooktabs "\\\%(top\|mid\|bottom\|thin\)rule\>" conceal cchar=
 " conceal table cell
 syn match texCell "\\makecell\[\a\+\]" conceal cchar=☐
 hi def link texCell texCmd
+
+syntax region acro matchgroup=texCmdAcro start='\\[Aa]c[sl]\?p\?{' end='}' nextgroup=acroinsert
+syntax region acroinsert matchgroup=Delimiter start=/\[/ end=/\]/ contained
+" Not linking 'acro', and 'acroinsert', so they go uncolored, since they are 
+" basically just text. texCmdAcro is colored in ftplugin/tex.lua
 

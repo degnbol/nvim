@@ -147,6 +147,7 @@ vim.api.nvim_create_autocmd("Colorscheme", {
         hi.set("texCmdRefConcealed", {fg=gray, italic=true}) -- italic \cite
         hi.set("texCmdRef", {fg=gray, italic=true})
         hi.set("texCmdCRef", {fg=gray, italic=true})
+        hi.set("texCmdAcro", {fg=gray}) -- custom cmd defined in after/syntax/tex.vim
         hi.link("texCmdPackage", "@function.builtin") -- italic \package
         hi.link("texCmdInput", "@function.builtin") -- italic \inputgraphics
         hi.link("texCmdTitle", "@function.builtin") -- italic \title
