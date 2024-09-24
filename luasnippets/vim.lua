@@ -24,13 +24,13 @@ s({trig="syntax", dscr="Syntax capture.", trigEngine="pattern", show_condition=c
             })
         else
             return sn(nil, { -- the returned snippetNode doesn't need a position; it's inserted "inside" the dynamicNode.
+                c(1, {t"", {t"matchgroup=", i(1, "HLSTARTEND"), t" "}}),
                 t"start=/",
                 -- jump-indices are local to each snippetNode, so restart at 1.
-                i(1, "PATTERN"),
-                t"/ end=/",
                 i(2, "PATTERN"),
+                t"/ end=/",
+                i(3, "PATTERN"),
                 t"/",
-                c(3, {t"", {t" matchgroup=", i(1, "HLSTARTEND")}})
             })
         end
     end, {1}),
