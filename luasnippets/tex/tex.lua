@@ -233,24 +233,30 @@ fmta([[\begin{figure}[ht]
 ]], {i(1), i(2), i(3, "\\textbf{Title.} Caption."), i(4)})),
 
 
-s({trig="tabx", dscr="tabularx", condition=conds.line_begin*conds.line_end, snippetType="autosnippet"},
+s({trig="tab", dscr="Table", condition=conds.line_begin*conds.line_end, snippetType="autosnippet"},
 -- @{} suppresses space between columns. @{.} would use "." as column separator.
 fmta([[\begin{table}[ht]
-\caption{<>}
-\begin{tabularx}{\textwidth}{@{}<>@{}}
-	\toprule
-	<> \\
-	\midrule
-	<> \\
-	\bottomrule
-\end{tabularx}
+    \caption{
+        \textbf{<>.}
+        <>.
+    }
+    \begin{tabularx}{\textwidth}{@{}<>@{}}
+        \toprule
+        <> \\
+        \midrule
+        <> \\
+        \bottomrule
+    \end{tabularx}
+    \label{tab:<>}
 \end{table}
 
 ]], {
-    i(4, [[\textbf{Title.} Caption.]]),
-    i(1, [[lcX]]),
-    i(2, [[left & right & filling]]),
-    i(3, [[left & right & filling]])
+    i(1, [[TITLE]]),
+    i(3, [[CAPTION]]),
+    i(4, [[lcX]]),
+    i(5, [[left & right & filling]]),
+    i(6, [[left & right & filling]]),
+    i(2, [[REF]]),
 })),
 
 -- \cmidrule{2-4} makes a thin line covering column 2 to 4.
