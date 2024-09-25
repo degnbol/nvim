@@ -39,3 +39,9 @@ syntax region acroinsert matchgroup=Delimiter start=/\[/ end=/\]/ contained
 " Not linking 'acro', and 'acroinsert', so they go uncolored, since they are 
 " basically just text. texCmdAcro is colored in ftplugin/tex.lua
 
+" hl cite key in custom function \citea the same way as in \cite and \citeauthor
+syntax match citea /\\citea/ containedin=texCmd nextgroup=citeaArg
+syntax region citeaArg matchgroup=texDelim start='{' end='}' containedin=texGroup contained
+hi def link citea texCmd " not using texCmdRef to make it clear it is custom cmd that adds more text.
+hi def link citeaArg texRefConcealedArg
+
