@@ -11,6 +11,13 @@
 % Disable links from terms as they are used to the glossary but not the other way.
 \setkeys{glslink}{hyper=false}
 
+% listgroup adds "A" above all entries starting with "A", etc.
+\setglossarystyle{listgroup}
+% For no good reason they decided to place a \penalty (for pagebreak) after groupings for the listgroup, which means after the "A" before all entries starting with "A". I redefine the skip to its default excluding the penalty. Requires the styling package.
+\usepackage{glossaries-extra-stylemods}
+\renewcommand*{\glsgroupskip}{\indexspace}
+% \renewcommand*{\glslistgroupskip}{\indexspace} % Can also be done for a specific style only.
+
 % the -extra package has options for categories acronym, etc. that can be 
 % treated separately, with different abbreviationstyles and can be printed to 
 % separate groupings.
