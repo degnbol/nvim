@@ -54,10 +54,24 @@ vim.keymap.set('n', '<leader><leader>g', function ()
         vim.api.nvim_err_writeln("Couldn't makeglossaries. No aux/ dir found (searched upward)")
         return
     end
-    local obj = vim.system({"makeglossaries", "main"}, {text=true, cwd=auxs[1]}):wait()
-    -- make sure we notice it since only last line of messages is visible
-    local stderr = obj.stderr:gsub("\n$", "")
-    print(stderr)
+    local makeglossaries = function(on_exit)
+        vim.system({"makeglossaries", "main"}, {text=true, cwd=auxs[1]}, on_exit)
+    end
+    makeglossaries(function (obj)
+        if obj.code == 0 then
+            print("makeglossaries complete")
+            return
+        end
+        -- Retry once. Fixes a specific error.
+        makeglossaries(function (obj)
+            if obj.code == 0 then
+                print("makeglossaries complete")
+                return
+            end
+            local stderr = obj.stderr:gsub("\n$", "")
+            vim.notify(stderr) -- vim.notify instead of print to see multiple lines
+        end)
+    end)
 end, { buffer=true, desc="Compile glossary" })
 vim.keymap.set('n', '<leader><leader>s', "<Plug>(vimtex-status)", { buffer=true, desc="Status"})
 vim.keymap.set('n', '<leader><leader>S', "<Plug>(vimtex-status-all)", { buffer=true, desc="Status all"})
