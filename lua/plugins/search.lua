@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 
-vim.keymap.set('n', '<Esc>', ":noh<CR><Esc>", { silent=true, remap=false, desc="Disable search highlights" })
+-- vim.keymap.set('n', '<Esc>', ":noh<CR><Esc>", { silent=true, remap=false, desc="Disable search highlights" })
 -- disable when entering visual
 local grp = vim.api.nvim_create_augroup("auto_hlsearch", {clear=true})
 vim.api.nvim_create_autocmd("ModeChanged", {
@@ -46,12 +46,12 @@ return {
         init = function ()
             vim.keymap.set("n", "yoH", function () require'hlslens'.toggle() end, { desc="HlSearchLens", silent=true })
             -- integrate with haya14busa/vim-asterisk
-            vim.api.nvim_set_keymap('n', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
-            vim.api.nvim_set_keymap('n', '#', [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
+            vim.api.nvim_set_keymap('n',  '*', [[<Plug>(asterisk-z*) <Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
+            vim.api.nvim_set_keymap('n',  '#', [[<Plug>(asterisk-z#) <Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
             vim.api.nvim_set_keymap('n', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
             vim.api.nvim_set_keymap('n', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-            vim.api.nvim_set_keymap('x', '*', [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
-            vim.api.nvim_set_keymap('x', '#', [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],   {desc="Search word under cursor"})
+            vim.api.nvim_set_keymap('x',  '*', [[<Plug>(asterisk-z*) <Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
+            vim.api.nvim_set_keymap('x',  '#', [[<Plug>(asterisk-z#) <Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
             vim.api.nvim_set_keymap('x', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
             vim.api.nvim_set_keymap('x', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
         end,
