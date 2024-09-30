@@ -14,6 +14,28 @@ function M.strip(text)
     return text:match("^[\t%s]*(.-)[\t%s]*$")
 end
 
+function M.count()
+    if vim.v.count == 0 then
+        return 1
+    else
+        return vim.v.count
+    end
+end
+
+---Repeat calls to a given function as many times as the vim count value (default once).
+---Optionally pass arguments.
+---@param fn function
+---@param ... unknown
+---@return function
+function M.fncount(fn, ...)
+    local args = ...
+    return function ()
+        for _ = 1, M.count() do
+            fn(args)
+        end
+    end
+end
+
 function M.end_visual()
     -- magic from
     -- https://github.com/neovim/neovim/issues/19770
@@ -150,12 +172,6 @@ function M.press(keys, opts)
     end
     local code = vim.api.nvim_replace_termcodes(keys, true, false, true)
     vim.api.nvim_feedkeys(code, mode, false)
-end
-
----Get clipboard content as lines
----@return table lines
-function M.get_clipboard()
-    return vim.split(vim.fn.getreg('+'), '\n')
 end
 
 ---Get current mode.
