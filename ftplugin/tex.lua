@@ -69,10 +69,34 @@ vim.keymap.set('n', '<leader><leader>g', function ()
                 return
             end
             local stderr = obj.stderr:gsub("\n$", "")
-            vim.notify(stderr) -- vim.notify instead of print to see multiple lines
+            vim.schedule(function () -- notify when we are ready
+                vim.notify(stderr) -- vim.notify instead of print to see multiple lines
+            end)
         end)
     end)
 end, { buffer=true, desc="Compile glossary" })
+vim.keymap.set('n', '<leader><leader>B', function ()
+    local biber = function(on_exit)
+        vim.system({"biber", "main"}, {text=true}, on_exit)
+    end
+    biber(function (obj)
+        if obj.code == 0 then
+            print("biber complete")
+            return
+        end
+        -- Retry once.
+        biber(function (obj)
+            if obj.code == 0 then
+                print("biber complete")
+                return
+            end
+            local stderr = obj.stderr:gsub("\n$", "")
+            vim.schedule(function () -- notify when we are ready
+                vim.notify(stderr) -- vim.notify instead of print to see multiple lines
+            end)
+        end)
+    end)
+end, { buffer=true, desc="Compile bibliography" })
 vim.keymap.set('n', '<leader><leader>s', "<Plug>(vimtex-status)", { buffer=true, desc="Status"})
 vim.keymap.set('n', '<leader><leader>S', "<Plug>(vimtex-status-all)", { buffer=true, desc="Status all"})
 set_keymap_desc('n', '<leader><leader>i', "Info")
