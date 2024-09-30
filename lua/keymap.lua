@@ -289,10 +289,15 @@ map('i', "<C-`>", "<Esc>viwo<Esc>~gvo<Esc>a", { desc="Capitalise last word" })
 map('n', "<C-`>",      "viwo<Esc>~gvo<Esc>",  { desc="Capitalise last word" })
 
 -- tired for accidentally jumping really far when pressing shift+down
-map('v', "<S-down>", "<down>")
-map('v', "<S-up>", "<up>")
-map('n', "<S-down>", "v<down>")
-map('n', "<S-up>", "v<up>")
+-- Getting mapped by multicursor instead
+-- map('v', "<S-down>", "<down>")
+-- map('v', "<S-up>", "<up>")
+-- map('n', "<S-down>", "v<down>")
+-- map('n', "<S-up>", "v<up>")
+-- shift+up and down jumping way to far for anything that would make sense in insert mode.
+-- Changed to start/end of line but could do other things too.
+map('i', "<S-up>", "<C-o>^")
+map('i', "<S-down>", "<C-o>$")
 
 map('i', "<C-l>", "<right>", {desc="Right"})
 
