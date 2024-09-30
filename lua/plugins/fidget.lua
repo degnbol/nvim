@@ -34,7 +34,7 @@ return {
         sources = {
             -- ltex = {ignore = true},
         }
-    }
+    },
 }
 
 -- TODO: there's some error if you open the command window while fidget is still spinning.

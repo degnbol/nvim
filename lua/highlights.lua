@@ -59,6 +59,11 @@ local function afterColorscheme()
     -- there is enough things indicated by color, matched parenthesis etc. with underline is great
     hi.set("MatchParen", {underline=true})
 
+    -- Should be default
+    hi.set("@text.underline", {underline=true})
+    hi.link("@markup.underline", "@text.underline")
+    hi.set("@text.strong", {bold=true})
+
     -- never italic comments but italize builtin stuff
     -- :h group-name
     -- Italics are not default since terms aren't assumed to support it,
@@ -214,6 +219,9 @@ local function afterColorscheme()
 
     -- Make a hl group we can link to that hides text
     hi.hide("Background")
+
+    -- remove title link, which makes it bold
+    hi.link("FidgetTitle", "Normal")
 end
 
 -- local defaultDark = 'fluoromachine'
