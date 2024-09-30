@@ -199,7 +199,7 @@ return {
 
             -- MasonInstall typescript-language-server
             -- Used on javascript as well.
-            lsp.tsserver.setup {}
+            lsp.ts_ls.setup {}
 
             lsp.yamlls.setup {
                 settings = { yaml = { schemas = {
@@ -296,7 +296,7 @@ return {
                 "lua_ls",
                 -- "vimls",
                 "rust_analyzer",
-                "tsserver",     -- javascript. MasonInstall typescript-language-server
+                "ts_ls",     -- javascript. MasonInstall typescript-language-server
                 "sqlls",
                 -- "latexindent",
                 "matlab_ls",
