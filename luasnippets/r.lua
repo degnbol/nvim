@@ -58,4 +58,16 @@ s({trig="annotate", dscr="annotate text"},
 fmta([[annotate("text", label="<>", x=<>, y=<>, size=<>, hjust=0) +]],
 {i(1, "LABEL"), i(2, "x"), i(3, "y"), i(4, "4")})),
 
+s({trig="facet_grid", dscr="Facet grid"},
+fmta([[facet_grid(rows=vars(<>), cols=vars(<>))]], {i(1, "GROUP1"), i(2, "GROUP2")})
+),
+
+s({trig="facet_wrap", dscr="Facet wrap"},
+    fmta([[facet_wrap(vars(<>), <>=<>)]], {
+        i(1, "GROUP"),
+        c(2, {t"nrow", t"ncol"}),
+        i(3, "2"),
+    })
+),
+
 }
