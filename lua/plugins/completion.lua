@@ -73,20 +73,47 @@ return {
                 end, {"i", "s"}),
                 ['<C-e>'] = cmp.mapping.abort(),
                 ['<C-c>'] = cmp.mapping.abort(),
-                -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-                -- Disable. It sometimes got in the way (julia autotrigger after comma) and we get the selection with <C-n> or tab and can use the more explicit <C-y>
+                ['<C-n>'] = cmp.mapping(function(fallback)
+                    if vim.bo.filetype == "tsv" then
+                        fallback()
+                    elseif cmp.visible() then
+                        -- Hack to avoid luasnip autosnip trigger when browsing through popup menu.
+                        -- luasnip is the only autocmd set for the frequent InsertCharPre event, 
+                        -- where a flag is set to indicate to a later TextChangedI, TextChangedP autocmd that text has been inserted.
+                        -- See Luasnip_just_inserted in https://github.com/L3MON4D3/LuaSnip/blob/master/lua/luasnip/config.lua
+                        -- InsertCharPre is called after the insertion by cmp.select_next_item.
+                        -- We change the eventignore option temporarily to ignore this event.
+                        vim.opt.eventignore:append("InsertCharPre")
+                        cmp.select_next_item() -- {behavior=cmp.SelectBehavior.Select}
+                        -- Resetting has to be scheduled since there is some time between the above call and the trigger.
+                        vim.schedule(function ()
+                            vim.opt.eventignore:remove("InsertCharPre")
+                        end)
+                    elseif has_words_before() then
+                        cmp.complete()
+                    else
+                        fallback()
+                    end
+                end, { "i", "s" }),
+                ["<C-p>"] = cmp.mapping(function(fallback)
+                    if cmp.visible() then
+                        -- see above
+                        vim.opt.eventignore:append("InsertCharPre")
+                        cmp.select_prev_item() -- {behavior=cmp.SelectBehavior.Select}
+                        vim.schedule(function ()
+                            vim.opt.eventignore:remove("InsertCharPre")
+                        end)
+                    else
+                        fallback()
+                    end
+                end, { "i", "s" }),
+                -- I may change tab in future, since I'm using ctrl-N, ctrl-P.
+                -- It currently is different in that it expands autocmds if they happen to match the popup selection.
                 ["<Tab>"] = cmp.mapping(function(fallback)
                     if vim.bo.filetype == "tsv" then
                         fallback()
                     elseif cmp.visible() then
-                        -- You could get the autosnippets to show up in the menu, 
-                        -- but then they would autocomplete when you move through 
-                        -- the completion items. Currently the only way I can think 
-                        -- of to fix this is to either never auto complete the item 
-                        -- when picking or writing something more intelligent to do 
-                        -- this only when the next item is an (auto)snippet.
-                        -- cmp.select_next_item({behavior=cmp.SelectBehavior.Select})
-                        cmp.select_next_item()
+                        cmp.select_next_item() -- {behavior=cmp.SelectBehavior.Select}
                     elseif has_words_before() then
                         cmp.complete()
                     else
@@ -97,7 +124,7 @@ return {
                     if vim.bo.filetype == "tsv" then
                         fallback()
                     elseif cmp.visible() then
-                        cmp.select_prev_item()
+                        cmp.select_prev_item() -- {behavior=cmp.SelectBehavior.Select}
                     else
                         fallback()
                     end
@@ -252,6 +279,7 @@ return {
     {'saadparwaiz1/cmp_luasnip', lazy=true,
         dependencies={'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp"}, config=function()
             local luasnip = require "luasnip"
+            local cmp = require "cmp"
             -- works better to put it here than directly with luasnip, since we need to 
             -- require ft_func and would then replace config anyways
             luasnip.config.set_config {
@@ -296,6 +324,17 @@ return {
             vim.keymap.set({ "i", "s", "n" }, "<C-/>", function ()
                 if luasnip.choice_active() then
                     luasnip.change_choice(1)
+                elseif cmp.visible() then
+                    -- This will change an active popup menu listing to only show snippets
+                    cmp.complete {config={sources={{name="luasnip"}}}}
+                    -- Confirm first selection. Could also use the above by itself for filtering only.
+                    cmp.confirm({select=true})
+                end
+            end)
+            -- with shift to go backwards
+            vim.keymap.set({ "i", "s", "n" }, "<C-?>", function ()
+                if luasnip.choice_active() then
+                    luasnip.change_choice(-1)
                 end
             end)
 
