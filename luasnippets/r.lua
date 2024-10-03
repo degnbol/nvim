@@ -40,6 +40,12 @@ return {
     fmta([[<>[<>, .(<>=<>), by=c("<>")]
     ]], {i(1, "dt"), i(2), i(3, "NAME"), i(4, "sum(COL)"), i(5, "BY")})),
 
+    s({trig="dcast", dscr="Opposite of melt. Long to wide table reshaping.", show_condition=conds.line_end},
+        fmta([[dcast(<>, ... ~ <>, value.var="<>")]], {
+            i(1, "dt"),
+            i(2, "VARIABLE"),
+            i(3, "VALUE"),
+        })),
 
     -- ggplot
 
