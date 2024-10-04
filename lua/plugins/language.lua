@@ -166,5 +166,16 @@ return {
     "udalov/kotlin-vim",
 
     "jaredsampson/vim-pymol",
+
+    {
+        -- pretty decorations on help.
+        -- Currently a bit buggy, might use later when you can toggle it without getting error.
+        "OXY2DEV/helpview.nvim",
+        enabled = false,
+        lazy = false, -- Recommended
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter"
+        }
+    },
 }
 
