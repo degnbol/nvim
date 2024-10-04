@@ -36,19 +36,24 @@ vim.keymap.set('n', '<leader><leader>[', "<Plug>TableSwapLeft", { buffer=true, d
 vim.keymap.set('n', '<leader><leader>]', "<Plug>TableSwapRight", { buffer=true, desc="Swap table column right"})
 vim.keymap.set('n', '<leader><leader>{', "<Plug>TableAddColLeft", { buffer=true, desc="Add new empty column to the left"})
 vim.keymap.set('n', '<leader><leader>}', "<Plug>TableAddColRight", { buffer=true, desc="Add new empty column to the right"})
-vim.keymap.set("n", "<leader><leader>b", "<Cmd>Telescope bibtex<CR>", { buffer=true, desc="Cite" })
+vim.keymap.set('n', '<leader>fc', "<Cmd>Telescope bibtex<CR>", { buffer=true, desc="Cite" })
 vim.keymap.set('n', '<leader><leader><left>', "<Plug>TableGoLeft", { buffer=true, desc="Goto left cell"})
 vim.keymap.set('n', '<leader><leader><right>', "<Plug>TableGoRight", { buffer=true, desc="Goto right cell"})
 vim.keymap.set('n', '<leader><leader><up>', "<Plug>TableGoUp", { buffer=true, desc="Goto up cell"})
 vim.keymap.set('n', '<leader><leader><down>', "<Plug>TableGoDown", { buffer=true, desc="Goto down cell"})
-vim.keymap.set('n', '<leader><leader><del>', "Clean", { buffer=true, desc="Clean (rm aux)"})
-vim.keymap.set('n', '<leader><leader><S-del>', "Clean all", { buffer=true, desc="Clean all (rm aux+out)"})
+vim.keymap.set('n', '<leader><leader><del>', "<Plug>(vimtex-clean)", { buffer=true, desc="Clean (rm aux)"})
+vim.keymap.set('n', '<leader><leader><S-del>', "<Plug>(vimtex-clean-all)", { buffer=true, desc="Clean all (rm aux+out)"})
 set_keymap_desc('n', '<leader><leader>e', "Errors")
 -- hacky. VimtexErrors puts errors found by Vimtex in quickfix (should be
 -- running, use <leader>Lb) then cclose closes quickfix, and then Telescope
 -- opens the quickfix in a nicer view.
 vim.keymap.set('n', '<space>E', "<Cmd>VimtexErrors<CR>|:cclose|<Cmd>Telescope quickfix<CR>", { buffer=true, desc="Errors"})
-vim.keymap.set('n', '<leader><leader>g', function ()
+-- Avoid accidentally deleting aux files with default keymap that is very similar to the compile keymaps.
+-- no-operation, instead of del since deleting throws error and this means we don't start a vim change motion etc.
+vim.keymap.set('n', "<leader><leader>c", "<nop>", {buffer=true})
+vim.keymap.set('n', "<leader><leader>C", "<nop>", {buffer=true})
+
+vim.keymap.set('n', '<leader>cg', function ()
     local auxs = vim.fs.find("aux", {upward=true, limit=5})
     if #auxs == 0 then
         vim.api.nvim_err_writeln("Couldn't makeglossaries. No aux/ dir found (searched upward)")
@@ -75,7 +80,46 @@ vim.keymap.set('n', '<leader><leader>g', function ()
         end)
     end)
 end, { buffer=true, desc="Compile glossary" })
-vim.keymap.set('n', '<leader><leader>B', function ()
+
+---Notify of stderr from a vim.system call obj.
+---@param obj any
+local function notify_stderr(obj)
+    local stderr = obj.stderr:gsub("\n$", "")
+    vim.schedule(function () -- notify when we are ready
+        vim.notify(stderr) -- vim.notify instead of print to see multiple lines
+    end)
+end
+
+---Run `biber --cache` to get biber cache dir, so far found in /var/folders/...
+---Then call `rm -rf` on it.
+---Then call the supplied on_exit function if given.
+---@param on_exit function
+local function biber_clear_cache(on_exit)
+    vim.system({"biber", "--cache"}, {text=true}, function (obj)
+        if obj.code ~= 0 then
+            notify_stderr(obj)
+        else
+            local cachepath = obj.stdout:gsub('\n$', '')
+            if cachepath:match("^/var/folders/") then
+                vim.system({"rm", "-rf", cachepath}, {text=true}, function (obj)
+                    if obj.code ~= 0 then
+                        notify_stderr(obj)
+                    else
+                        print("biber cache cleared")
+                        if on_exit ~= nil then
+                            on_exit()
+                        end
+                    end
+                end)
+            else
+                print("Unexpected cache path: " .. cachepath)
+            end
+        end
+    end)
+end
+vim.api.nvim_create_user_command("BiberClearCache", biber_clear_cache, {})
+
+vim.keymap.set('n', '<leader>cb', function ()
     local biber = function(on_exit)
         vim.system({"biber", "main"}, {text=true}, on_exit)
     end
@@ -84,19 +128,21 @@ vim.keymap.set('n', '<leader><leader>B', function ()
             print("biber complete")
             return
         end
-        -- Retry once.
-        biber(function (obj)
-            if obj.code == 0 then
-                print("biber complete")
-                return
-            end
-            local stderr = obj.stderr:gsub("\n$", "")
-            vim.schedule(function () -- notify when we are ready
-                vim.notify(stderr) -- vim.notify instead of print to see multiple lines
+        -- Clear cache then retry once.
+        -- Clearing cache helped with cryptic error with message:
+        -- Unicode::UCD: failed to find unicore/version in /var/folders/...
+        biber_clear_cache(function ()
+            biber(function (obj)
+                if obj.code == 0 then
+                    print("biber complete")
+                    return
+                end
+                notify_stderr(obj)
             end)
         end)
     end)
 end, { buffer=true, desc="Compile bibliography" })
+
 vim.keymap.set('n', '<leader><leader>s', "<Plug>(vimtex-status)", { buffer=true, desc="Status"})
 vim.keymap.set('n', '<leader><leader>S', "<Plug>(vimtex-status-all)", { buffer=true, desc="Status all"})
 set_keymap_desc('n', '<leader><leader>i', "Info")
@@ -110,15 +156,12 @@ set_keymap_desc('n', '<leader><leader>T', "TOC toggle")
 vim.keymap.set({"n", "x"}, "<leader><leader>u", "<Plug>Latex2Unicode", { buffer=true, desc="TeX -> unicode" })
 vim.keymap.set({"n", "x"}, "<leader><leader>U", "<Plug>Unicode2Latex", { buffer=true, desc="Unicode -> TeX" })
 vim.keymap.set('n', '<leader>cv', '<Plug>(vimtex-view)', {buffer=true, desc="View"})
-set_keymap_desc('n', '<leader><leader>x', "Reload")
-set_keymap_desc('n', '<leader><leader>X', "Reload state")
+vim.keymap.set('n', '<leader><leader>r', "<Plug>(vimtex-reload)", {desc="Reload"})
+vim.keymap.set('n', '<leader><leader>R', "<Plug>(vimtex-reload-state)", {desc="Reload state"})
 vim.keymap.set('n', '<leader>ck', '<Plug>(vimtex-stop)', {buffer=true, desc="Stop"})
 vim.keymap.set('n', '<leader>cK', '<Plug>(vimtex-stop-all)', {buffer=true, desc="Stop all"})
--- single shot compilation
 vim.keymap.set('n', '<leader>cc', '<Plug>(vimtex-compile-ss)', {buffer=true, desc="Compile single shot"})
-vim.keymap.set('n', '<leader><leader>c', '<Plug>(vimtex-compile-ss)', {buffer=true, desc="Compile single shot"})
 vim.keymap.set('n', '<leader>cC', '<Plug>(vimtex-compile)', {buffer=true, desc="Compile continuously"})
-vim.keymap.set('n', '<leader><leader>C', '<Plug>(vimtex-compile)', {buffer=true, desc="Compile continuously"})
 vim.keymap.set('n', '<leader>cl', '<Plug>(vimtex-compile-output)', {buffer=true, desc="Output"})
 vim.keymap.set('x', '<leader>cc', '<Plug>(vimtex-compile-selected)', {buffer=true, desc="Compile selected"})
 
