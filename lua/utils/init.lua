@@ -1,6 +1,15 @@
 #!/usr/bin/env lua
 local M = {}
 
+---Convenience for plain matching.
+---@param a string
+---@param b string
+---@return integer? start
+---@return integer? stop
+function string.contains(a, b)
+    return a:find(b, 1, true)
+end
+
 function M.readtext(path)
     local file = io.open(path, "rb") -- r read mode and b binary mode
     if not file then return nil end

@@ -4,6 +4,7 @@ local tbl = require "tex.tables"
 require "tex.cmds"
 require "tex.textcolor"
 local hi = require "utils/highlights"
+require "utils/init" -- string.contains
 
 -- also defined in lua/plugins/mini.lua as shift+` but we can just use ` since 
 -- I don't think it has use in latex, maybe except in some verbatim code block or something?
@@ -81,12 +82,16 @@ vim.keymap.set('n', '<leader>cg', function ()
     end)
 end, { buffer=true, desc="Compile glossary" })
 
----Notify of stderr from a vim.system call obj.
+---Notify of stderr or stdout from a vim.system call obj.
+---Intended for stderr. Uses stdout if stderr is empty, which may be the case if program doesn't utilise stderr at all.
 ---@param obj any
-local function notify_stderr(obj)
-    local stderr = obj.stderr:gsub("\n$", "")
+local function schedule_notify(obj)
+    local text = obj.stderr:gsub("\n$", "")
+    if text == "" then
+        text = obj.stdout:gsub("\n$", "")
+    end
     vim.schedule(function () -- notify when we are ready
-        vim.notify(stderr) -- vim.notify instead of print to see multiple lines
+        vim.notify(text) -- vim.notify instead of print to see multiple lines
     end)
 end
 
@@ -97,13 +102,13 @@ end
 local function biber_clear_cache(on_exit)
     vim.system({"biber", "--cache"}, {text=true}, function (obj)
         if obj.code ~= 0 then
-            notify_stderr(obj)
+            schedule_notify(obj)
         else
             local cachepath = obj.stdout:gsub('\n$', '')
             if cachepath:match("^/var/folders/") then
                 vim.system({"rm", "-rf", cachepath}, {text=true}, function (obj)
                     if obj.code ~= 0 then
-                        notify_stderr(obj)
+                        schedule_notify(obj)
                     else
                         print("biber cache cleared")
                         if on_exit ~= nil then
@@ -119,16 +124,22 @@ local function biber_clear_cache(on_exit)
 end
 vim.api.nvim_create_user_command("BiberClearCache", biber_clear_cache, {})
 
-vim.keymap.set('n', '<leader>cb', function ()
+vim.keymap.set('n', '<leader>cb', function (main)
+    if main == nil then main = "main" end
     local biber = function(on_exit)
-        vim.system({"biber", "main"}, {text=true}, on_exit)
+        vim.system({"biber", main}, {text=true}, on_exit)
     end
     biber(function (obj)
         if obj.code == 0 then
             print("biber complete")
             return
         end
-        -- Clear cache then retry once.
+        -- Might have failed due to lack of pdflatex/lualatex/etc. run
+        if obj.stdout:contains("ERROR - Cannot find '"..main..".bcf'!") then
+            print("biber failed: no main.bcf")
+            return
+        end
+        -- Otherwise clear cache then retry once.
         -- Clearing cache helped with cryptic error with message:
         -- Unicode::UCD: failed to find unicore/version in /var/folders/...
         biber_clear_cache(function ()
@@ -137,7 +148,7 @@ vim.keymap.set('n', '<leader>cb', function ()
                     print("biber complete")
                     return
                 end
-                notify_stderr(obj)
+                schedule_notify(obj)
             end)
         end)
     end)
@@ -225,6 +236,7 @@ vim.api.nvim_create_autocmd("Colorscheme", {
         hi.set("texCmdStyleBold", {fg=gray, italic=true})
         hi.set("texCmdStyleItal", {fg=gray, italic=true})
         hi.set("texTypeStyle", {fg=gray, italic=true}) -- e.g. \underline
+        hi.set("texItalStyle", {italic=true}) -- contents of \emph{...}
         hi.set("texCmdRefConcealed", {fg=gray, italic=true}) -- italic \cite
         hi.set("texCmdRef", {fg=gray, italic=true})
         hi.set("texCmdCRef", {fg=gray, italic=true})
