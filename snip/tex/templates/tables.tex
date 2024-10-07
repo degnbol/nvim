@@ -4,8 +4,11 @@
 \usepackage{tabularx} % Column type X for width filling.
 \usepackage{tabulary} % Column type L,C,R,J for balanced width versions of l,c,r,j.
 \usepackage{booktabs} % Better vertical spacing. Midrule etc with varying thickness instead of \hline.
-% creates missing tabularx column type named "R" to specify right adjustment
-\newcolumntype{R}{>>{\raggedleft\arraybackslash}X}
+% creates missing tabularx column type named "R", and "C" to specify right and center adjustment of width-filling column.
+% > is from array package. It inserts the {...} contents directly before each column.
+% https://mirror.aarnet.edu.au/pub/CTAN/macros/latex/required/tools/array.pdf
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
 \usepackage{multicol, multirow} % Also see pbox.
 % \usepackage{longtable} % Multipage table. Might not support column X. Alts: xltabular, ltxtable
 \usepackage{makecell} % multiline cell with \makecell[tl]{TEXT}
