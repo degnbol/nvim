@@ -278,8 +278,23 @@ map('n', "<leader>Q2", "<Cmd>ll 2<CR>", {desc="Entry 2"})
 map('n', "<leader>Q3", "<Cmd>ll 3<CR>", {desc="Entry 3"})
 -- we don't map :lnext etc here since we have ]l etc
 
-map('n', '<leader>bd', "<Cmd>bd<CR>", { desc="Delete" })
-map('n', '<leader>bD', "<Cmd>bd!<CR>", { desc="Delete!" })
+---Delete buffer. Repeat for unnamed empty buffers.
+---@param opts table with bool key force (passed to vim.api.nvim_buf_delete)
+---@param lastbufnr integer? for recursion
+local function bufdel(opts, lastbufnr)
+    opts = opts or {}
+    local bufnr = vim.api.nvim_get_current_buf()
+    -- make sure to not retry if a previous call failed
+    if bufnr == lastbufnr then return end
+    vim.api.nvim_buf_delete(0, opts)
+    -- repeat if next buffer is empty (stop annoying behaviour of vimtex)
+    if not util.is_named() and util.is_empty() then
+        vim.schedule(function() bufdel(opts, bufnr) end)
+    end
+end
+
+map('n', '<leader>bd', bufdel, { desc="Delete" })
+map('n', '<leader>bD', function () bufdel {force=true} end, { desc="Delete!" })
 map('n', "<leader>bn", "<Cmd>enew<CR>", { desc="New" })
 map('n', "<leader>bc", "<Cmd>tabclose<CR>", { desc="tabclose" })
 
