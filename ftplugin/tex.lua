@@ -177,7 +177,7 @@ vim.keymap.set('n', '<leader>cc', function ()
     vim.system({"pgrep", "-f", "latexmk"}, {}, function (obj)
         -- returns success if process is found
         if obj.code == 0 then
-            print("Looks like latexmk is already running, e.g. in another tab.")
+            print("Looks like latexmk is already running, e.g. in another tab. Use :VimtexComileSS to force.")
         else
             vim.cmd.normal '<Plug>(vimtex-compile-ss)'
         end
@@ -186,7 +186,7 @@ end, {buffer=true, desc="Compile single shot"})
 vim.keymap.set('n', '<leader>cC', function ()
     vim.system({"pgrep", "-f", "latexmk"}, {}, function (obj)
         if obj.code == 0 then
-            print("Looks like latexmk is already running, e.g. in another tab.")
+            print("Looks like latexmk is already running, e.g. in another tab. Use :VimtexComile to force.")
         else
             vim.cmd.normal '<Plug>(vimtex-compile)'
         end
