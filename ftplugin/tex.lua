@@ -5,6 +5,7 @@ require "tex.cmds"
 require "tex.textcolor"
 local hi = require "utils/highlights"
 require "utils/init" -- string.contains
+local latexmk = require "tex.latexmk"
 
 -- also defined in lua/plugins/mini.lua as shift+` but we can just use ` since 
 -- I don't think it has use in latex, maybe except in some verbatim code block or something?
@@ -158,7 +159,7 @@ vim.keymap.set('n', '<leader><leader>s', "<Plug>(vimtex-status)", { buffer=true,
 vim.keymap.set('n', '<leader><leader>S', "<Plug>(vimtex-status-all)", { buffer=true, desc="Status all"})
 set_keymap_desc('n', '<leader><leader>i', "Info")
 set_keymap_desc('n', '<leader><leader>I', "Info full")
-set_keymap_desc('n', '<leader><leader>q', "Log")
+set_keymap_desc('n', '<leader><leader>q', "Log of VimTeX actions")
 -- j for jump. Not using p for preamble since I want to use it for pasting tables.
 vim.keymap.set("n", "<leader><leader>j", "<Plug>TableJumpPre", { buffer=true, desc="goto/from preamble (table)" })
 vim.keymap.set('n', '<leader><leader>m', "<Plug>(vimtex-toggle-main)", { buffer=true, desc="Toggle compiling main vs subfile" })
@@ -173,22 +174,20 @@ vim.keymap.set('n', '<leader>ck', '<Plug>(vimtex-stop)', {buffer=true, desc="Sto
 vim.keymap.set('n', '<leader>cK', '<Plug>(vimtex-stop-all)', {buffer=true, desc="Stop all"})
 vim.keymap.set('n', '<leader>cc', function ()
     -- check for already running latexmk, since running it twice will break things.
-    -- We need to grep in full name (-f), since the command is `perl /Library/TeX/texbin/latexmk ...`
-    vim.system({"pgrep", "-f", "latexmk"}, {}, function (obj)
-        -- returns success if process is found
-        if obj.code == 0 then
+    latexmk.is_running(function (is_running)
+        if is_running then
             print("Looks like latexmk is already running, e.g. in another tab. Use :VimtexComileSS to force.")
         else
-            vim.cmd.normal '<Plug>(vimtex-compile-ss)'
+            vim.schedule(vim.fn["vimtex#compiler#compile_ss"])
         end
     end)
 end, {buffer=true, desc="Compile single shot"})
 vim.keymap.set('n', '<leader>cC', function ()
-    vim.system({"pgrep", "-f", "latexmk"}, {}, function (obj)
-        if obj.code == 0 then
+    latexmk.is_running(function (is_running)
+        if is_running then
             print("Looks like latexmk is already running, e.g. in another tab. Use :VimtexComile to force.")
         else
-            vim.cmd.normal '<Plug>(vimtex-compile)'
+            vim.schedule(vim.fn["vimtex#compiler#compile"])
         end
     end)
 end, {buffer=true, desc="Compile continuously"})

@@ -1,5 +1,4 @@
-local cmd = vim.cmd
-local fn = vim.fn
+local latexmk = require "tex.latexmk"
 local g = vim.g
 
 -- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
@@ -60,6 +59,7 @@ return {
             g.vimtex_compiler_latexmk = {
                 aux_dir = "aux",
                 out_dir = "aux",
+                -- callback = true,
             }
             -- set default latex engine to the modern lualatex over pdflatex
             g.vimtex_compiler_latexmk_engines = {
@@ -97,6 +97,49 @@ return {
             vim.defer_fn(function ()
                 vim.api.nvim_set_hl(0, "texCmd", {link="@function.call", force=true})
             end, 1000)
+
+            local grp = vim.api.nvim_create_augroup("vimtex", {clear=true})
+
+            vim.api.nvim_create_autocmd("User", {
+                pattern = "*VimtexEventCompileStarted*",
+                group = grp,
+                callback = function ()
+                    local VimtexCompiling = true
+                end
+            })
+            
+            vim.api.nvim_create_autocmd("User", {
+                pattern = "VimtexEventCompileFailed",
+                group = grp,
+                callback = function ()
+                    -- Make function arg if needed
+                    local opts = {
+                        main = "main",
+                        aux  = "aux",
+                    }
+                    local auxs = vim.fs.find(opts.aux, {upward=true, limit=5})
+                    if #auxs == 0 then return end
+                    local search_pattern = "ERROR - " .. opts.aux .. "/" .. opts.main .. ".bcf is malformed"
+                    vim.system({"grep", search_pattern, "main.blg"}, {cwd=auxs[1]}, function (obj)
+                        if obj.code == 0 then -- search pattern found, i.e. main.bcf is malformed
+                            print(opts.main .. ".bcf malformed. Cleaning...")
+                            vim.schedule(function ()
+                                vim.fn["vimtex#compiler#clean"](0)
+                                vim.defer_fn(function ()
+                                    latexmk.is_running(function (is_running)
+                                        -- Since this autocmd is triggered by failed compile it means we just tried to compile.
+                                        -- Then we should either be in continuous mode with a latexmk process running (is_running == true),
+                                        -- or it was a single shot compile that failed, hence we redo single shot compile here.
+                                        if not is_running then
+                                            vim.fn["vimtex#compiler#compile_ss"]()
+                                        end
+                                    end)
+                                end, 500)
+                            end)
+                        end
+                    end)
+                end
+            })
 
             local grp = vim.api.nvim_create_augroup("TexMain", {clear=true})
             -- Set tex main file by looking for a file upwards named "main.tex"
