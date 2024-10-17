@@ -21,7 +21,7 @@ local defaultlines = {
         local cmdname = vim.fn.expand('%:r')
         lines = {
             "# || syntax allows <PATH> to take completion precidence over options (otherwise they would be suggested together)",
-            cmdname .. " <PATH> || [<OPTION>]... <PATH>;",
+            cmdname .. " <PATH>... || [<OPTION>]... <PATH>...;",
             "",
             "<OPTION> ::=",
             "      (--help) \"display this help and exit\"",
