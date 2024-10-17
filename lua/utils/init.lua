@@ -125,6 +125,26 @@ function M.set_cursor(r, c)
     vim.api.nvim_win_set_cursor(0, {r+1, c})
 end
 
+---Get all lines of the current buffer.
+---@return table array of strings.
+function M.get_all_lines()
+    return vim.api.nvim_buf_get_lines(0, 0, -1, true)
+end
+
+---Is current buffer empty?
+---@return boolean empty
+function M.is_empty()
+    -- only use max 2 lines for efficiency
+    local lines = vim.api.nvim_buf_get_lines(0, 0, 2, false)
+    return #lines == 1 and lines[1] == ""
+end
+
+---Is current buffer named?
+---@return boolean named
+function M.is_named()
+    -- Note that "" evaluates to true in lua
+    return vim.api.nvim_buf_get_name(0) ~= ""
+end
 
 ---@param r integer 0-indexed
 function M.get_line(r)

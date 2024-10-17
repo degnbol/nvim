@@ -203,7 +203,7 @@ return {
 
             lsp.yamlls.setup {
                 settings = { yaml = { schemas = {
-                    [vim.opt.runtimepath:get()[1] .. "/lua/completion/asciidoc-theme.json"] = "*.adoc.yml",
+                    [vim.opt.runtimepath:get()[1] .. "/lua/completion/asciidoc/asciidoc-theme.json"] = "*.adoc.yml",
                 }}}
             }
 

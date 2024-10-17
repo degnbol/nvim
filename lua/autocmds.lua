@@ -20,7 +20,7 @@ local defaultlines = {
         -- assume filename is command name
         local cmdname = vim.fn.expand('%:r')
         lines = {
-            "# || syntax allows <PATH> to take completion precidence over options (otherwise they would be given together)",
+            "# || syntax allows <PATH> to take completion precidence over options (otherwise they would be suggested together)",
             cmdname .. " <PATH> || [<OPTION>]... <PATH>;",
             "",
             "<OPTION> ::=",

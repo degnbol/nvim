@@ -7,7 +7,7 @@ local M = {}
 local registered = false
 
 local rtp = vim.opt.runtimepath:get()[1]
-local fh = io.open(rtp .. "/lua/completion/plotlyjs.json")
+local fh = io.open(rtp .. "/lua/completion/plotlyjs/plotlyjs.json")
 local tree = vim.json.decode(fh:read("*a"))
 fh:close()
 -- extend with shortcut entries such as marker_color=... instead of marker=attr(color=...).
@@ -83,7 +83,7 @@ M.setup = function()
     if not has_cmp then return end
 
     -- the rest is modified from :help cmp-develop
-    
+
     local source = {}
 
     ---Return the keyword pattern for triggering completion (optional).
@@ -96,7 +96,7 @@ M.setup = function()
     -- main purpose of this is to separate these completion items from regular text items, 
     -- so regular text suggestions comes after due to my custom sorting in completion.lua
     local types = require('cmp.types')
-    
+
     ---Invoke completion (required).
     ---@param params cmp.SourceCompletionApiParams
     ---@param callback fun(response: lsp.CompletionResponse|nil)

@@ -1,0 +1,5644 @@
+<html>
+<head>
+<title>PyMOL Command Reference</title>
+<style type='text/css'>
+body, p, h1, h2 {
+  font-family: sans-serif;
+}
+p.api {
+  font:small monospace;
+  color:#999;
+}
+pre.example {
+  background-color: #ccc;
+  padding: 5px;
+}
+li {
+  display: block;
+  width: 10em;
+  float: left;
+}
+</style>
+</head>
+<body>
+<h1>PyMOL Command Reference</h1>
+
+<p>This is the list of all PyMOL commands which can be used in the PyMOL
+command line and in PML scripts. The command descriptions found in this
+file can also be printed to the PyMOL text buffer with the
+<a href="#help">help</a> command. Example:</p>
+
+<pre class="example">PyMOL&gt;help color
+...</pre>
+
+<p>The list of arguments for a command (the "usage") can be queried on
+the command line with a questionmark. Example:</p>
+
+<pre class="example">PyMOL&gt;color ?
+Usage: color color [, selection [, quiet [, flags ]]]</pre>
+
+<p>The square brackets ("[" and "]") indicate optional arguments and are
+not part of the syntax.</p>
+
+<p>If the PyMOL command interpreter doesn't understand some input, it passes
+it to the Python interpreter. This means that single-line Python expressions
+can be put into PML scripts or typed into the command line. Prefixing a line
+with a slash (/) forces the interpreter to pass it to Python. See also the
+<a href="#python">python</a> command to input multi-line Python scripts.</p>
+
+<p>This file can be generated on the PyMOL command line:</p>
+<pre class="example">PyMOL&gt;cmd.write_html_ref('pymol-command-ref.html')</pre>
+
+<hr size=1>
+
+<ul>
+<li><a href='#abort'>abort</a></li><li><a href='#accept'>accept</a></li><li><a href='#alias'>alias</a></li><li><a href='#align'>align</a></li><li><a href='#alignto'>alignto</a></li><li><a href='#alphatoall'>alphatoall</a></li><li><a href='#alter'>alter</a></li><li><a href='#alter_state'>alter_state</a></li><li><a href='#angle'>angle</a></li><li><a href='#api'>api</a></li><li><a href='#as'>as</a></li><li><a href='#assign_stereo'>assign_stereo</a></li><li><a href='#attach'>attach</a></li><li><a href='#backward'>backward</a></li><li><a href='#bg_color'>bg_color</a></li><li><a href='#bond'>bond</a></li><li><a href='#button'>button</a></li><li><a href='#cache'>cache</a></li><li><a href='#callout'>callout</a></li><li><a href='#capture'>capture</a></li><li><a href='#cartoon'>cartoon</a></li><li><a href='#cd'>cd</a></li><li><a href='#cealign'>cealign</a></li><li><a href='#center'>center</a></li><li><a href='#centerofmass'>centerofmass</a></li><li><a href='#check'>check</a></li><li><a href='#clean'>clean</a></li><li><a href='#clip'>clip</a></li><li><a href='#cls'>cls</a></li><li><a href='#color'>color</a></li><li><a href='#color_deep'>color_deep</a></li><li><a href='#config_mouse'>config_mouse</a></li><li><a href='#copy'>copy</a></li><li><a href='#copy_to'>copy_to</a></li><li><a href='#count_atoms'>count_atoms</a></li><li><a href='#count_discrete'>count_discrete</a></li><li><a href='#count_frames'>count_frames</a></li><li><a href='#count_states'>count_states</a></li><li><a href='#create'>create</a></li><li><a href='#curve_new'>curve_new</a></li><li><a href='#cycle_valence'>cycle_valence</a></li><li><a href='#decline'>decline</a></li><li><a href='#delete'>delete</a></li><li><a href='#deprotect'>deprotect</a></li><li><a href='#desaturate'>desaturate</a></li><li><a href='#deselect'>deselect</a></li><li><a href='#diagnostics'>diagnostics</a></li><li><a href='#dihedral'>dihedral</a></li><li><a href='#dir'>dir</a></li><li><a href='#disable'>disable</a></li><li><a href='#distance'>distance</a></li><li><a href='#drag'>drag</a></li><li><a href='#draw'>draw</a></li><li><a href='#dss'>dss</a></li><li><a href='#dump'>dump</a></li><li><a href='#edit'>edit</a></li><li><a href='#edit_mode'>edit_mode</a></li><li><a href='#editing_ring'>editing_ring</a></li><li><a href='#embed'>embed</a></li><li><a href='#enable'>enable</a></li><li><a href='#ending'>ending</a></li><li><a href='#extra_fit'>extra_fit</a></li><li><a href='#extract'>extract</a></li><li><a href='#fab'>fab</a></li><li><a href='#feedback'>feedback</a></li><li><a href='#fetch'>fetch</a></li><li><a href='#fit'>fit</a></li><li><a href='#fix_chemistry'>fix_chemistry</a></li><li><a href='#flag'>flag</a></li><li><a href='#fnab'>fnab</a></li><li><a href='#focal_blur'>focal_blur</a></li><li><a href='#fork'>fork</a></li><li><a href='#forward'>forward</a></li><li><a href='#fragment'>fragment</a></li><li><a href='#frame'>frame</a></li><li><a href='#full_screen'>full_screen</a></li><li><a href='#fuse'>fuse</a></li><li><a href='#get'>get</a></li><li><a href='#get_angle'>get_angle</a></li><li><a href='#get_area'>get_area</a></li><li><a href='#get_bond'>get_bond</a></li><li><a href='#get_chains'>get_chains</a></li><li><a href='#get_clip'>get_clip</a></li><li><a href='#get_dihedral'>get_dihedral</a></li><li><a href='#get_distance'>get_distance</a></li><li><a href='#get_extent'>get_extent</a></li><li><a href='#get_position'>get_position</a></li><li><a href='#get_renderer'>get_renderer</a></li><li><a href='#get_sasa_relative'>get_sasa_relative</a></li><li><a href='#get_symmetry'>get_symmetry</a></li><li><a href='#get_title'>get_title</a></li><li><a href='#get_type'>get_type</a></li><li><a href='#get_version'>get_version</a></li><li><a href='#get_view'>get_view</a></li><li><a href='#get_viewport'>get_viewport</a></li><li><a href='#gradient'>gradient</a></li><li><a href='#group'>group</a></li><li><a href='#h_add'>h_add</a></li><li><a href='#h_fill'>h_fill</a></li><li><a href='#h_fix'>h_fix</a></li><li><a href='#help'>help</a></li><li><a href='#help_setting'>help_setting</a></li><li><a href='#hide'>hide</a></li><li><a href='#id_atom'>id_atom</a></li><li><a href='#identify'>identify</a></li><li><a href='#index'>index</a></li><li><a href='#indicate'>indicate</a></li><li><a href='#intra_fit'>intra_fit</a></li><li><a href='#intra_rms'>intra_rms</a></li><li><a href='#intra_rms_cur'>intra_rms_cur</a></li><li><a href='#invert'>invert</a></li><li><a href='#isodot'>isodot</a></li><li><a href='#isolevel'>isolevel</a></li><li><a href='#isomesh'>isomesh</a></li><li><a href='#isosurface'>isosurface</a></li><li><a href='#iterate'>iterate</a></li><li><a href='#iterate_state'>iterate_state</a></li><li><a href='#join_states'>join_states</a></li><li><a href='#label'>label</a></li><li><a href='#load'>load</a></li><li><a href='#load_embedded'>load_embedded</a></li><li><a href='#load_mtz'>load_mtz</a></li><li><a href='#load_png'>load_png</a></li><li><a href='#load_traj'>load_traj</a></li><li><a href='#loadall'>loadall</a></li><li><a href='#log'>log</a></li><li><a href='#log_close'>log_close</a></li><li><a href='#log_open'>log_open</a></li><li><a href='#look_at'>look_at</a></li><li><a href='#ls'>ls</a></li><li><a href='#madd'>madd</a></li><li><a href='#map_double'>map_double</a></li><li><a href='#map_halve'>map_halve</a></li><li><a href='#map_new'>map_new</a></li><li><a href='#map_set'>map_set</a></li><li><a href='#map_set_border'>map_set_border</a></li><li><a href='#map_trim'>map_trim</a></li><li><a href='#mappend'>mappend</a></li><li><a href='#mask'>mask</a></li><li><a href='#matrix_copy'>matrix_copy</a></li><li><a href='#matrix_reset'>matrix_reset</a></li><li><a href='#mclear'>mclear</a></li><li><a href='#mcopy'>mcopy</a></li><li><a href='#mdelete'>mdelete</a></li><li><a href='#mdo'>mdo</a></li><li><a href='#mdump'>mdump</a></li><li><a href='#mem'>mem</a></li><li><a href='#meter_reset'>meter_reset</a></li><li><a href='#middle'>middle</a></li><li><a href='#minsert'>minsert</a></li><li><a href='#mmatrix'>mmatrix</a></li><li><a href='#mmove'>mmove</a></li><li><a href='#morph'>morph</a></li><li><a href='#mouse'>mouse</a></li><li><a href='#move'>move</a></li><li><a href='#movie.load'>movie.load</a></li><li><a href='#movie.nutate'>movie.nutate</a></li><li><a href='#movie.pause'>movie.pause</a></li><li><a href='#movie.produce'>movie.produce</a></li><li><a href='#movie.rock'>movie.rock</a></li><li><a href='#movie.roll'>movie.roll</a></li><li><a href='#movie.screw'>movie.screw</a></li><li><a href='#movie.sweep'>movie.sweep</a></li><li><a href='#movie.tdroll'>movie.tdroll</a></li><li><a href='#movie.zoom'>movie.zoom</a></li><li><a href='#mplay'>mplay</a></li><li><a href='#mpng'>mpng</a></li><li><a href='#mse2met'>mse2met</a></li><li><a href='#mset'>mset</a></li><li><a href='#mstop'>mstop</a></li><li><a href='#mtoggle'>mtoggle</a></li><li><a href='#multifilesave'>multifilesave</a></li><li><a href='#multisave'>multisave</a></li><li><a href='#mview'>mview</a></li><li><a href='#order'>order</a></li><li><a href='#orient'>orient</a></li><li><a href='#origin'>origin</a></li><li><a href='#overlap'>overlap</a></li><li><a href='#pair_fit'>pair_fit</a></li><li><a href='#pbc_unwrap'>pbc_unwrap</a></li><li><a href='#pbc_wrap'>pbc_wrap</a></li><li><a href='#phi_psi'>phi_psi</a></li><li><a href='#pi_interactions'>pi_interactions</a></li><li><a href='#png'>png</a></li><li><a href='#pop'>pop</a></li><li><a href='#protect'>protect</a></li><li><a href='#pseudoatom'>pseudoatom</a></li><li><a href='#pwd'>pwd</a></li><li><a href='#python'>python</a></li><li><a href='#quit'>quit</a></li><li><a href='#ramp_new'>ramp_new</a></li><li><a href='#ramp_update'>ramp_update</a></li><li><a href='#ray'>ray</a></li><li><a href='#rebond'>rebond</a></li><li><a href='#rebuild'>rebuild</a></li><li><a href='#recolor'>recolor</a></li><li><a href='#redo'>redo</a></li><li><a href='#reference'>reference</a></li><li><a href='#refresh'>refresh</a></li><li><a href='#refresh_wizard'>refresh_wizard</a></li><li><a href='#reinitialize'>reinitialize</a></li><li><a href='#remove'>remove</a></li><li><a href='#remove_picked'>remove_picked</a></li><li><a href='#rename'>rename</a></li><li><a href='#replace'>replace</a></li><li><a href='#replace_wizard'>replace_wizard</a></li><li><a href='#reset'>reset</a></li><li><a href='#resume'>resume</a></li><li><a href='#rewind'>rewind</a></li><li><a href='#rms'>rms</a></li><li><a href='#rms_cur'>rms_cur</a></li><li><a href='#rock'>rock</a></li><li><a href='#rotate'>rotate</a></li><li><a href='#run'>run</a></li><li><a href='#save'>save</a></li><li><a href='#scene'>scene</a></li><li><a href='#scene_order'>scene_order</a></li><li><a href='#sculpt_activate'>sculpt_activate</a></li><li><a href='#sculpt_deactivate'>sculpt_deactivate</a></li><li><a href='#sculpt_iterate'>sculpt_iterate</a></li><li><a href='#sculpt_purge'>sculpt_purge</a></li><li><a href='#select'>select</a></li><li><a href='#set'>set</a></li><li><a href='#set_bond'>set_bond</a></li><li><a href='#set_color'>set_color</a></li><li><a href='#set_dihedral'>set_dihedral</a></li><li><a href='#set_geometry'>set_geometry</a></li><li><a href='#set_key'>set_key</a></li><li><a href='#set_name'>set_name</a></li><li><a href='#set_symmetry'>set_symmetry</a></li><li><a href='#set_title'>set_title</a></li><li><a href='#set_view'>set_view</a></li><li><a href='#show'>show</a></li><li><a href='#skip'>skip</a></li><li><a href='#slice_new'>slice_new</a></li><li><a href='#smooth'>smooth</a></li><li><a href='#sort'>sort</a></li><li><a href='#space'>space</a></li><li><a href='#spawn'>spawn</a></li><li><a href='#spectrum'>spectrum</a></li><li><a href='#spheroid'>spheroid</a></li><li><a href='#splash'>splash</a></li><li><a href='#split_chains'>split_chains</a></li><li><a href='#split_states'>split_states</a></li><li><a href='#stereo'>stereo</a></li><li><a href='#super'>super</a></li><li><a href='#symexp'>symexp</a></li><li><a href='#symmetry_copy'>symmetry_copy</a></li><li><a href='#system'>system</a></li><li><a href='#toggle'>toggle</a></li><li><a href='#torsion'>torsion</a></li><li><a href='#translate'>translate</a></li><li><a href='#turn'>turn</a></li><li><a href='#unbond'>unbond</a></li><li><a href='#undo'>undo</a></li><li><a href='#ungroup'>ungroup</a></li><li><a href='#uniquify'>uniquify</a></li><li><a href='#unmask'>unmask</a></li><li><a href='#unpick'>unpick</a></li><li><a href='#unset'>unset</a></li><li><a href='#unset_bond'>unset_bond</a></li><li><a href='#unset_deep'>unset_deep</a></li><li><a href='#update'>update</a></li><li><a href='#util.cbab'>util.cbab</a></li><li><a href='#util.cbac'>util.cbac</a></li><li><a href='#util.cbag'>util.cbag</a></li><li><a href='#util.cbak'>util.cbak</a></li><li><a href='#util.cbam'>util.cbam</a></li><li><a href='#util.cbao'>util.cbao</a></li><li><a href='#util.cbap'>util.cbap</a></li><li><a href='#util.cbas'>util.cbas</a></li><li><a href='#util.cbaw'>util.cbaw</a></li><li><a href='#util.cbay'>util.cbay</a></li><li><a href='#util.cbc'>util.cbc</a></li><li><a href='#util.chainbow'>util.chainbow</a></li><li><a href='#util.cnc'>util.cnc</a></li><li><a href='#util.rainbow'>util.rainbow</a></li><li><a href='#util.ss'>util.ss</a></li><li><a href='#valence'>valence</a></li><li><a href='#vdw_fit'>vdw_fit</a></li><li><a href='#view'>view</a></li><li><a href='#viewport'>viewport</a></li><li><a href='#volume'>volume</a></li><li><a href='#volume_color'>volume_color</a></li><li><a href='#volume_panel'>volume_panel</a></li><li><a href='#volume_ramp_new'>volume_ramp_new</a></li><li><a href='#window'>window</a></li><li><a href='#wizard'>wizard</a></li><li><a href='#zoom'>zoom</a></li></ul><br style="clear: both"><hr size=1><h2 id='abort'>abort</h2><pre><b>DESCRIPTION</b>
+
+    "abort" abruptly terminates execution of the PyMOL command script
+    without executing any additional commands.
+
+<b>SEE ALSO</b>
+
+    <a href='#embed'>embed</a>, <a href='#skip'>skip</a>, <a href='#python'>python</a></pre><p class='api'>api: pymol.helping.abort</p><hr size=1><h2 id='accept'>accept</h2><pre><b>DESCRIPTION</b>
+
+    "accept" is an internal method for handling of session file
+    security.</pre><p class='api'>api: pymol.moving.accept</p><hr size=1><h2 id='alias'>alias</h2><pre><b>DESCRIPTION</b>
+
+    "alias" binds routinely-used command inputs to a new command
+    keyword.
+
+<b>USAGE</b>
+
+    alias name, command
+
+<b>ARGUMENTS</b>
+
+    name = string: new keyword
+    
+    command = string: literal input with commands separated by semicolons.
+    
+<b>EXAMPLE</b>
+
+    alias my_scene, hide; show ribbon, polymer; show sticks, organic; show nonbonded, solvent
+    
+    my_scene
+
+<b>NOTES</b>
+
+    For security reasons, aliased commands are not saved or restored
+    in sessions.
+
+<b>SEE ALSO</b>
+
+    cmd.extend, <a href='#api'>api</a></pre><p class='api'>api: pymol.commanding.alias</p><hr size=1><h2 id='align'>align</h2><pre><b>DESCRIPTION</b>
+
+    "align" performs a sequence alignment followed by a structural
+    superposition, and then carries out zero or more cycles of
+    refinement in order to reject structural outliers found during
+    the fit. "align" does a good job on proteins with decent sequence
+    similarity (identity &gt;30%). For comparing proteins with lower
+    sequence identity, the "super" and "cealign" commands perform
+    better.
+
+<b>USAGE </b>
+
+    align mobile, target [, cutoff [, cycles
+        [, gap [, extend [, max_gap [, object
+        [, matrix [, mobile_state [, target_state
+        [, quiet [, max_skip [, transform [, reset ]]]]]]]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    mobile = string: atom selection of mobile object
+
+    target = string: atom selection of target object
+
+    cutoff = float: outlier rejection cutoff in Angstrom {default: 2.0}
+
+    cycles = int: maximum number of outlier rejection cycles {default: 5}
+
+    gap, extend, max_gap: sequence alignment parameters
+
+    object = string: name of alignment object to create {default: (no
+    alignment object)}
+
+    matrix = string: file name of substitution matrix for sequence
+    alignment {default: BLOSUM62}
+
+    mobile_state = int: object state of mobile selection {default: 0 = all states}
+
+    target_state = int: object state of target selection {default: 0 = all states}
+
+    transform = 0/1: do superposition {default: 1}
+        
+<b>NOTES</b>
+
+    If object is specified, then align will create an object which
+    indicates paired atoms and supports visualization of the alignment
+    in the sequence viewer.
+
+    The RMSD of the aligned atoms (after outlier rejection!) is reported
+    in the text output. The all-atom RMSD can be obtained by setting
+    cycles=0 and thus not doing any outlier rejection.
+
+<b>EXAMPLE</b>
+
+    align protA////CA, protB////CA, object=alnAB
+
+<b>SEE ALSO</b>
+
+    <a href='#super'>super</a>, <a href='#cealign'>cealign</a>, <a href='#pair_fit'>pair_fit</a>, <a href='#fit'>fit</a>, <a href='#rms'>rms</a>, <a href='#rms_cur'>rms_cur</a>, <a href='#intra_rms'>intra_rms</a>, <a href='#intra_rms_cur'>intra_rms_cur</a></pre><p class='api'>api: pymol.fitting.align</p><hr size=1><h2 id='alignto'>alignto</h2><pre><b>DESCRIPTION</b>
+
+    "alignto" aligns all other loaded objects to the target
+    using the specified alignment algorithm.
+
+    This is a wrapper for "extra_fit".
+
+<b>USAGE</b>
+
+    alignto [ target [, method [, selection [, quiet ]]]]
+
+<b>ARGUMENTS</b>
+
+    target = str: reference object name {default: first object in selection}
+
+    method = str: (see "extra_fit") {default: cealign}
+
+    selection = str: (see "extra_fit") {default: public objects}
+
+<b>EXAMPLE</b>
+
+    # fetch some calmodulins
+    fetch 1cll 1sra 1ggz 1k95, async=0
+
+    # align them to 1cll using cealign
+    alignto 1cll, method=cealign
+    alignto 1cll, object=all_to_1cll
+
+<b>SEE ALSO</b>
+
+    <a href='#extra_fit'>extra_fit</a>, <a href='#align'>align</a>, <a href='#super'>super</a>, <a href='#cealign'>cealign</a>, <a href='#fit'>fit</a>, <a href='#rms'>rms</a>, <a href='#rms_cur'>rms_cur</a>, <a href='#intra_fit'>intra_fit</a></pre><p class='api'>api: pymol.fitting.alignto</p><hr size=1><h2 id='alphatoall'>alphatoall</h2><pre><b>DESCRIPTION</b>
+
+    Expand any given property of the CA atoms to all atoms in the residue
+
+<b>ARGUMENTS</b>
+
+    selection = string: atom selection {default: polymer}
+
+    properties = string: space separated list of atom properties {default: b}</pre><p class='api'>api: pymol.editing.alphatoall</p><hr size=1><h2 id='alter'>alter</h2><pre><b>DESCRIPTION</b>
+
+    "alter" changes atomic properties using an expression evaluated
+    within a temporary namespace for each atom.
+
+<b>USAGE</b>
+
+    alter selection, expression
+
+<b>EXAMPLES</b>
+
+    alter chain A, chain='B'
+    alter all, resi=str(int(resi)+100)
+    sort
+
+<b>NOTES</b>
+
+    Symbols defined (* = read only):
+
+    name, resn, resi, resv, chain, segi, elem, alt, q, b, vdw, type,
+    partial_charge, formal_charge, elec_radius, text_type, label, 
+    numeric_type, model*, state*, index*, ID, rank, color, ss,
+    cartoon, flags
+
+    All strings must be explicitly quoted.  This operation typically
+    takes several seconds per thousand atoms altered.  
+
+    You may need to issue a "rebuild" in order to update associated
+    representations.
+    
+    WARNING: You should always issue a "sort" command on an object
+    after modifying any property which might affect canonical atom
+    ordering (names, chains, etc.).  Failure to do so will confound
+    subsequent "create" and "byres" operations.  
+
+<b>SEE ALSO</b>
+
+    <a href='#alter_state'>alter_state</a>, <a href='#iterate'>iterate</a>, <a href='#iterate_state'>iterate_state</a>, <a href='#sort'>sort</a></pre><p class='api'>api: pymol.editing.alter</p><hr size=1><h2 id='alter_state'>alter_state</h2><pre><b>DESCRIPTION</b>
+
+    "alter_state" changes atom coordinates and flags over a particular
+    state and selection using the Python evaluator with a temporary
+    namespace for each atomic coordinate.
+
+<b>USAGE</b>
+
+    alter_state state, selection, expression
+
+<b>EXAMPLES</b>
+
+    alter_state 1, all, x=x+5
+    rebuild
+    
+<b>NOTES</b>
+
+    By default, most of the symbols from "alter" are available for use
+    on a read-only basis.  
+
+    It is usually necessary to "rebuild" representations once your
+    alterations are complete.
+    
+<b>SEE ALSO</b>
+
+    <a href='#iterate_state'>iterate_state</a>, <a href='#alter'>alter</a>, <a href='#iterate'>iterate</a></pre><p class='api'>api: pymol.editing.alter_state</p><hr size=1><h2 id='angle'>angle</h2><pre><b>DESCRIPTION</b>
+
+    "angle" shows the angle formed between any three atoms.
+
+<b>USAGE</b>
+
+    angle [ name [, selection1 [, selection2 [, selection3 ]]]]
+
+<b>NOTES</b>
+
+    "angle" alone will show the angle angle formed by selections (pk1),
+    (pk2), (pk3) which can be set using the "PkAt" mouse action
+    (typically, Ctrl-middle-click)
+
+<b>PYMOL API</b>
+
+    cmd.angle(string name, string selection1, string selection2,
+              string selection3)
+
+<b>SEE ALSO</b>
+
+    <a href='#distance'>distance</a>, <a href='#dihedral'>dihedral</a></pre><p class='api'>api: pymol.querying.angle</p><hr size=1><h2 id='api'>api</h2><pre><b>DESCRIPTION</b>
+
+    API helper function. Get the full function name (incl. module) of
+    given command.
+
+<b>ARGUMENTS</b>
+
+    name = string: name of a PyMOL command
+
+<b>NOTES</b>
+
+    The PyMOL Python Application Programming Interface (API) should be
+    accessed exclusively through the "cmd" module (never "_cmd"!).  Nearly
+    all command-line functions have a corresponding API method.
+
+    from pymol import cmd
+    result = cmd.&lt;command-name&gt;( argument , ... ) 
+
+    Although the PyMOL core is not multi-threaded, the API is
+    thread-safe and can be called asynchronously by external python
+    programs.  PyMOL handles the necessary locking to insure that
+    internal states do not get corrupted.  This makes it very easy to
+    build complicated systems which involve direct realtime visualization.</pre><p class='api'>api: pymol.helping.api</p><hr size=1><h2 id='as'>as</h2><pre><b>DESCRIPTION</b>
+
+    "as" turns on and off atom and bond representations.
+
+<b>USAGE</b>
+
+    as representation [, selection ]
+
+<b>ARGUMENTS</b>
+    
+    representation = lines, spheres, mesh, ribbon, cartoon, sticks,
+        dots, surface, labels, extent, nonbonded, nb_spheres, slice,
+        extent, slice, dashes, angles, dihedrals, cgo, cell, callback,
+        volume or everything
+
+    selection = string {default: all}
+
+<b>EXAMPLES</b>
+
+    as lines, name CA+C+N
+
+    as ribbon
+
+<b>PYMOL API</b>
+
+    cmd.show_as(string representation, string selection)
+
+<b>NOTES</b>
+
+    "selection" can be an object name
+    "as" alone will turn on lines and nonbonded and hide everything else.
+
+<b>SEE ALSO</b>
+
+    <a href='#show'>show</a>, <a href='#hide'>hide</a>, <a href='#enable'>enable</a>, <a href='#disable'>disable</a></pre><p class='api'>api: pymol.viewing.show_as</p><hr size=1><h2 id='assign_stereo'>assign_stereo</h2><pre><b>DESCRIPTION</b>
+
+    Assign "stereo" atom property (R/S stereochemistry).
+
+    Requires either a Schrodinger Suite installation (SCHRODINGER
+    environment variable set) or RDKit (rdkit Python module).
+
+<b>USAGE</b>
+
+    assign_stereo [selection [, state [, method ]]]
+
+<b>ARGUMENTS</b>
+
+    selection = str: atom selection {default: all}
+
+    state = int: object state {default: -1 (current)}
+
+    method = schrodinger or rdkit: {default: try both}</pre><p class='api'>api: pymol.stereochemistry.assign_stereo</p><hr size=1><h2 id='attach'>attach</h2><pre><b>DESCRIPTION</b>
+
+    "attach" adds a single atom on to the picked atom.
+
+<b>USAGE</b>
+
+    attach element, geometry, valence
+
+<b>PYMOL API</b>
+
+    cmd.attach( element, geometry, valence )</pre><p class='api'>api: pymol.editing.attach</p><hr size=1><h2 id='backward'>backward</h2><pre><b>DESCRIPTION</b>
+
+    "backward" moves the movie back one frame.
+
+<b>USAGE</b>
+
+    backward
+
+<b>PYMOL API</b>
+
+    cmd.backward()
+
+<b>SEE ALSO</b>
+
+    <a href='#mset'>mset</a>, <a href='#forward'>forward</a>, <a href='#rewind'>rewind</a></pre><p class='api'>api: pymol.moving.backward</p><hr size=1><h2 id='bg_color'>bg_color</h2><pre><b>DESCRIPTION</b>
+
+    "bg_color" sets the background color.
+
+<b>USAGE</b>
+
+    bg_color [ color ]
+
+<b>ARGUMENTS</b>
+
+    color = string: color name or number {default: black}
+
+<b>EXAMPLES</b>
+
+    bg_color grey30
+
+    bg_color
+    
+<b>NOTES</b>
+
+    To obtain a transparent background, "unset opaque_background", and
+    then use "ray".
+    
+<b>SEE ALSO</b>
+
+    <a href='#set_color'>set_color</a>, <a href='#ray'>ray</a>
+    
+<b>PYMOL API</b>
+
+    cmd.bg_color(string color)</pre><p class='api'>api: pymol.viewing.bg_color</p><hr size=1><h2 id='bond'>bond</h2><pre><b>DESCRIPTION</b>
+
+    "bond" creates a new bond between two selections, each of which
+    should contain one atom.
+
+<b>USAGE</b>
+
+    bond [atom1, atom2 [,order]]
+
+<b>ARGUMENTS</b>
+
+    atom1 = str: Atom selection of first atom {default: pk1}
+
+    atom2 = str: Atom selection of second atom {default: pk2}
+
+    order = int: Bond order {default: 1}
+
+    symop = str: Symmetry operation code for second atom (e.g. "1_555")
+
+<b>NOTES</b>
+
+    The atoms must both be within the same object.
+
+<b>SEE ALSO</b>
+
+    <a href='#unbond'>unbond</a>, <a href='#fuse'>fuse</a>, <a href='#attach'>attach</a>, <a href='#replace'>replace</a>, <a href='#remove_picked'>remove_picked</a></pre><p class='api'>api: pymol.editing.bond</p><hr size=1><h2 id='button'>button</h2><pre><b>DESCRIPTION</b>
+
+    "button" can be used to redefine what the mouse buttons do.
+
+<b>USAGE</b>
+
+    button button, modifier, action
+
+<b>ARGUMENTS</b>
+
+    button = left, middle, right, wheel, double_left, double_middle,
+        double_right, single_left, single_middle, or single_right
+       
+    modifiers = None, Shft, Ctrl, CtSh, CtAl, CtAl, CtAS, 
+
+    actions = None, Rota, Move, MovZ, Slab, +Box, -Box, Clip, MovS,
+        +/-, PkAt, Pk1, MvSZ, Sele, Orig, Menu, PkAt, Pk1 RotO, MovO,
+        MvOZ, MovA, PkAt, PkTB, MvSZ MvAZ, DrgM, RotZ, PkBd, ClpN,
+        ClpF
+
+<b>NOTES</b>
+
+   Changes made using the button command are easily overridden when
+   the user iterates through the mouse modes.  This behavior needs to
+   be changed.
+
+   Obsolete actions: lb, mb, rb, +lb, +mb, +rb, +lbX, -lbX,
+      
+   Unsupported, Internal, or Future Actions: RotD, MovD, MvDZ, RotF,
+    MovF, MvFZ, TorF, RotV, MovV, MvVZ, DgMZ, DgRT
+
+<b>PYMOL API</b>
+
+    cmd.button(string button, string modifier, string action)
+
+<b>SEE ALSO</b>
+
+    <a href='#config_mouse'>config_mouse</a></pre><p class='api'>api: pymol.controlling.button</p><hr size=1><h2 id='cache'>cache</h2><pre><b>DESCRIPTION</b>
+
+    "cache" manages storage of precomputed results, such as
+    molecular surfaces.
+
+<b>USAGE</b>
+
+    cache action [, scenes [, state ]]
+
+<b>ARGUMENTS</b>
+
+    action = string: enable, disable, read_only, clear, or optimize
+
+    scenes = string: a space-separated list of scene names (default: '')
+
+    state = integer: state index (default: -1)
+
+<b>EXAMPLES</b>
+
+    cache enable
+    cache optimize
+    cache optimize, F1 F2 F5
+
+<b>NOTES</b>
+
+    "cache optimize" will iterate through the list of scenes provided
+    (or all defined scenes), compute any missing surfaces, and store
+    them in the cache for later reuse.
+    
+<b>PYMOL API</b>
+
+    cmd.cache(string action, string scenes, int state, int quiet)</pre><p class='api'>api: pymol.exporting.cache</p><hr size=1><h2 id='callout'>callout</h2><pre><b>DESCRIPTION</b>
+
+    Create a new screen-stabilized callout object.
+
+<b>ARGUMENTS</b>
+
+    name = str: object name
+
+    label = str: label text
+
+    pos = str or list: anchor in model space as 3-float coord list or atom
+    selection. If empty, don't draw an arrow. {default: }
+
+    screen = str or list: position on screen as 2-float list between [-1,-1]
+    (lower left) and [1,1] (upper right) or "auto" for smart placement.
+    {default: auto}</pre><p class='api'>api: pymol.experimenting.callout</p><hr size=1><h2 id='capture'>capture</h2><pre><b>UNDOCUMENTED</b></pre><p class='api'>api: pymol.viewing.capture</p><hr size=1><h2 id='cartoon'>cartoon</h2><pre><b>DESCRIPTION</b>
+
+    "cartoon" changes the default cartoon representation for a set of atoms.
+
+<b>USAGE</b>
+
+    cartoon type, selection
+
+<b>ARGUMENTS</b>
+
+    type = automatic, skip, loop, rectangle, oval, tube, arrow, dumbbell
+    
+<b>PYMOL API</b>
+
+    cmd.cartoon(string type, string selection)
+
+<b>EXAMPLES</b>
+
+    cartoon rectangle, chain A
+
+    cartoon skip, resi 145-156
+
+<b>NOTES</b>
+
+    This command is rarely required since the default "automatic" mode
+    chooses cartoons according to the information in the PDB HELIX and
+    SHEET records.</pre><p class='api'>api: pymol.viewing.cartoon</p><hr size=1><h2 id='cd'>cd</h2><pre><b>DESCRIPTION</b>
+
+    "cd" changes the current working directory.
+
+<b>USAGE</b>
+
+    cd &lt;path&gt;
+
+<b>SEE ALSO</b>
+
+    <a href='#pwd'>pwd</a>, <a href='#ls'>ls</a>, <a href='#system'>system</a></pre><p class='api'>api: pymol.externing.cd</p><hr size=1><h2 id='cealign'>cealign</h2><pre><b>DESCRIPTION</b>
+
+    "cealign" aligns two proteins using the CE algorithm.
+
+<b>USAGE </b>
+
+    cealign target, mobile [, target_state [, mobile_state [, quiet [,
+        guide [, d0 [, d1 [, window [, gap_max, [, transform ]]]]]]]]]
+
+<b>NOTES</b>
+
+    If "guide" is set PyMOL will align using only alpha carbons, which is the
+    default behavior. Otherwise, PyMOL will use all atoms. If "quiet" is set
+    to -1, PyMOL will print the rotation matrix as well.
+
+    Reference: Shindyalov IN, Bourne PE (1998) Protein structure alignment by
+    incremental combinatorial extension (CE) of the optimal path.  Protein
+    Engineering 11(9) 739-747.
+
+<b>EXAMPLES</b>
+
+    cealign protA////CA, protB////CA
+
+    # fetch two proteins and align them
+    fetch 1rlw 1rsy, async=0
+    cealign 1rlw, 1rsy
+
+<b>SEE ALSO</b>
+
+    <a href='#align'>align</a>, <a href='#pair_fit'>pair_fit</a>, <a href='#fit'>fit</a>, <a href='#rms'>rms</a>, <a href='#rms_cur'>rms_cur</a>, <a href='#intra_rms'>intra_rms</a>, <a href='#intra_rms_cur'>intra_rms_cur</a>, <a href='#super'>super</a></pre><p class='api'>api: pymol.fitting.cealign</p><hr size=1><h2 id='center'>center</h2><pre><b>DESCRIPTION</b>
+
+    "center" translates the window, the clipping slab, and the
+    origin to a point centered within the atom selection.
+
+<b>USAGE</b>
+
+    center [ selection [, state [, origin [, animate ]]]]
+
+<b>EXAMPLES</b>
+
+    center chain B
+    center 145/
+
+<b>ARGUMENTS</b>
+
+    selection = string: selection-expression or name pattern (default: "all").
+    
+    state = 0 (default) use all coordinate states
+    
+    state = -1 use only coordinates for the current state
+    
+    state &gt; 0  use coordinates for a specific state
+
+    origin = 1 (default) move the origin
+    
+    origin = 0 leave the origin unchanged
+
+<b>PYMOL API</b>
+
+    cmd.center(string selection, int state, int origin)
+
+<b>SEE ALSO</b>
+
+    <a href='#origin'>origin</a>, <a href='#orient'>orient</a>, <a href='#zoom'>zoom</a></pre><p class='api'>api: pymol.viewing.center</p><hr size=1><h2 id='centerofmass'>centerofmass</h2><pre><b>DESCRIPTION</b>
+
+    Calculates the center of mass. Considers atom mass and occupancy.
+
+<b>ARGUMENTS</b>
+
+    selection = string: atom selection {default: all}
+
+    state = integer: object state, -1 for current state, 0 for all states
+    {default: -1}
+
+<b>NOTES</b>
+
+    If occupancy is 0.0 for an atom, set it to 1.0 for the calculation
+    (assume it was loaded from a file without occupancy information).
+
+<b>SEE ALSO</b>
+
+    <a href='#get_extent'>get_extent</a></pre><p class='api'>api: pymol.querying.centerofmass</p><hr size=1><h2 id='check'>check</h2><pre><b>DESCRIPTION</b>
+
+    "check" is unsupported command that may eventually have something
+    to do with assigning forcefield parameters to a selection of
+    atoms.</pre><p class='api'>api: pymol.experimenting.check</p><hr size=1><h2 id='clean'>clean</h2><pre><b>DESCRIPTION</b>
+
+    Run energy minimization on the given selection, using an MMFF94
+    force field.</pre><p class='api'>api: pymol.computing.clean</p><hr size=1><h2 id='clip'>clip</h2><pre><b>DESCRIPTION</b>
+
+    "clip" alters the positions of the clipping planes.
+
+<b>USAGE</b>
+
+    clip mode, distance [, selection [, state ]]
+
+<b>ARGUMENTS </b>
+
+    mode = near, far, move, slab, or atoms
+
+    distance is a floating point value
+
+    selection = atom selection (for mode=atoms only)
+
+<b>EXAMPLES</b>
+
+    clip near, -5           # moves near plane away from you by 5 A
+    clip far, 10            # moves far plane towards you by 10 A
+    clip move, -5           # moves the slab away from you by 5 A
+    clip slab, 20           # sets slab thickness to 20 A
+    clip slab, 10, resi 11  # clip 10 A slab about residue 11
+
+    clip atoms, 5, pept     # clip atoms in "pept" with a 5 A buffer
+                            # about their current camera positions
+
+<b>PYMOL API</b>
+
+    cmd.clip(string mode, float distance, string selection, int state)
+
+<b>SEE ALSO</b>
+
+    <a href='#zoom'>zoom</a>, <a href='#orient'>orient</a>, <a href='#reset'>reset</a></pre><p class='api'>api: pymol.viewing.clip</p><hr size=1><h2 id='cls'>cls</h2><pre><b>DESCRIPTION</b>
+
+    "cls" clears the output buffer.
+
+<b>USAGE</b>
+
+    cls</pre><p class='api'>api: pymol.commanding.cls</p><hr size=1><h2 id='color'>color</h2><pre><b>DESCRIPTION</b>
+
+    "color" changes the color of objects or atoms.
+
+<b>USAGE</b>
+
+    color color [, selection ]
+
+<b>ARGUMENTS</b>
+
+    color = string: color name or number
+
+    selection = string: selection-expression or name-pattern
+    corresponding to the atoms or objects to be colored
+    {default: (all)}.
+
+<b>NOTES</b>
+
+    When using color ramps, the ramp can be used as a color.
+    
+<b>PYMOL API</b>
+
+    cmd.color(string color, string selection, int quiet)
+
+<b>SEE ALSO</b>
+
+    <a href='#color_deep'>color_deep</a>, <a href='#set_color'>set_color</a>, <a href='#recolor'>recolor</a>
+    
+<b>EXAMPLE </b>
+
+    color cyan
+    color yellow, chain A</pre><p class='api'>api: pymol.viewing.color</p><hr size=1><h2 id='color_deep'>color_deep</h2><pre><b>DESCRIPTION</b>
+
+    Unset all object and atom level (not global) color settings and
+    apply given color.
+
+<b>ARGUMENTS</b>
+
+    color = str: color name or number
+
+    name = str: object name or pattern {default: all}
+
+<b>SEE ALSO</b>
+
+    <a href='#color'>color</a>, <a href='#unset_deep'>unset_deep</a></pre><p class='api'>api: pymol.viewing.color_deep</p><hr size=1><h2 id='config_mouse'>config_mouse</h2><pre><b>DESCRIPTION</b>
+
+    "config_mouse" sets the current mouse configuration ring.
+
+<b>USAGE</b>
+
+    config_mouse ring
+
+<b>EXAMPLES</b>
+
+    config_mouse three_button
+    config_mouse two_button
+    config_mouse one_button
+    
+<b>PYMOL API</b>
+
+    cmd.config_mouse(string ring, int quiet)
+
+<b>SEE ALSO</b>
+
+    <a href='#mouse'>mouse</a>, <a href='#button'>button</a></pre><p class='api'>api: pymol.controlling.config_mouse</p><hr size=1><h2 id='copy'>copy</h2><pre><b>DESCRIPTION</b>
+
+    "copy" creates a new object that is an identical copy of an
+    existing object.
+
+<b>USAGE</b>
+
+    copy target, source [, zoom ]
+
+<b>NOTES</b>
+
+    Currently, this command only works for molecular objects.
+
+<b>SEE ALSO</b>
+
+    <a href='#create'>create</a></pre><p class='api'>api: pymol.creating.copy</p><hr size=1><h2 id='copy_to'>copy_to</h2><pre><b>DESCRIPTION</b>
+
+    Copies selection to object `name` (all states) and by default
+    renames chain, segi and ID identifiers to avoid naming conflicts.
+
+<b>ARGUMENTS</b>
+
+    name = str: object name to modify
+
+    selection = str: atom selection (will be copied to `name`)
+
+    rename = str: space separated list of identifiers to rename
+    {default: chain segi ID}
+
+<b>SEE ALSO</b>
+
+    <a href='#create'>create</a>, <a href='#fuse'>fuse</a></pre><p class='api'>api: pymol.editing.copy_to</p><hr size=1><h2 id='count_atoms'>count_atoms</h2><pre><b>DESCRIPTION</b>
+
+    "count_atoms" returns a count of atoms in a selection.
+
+<b>USAGE</b>
+
+    count_atoms [ selection [, quiet [, state ]]]</pre><p class='api'>api: pymol.querying.count_atoms</p><hr size=1><h2 id='count_discrete'>count_discrete</h2><pre><b>DESCRIPTION</b>
+
+    Count the number of discrete objects in selection.
+
+<b>USAGE</b>
+
+    count_discrete selection</pre><p class='api'>api: pymol.querying.count_discrete</p><hr size=1><h2 id='count_frames'>count_frames</h2><pre><b>DESCRIPTION</b>
+
+    "count_frames" returns the number of frames defined for the PyMOL
+    movie.
+
+<b>USAGE</b>
+
+    count_frames
+    
+<b>PYMOL API</b>
+
+    cmd.count_frames()
+
+<b>SEE ALSO</b>
+
+    <a href='#frame'>frame</a>, <a href='#count_states'>count_states</a></pre><p class='api'>api: pymol.querying.count_frames</p><hr size=1><h2 id='count_states'>count_states</h2><pre><b>DESCRIPTION</b>
+
+    "count_states" returns the number of states in the selection.
+
+<b>USAGE</b>
+
+    count_states
+    
+<b>PYMOL API</b>
+
+    cmd.count_states(string selection)
+
+<b>SEE ALSO</b>
+
+    <a href='#frame'>frame</a></pre><p class='api'>api: pymol.querying.count_states</p><hr size=1><h2 id='create'>create</h2><pre><b>DESCRIPTION</b>
+
+    "create" creates a new molecule object from a selection.  It can
+    also be used to create states in an existing object.
+
+<b>USAGE</b>
+
+    create name, selection [,source_state [,target_state ] ]
+
+<b>ARGUMENTS</b>
+
+    name = string: name of object to create or modify
+
+    selection = string: atoms to include in the new object
+
+    source_state = integer: {default: 0 -- copy all states}
+
+    target_state = integer: -1 appends after last state {default: 0}
+
+<b>PYMOL API</b>
+
+    cmd.create(string name, string selection, int state,
+               int target_state, int discrete)
+
+<b>NOTES</b>
+
+    If the source and target states are zero (default), then all
+    states will be copied.  Otherwise, only the indicated states will
+    be copied.
+
+<b>SEE ALSO</b>
+
+    <a href='#load'>load</a>, <a href='#copy'>copy</a>, <a href='#extract'>extract</a></pre><p class='api'>api: pymol.creating.create</p><hr size=1><h2 id='curve_new'>curve_new</h2><pre><b>DESCRIPTION</b>
+
+    "curve_new" creates a new curve object.
+
+<b>ARGUMENTS</b>
+
+    name = string: name of object to create
+
+    curve_type = string: type of curve (currently only "bezier" supported)</pre><p class='api'>api: pymol.creating.curve_new</p><hr size=1><h2 id='cycle_valence'>cycle_valence</h2><pre><b>DESCRIPTION</b>
+
+    "cycle_valence" cycles the valence on the currently selected bond.
+
+<b>USAGE</b>
+
+    cycle_valence [ h_fill ]
+
+<b>ARGUMENTS</b>
+
+    h_fill = 0 or 1: updated hydrogens too? {default: 1 (yes)}
+    
+<b>EXAMPLE</b>
+
+    cycle_valence
+
+<b>NOTES</b>
+
+    If the h_fill flag is true, hydrogens will be added or removed to
+    satisfy valence requirements.
+
+    This function is usually connected to the DELETE key and "CTRL-W".
+
+<b>PYMOL API</b>
+
+    cmd.cycle_valence(int h_fill)
+
+<b>SEE ALSO</b>
+
+    <a href='#remove_picked'>remove_picked</a>, <a href='#attach'>attach</a>, <a href='#replace'>replace</a>, <a href='#fuse'>fuse</a>, <a href='#h_fill'>h_fill</a></pre><p class='api'>api: pymol.editing.cycle_valence</p><hr size=1><h2 id='decline'>decline</h2><pre><b>DESCRIPTION</b>
+
+    "decline" is an internal method for handling of session file
+    security.</pre><p class='api'>api: pymol.moving.decline</p><hr size=1><h2 id='delete'>delete</h2><pre><b>DESCRIPTION</b>
+
+    "delete" removes objects and named selections
+
+<b>USAGE</b>
+
+    delete name
+
+<b>ARGUMENTS</b>
+
+    name = name(s) of object(s) or selection(s), supports wildcards (*)
+
+<b>EXAMPLES</b>
+
+    delete measure*     # delete all objects which names start with "measure"
+    delete all          # delete all objects and selections
+
+<b>PYMOL API</b>
+
+    cmd.delete (string name = object-or-selection-name )
+
+<b>SEE ALSO</b>
+
+    <a href='#remove'>remove</a></pre><p class='api'>api: pymol.commanding.delete</p><hr size=1><h2 id='deprotect'>deprotect</h2><pre><b>DESCRIPTION</b>
+
+    "deprotect" reverses the effect of the "protect" command.
+
+<b>USAGE</b>
+
+    deprotect (selection)
+
+<b>PYMOL API</b>
+
+    cmd.deprotect(string selection)
+
+<b>SEE ALSO</b>
+
+    <a href='#protect'>protect</a>, <a href='#mask'>mask</a>, <a href='#unmask'>unmask</a>, <a href='#mouse'>mouse</a>, editing</pre><p class='api'>api: pymol.editing.deprotect</p><hr size=1><h2 id='desaturate'>desaturate</h2><pre><b>DESCRIPTION</b>
+
+    Desaturate the colors in the given selection.
+
+<b>ARGUMENTS</b>
+
+    selection = str: atom selection {default: all}
+
+    a = float [0..1]: desaturation factor {default: 0.5}</pre><p class='api'>api: pymol.experimenting.desaturate</p><hr size=1><h2 id='deselect'>deselect</h2><pre><b>DESCRIPTION</b>
+
+    "deselect" disables any and all visible selections
+
+<b>USAGE</b>
+
+    deselect
+
+<b>PYMOL API</b>
+
+    cmd.deselect()</pre><p class='api'>api: pymol.selecting.deselect</p><hr size=1><h2 id='diagnostics'>diagnostics</h2><pre><b>DESCRIPTION</b>
+
+    Get system level diagnostics data
+
+<b>USAGE</b>
+
+    diagnostics [ filename ]
+
+<b>ARGUMENTS</b>
+
+    filename = str: If given, write output to text file</pre><p class='api'>api: pymol.diagnosing.diagnostics</p><hr size=1><h2 id='dihedral'>dihedral</h2><pre><b>DESCRIPTION</b>
+
+    "dihedral" shows dihedral angles formed between any four atoms.
+
+<b>USAGE</b>
+
+    dihedral [ name [, selection1 [, selection2 [, selection3 [, selection4 ]]]]]
+
+
+<b>NOTES</b>
+
+    "dihedral" alone will show the dihedral angle formed by selections
+    (pk1), (pk2), (pk3), and (pk4), which can be set using the "PkAt"
+    mouse action (typically, Ctrl-middle-click)
+
+<b>PYMOL API</b>
+
+    cmd.dihedral(string name, string selection1, string selection2,
+                 string selection3, string selection4)
+
+<b>SEE ALSO</b>
+
+    <a href='#distance'>distance</a>, <a href='#angle'>angle</a></pre><p class='api'>api: pymol.querying.dihedral</p><hr size=1><h2 id='dir'>dir</h2><pre><b>DESCRIPTION</b>
+
+    List contents of the current working directory.
+
+<b>USAGE</b>
+
+    ls [pattern]
+    dir [pattern]
+
+<b>EXAMPLES</b>
+
+    ls
+    ls *.pml
+
+<b>SEE ALSO</b>
+
+    <a href='#cd'>cd</a>, <a href='#pwd'>pwd</a>, <a href='#system'>system</a></pre><p class='api'>api: pymol.externing.ls</p><hr size=1><h2 id='disable'>disable</h2><pre><b>DESCRIPTION</b>
+
+    "disable" turns off display of one or more objects and/or selections.
+
+<b>USAGE</b>
+
+    disable name
+
+<b>ARGUMENTS    </b>
+
+    name = name-pattern or selection.
+
+<b>PYMOL API</b>
+
+    cmd.disable(string name) 
+
+<b>SEE ALSO</b>
+
+    <a href='#show'>show</a>, <a href='#hide'>hide</a>, <a href='#enable'>enable</a></pre><p class='api'>api: pymol.viewing.disable</p><hr size=1><h2 id='distance'>distance</h2><pre><b>DESCRIPTION</b>
+
+    "distance" creates a new distance object between two selections.
+
+<b>USAGE</b>
+    
+    distance [name [, selection1 [, selection2 [, cutoff [, mode ]]]]]
+
+<b>ARGUMENTS</b>
+
+    name = string: name of the distance object to create
+
+    selection1 = string: first atom selection
+
+    selection2 = string: second atom selection
+
+    cutoff = float: longest distance to show 
+    
+    mode = 0: all interatomic distances
+
+    mode = 1: only bond distances
+
+    mode = 2: only show polar contact distances
+
+    mode = 3: like mode=0, but use distance_exclusion setting
+
+    mode = 4: distance between centroids (does not support
+              dynamic_measures; new in PyMOL 1.8.2)
+
+    mode = 5: pi-pi and pi-cation interactions
+
+    mode = 6: pi-pi interactions
+
+    mode = 7: pi-cation interactions
+
+    mode = 8: like mode=3, but cutoff is the ratio between
+              distance and sum of VDW radii
+
+    state = int: object state to create the measurement object in
+    and to get coordinates from {default: 0 (all states)}
+
+    state1, state2 = int: overrule 'state' argument to measure distances
+    between different states {default: use state}
+
+<b>EXAMPLES</b>
+
+    distance mydist, 14/CA, 29/CA
+
+    distance hbonds, all, all, 3.2, mode=2
+
+<b>NOTES</b>
+
+    The distance wizard makes measuring distances easier than using
+    the "dist" command for real-time operations.
+
+    "dist" alone will show distances between selections (pk1) and (pk1),
+    which can be set using the PkAt mouse action (usually CTRL-middle-click).
+
+<b>PYMOL API</b>
+
+    cmd.distance(string name, string selection1, string selection2,
+                 string cutoff, string mode )</pre><p class='api'>api: pymol.querying.distance</p><hr size=1><h2 id='drag'>drag</h2><pre><b>DESCRIPTION</b>
+
+    "drag" activates dragging for a selection, enabling the user to
+    manipulate the atom coordinates of the atoms using mouse controls
+    similar to those for controlling the camera.
+
+<b>USAGE</b>
+
+    drag [ selection ]
+
+<b>ARGUMENTS</b>
+  
+    selection = string: atoms to drag.  If not provided, and dragging
+    is active, then dragging is instead deactivated.
+
+<b>NOTES</b>
+
+    Currently, the selection of atom to drag must all reside in a
+    single molecular object.</pre><p class='api'>api: pymol.editing.drag</p><hr size=1><h2 id='draw'>draw</h2><pre><b>DESCRIPTION</b>
+
+    "draw" creates an OpenGL-based image of the current frame.  
+
+<b>USAGE</b>
+
+    draw [width [,height [,antialias ]]]
+
+<b>ARGUMENTS</b>
+
+    width = integer {default: 0 (current)}
+
+    height = integer {default: 0 (current)}
+
+    antialias = integer {default: -1 (use antialias setting)}
+    
+<b>EXAMPLES</b>
+
+    draw
+    draw 1600
+
+<b>NOTES</b>
+
+    Default width and height are taken from the current viewpoint. If
+    one is specified but not the other, then the missing value is
+    scaled so as to preserve the current aspect ratio.
+
+    Because this feature uses the OpenGL rendering context to piece
+    together the image, it does not work when running in the
+    command-line only mode.
+
+    On certain graphics hardware, "unset opaque_background" followed
+    by "draw" will produce an image with a transparent background.
+    However, better results can usually be obtained using "ray".
+    
+<b>PYMOL API</b>
+
+    cmd.draw(int width, int height, int antialias, int quiet)
+
+<b>SEE ALSO</b>
+
+    <a href='#ray'>ray</a>, <a href='#png'>png</a>, <a href='#save'>save</a></pre><p class='api'>api: pymol.viewing.draw</p><hr size=1><h2 id='dss'>dss</h2><pre><b>DESCRIPTION</b>
+
+    "dss" defines secondary structure based on backbone geometry
+    and hydrogen bonding patterns.
+    
+<b>USAGE</b>
+
+    dss selection, state
+
+<b>ARGUMENT</b>
+
+    selection = string: {default: (all)}
+
+    state = integer: {default: 0 -- all states}
+    
+<b>EXAMPLE</b>
+
+    dss
+
+<b>NOTES</b>
+
+    With PyMOL, heavy emphasis is placed on cartoon aesthetics, and so
+    both hydrogen bonding patterns and backbone geometry are used in
+    the assignment process.  Depending upon the local context, helix
+    and strand assignments are made based on geometry, hydrogen
+    bonding, or both.
+
+    This command will generate results which differ slightly from DSSP
+    and other programs.  Most deviations occur in borderline or
+    transition regions.  Generally speaking, PyMOL is more strict, thus
+    assigning fewer helix/sheet residues, except for partially
+    distorted helices, which PyMOL tends to tolerate.
+    
+    WARNING: This algorithm has not yet been rigorously validated.
+
+    If you dislike one or more of the assignments made by dss, you can
+    use the alter command to make changes (followed by "rebuild").
+    For example:
+    
+        alter 123-125/, ss='L'
+        alter pk1, ss='S'
+        alter 90/, ss='H'
+        rebuild
+
+<b>PYMOL API</b>
+
+    cmd.dss(string selection, int state)</pre><p class='api'>api: pymol.editing.dss</p><hr size=1><h2 id='dump'>dump</h2><pre><b>DESCRIPTION</b>
+
+    The dump command writes the geometry of an isosurface, isomesh,
+    isodot, or map object to a simple text file. Each line contains one
+    vertex in case of representations, or one grid point in case of a map.
+
+    For surface objects, XYZ coordinates and the normal are exported.
+    Three lines make one triangle (like GL_TRIANGLES).
+
+    For mesh objects, XYZ coordinates are exported (no normals).
+    The vertices form line strips (like GL_LINE_STRIP), a blank
+    line starts a new strip.
+
+    For dot objects, XYZ coordinates are exported.
+
+    For map objects, XYZ coordinates and the value at the point are
+    exported. This forms a grid map.
+
+<b>USAGE</b>
+
+    dump filename, object, state=1, quiet=1
+
+<b>ARGUMENTS</b>
+
+    filename = str: file that will be written
+    object = str: object name
+
+<b>EXAMPLE</b>
+
+    fetch 1ubq, mymap, type=2fofc, async=0
+
+    dump gridmap.txt, mymap
+
+    isosurface mysurface, mymap
+    dump surfacegeometry.txt, mysurface
+
+    isomesh mymesh, mymap
+    dump meshgeometry.txt, mymesh
+
+    isodot mydot, mymap, quiet=1
+    dump dotgeometry.txt, mydot
+
+<b>SEE ALSO</b>
+
+    COLLADA export</pre><p class='api'>api: pymol.experimenting.dump</p><hr size=1><h2 id='edit'>edit</h2><pre><b>DESCRIPTION</b>
+
+    "edit" picks atoms or a bond for editing.
+
+<b>USAGE</b>
+
+    edit selection1 [, selection2 [, selection3 [, selection4 [, pkresi [, pkbond ]]]]] 
+
+<b>NOTES</b>
+
+    If only one selection is provided, an atom is picked.
+
+    If two selections are provided, the bond between them
+    is picked (by default, if one exists).
+
+<b>PYMOL API</b>
+
+    cmd.edit(string selection1, string selection2,
+             string selection3, string selection4,
+             int pkresi, int pkbond, int quiet)
+
+<b>SEE ALSO</b>
+
+    <a href='#unpick'>unpick</a>, <a href='#remove_picked'>remove_picked</a>, <a href='#cycle_valence'>cycle_valence</a>, <a href='#torsion'>torsion</a></pre><p class='api'>api: pymol.editing.edit</p><hr size=1><h2 id='edit_mode'>edit_mode</h2><pre><b>DESCRIPTION</b>
+
+    "edit_mode" switches the mouse into editing mode, if such a mode
+    is available in the current mouse ring.</pre><p class='api'>api: pymol.controlling.edit_mode</p><hr size=1><h2 id='editing_ring'>editing_ring</h2><pre><b>DESCRIPTION</b>
+
+    Helper function for copy/cut/paste of molecular selections.
+
+<b>ARGUMENTS</b>
+
+    action = cut/copy/paste/invert</pre><p class='api'>api: pymol.keyboard.editing_ring</p><hr size=1><h2 id='embed'>embed</h2><pre><b>DESCRIPTION</b>
+
+    "embed" delimits a block of data embedded in a PyMOL command
+    script.
+
+<b>USAGE</b>
+
+    embed key [, type [, sentinel ]]
+
+<b>ARGUMENTS</b>
+
+    key = string: unique indentifier for the data
+
+    type = pdb, mol, mol2, sdf, xplor
+
+    sentinel = string: a unique string signalling the end of the data {default: embed end}
+    
+<b>EXAMPLE</b>
+
+    embed wats, pdb
+    HETATM    1  O   WAT     1       2.573  -1.034  -1.721
+    HETATM    2  H1  WAT     1       2.493  -1.949  -1.992
+    HETATM    3  H2  WAT     1       2.160  -0.537  -2.427
+    HETATM    4  O   WAT     2       0.705   0.744   0.160
+    HETATM    5  H1  WAT     2      -0.071   0.264   0.450
+    HETATM    6  H2  WAT     2       1.356   0.064  -0.014
+    embed end
+    
+<b>NOTES</b>
+
+    Only text data formats can be used with embed
+    
+<b>SEE ALSO</b>
+
+    <a href='#abort'>abort</a>, <a href='#skip'>skip</a>, <a href='#python'>python</a></pre><p class='api'>api: pymol.helping.embed</p><hr size=1><h2 id='enable'>enable</h2><pre><b>DESCRIPTION</b>
+
+    "enable" turns on display of one or more objects and/or selections.
+
+<b>USAGE</b>
+
+    enable name
+
+<b>ARGUMENTS    </b>
+
+    name = name-pattern or selection. 
+
+<b>NOTES</b>
+
+    If name matches a selection name, then selection indicator dots
+    are shown for atoms in that selection.  If name is a
+    selection-expression, then all objects with atoms in that
+    selection are enabled.
+
+    For an object's content to be displayed in the 3D viewer, the
+    object must be enabled AND at least one of the available
+    representations must be shown.
+    
+<b>PYMOL API</b>
+
+    cmd.enable(string object-name)
+
+<b>EXAMPLES</b>
+
+    enable target_protein  # enables the target_protein object
+
+    enable 1dn2.*   # enables all entities starting with 1dn2.
+    
+    enable *lig     # enables all entities ending with lig
+    
+<b>SEE ALSO</b>
+
+    <a href='#show'>show</a>, <a href='#hide'>hide</a>, <a href='#disable'>disable</a></pre><p class='api'>api: pymol.viewing.enable</p><hr size=1><h2 id='ending'>ending</h2><pre><b>DESCRIPTION</b>
+
+    "ending" goes to the end of the movie.
+
+<b>USAGE</b>
+
+    ending
+
+<b>PYMOL API</b>
+
+    cmd.ending()</pre><p class='api'>api: pymol.moving.ending</p><hr size=1><h2 id='extra_fit'>extra_fit</h2><pre><b>DESCRIPTION</b>
+
+    Like "intra_fit", but for multiple objects instead of
+    multiple states.
+
+<b>ARGUMENTS</b>
+
+    selection = string: atom selection of multiple objects {default: all}
+
+    reference = string: reference object name {default: first object in selection}
+
+    method = string: alignment method (command that takes "mobile" and "target"
+    arguments, like "align", "super", "cealign" {default: align}
+
+    ... extra arguments are passed to "method"
+
+<b>SEE ALSO</b>
+
+    <a href='#align'>align</a>, <a href='#super'>super</a>, <a href='#cealign'>cealign</a>, <a href='#intra_fit'>intra_fit</a>, util.mass_align</pre><p class='api'>api: pymol.fitting.extra_fit</p><hr size=1><h2 id='extract'>extract</h2><pre><b>DESCRIPTION</b>
+
+    "extract" is simply a shorthand way calling the "create" command
+    with the extract argument activated, so that atoms in the new
+    object are removed from the source object.
+
+<b>USAGE</b>
+
+    extract name, selection [, source_state [, target_state ]]
+
+<b>SEE ALSO</b>
+
+    <a href='#create'>create</a></pre><p class='api'>api: pymol.creating.extract</p><hr size=1><h2 id='fab'>fab</h2><pre><b>DESCRIPTION</b>
+
+    Build a peptide
+
+<b>ARGUMENTS</b>
+
+    input = str: sequence in one-letter code
+
+    name = str: name of object to create {default: }
+
+    ss = int: Secondary structure 1=alpha helix, 2=antiparallel beta, 3=parallel beta, 4=flat
+
+<b>EXAMPLE</b>
+
+    fab ACDEFGH
+    fab ACDEFGH, helix, ss=1</pre><p class='api'>api: pymol.editor.fab</p><hr size=1><h2 id='feedback'>feedback</h2><pre><b>DESCRIPTION</b>
+
+    "feedback" changes the amount of information output by pymol.
+
+<b>USAGE</b>
+
+    feedback action, module, mask
+
+<b>ARGUMENTS</b>
+
+    action = set, enable, or disable
+
+    module = string: a space-separated list of modules or simply "all"
+
+    mask = string: a space-separated list of output categories or simply "everything"
+
+<b>NOTES</b>
+
+    "feedback" alone will print a list of the available module choices
+
+<b>PYMOL API</b>
+
+    cmd.feedback(string action,string module,string mask)
+
+<b>EXAMPLES</b>
+
+    feedback enable, all , debugging
+    feedback disable, selector, warnings actions
+    feedback enable, main, blather</pre><p class='api'>api: pymol.feedingback.feedback</p><hr size=1><h2 id='fetch'>fetch</h2><pre><b>DESCRIPTION</b>
+
+    "fetch" downloads a file from the internet (if possible)
+
+<b>USAGE</b>
+
+    fetch code [, name [, state [, finish [, discrete [, multiplex
+        [, zoom [, type [, async [, path ]]]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    code = a single PDB identifier or a list of identifiers. Supports
+    5-letter codes for fetching single chains (like 1a00A).
+
+    name = the object name into which the file should be loaded.
+
+    state = the state number into which the file should loaded.
+
+    type = str: cif, pdb, pdb1, 2fofc, fofc, emd, cid, sid {default: cif
+    (default was "pdb" up to 1.7.6)}
+
+    async_ = 0/1: download in the background and do not block the PyMOL
+    command line {default: 0 -- changed in PyMOL 2.3}
+
+<b>PYMOL API</b>
+
+    cmd.fetch(string code, string name, int state, init finish,
+              int discrete, int multiplex, int zoom, string type,
+              int async, string path, string file, int quiet)
+              
+<b>NOTES</b>
+
+    When running in interactive mode, the fetch command loads
+    structures asyncronously by default, meaning that the next command
+    may get executed before the structures have been loaded.  If you
+    need synchronous behavior in order to insure that all structures
+    are loaded before the next command is executed, please provide the
+    optional argument "async=0".
+
+    Fetch requires a direct connection to the internet and thus may
+    not work behind certain types of network firewalls.</pre><p class='api'>api: pymol.importing.fetch</p><hr size=1><h2 id='fit'>fit</h2><pre><b>DESCRIPTION</b>
+
+    "fit" superimposes the model in the first selection on to the model
+    in the second selection. Only matching atoms in both selections will
+    be used for the fit.
+	
+<b>USAGE</b>
+
+    fit mobile, target [, mobile_state [, target_state [, quiet
+        [, matchmaker [, cutoff [, cycles [, object ]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    mobile = string: atom selection
+
+    target = string: atom selection
+
+    mobile_state = integer: object state {default=0, all states)
+
+    target_state = integer: object state {default=0, all states)
+
+    matchmaker = integer: how to match atom pairs {default: 0}
+        -1:  assume that atoms are stored in the identical order
+        0/1: match based on all atom identifiers (segi,chain,resn,resi,name,alt)
+        2:   match based on ID
+        3:   match based on rank
+        4:   match based on index (same as -1 ?)
+
+    cutoff = float: outlier rejection cutoff (only if cycles&gt;0) {default: 2.0}
+
+    cycles = integer: number of cycles in outlier rejection refinement {default: 0}
+
+    object = string: name of alignment object to create {default: None}
+
+<b>EXAMPLES</b>
+
+	fit protA, protB
+
+<b>NOTES</b>
+
+	Since atoms are matched based on all of their identifiers
+	(including segment and chain identifiers), this command is only
+	helpful when comparing very similar structures.
+
+<b>SEE ALSO</b>
+
+	<a href='#align'>align</a>, <a href='#super'>super</a>, <a href='#pair_fit'>pair_fit</a>, <a href='#rms'>rms</a>, <a href='#rms_cur'>rms_cur</a>, <a href='#intra_fit'>intra_fit</a>, <a href='#intra_rms'>intra_rms</a>, <a href='#intra_rms_cur'>intra_rms_cur</a></pre><p class='api'>api: pymol.fitting.fit</p><hr size=1><h2 id='fix_chemistry'>fix_chemistry</h2><pre><b>DESCRIPTION</b>
+   
+    "fix chemistry" is an unsupported feature.</pre><p class='api'>api: pymol.editing.fix_chemistry</p><hr size=1><h2 id='flag'>flag</h2><pre><b>DESCRIPTION</b>
+
+    "flag" sets the indicated flag for atoms in the selection and
+     clears the indicated flag for atoms not in the selection.  
+
+<b>USAGE</b>
+
+    flag flag, selection [, action ]
+
+<b>ARGUMENTS</b>
+
+    flag = str or int: Flag name or number
+
+    selection = str: atom selection
+
+    action = reset: {default} set flag for atoms in selection and clear it for all others
+
+    action = set: set the flag for atoms in selection, leaving other atoms unchanged
+
+    action = clear: clear the flag for selected atoms, leaving other atoms unchanged
+
+<b>EXAMPLES  </b>
+
+    flag free, (resi 45 x; 6)
+
+<b>NOTES</b>
+
+    This is primarily useful for passing selection information into
+    Chempy models, which have a 32 bit attribute "flag" which holds
+    this information.
+
+    If the 'auto_indicate_flags' setting is true, then PyMOL will automatically
+    create a selection called "indicate" which contains all atoms with that flag
+    after applying the command.
+
+    SPECIAL FLAGS
+
+    * Flags 0-5 are reserved for molecular modeling
+
+        focus      0 = Atoms of Interest (i.e. a ligand in an active site) \
+        free       1 = Free Atoms (free to move subject to a force-field) \
+        restrain   2 = Restrained Atoms (typically harmonically contrained) \
+        fix        3 = Fixed Atoms (no movement allowed) \
+        exclude    4 = Atoms which should not be part of any simulation
+        study      5
+
+    * Flags 6-7 are for protein and nucleic acid classification
+
+    * Flags 8-15 are free for end users to manipulate
+
+    * Flags 16-21 are reserved for external GUIs and linked applications
+
+    * Flags 22-23 are for temporary use only (flag 23 used for coverage
+      tracking when assigning parameters in chempy.champ.assign)
+
+    * Flags 24-31 are reserved for PyMOL internal usage
+
+        exfoliate 24 = DEPRECATED: Use "hide surface, sele" instead \
+        ignore    25 = Ignore atoms altogether when surfacing \
+        no_smooth 26 = Do not smooth atom position
+
+<b>PYMOL API</b>
+
+    cmd.flag(int flag, string selection, string action="reset",
+             int indicate=0)</pre><p class='api'>api: pymol.editing.flag</p><hr size=1><h2 id='fnab'>fnab</h2><pre><b>DESCRIPTION</b>
+
+    Builds a nucleotide acid from sequence
+
+    Fragments provided by:
+    Lu, Xiang-Jun, Olson, Wilma K. 3DNA: a software package for the analysis,
+    rebuilding and visualization of three-dimensional nucleic acid structures,
+    Nucleic Acids Research, 32, W667-W675 (2004).
+
+<b>USAGE</b>
+
+    fnab input [, name [, type [, form [, dbl_helix ]]]]
+
+<b>ARGUMENTS</b>
+
+    input = str: Sequence as an array of one letter codes
+
+    name = str: Name of the object to create {default: obj}
+
+    mode = str: "DNA" or "RNA"
+
+    form = str: "A" or "B"
+
+    dbl_helix = bool (0/1): flag for using double helix in DNA
+
+<b>EXAMPLE</b>
+
+    fnab ATGCGATAC
+    fnab ATGCGATAC, name=myDNA, mode=DNA, form=B, dbl_helix=1
+    fnab AAUUUUCCG, mode=RNA</pre><p class='api'>api: pymol.editor.fnab</p><hr size=1><h2 id='focal_blur'>focal_blur</h2><pre><b>DESCRIPTION</b>
+
+    Creates fancy figures by introducing a focal blur to the image.
+    The object at the origin will be in focus.
+
+<b>USAGE</b>
+
+    focal_blur [ aperture [, samples [, ray [, filename ]]]]
+
+<b>ARGUMENTS</b>
+
+    aperture = float: aperture angle in degrees {default: 2.0}
+
+    samples = int: number of images for averaging {default: 10}
+
+    ray = 0/1: {default: 0}
+
+    filename = str: write image to file {default: temporary}
+
+<b>AUTHORS</b>
+
+    Jarl Underhaug, Jason Vertrees and Thomas Holder
+
+<b>EXAMPLES</b>
+
+    focal_blur 3.0, 50</pre><p class='api'>api: pymol.experimenting.focal_blur</p><hr size=1><h2 id='fork'>fork</h2><pre><b>DESCRIPTION</b>
+
+    "spawn" launches a Python script in a new thread which will run
+    concurrently with the PyMOL interpreter. It can be run in its own
+    namespace (like a Python module, default), a local name space, or
+    in the global namespace.
+
+<b>USAGE</b>
+
+    spawn file [, namespace ]
+
+<b>NOTES</b>
+
+    The default namespace for spawn is "module".
+
+    The best way to spawn processes at startup is to use the -l option
+    (see "help launching").
+
+<b>SEE ALSO</b>
+
+    <a href='#run'>run</a></pre><p class='api'>api: pymol.parsing.spawn</p><hr size=1><h2 id='forward'>forward</h2><pre><b>DESCRIPTION</b>
+
+    "forward" moves the movie one frame forward.
+
+<b>USAGE</b>
+
+    forward
+
+<b>PYMOL API</b>
+
+    cmd.forward()
+
+<b>SEE ALSO</b>
+
+    <a href='#mset'>mset</a>, <a href='#backward'>backward</a>, <a href='#rewind'>rewind</a></pre><p class='api'>api: pymol.moving.forward</p><hr size=1><h2 id='fragment'>fragment</h2><pre><b>DESCRIPTION</b>
+
+    "fragment" retrieves a 3D structure from the fragment library,
+    which is currently pretty meager (just amino acids).
+
+<b>USAGE</b>
+
+    fragment name</pre><p class='api'>api: pymol.creating.fragment</p><hr size=1><h2 id='frame'>frame</h2><pre><b>DESCRIPTION</b>
+
+    "frame" sets the viewer to the indicated movie frame.
+
+<b>USAGE</b>
+
+    frame frame
+
+<b>ARGUMENTS</b>
+
+    frame = integer: frame number to display
+
+<b>EXAMPLE</b>
+
+    frame 10
+    
+<b>PYMOL API</b>
+
+    cmd.frame( int frame_number )
+
+<b>NOTES</b>
+
+    Frame numbers are 1-based.
+
+<b>SEE ALSO</b>
+
+    <a href='#count_states'>count_states</a></pre><p class='api'>api: pymol.moving.frame</p><hr size=1><h2 id='full_screen'>full_screen</h2><pre><b>DESCRIPTION</b>
+
+    "full_screen" enables or disables full screen mode.  
+
+<b>USAGE</b>
+
+    full_screen [toggle]
+
+<b>EXAMPLES</b>
+
+
+    full_screen
+    full_screen on
+    full_screen off
+
+<b>NOTES</b>
+
+    This does not work correctly on all platforms.  If you encounter
+    trouble, try using the maximize button on the viewer window
+    instead.</pre><p class='api'>api: pymol.viewing.full_screen</p><hr size=1><h2 id='fuse'>fuse</h2><pre><b>DESCRIPTION</b>
+
+    "fuse" joins two objects into one by forming a bond.  A copy of
+    the object containing the first atom is moved so as to form an
+    approximately resonable bond with the second, and that copy is
+    then merged with the first object.
+
+<b>USAGE</b>
+
+    fuse [ selection1 [, selection2 [, mode [, recolor [, move ]]]]]
+
+<b>ARGUMENTS</b>
+
+    selection1 = str: single atom selection (will be copied to object 2)
+
+    selection2 = str: single atom selection
+
+    mode = int: {default: 0}
+      3: don't move and don't create a bond, just combine into single object
+
+    recolor = bool: recolor C atoms to match target {default: 1}
+
+    move = bool: {default: 1}
+
+<b>NOTES</b>
+
+    Each selection must include a single atom in each object.
+    The atoms can both be hydrogens, in which case they are
+    eliminated, or they can both be non-hydrogens, in which
+    case a bond is formed between the two atoms.
+
+<b>SEE ALSO</b>
+
+    <a href='#bond'>bond</a>, <a href='#unbond'>unbond</a>, <a href='#attach'>attach</a>, <a href='#replace'>replace</a>, <a href='#fuse'>fuse</a>, <a href='#remove_picked'>remove_picked</a></pre><p class='api'>api: pymol.editing.fuse</p><hr size=1><h2 id='get'>get</h2><pre><b>DESCRIPTION</b>
+
+    "get" prints out the current value of a setting.
+
+<b>USAGE</b>
+
+    get name [, selection [, state ]]
+    
+<b>EXAMPLE</b>
+
+    get line_width
+
+<b>ARGUMENTS</b>
+
+    name = string: setting name
+
+    selection = string: object name (selections not yet supported)
+
+    state = integer: state number
+    
+<b>NOTES</b>
+
+    "get" currently only works with global, per-object, and per-state
+    settings.  Atom level settings get be queried with "iterate" (e.g.
+    iterate all, print s.line_width)
+    
+<b>PYMOL API</b>
+
+    cmd.get(string name, string object, int state, int quiet)
+
+<b>SEE ALSO</b>
+
+    <a href='#set'>set</a>, <a href='#set_bond'>set_bond</a>, <a href='#get_bond'>get_bond</a></pre><p class='api'>api: pymol.setting.get</p><hr size=1><h2 id='get_angle'>get_angle</h2><pre><b>DESCRIPTION</b>
+
+    "get_angle" returns the angle between three atoms.  By default, the
+    coordinates used are from the current state, however an alternate
+    state identifier can be provided.
+
+<b>USAGE</b>
+
+    get_angle atom1, atom2, atom3, [,state ]
+
+<b>EXAMPLES</b>
+
+    get_angle 4/n,4/c,4/ca
+    get_angle 4/n,4/c,4/ca,state=4
+
+<b>PYMOL API</b>
+
+    cmd.get_angle(atom1="pk1",atom2="pk2",atom3="pk3",state=-1)</pre><p class='api'>api: pymol.querying.get_angle</p><hr size=1><h2 id='get_area'>get_area</h2><pre><b>DESCRIPTION</b>
+
+    Get the surface area of an selection. Depends on the "dot_solvent"
+    setting. With "dot_solvent=off" (default) it calculates the solvent
+    excluded surface area, else the surface accessible surface.
+
+<b>USAGE</b>
+
+    get_area [ selection [, state [, load_b ]]]
+
+<b>ARGUMENTS</b>
+
+    load_b = bool: store per-atom surface area in b-factors {default: 0}
+
+<b>SEE ALSO</b>
+
+    "dot_solvent" setting, "dots" representation (<a href='#show'>show</a> dots)</pre><p class='api'>api: pymol.querying.get_area</p><hr size=1><h2 id='get_bond'>get_bond</h2><pre><b>DESCRIPTION</b>
+
+    "get_bond" gets per-bond settings for all bonds which exist
+    between two selections of atoms.
+
+<b>USAGE</b>
+
+    get_bond name, selection1 [, selection2 ]
+
+<b>ARGUMENTS</b>
+
+    name = string: name of the setting
+
+    selection1 = string: first set of atoms
+
+    selection2 = string: seconds set of atoms {default: (selection1)}
+
+<b>EXAMPLE</b>
+
+    get_bond stick_transparency, */n+c+ca+o
+
+
+<b>NOTES</b>
+
+    The following per-bond settings are currently implemented.  Others
+    may seem to be recognized but will currently have no effect when
+    set at the per-bond level.
+    
+    * valence
+    * line_width
+    * line_color
+    * stick_radius
+    * stick_color
+    * stick_transparency
+
+<b>PYMOL API</b>
+
+    cmd.get_bond ( string name,
+                   string selection1,
+                   string selection2,
+                   int state, int updates, quiet=1)</pre><p class='api'>api: pymol.setting.get_bond</p><hr size=1><h2 id='get_chains'>get_chains</h2><pre><b>DESCRIPTION</b>
+
+    Print the list of chain identifiers in the given selection.
+
+<b>USAGE</b>
+
+    get_chains [ selection [, state ]]
+
+<b>ARGUMENTS</b>
+
+    selection = str: atom selection {default: all}
+
+    state = int: CURRENTLY IGNORED</pre><p class='api'>api: pymol.querying.get_chains</p><hr size=1><h2 id='get_clip'>get_clip</h2><pre><b>DESCRIPTION</b>
+
+    "get_clip" returns the positions of the clipping planes.
+
+<b>USAGE</b>
+
+    get_clip
+
+<b>ARGUMENTS</b>
+
+<b>EXAMPLES</b>
+
+<b>PYMOL API</b>
+
+    cmd.get_clip()
+
+<b>SEE ALSO</b>
+
+    <a href='#clip'>clip</a></pre><p class='api'>api: pymol.viewing.get_clip</p><hr size=1><h2 id='get_dihedral'>get_dihedral</h2><pre><b>DESCRIPTION</b>
+
+    "get_dihedral" returns the dihedral angle between four atoms.  By
+    default, the coordinates used are from the current state, however
+    an alternate state identifier can be provided.
+
+    By convention, positive dihedral angles are right-handed
+    (looking down the atom2-atom3 axis).
+
+<b>USAGE</b>
+
+    get_dihedral atom1, atom2, atom3, atom4 [,state ]
+
+<b>EXAMPLES</b>
+
+    get_dihedral 4/n,4/c,4/ca,4/cb
+    get_dihedral 4/n,4/c,4/ca,4/cb,state=4
+
+<b>PYMOL API</b>
+
+    cmd.get_dihedral(atom1,atom2,atom3,atom4,state=-1)</pre><p class='api'>api: pymol.querying.get_dihedral</p><hr size=1><h2 id='get_distance'>get_distance</h2><pre><b>DESCRIPTION</b>
+
+    "get_distance" returns the distance between two atoms.  By default, the
+    coordinates used are from the current state, however an alternate
+    state identifier can be provided.
+
+<b>USAGE</b>
+
+    get_distance atom1, atom2, [,state ]
+
+<b>EXAMPLES</b>
+
+    get_distance 4/n,4/c
+    get_distance 4/n,4/c,state=4
+    
+<b>PYMOL API</b>
+
+    cmd.get_distance(atom1="pk1",atom2="pk2",state=-1)</pre><p class='api'>api: pymol.querying.get_distance</p><hr size=1><h2 id='get_extent'>get_extent</h2><pre><b>DESCRIPTION</b>
+
+    "get_extent" returns the minimum and maximum XYZ coordinates of a
+    selection as an array:
+     [ [ min-X , min-Y , min-Z ],[ max-X, max-Y , max-Z ]]
+
+<b>PYMOL API</b>
+
+    cmd.get_extent(string selection="(all)", state=0 )</pre><p class='api'>api: pymol.querying.get_extent</p><hr size=1><h2 id='get_position'>get_position</h2><pre><b>DESCRIPTION</b>
+
+    "get_position" returns the 3D coordinates of the center of the
+    viewer window.</pre><p class='api'>api: pymol.querying.get_position</p><hr size=1><h2 id='get_renderer'>get_renderer</h2><pre><b>DESCRIPTION</b>
+
+    Prints OpenGL renderer information.</pre><p class='api'>api: pymol.querying.get_renderer</p><hr size=1><h2 id='get_sasa_relative'>get_sasa_relative</h2><pre><b>DESCRIPTION</b>
+
+    Calculates the relative per-residue solvent accessible surface area
+    and optionally labels and colors residues. The value is relative to
+    full exposure of the residue, calculated by removing all other
+    residues except its two next neighbors, if present.
+
+    Loads a value beteween 0.0 (fully buried) and 1.0 (fully exposed)
+    into the b-factor property, available in "iterate", "alter" and
+    "label" as "b".
+
+<b>USAGE</b>
+
+    get_sasa_relative [ selection [, state [, vis [, var ]]]]
+
+<b>ARGUMENTS</b>
+
+    selection = str: atom selection {default: all}
+
+    state = int: object state {default: 1}
+
+    vis = 0/1: show labels and do color by exposure {default: !quiet}
+
+    var = str: name of property to assign {default: b}
+
+    quiet = 0/1: print results to log window
+
+    outfile = str: filename, write to file instead of log window {default: }
+
+    subsele = str: Sub-selection, e.g. "sidechain" {default: all}
+
+<b>EXAMPLE</b>
+
+    fetch 1ubq, async=0
+    get_sasa_relative polymer
+
+    # side-chain exposure, excluding C-alpha atom
+    get_sasa_relative polymer, subsele=sidechain
+
+    # side-chain exposure, including C-alpha atom
+    get_sasa_relative polymer, subsele=sidechain guide
+
+<b>PYTHON API</b>
+
+    cmd.get_sasa_relative(...) -&gt; dict
+
+<b>SEE ALSO</b>
+
+    <a href='#get_area'>get_area</a> with "load_b=1" argument.</pre><p class='api'>api: pymol.util.get_sasa_relative</p><hr size=1><h2 id='get_symmetry'>get_symmetry</h2><pre><b>DESCRIPTION</b>
+
+    "get_symmetry" can be used to obtain the crystal
+    and spacegroup parameters for a molecule or map.
+
+<b>USAGE</b>
+
+    get_symmetry object-name-or-selection
+
+<b>PYMOL API</b>
+
+    cmd.get_symmetry(string selection, int state, int quiet)</pre><p class='api'>api: pymol.querying.get_symmetry</p><hr size=1><h2 id='get_title'>get_title</h2><pre><b>DESCRIPTION</b>
+
+    "get_title" retrieves a text string to the state of a particular
+    object which will be displayed when the state is active.
+
+<b>USAGE</b>
+
+    set_title object, state
+
+<b>PYMOL API</b>
+
+    cmd.set_title(string object, int state, string text)</pre><p class='api'>api: pymol.querying.get_title</p><hr size=1><h2 id='get_type'>get_type</h2><pre><b>DESCRIPTION</b>
+
+    "get_type" returns a string describing the named object or
+     selection.
+
+<b>PYMOL API</b>
+
+    cmd.get_type(string object-name)
+
+<b>NOTES</b>
+
+    Possible return values are
+
+    "object:molecule"
+    "object:map"
+    "object:mesh"
+    "object:slice"
+    "object:surface"
+    "object:measurement"
+    "object:cgo"
+    "object:group"
+    "object:volume"
+    "selection"
+
+<b>SEE ALSO</b>
+
+    get_names</pre><p class='api'>api: pymol.querying.get_type</p><hr size=1><h2 id='get_version'>get_version</h2><pre><b>DESCRIPTION</b>
+ 
+    "get_version" returns a tuple of length six containing text,
+    floating point, and integer representations of the current PyMOL
+    version number, build date as unix timestamp, GIT SHA and SVN
+    code revision so far available.
+   
+<b>PYMOL API</b>
+
+    cmd.get_version(int quiet)</pre><p class='api'>api: pymol.querying.get_version</p><hr size=1><h2 id='get_view'>get_view</h2><pre><b>DESCRIPTION</b>
+
+    "get_view" returns and optionally prints out the current view
+    information in a format which can be embedded into a command
+    script and can be used in subsequent calls to "set_view".
+
+    If a log file is currently open, get_view will not write the view
+    matrix to the screen unless the "output" parameter is 2.
+
+<b>USAGE</b>
+
+    get_view [output]
+
+<b>ARGUMENTS</b>
+
+    output = 0: output matrix to screen
+
+    output = 1: do not Output matrix to screen
+
+    output = 2: force output to screen even if log file is open
+
+    output = 3: return formatted string instead of a list
+
+<b>NOTES</b>
+
+    Contents of the view matrix:
+    
+    * 0  -  8: column-major 3x3 matrix which rotates model space to camera space
+
+    * 9  - 11: origin of rotation relative to camera (in camera space)
+
+    * 12 - 14: origin of rotation (in model space)
+
+    * 15: front plane distance from the camera
+
+    * 16: rear plane distance from the camera
+
+    * 17: orthoscopic flag (+/-) and field of view (if abs(value) &gt; 1)
+
+    The camera always looks down -Z with its +X left and its +Y down.
+
+    Therefore, in the default view, model +X is to the observer's
+    right, +Y is upward, and +Z points toward the observer.
+
+<b>PYMOL API</b>
+
+    cmd.get_view(output=1, quiet=1)
+
+<b>SEE ALSO</b>
+
+    <a href='#set_view'>set_view</a></pre><p class='api'>api: pymol.viewing.get_view</p><hr size=1><h2 id='get_viewport'>get_viewport</h2><pre><b>DESCRIPTION</b>
+
+    "get_viewport" returns and optionally prints out the screen viewport size
+
+<b>USAGE</b>
+
+    get_viewport [output]
+
+<b>ARGUMENTS</b>
+
+    output = 0: do not print to screen
+
+    output = 1 {default}: print to screen if not logging and not quiet
+
+    output = 2: force output to screen even if log file is open
+
+<b>PYMOL API</b>
+
+    cmd.get_viewport(output=1, quiet=1)</pre><p class='api'>api: pymol.viewing.get_viewport</p><hr size=1><h2 id='gradient'>gradient</h2><pre><b>DESCRIPTION</b>
+
+    "gradient" creates a gradient object from a map object.
+
+<b>USAGE</b>
+
+    gradient name, map [, minimum [, maximum [, selection [, buffer [, state
+        [, carve [, source_state [, quiet ]]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    map = the name of the map object to use.
+
+    minimum, maximum = minimum and maximum levels (default: full map range)
+
+    selection = an atom selection about which to display the mesh with
+        an additional "buffer" (if provided).
+
+<b>SEE ALSO</b>
+
+    <a href='#load'>load</a>, <a href='#isomesh'>isomesh</a></pre><p class='api'>api: pymol.creating.gradient</p><hr size=1><h2 id='group'>group</h2><pre><b>DESCRIPTION</b>
+
+    "group" creates or updates a group object: a container for
+    organizing objects into a hierarchy.
+    
+<b>USAGE</b>
+
+    group name [, members [, action ]]
+
+<b>ARGUMENTS</b>
+
+    name = string: name of the group
+
+    members = string: space-separated list of objects to include in
+              the group
+
+    action = add, remove, open, close, toggle, auto, empty,
+             purge, excise
+
+<b>ACTIONS</b>
+
+    add:     add members to group
+    remove:  remove members from group (members will be ungrouped)
+    empty:   remove all members from group
+    purge:   remove all members from group and delete them
+    excise:  remove all members from group and delete group
+    open:    expand group display in object menu panel
+    close:   collapse group display in object menu panel
+    toggle:  toggle group display in object menu panel
+    auto:    add or toggle
+    ungroup: DEPRECATED, use ungroup command
+
+<b>EXAMPLE</b>
+
+    group kinases, 1oky 1pkg 1t46 1uwh 1z5m
+    group kinases, open
+    group kinases, close
+
+<b>NOTES</b>
+
+    Group objects can typically be used as arguments to commands.  In
+    such cases, the command should be applied to all members of the
+    group.  If the group is used as a selection, then all atoms in all
+    objects in the group should be included in the selection.
+
+    When a group objects is open, objects can be added or removed from
+    the group by right-clicking and dragging in the control panel.
+
+<b>SEE ALSO</b>
+
+    <a href='#ungroup'>ungroup</a>, <a href='#order'>order</a>, "group_auto_mode" setting</pre><p class='api'>api: pymol.creating.group</p><hr size=1><h2 id='h_add'>h_add</h2><pre><b>DESCRIPTION</b>
+
+    "h_add" adds hydrogens onto a molecule based on current valences.
+
+<b>USAGE</b>
+
+    h_add [ selection [, state ]]
+
+<b>ARGUMENTS</b>
+
+    selection = string {default: (all)}
+
+    state = int {default: 0 (all states)}
+
+<b>NOTES</b>
+
+    Because PDB files do not normally contain bond valences for
+    ligands and other nonstandard components, it may be necessary to
+    manually correct ligand conformations before adding hydrogens.
+
+<b>SEE ALSO</b>
+
+    <a href='#h_fill'>h_fill</a></pre><p class='api'>api: pymol.editing.h_add</p><hr size=1><h2 id='h_fill'>h_fill</h2><pre><b>DESCRIPTION</b>
+
+    "h_fill" removes and replaces hydrogens on the atom or bond picked
+    for editing.
+
+<b>USAGE</b>
+
+    h_fill
+
+<b>NOTES</b>
+
+    This is useful for fixing hydrogens after changing bond valences.
+
+<b>PYMOL API</b>
+
+    cmd.h_fill()
+
+<b>SEE ALSO</b>
+
+    <a href='#edit'>edit</a>, <a href='#cycle_valence'>cycle_valence</a>, <a href='#h_add'>h_add</a></pre><p class='api'>api: pymol.editing.h_fill</p><hr size=1><h2 id='h_fix'>h_fix</h2><pre><b>DESCRIPTION</b>
+
+    "h_fix" is an unsupported command that may have something to do
+    with repositioning hydrogen atoms.</pre><p class='api'>api: pymol.editing.h_fix</p><hr size=1><h2 id='help'>help</h2><pre><b>DESCRIPTION</b>
+
+    "help" prints out the online help for a given command.
+
+<b>USAGE</b>
+
+    help command</pre><p class='api'>api: pymol.helping.help</p><hr size=1><h2 id='help_setting'>help_setting</h2><pre><b>DESCRIPTION</b>
+
+    Print documentation for a setting.
+
+<b>USAGE</b>
+
+    help_setting name</pre><p class='api'>api: pymol.helping.help_setting</p><hr size=1><h2 id='hide'>hide</h2><pre><b>DESCRIPTION</b>
+
+    "hide" turns off atom and bond representations.
+
+
+<b>USAGE</b>
+
+    hide [ representation [, selection ]]
+
+<b>ARGUMENTS</b>
+
+    representation = lines, spheres, mesh, ribbon, cartoon,
+       sticks, dots, surface, labels, extent, nonbonded, nb_spheres,
+       slice, extent, slice, dashes, angles, dihedrals, cgo, cell, callback, 
+       or everything
+
+    selection = string: a selection-expression or name-pattern
+
+<b>EXAMPLES</b>
+
+    hide lines, all
+    hide ribbon
+
+<b>PYMOL API</b>
+
+    cmd.hide(string representation, string selection)
+
+<b>SEE ALSO</b>
+
+    <a href='#show'>show</a>, <a href='#enable'>enable</a>, <a href='#disable'>disable</a></pre><p class='api'>api: pymol.viewing.hide</p><hr size=1><h2 id='id_atom'>id_atom</h2><pre><b>DESCRIPTION</b>
+
+    "id_atom" returns the original source id of a single atom, or
+    raises and exception if the atom does not exist or if the selection
+    corresponds to multiple atoms.
+
+<b>PYMOL API</b>
+
+    list = cmd.id_atom(string selection)</pre><p class='api'>api: pymol.querying.id_atom</p><hr size=1><h2 id='identify'>identify</h2><pre><b>DESCRIPTION</b>
+
+    "identify" returns a list of atom IDs corresponding to the ID code
+    of atoms in the selection.
+
+<b>PYMOL API</b>
+
+    list = cmd.identify(string selection="(all)",int mode=0)
+
+<b>NOTES</b>
+
+    mode 0: only return a list of identifiers (default)
+    mode 1: return a list of tuples of the object name and the identifier</pre><p class='api'>api: pymol.querying.identify</p><hr size=1><h2 id='index'>index</h2><pre><b>DESCRIPTION</b>
+
+    "index" returns a list of tuples corresponding to the
+    object name and index of the atoms in the selection.
+
+<b>PYMOL API</b>
+
+    list = cmd.index(string selection="(all)")
+
+<b>NOTE</b>
+
+  Atom indices are fragile and will change as atoms are added
+  or deleted.  Whenever possible, use integral atom identifiers
+  instead of indices.</pre><p class='api'>api: pymol.querying.index</p><hr size=1><h2 id='indicate'>indicate</h2><pre><b>DESCRIPTION</b>
+
+    "indicate" shows a visual representation of an atom selection.
+
+<b>USAGE</b>
+
+    indicate (selection)
+
+<b>PYMOL API</b>
+
+    cmd.count(string selection)</pre><p class='api'>api: pymol.selecting.indicate</p><hr size=1><h2 id='intra_fit'>intra_fit</h2><pre><b>DESCRIPTION</b>
+
+    "intra_fit" fits all states of an object to an atom selection
+    in the specified state.  It returns the rms values to python
+    as an array.
+
+<b>USAGE </b>
+
+    intra_fit selection [, state]
+
+<b>ARGUMENTS</b>
+
+    selection = string: atoms to fit
+
+    state = integer: target state
+
+    pbc = 0/1: Consider periodic boundary conditions {default: 1}
+
+<b>PYMOL API</b>
+
+    cmd.intra_fit( string selection, int state )
+
+<b>EXAMPLES</b>
+
+    intra_fit ( name CA )
+
+<b>PYTHON EXAMPLE</b>
+
+    from pymol import cmd
+    rms = cmd.intra_fit("(name CA)",1)
+
+<b>SEE ALSO</b>
+
+    <a href='#fit'>fit</a>, <a href='#rms'>rms</a>, <a href='#rms_cur'>rms_cur</a>, <a href='#intra_rms'>intra_rms</a>, <a href='#intra_rms_cur'>intra_rms_cur</a>, <a href='#pair_fit'>pair_fit</a></pre><p class='api'>api: pymol.fitting.intra_fit</p><hr size=1><h2 id='intra_rms'>intra_rms</h2><pre><b>DESCRIPTION</b>
+
+    "intra_rms" calculates rms fit values for all states of an object
+    over an atom selection relative to the indicated state.
+    Coordinates are left unchanged.  The rms values are returned as a
+    python array.
+
+<b>EXAMPLE</b>
+
+    from pymol import cmd
+    rms = cmd.intra_rms("(name CA)",1)
+    print rms
+
+<b>PYMOL API</b>
+
+    cmd.intra_rms(string selection, int state)
+
+<b>SEE ALSO</b>
+
+    <a href='#fit'>fit</a>, <a href='#rms'>rms</a>, <a href='#rms_cur'>rms_cur</a>, <a href='#intra_fit'>intra_fit</a>, <a href='#intra_rms_cur'>intra_rms_cur</a>, <a href='#pair_fit'>pair_fit</a></pre><p class='api'>api: pymol.fitting.intra_rms</p><hr size=1><h2 id='intra_rms_cur'>intra_rms_cur</h2><pre><b>DESCRIPTION</b>
+
+    "intra_rms_cur" calculates rms values for all states of an object
+    over an atom selection relative to the indicated state without
+    performing any fitting.  The rms values are returned
+    as a python array.
+
+<b>PYMOL API</b>
+
+    cmd.intra_rms_cur( string selection, int state)
+
+<b>PYTHON EXAMPLE</b>
+
+    from pymol import cmd
+    rms = cmd.intra_rms_cur("(name CA)",1)
+
+<b>SEE ALSO</b>
+
+    <a href='#fit'>fit</a>, <a href='#rms'>rms</a>, <a href='#rms_cur'>rms_cur</a>, <a href='#intra_fit'>intra_fit</a>, <a href='#intra_rms'>intra_rms</a>, <a href='#pair_fit'>pair_fit</a></pre><p class='api'>api: pymol.fitting.intra_rms_cur</p><hr size=1><h2 id='invert'>invert</h2><pre><b>DESCRIPTION</b>
+
+    "invert" inverts the stereo-chemistry of atom (pk1), holding attached atoms
+    (pk2) and (pk3) immobile.
+
+<b>USAGE</b>
+
+    invert 
+
+<b>NOTES</b>
+
+    The invert function is usually bound to CTRL-E in Editing Mode.
+
+<b>PYMOL API</b>
+
+    cmd.invert( )</pre><p class='api'>api: pymol.editing.invert</p><hr size=1><h2 id='isodot'>isodot</h2><pre><b>DESCRIPTION</b>
+
+    "isodot" creates a dot isosurface object from a map object.
+
+<b>USAGE</b>
+
+    isodot name, map [, level [, selection [, buffer [, state
+        [, carve [, source_state [, quiet ]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    map = the name of the map object to use.
+
+    level = the contour level.
+
+    selection = an atom selection about which to display the mesh with
+        an additional "buffer" (if provided).
+
+<b>NOTES</b>
+
+    If the dot isosurface object already exists, then the new dots will
+    be appended onto the object as a new state.
+
+<b>SEE ALSO</b>
+
+    <a href='#load'>load</a>, <a href='#isomesh'>isomesh</a></pre><p class='api'>api: pymol.creating.isodot</p><hr size=1><h2 id='isolevel'>isolevel</h2><pre><b>DESCRIPTION</b>
+
+    "isolevel" changes the contour level of a isodot, isosurface, or isomesh object.
+
+<b>USAGE</b>
+
+    isolevel name, level, state</pre><p class='api'>api: pymol.creating.isolevel</p><hr size=1><h2 id='isomesh'>isomesh</h2><pre><b>DESCRIPTION</b>
+
+    "isomesh" creates a mesh isosurface object from a map object.
+
+<b>USAGE</b>
+
+    isomesh name, map, level [, selection [, buffer [, state [, carve ]]]]
+
+<b>ARGUMENTS</b>
+
+    name = the name for the new mesh isosurface object.
+
+    map = the name of the map object to use for computing the mesh.
+
+    level = the contour level.
+
+    selection = an atom selection about which to display the mesh with
+        an additional "buffer" (if provided).
+
+    state = the state into which the object should be loaded (default=1)
+        (set state=0 to append new mesh as a new state)
+
+    carve = a radius about each atom in the selection for which to
+        include density. If "carve" is not provided, then the whole
+        brick is displayed.
+
+<b>NOTES</b>
+
+    If the mesh object already exists, then the new mesh will be
+    appended onto the object as a new state (unless you indicate a state).
+
+    state &gt; 0: specific state
+    state = 0: all states
+    state = -1: current state
+    
+    source_state &gt; 0: specific state
+    source_state = 0: include all states starting with 0
+    source_state = -1: current state
+    source_state = -2: last state in map
+
+<b>SEE ALSO</b>
+
+    <a href='#isodot'>isodot</a>, <a href='#load'>load</a></pre><p class='api'>api: pymol.creating.isomesh</p><hr size=1><h2 id='isosurface'>isosurface</h2><pre><b>DESCRIPTION</b>
+
+    "isosurface" creates a new surface object from a map object.
+
+<b>USAGE</b>
+
+    isosurface name, map, [, level [, selection [, buffer [, state [, carve [, source_state [, side [, mode ]]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    name = the name for the new mesh isosurface object.
+
+    map = the name of the map object to use for computing the mesh.
+
+    level = the contour level. (default=1.0)
+
+    selection = an atom selection about which to display the mesh with
+        an additional "buffer" (if provided). (default='')
+
+    buffer = buffer around selection to display mesh (default=0.0)
+
+    state = the state into which the object should be loaded (default=1)
+        (set state=0 to append new surface as a new state)
+
+    carve = a radius about each atom in the selection for which to
+        include density. If "carve= not provided, then the whole
+        brick is displayed. (default=None)
+
+    source_state = the state of the map from which the object should be loaded. (default=0)
+
+    side = Front or back face. Triangle-winding/normal direction. (default=1)
+
+    mode = surface geometry (0: dots; 1: lines; 2: triangle triangle-normals;
+        3: triangle gradient-normals) (default=3)
+
+<b>NOTES</b>
+
+    If the surface object already exists, then the new surface will be
+    appended onto the object as a new state (unless you indicate a state).
+
+<b>SEE ALSO</b>
+
+    <a href='#isodot'>isodot</a>, <a href='#isomesh'>isomesh</a>, <a href='#load'>load</a></pre><p class='api'>api: pymol.creating.isosurface</p><hr size=1><h2 id='iterate'>iterate</h2><pre><b>DESCRIPTION</b>
+
+    "iterate" iterates over an expression within a temporary namespace
+    for each atom.
+
+<b>USAGE</b>
+
+    iterate selection, expression
+
+<b>EXAMPLES</b>
+
+    stored.net_charge = 0
+    iterate all, stored.net_charge = stored.net_charge + partial_charge
+    print(stored.net_charge)
+    
+    stored.names = []
+    iterate all, stored.names.append(name)
+    print(stored.names)
+    
+    # Using a Python callback (new in PyMOL 2.5)
+    names = []
+    cmd.iterate("all", lambda atom: names.append(atom.name))
+    print(names)
+
+<b>NOTES</b>
+
+    Unlike with the "alter" command, atomic properties cannot be
+    altered.  Other than that, the commands are identical.
+
+<b>SEE ALSO</b>
+
+    <a href='#iterate_state'>iterate_state</a>, <a href='#alter'>alter</a>, <a href='#alter_state'>alter_state</a></pre><p class='api'>api: pymol.editing.iterate</p><hr size=1><h2 id='iterate_state'>iterate_state</h2><pre><b>DESCRIPTION</b>
+
+    "iterate_state" is to "alter_state" as "iterate" is to "alter"
+
+<b>USAGE</b>
+
+    iterate_state state, selection, expression
+
+<b>EXAMPLES</b>
+
+    stored.sum_x = 0.0
+    iterate_state 1, all, stored.sum_x = stored.sum_x + x
+    print(stored.sum_x)
+    
+<b>SEE ALSO</b>
+
+    <a href='#iterate'>iterate</a>, <a href='#alter'>alter</a>, <a href='#alter_state'>alter_state</a></pre><p class='api'>api: pymol.editing.iterate_state</p><hr size=1><h2 id='join_states'>join_states</h2><pre><b>DESCRIPTION</b>
+
+    The reverse of split_states. Create a multi-state object from a
+    selection which spans multiple objects.
+
+<b>ARGUMENTS</b>
+
+    name = string: name of object to create or modify
+
+    selection = string: atoms to include in the new object
+
+    mode = int: how to match states {default: 2}
+      0: Create discrete object, input objects can be (totally) different
+      1: Assume identical topology (same number of atoms and matching atom
+         identifiers) in all input objects
+      2: Assume matching atom identifiers in all input objects, but also
+         check for missing atoms and only include atoms that are present
+         in all input objects
+      3: match atoms by sequence alignment, slowest but most robust option
+
+<b>EXAMPLE</b>
+
+    fragment ala
+    fragment his
+    join_states multi, (ala|his), mode=0</pre><p class='api'>api: pymol.creating.join_states</p><hr size=1><h2 id='label'>label</h2><pre><b>DESCRIPTION</b>
+
+    "label" labels one or more atoms in a selection by evaluating an
+    Python expression referencing properties for each atom.
+
+<b>USAGE</b>
+
+    label [ selection [, expression ]]
+
+<b>ARGUMENTS</b>
+
+    selection = string: a selection-expression
+
+    expression = string: a Python expression that can be converted to a string
+    
+<b>EXAMPLES</b>
+
+    label chain A, chain
+    label name CA,"%s-%s" % (resn,resi)
+    label resi 200,"%1.3f" % partial_charge
+
+<b>NOTES</b>
+
+    The symbols defined in the label name space for each atom are:
+
+        name, resi, resn, resv, chain, segi, model, alt, q, b, type,
+        index, rank, ID, ss, vdw, elec_radius, label, elem, geom,
+        flags, color, cartoon, valence, formal_charge, partial_charge,
+        numeric_type, text_type, stereo
+
+    All strings in the expression must be explicitly quoted.
+
+    This operation typically takes several seconds per thousand atoms
+    labelled.
+
+    To clear labels, simply omit the expression or set it to ''.</pre><p class='api'>api: pymol.viewing.label</p><hr size=1><h2 id='load'>load</h2><pre><b>DESCRIPTION</b>
+
+    "load" can by used to read molecules, crystallographic maps and
+    other volumetric data, PyMOL sessions, and some other types of
+    content.
+
+<b>USAGE</b>
+
+    load filename [, object [, state [, format [, finish [, discrete [, quiet
+            [, multiplex [, zoom [, partial [, mimic [, object_props
+            [, atom_props ]]]]]]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    filename = string: file path or URL
+
+    object = string: name of the object {default: filename prefix}
+
+    state = integer: number of the state into which
+    the content should be loaded, or 0 for append {default:0}
+
+    format = pdb, ccp4, etc. {default: use file extension}): format of
+    data file    
+    
+<b>EXAMPLES</b>
+
+    load 1dn2.pdb
+
+    load file001.pdb, ligand
+
+    load http://delsci.com/sample.pdb
+    
+<b>NOTES</b>
+
+    The file extension is used to determine the format unless the
+    format is provided explicitly.
+
+    If an object name is specified, then the file is loaded into that
+    object.  Otherwise, an object is created with the same name as the
+    file prefix.
+
+    If a state value is not specified, then the content is appended
+    after the last existing state (if any).
+
+    Supported molecular file formats include: pdb, mol, mol2, sdf,
+    xyz, and others.
+
+    Supported map formats include: xplor, ccp4, phi, and others.
+
+    All supported file formats are covered in the reference
+    documentation under File Formats.
+
+<b>PYMOL API</b>
+
+    cmd.load(string filename, string object-name, integer state,
+             string format, int finish, int discrete, int quiet,
+             int multiplex, int zoom, int partial)
+    
+<b>SEE ALSO</b>
+
+    <a href='#save'>save</a>, <a href='#load_traj'>load_traj</a>, <a href='#fetch'>fetch</a></pre><p class='api'>api: pymol.importing.load</p><hr size=1><h2 id='load_embedded'>load_embedded</h2><pre><b>DESCRIPTION</b>
+
+    "load_embedded" loads content previously defined in the current
+    PyMOL command script using the "embed" command.
+
+<b>USAGE</b>
+
+    load_embedded [ key [, name [, state [, finish [, discrete [, quiet ]]]]]]        
+
+<b>EXAMPLE</b>
+
+    embed wats, pdb
+    HETATM    1  O   WAT     1       2.573  -1.034  -1.721
+    HETATM    2  H1  WAT     1       2.493  -1.949  -1.992
+    HETATM    3  H2  WAT     1       2.160  -0.537  -2.427
+    HETATM    4  O   WAT     2       0.705   0.744   0.160
+    HETATM    5  H1  WAT     2      -0.071   0.264   0.450
+    HETATM    6  H2  WAT     2       1.356   0.064  -0.014
+    embed end
+
+    load_embedded wats
+
+<b>NOTES</b>
+
+    This approach only works with text data files.</pre><p class='api'>api: pymol.importing.load_embedded</p><hr size=1><h2 id='load_mtz'>load_mtz</h2><pre><b>DESCRIPTION</b>
+
+    Load a MTZ file as two map objects (fofc, 2fofc) or if amplitudes and
+    phases column names are given, as one map object.
+
+<b>USAGE</b>
+
+    load_mtz filename [, prefix [, amplitudes, phases [, weights
+        [, reso_low [, reso_high ]]]]]
+
+<b>ARGUMENTS</b>
+
+    filename = str: filename
+
+    prefix = str: object name or prefix {default: filename without extension}
+
+    amplitudes = str: amplitudes column name, guess if blank {default: }
+
+    phases = str: phases column name, required if amplitudes are given {default: }
+
+    weights = str: weights column name, optional {default: None}
+
+    reso_low = float: minimum resolution {default: 0, read from file}
+
+    reso_high = float: maximum resolution {default: 0, read from file}</pre><p class='api'>api: pymol.importing.load_mtz</p><hr size=1><h2 id='load_png'>load_png</h2><pre><b>DESCRIPTION</b>
+
+    "load_png" loads and displays a PNG file from disk.
+
+<b>USAGE</b>
+
+    load_png filename
+
+<b>NOTES</b>
+
+    If the displayed image is too big for the window, it will be
+    reduced 2-fold repeatedly until it fits.</pre><p class='api'>api: pymol.viewing.load_png</p><hr size=1><h2 id='load_traj'>load_traj</h2><pre><b>DESCRIPTION</b>
+
+    "load_traj" reads trajectory files.
+
+    Most of the trajectory formats listed here are supported:
+    http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/
+
+<b>USAGE</b>
+
+    load_traj filename [,object [,state [,format [,interval [,average ]
+                             [,start [,stop [,max [,selection [,image [,shift
+                             ]]]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    filename = str: path to trajectory file
+
+    object = str: name of the molecular object where the trajectory should be
+    appended as states {default: guess from filename or last object in list}
+
+    state = int: first object state to populate, or 0 to append after
+    last state {default: 1}
+
+    format = str: file format {default: guess from extension}
+
+    interval = int: interval to take frames from file {default: 1}
+
+    average = int: ? (trj only, possibly broken)
+
+    start = int: first frame to load from file {default: 1}
+
+    stop = int: last frame to load from file, or -1 to load all {default: -1}
+
+    max = int: maximum number of states to load, or 0 to load all {default: 0}
+
+    selection = str: atom selection to only load a subset of coordinates
+    {default: all}
+
+    image = 0/1: residue-based period image transformation (trj only)
+
+    shift = float-3: offset for image transformation {default: (0,0,0}
+
+    plugin = str: name of VMD plugin to use {default: guess from magic string
+    of from format}
+
+<b>NOTES</b>
+
+    You must first load a corresponding topology file before attempting
+    to load a trajectory file.
+
+    PyMOL does not know how to wrap the truncated octahedron used by Amber
+    You will need to use the "ptraj" program first to do this.
+
+    The average option is not a running average.  To perform this type of
+    average, use the "smooth" command after loading the trajectory file.
+
+<b>SEE ALSO</b>
+
+    <a href='#load'>load</a></pre><p class='api'>api: pymol.importing.load_traj</p><hr size=1><h2 id='loadall'>loadall</h2><pre><b>DESCRIPTION</b>
+
+    Load all files matching given globbing pattern
+
+<b>USAGE</b>
+
+    loadall pattern [, group ]
+
+<b>EXAMPLE</b>
+
+    loadall *.pdb</pre><p class='api'>api: pymol.importing.loadall</p><hr size=1><h2 id='log'>log</h2><pre><b>DESCRIPTION</b>
+
+    "log" writes a command to the log file (if one is open).
+
+    `text` and/or `alt_text` must include the terminating line feed.
+
+<b>ARGUMENTS</b>
+
+    text = str: PyMOL command (optional if alt_text is given)
+    alt_text = str: Python expression (optional)
+
+<b>SEE ALSO</b>
+
+    <a href='#log_open'>log_open</a>, <a href='#log_close'>log_close</a></pre><p class='api'>api: pymol.commanding.log</p><hr size=1><h2 id='log_close'>log_close</h2><pre><b>DESCRIPTION</b>
+
+    "log_close" closes the current log file (if one is open).
+
+<b>USAGE</b>
+
+    log_close
+
+<b>SEE ALSO</b>
+
+    <a href='#log'>log</a>, <a href='#log_open'>log_open</a></pre><p class='api'>api: pymol.commanding.log_close</p><hr size=1><h2 id='log_open'>log_open</h2><pre><b>DESCRIPTION</b>
+
+    "log_open" opens a log file for writing.
+
+<b>USAGE</b>
+
+    log_open [ filename [, mode ]]
+
+<b>ARGUMENTS</b>
+
+    filename = str: file to write to (.pml or .py) {default: log.pml}
+
+    mode = w/a: "w" to open an empty log file, "a" to append {default: w}
+
+<b>SEE ALSO</b>
+
+    <a href='#log'>log</a>, <a href='#log_close'>log_close</a></pre><p class='api'>api: pymol.commanding.log_open</p><hr size=1><h2 id='look_at'>look_at</h2><pre><b>DESCRIPTION</b>
+
+    "look_at" modifies a rotation of an object (or view) so that its forward (z axis)
+    faces the center of a target object.
+
+<b>ARGUMENTS</b>
+
+    mobile_obj the object to rotate
+
+    target_obj the object to look at
+
+<b>USAGE</b>
+
+    look_at target_obj
+
+<b>PYMOL API</b>
+
+    cmd.look_at(string target_obj)</pre><p class='api'>api: pymol.editing.look_at</p><hr size=1><h2 id='ls'>ls</h2><pre><b>DESCRIPTION</b>
+
+    List contents of the current working directory.
+
+<b>USAGE</b>
+
+    ls [pattern]
+    dir [pattern]
+
+<b>EXAMPLES</b>
+
+    ls
+    ls *.pml
+
+<b>SEE ALSO</b>
+
+    <a href='#cd'>cd</a>, <a href='#pwd'>pwd</a>, <a href='#system'>system</a></pre><p class='api'>api: pymol.externing.ls</p><hr size=1><h2 id='madd'>madd</h2><pre><b>DESCRIPTION</b>
+
+    "madd" extends the existing movie specification using the same
+    syntax as mset.
+
+<b>SEE ALSO</b>
+
+    <a href='#mset'>mset</a>, <a href='#mdo'>mdo</a>, <a href='#mplay'>mplay</a>, <a href='#mclear'>mclear</a></pre><p class='api'>api: pymol.moving.madd</p><hr size=1><h2 id='map_double'>map_double</h2><pre><b>DESCRIPTION</b>
+
+    "map_double" resamples a map at twice the current resolution.
+
+<b>NOTES</b>
+
+     The amount of memory required to store the map will increase
+     eight-fold.
+
+<b>USAGE</b>
+
+    map_double map_name, state</pre><p class='api'>api: pymol.editing.map_double</p><hr size=1><h2 id='map_halve'>map_halve</h2><pre><b>DESCRIPTION</b>
+
+    "map_halve" resamples a map at half the current resolution.  
+
+<b>USAGE</b>
+
+    map_halve map_name, state
+    
+<b>NOTES</b>
+
+    The amount of memory required to store the map will decrease
+    eight-fold.
+
+<b>SEE ALSO</b>
+
+    <a href='#map_double'>map_double</a></pre><p class='api'>api: pymol.editing.map_halve</p><hr size=1><h2 id='map_new'>map_new</h2><pre><b>DESCRIPTION</b>
+
+    "map_new" creates a map object using one of the built-in map
+    generation routines.  This command not yet fully supported.
+
+<b>USAGE</b>
+
+    map_new name [, type [, grid [, selection [, buffer [, box [, state ]]]]]]
+
+<b>ARGUMENTS</b>
+
+    name = string: name of the map object to create or modify
+	
+    type = vdw, gaussian, gaussian_max, coulomb, coulomb_neutral, coulomb_local
+
+    grid = float: grid spacing
+
+    selection = string: atoms about which to generate the map
+
+    buffer = float: cutoff 
+    
+    state &gt; 0: use the indicated state
+    
+    state = 0: use all states independently with independent extents
+    
+    state = -1: use current global state
+    
+    state = -2: use effective object state(s)
+    
+    state = -3: use all states in one map
+    
+    state = -4: use all states independent states by with a unified extent
+
+<b>NOTES</b>
+
+    This command can be used to create low-resolution surfaces of
+    protein structures.</pre><p class='api'>api: pymol.creating.map_new</p><hr size=1><h2 id='map_set'>map_set</h2><pre><b>DESCRIPTION</b>
+
+    "map_set" provides a number of common operations on and between maps.
+
+<b>USAGE</b>
+
+    map_set name, operator, operands, target_state, source_state
+
+    operator may be "minimum, maximum, average, sum, or difference"
+
+<b>EXAMPLES</b>
+
+    map my_sum, add, map1 map2 map3
+    map my_avg, average, map1 map2 map3
+    
+<b>NOTES</b>
+
+    source_state = 0 means all states
+    target_state = -1 means current state
+    
+    experimental
+    
+<b>SEE ALSO</b>
+
+    <a href='#map_new'>map_new</a></pre><p class='api'>api: pymol.editing.map_set</p><hr size=1><h2 id='map_set_border'>map_set_border</h2><pre><b>DESCRIPTION</b>
+
+    "map_set_border" is a function (reqd by PDA) which allows you to set the
+    level on the edge points of a map
+
+<b>USAGE</b>
+
+    map_set_border name, level
+
+<b>NOTES</b>
+
+    unsupported.
+    
+<b>SEE ALSO</b>
+
+    <a href='#load'>load</a></pre><p class='api'>api: pymol.editing.map_set_border</p><hr size=1><h2 id='map_trim'>map_trim</h2><pre><b>DESCRIPTION</b>
+
+    "map_trim" is an unsupported command that may have something to do with
+    reducing the extent of a map to cover just a single selection of atoms.</pre><p class='api'>api: pymol.editing.map_trim</p><hr size=1><h2 id='mappend'>mappend</h2><pre><b>DESCRIPTION</b>
+
+    "mappend" associates additional command line operations with a
+    particular movie frame.  These "generalized movie commands" will
+    be executed every time the numbered frame is played.
+    
+<b>USAGE</b>
+
+    mappend frame: command
+
+<b>ARGUMENTS</b>
+
+    frame = integer: the frame to modify
+
+    command = literal command-line text
+    
+<b>EXAMPLE</b>
+
+    mappend 1: hide everything; show sticks
+    mappend 60: hide sticks; show spheres
+    mappend 120: hide spheres; show surface
+    
+<b>NOTES</b>
+
+    The "mset" command must first be used to define the movie before
+    "mdo" statements will have any effect.  Redefinition of the movie
+    clears any existing movie commands specified with mdo or mappend.
+
+<b>SEE ALSO</b>
+
+    <a href='#mset'>mset</a>, <a href='#madd'>madd</a>, <a href='#mdo'>mdo</a>, <a href='#mplay'>mplay</a>, <a href='#mstop'>mstop</a></pre><p class='api'>api: pymol.moving.mappend</p><hr size=1><h2 id='mask'>mask</h2><pre><b>DESCRIPTION</b>
+
+    "mask" makes it impossible to select the indicated atoms using the
+    mouse.  This is useful when you are working with one molecule in
+    front of another and wish to avoid accidentally selecting atoms in
+    the background.
+
+<b>USAGE</b>
+
+    mask (selection)
+
+<b>PYMOL API</b>
+
+    cmd.mask( string selection="(all)" )
+
+<b>SEE ALSO</b>
+
+    <a href='#unmask'>unmask</a>, <a href='#protect'>protect</a>, <a href='#deprotect'>deprotect</a>, <a href='#mouse'>mouse</a></pre><p class='api'>api: pymol.controlling.mask</p><hr size=1><h2 id='matrix_copy'>matrix_copy</h2><pre><b>DESCRIPTION</b>
+        
+    "matrix_copy" copies a transformation matrix from one object to
+    another.
+
+<b>USAGE</b>
+
+    matrix_copy source_name, target_name
+
+<b>NOTES</b>
+
+    This command is often used after a protein structure alignment to
+    bring other related objects into the same frame of reference.
+
+<b>SEE ALSO</b>
+
+    <a href='#matrix_reset'>matrix_reset</a>, <a href='#align'>align</a>, <a href='#fit'>fit</a>, <a href='#pair_fit'>pair_fit</a></pre><p class='api'>api: pymol.editing.matrix_copy</p><hr size=1><h2 id='matrix_reset'>matrix_reset</h2><pre><b>DESCRIPTION</b>
+        
+    "matrix_reset" resets the transformation for an object.
+
+<b>USAGE</b>
+
+    matrix_reset name [, state [, mode ]]
+
+<b>ARGUMENTS</b>
+
+    name = str: object name
+
+    state = int: object state {default: 1}
+
+    mode = int: {defualt: -1 = matrix_mode or 0}
+      0: transformation was applied to coordinates
+      1: reset TTT matrix (movie transformation)
+      2: reset state matrix
+
+<b>SEE ALSO</b>
+
+    <a href='#matrix_copy'>matrix_copy</a>, <a href='#align'>align</a>, <a href='#super'>super</a>, <a href='#fit'>fit</a>, <a href='#pair_fit'>pair_fit</a></pre><p class='api'>api: pymol.editing.matrix_reset</p><hr size=1><h2 id='mclear'>mclear</h2><pre><b>DESCRIPTION</b>
+
+    "mclear" clears the movie frame image cache.
+
+<b>USAGE</b>
+
+    mclear
+
+<b>PYMOL API</b>
+
+    cmd.mclear()</pre><p class='api'>api: pymol.moving.mclear</p><hr size=1><h2 id='mcopy'>mcopy</h2><pre><b>DESCRIPTION</b>
+
+    "mcopy" copies key frames and movie commands
+
+    Usage like "mmove".
+
+<b>SEE ALSO</b>
+
+    <a href='#mmove'>mmove</a>, <a href='#mdelete'>mdelete</a>, <a href='#minsert'>minsert</a></pre><p class='api'>api: pymol.moving.mcopy</p><hr size=1><h2 id='mdelete'>mdelete</h2><pre><b>DESCRIPTION</b>
+
+    "mdelete" removes frames from camera view and object motions.
+
+<b>ARGUMENTS</b>
+
+    count = int: number of frames to delete, or -1 to delete all the way
+    to the end {default: -1}
+
+    frame = int: first frame to delete, or 0 for current frame {default: 0}
+
+<b>EXAMPLE</b>
+
+    # delete frames 81 to 90
+    mdelete 10, 81
+
+<b>SEE ALSO</b>
+
+    <a href='#minsert'>minsert</a>, <a href='#mmove'>mmove</a></pre><p class='api'>api: pymol.moving.mdelete</p><hr size=1><h2 id='mdo'>mdo</h2><pre><b>DESCRIPTION</b>
+
+    "mdo" defines (or redefines) the command-line operations
+    associated with a particular movie frame.  These "generalized
+    movie commands" will be executed every time the numbered frame is
+    played.
+
+<b>USAGE</b>
+
+    mdo frame: command
+
+<b>PYMOL API</b>
+
+    cmd.mdo( int frame, string command )
+
+<b>EXAMPLE</b>
+
+    // Creates a single frame movie involving a rotation about X and Y
+
+    load test.pdb
+    mset 1
+    mdo 1, turn x,5; turn y,5;
+    mplay
+
+<b>NOTES</b>
+
+ These commands are usually created
+    by a PyMOL utility program (such as movie.rock).  Command can
+    actually contain several commands separated by semicolons ';'
+    
+    The "mset" command must first be used to define the movie before
+    "mdo" statements will have any effect.  Redefinition of the movie
+    clears any existing mdo statements.
+
+<b>SEE ALSO</b>
+
+    <a href='#mset'>mset</a>, <a href='#mplay'>mplay</a>, <a href='#mstop'>mstop</a></pre><p class='api'>api: pymol.moving.mdo</p><hr size=1><h2 id='mdump'>mdump</h2><pre><b>DESCRIPTION</b>
+
+    "mdump" dumps the current set of movie commands as text output.
+
+<b>USAGE</b>
+
+    mdump
+
+<b>SEE ALSO</b>
+
+    <a href='#mplay'>mplay</a>, <a href='#mset'>mset</a>, <a href='#mdo'>mdo</a>, <a href='#mclear'>mclear</a>, <a href='#mmatrix'>mmatrix</a></pre><p class='api'>api: pymol.moving.mdump</p><hr size=1><h2 id='mem'>mem</h2><pre><b>DESCRIPTION</b>
+
+    "mem" Dumps current memory state to standard output. This is a
+    debugging feature, not an official part of the API.</pre><p class='api'>api: pymol.experimenting.mem</p><hr size=1><h2 id='meter_reset'>meter_reset</h2><pre><b>DESCRIPTION</b>
+
+    "meter_reset" resets the frames per secound counter.
+
+<b>USAGE</b>
+
+    meter_reset</pre><p class='api'>api: pymol.viewing.meter_reset</p><hr size=1><h2 id='middle'>middle</h2><pre><b>DESCRIPTION</b>
+
+    "middle" goes to the middle of the movie.
+
+<b>USAGE</b>
+
+    middle
+
+<b>PYMOL API</b>
+
+    cmd.middle()</pre><p class='api'>api: pymol.moving.middle</p><hr size=1><h2 id='minsert'>minsert</h2><pre><b>DESCRIPTION</b>
+
+    "minsert" adds frames into camera view and object motions.
+
+<b>ARGUMENTS</b>
+
+    count = int: number of frames to insert
+
+    frame = int: insert before "frame" if frame &gt; 0, otherwise insert before
+    the current frame {default: 0}
+
+<b>SEE ALSO</b>
+
+    <a href='#mdelete'>mdelete</a>, <a href='#mmove'>mmove</a>, <a href='#madd'>madd</a></pre><p class='api'>api: pymol.moving.minsert</p><hr size=1><h2 id='mmatrix'>mmatrix</h2><pre><b>DESCRIPTION</b>
+
+    "mmatrix" sets up a matrix to be used for the first frame of the movie.
+
+<b>USAGE</b>
+
+    mmatrix action
+
+<b>ARGUMENTS</b>
+
+    action = clear, store, or recall
+
+<b>NOTES</b>
+
+    This command ensures that the movie always starts from the same
+    camera view.
+
+    "mmatrix" should not be used when controlling the camera using
+    "mview".
+    
+<b>PYMOL API</b>
+
+    cmd.mmatrix( string action )
+
+<b>EXAMPLES</b>
+
+    mmatrix store</pre><p class='api'>api: pymol.moving.mmatrix</p><hr size=1><h2 id='mmove'>mmove</h2><pre><b>DESCRIPTION</b>
+
+    "mmove" moves key frames and movie commands
+
+<b>ARGUMENTS</b>
+
+    target = int: frame to move to
+
+    source = int: frame to move from, 0 for current frame {default: 0}
+
+    count = int: number of frames to move
+
+<b>SEE ALSO</b>
+
+    <a href='#mcopy'>mcopy</a>, <a href='#mdelete'>mdelete</a>, <a href='#minsert'>minsert</a></pre><p class='api'>api: pymol.moving.mmove</p><hr size=1><h2 id='morph'>morph</h2><pre><b>DESCRIPTION</b>
+
+    Creates an interpolated trajectory between two or multiple conformations.
+    If the two input objects are not the same, match them based on sequence
+    alignment.
+
+    This command supports two methods: rigimol and linear. RigiMOL is an
+    incentive feature and only available to official PyMOL sponsors. Linear
+    morphing is quick and robust but likely to produce distorted intermediates.
+
+<b>ARGUMENTS</b>
+
+    name = string: name of object to create
+
+    sele1 = string: atom selection of first conformation
+
+    sele2 = string: atom selection of second conformation {default: &lt;sele1&gt;}
+
+    state1 = int: sele1 state {default: 1}. If state1=0 and sele1 has N
+    states, create N morphings between all consecutive states and back from
+    state N to 1 (so the morph will have N*steps states). If state2=0, create
+    N-1 morphings and stop at last state.
+
+    state2 = int: sele2 state {default: 2 if sele1=sele2, else 1}
+
+    refinement = int: number of sculpting refinement cycles to clean
+    distorted intermediates {default: 3}
+
+    steps = int: number of states for sele2 object {default: 30}
+
+    method = string: rigimol or linear {default: rigimol}
+
+<b>EXAMPLE</b>
+
+    fetch 1akeA 4akeA, async=0
+    align 1akeA, 4akeA
+    morph mout, 1akeA, 4akeA</pre><p class='api'>api: pymol.morphing.morph</p><hr size=1><h2 id='mouse'>mouse</h2><pre><b>DESCRIPTION</b>
+
+    "mouse" cycles through the mouse modes defined in the current
+    mouse configuration ring.
+
+<b>USAGE</b>
+
+    mouse</pre><p class='api'>api: pymol.controlling.mouse</p><hr size=1><h2 id='move'>move</h2><pre><b>DESCRIPTION</b>
+
+    "move" translates the camera about one of the three primary axes.
+
+<b>USAGE</b>
+
+    move axis, distance
+
+<b>EXAMPLES</b>
+
+    move x, 3
+    move y, -1
+
+<b>PYMOL API</b>
+
+    cmd.move(string axis, float distance)
+
+<b>SEE ALSO</b>
+
+    <a href='#turn'>turn</a>, <a href='#rotate'>rotate</a>, <a href='#translate'>translate</a>, <a href='#zoom'>zoom</a>, <a href='#center'>center</a>, <a href='#clip'>clip</a></pre><p class='api'>api: pymol.viewing.move</p><hr size=1><h2 id='movie.load'>movie.load</h2><pre><b>UNDOCUMENTED</b></pre><p class='api'>api: pymol.movie.load</p><hr size=1><h2 id='movie.nutate'>movie.nutate</h2><pre><b>UNDOCUMENTED</b></pre><p class='api'>api: pymol.movie.nutate</p><hr size=1><h2 id='movie.pause'>movie.pause</h2><pre><b>UNDOCUMENTED</b></pre><p class='api'>api: pymol.movie.pause</p><hr size=1><h2 id='movie.produce'>movie.produce</h2><pre><b>DESCRIPTION</b>
+
+    Export a movie to an MPEG, WEBM, or GIF file.
+
+    Which video formats and codecs are available depends on the availability
+    and feature set of your ffmpeg and ImageMagick installations.
+
+<b>ARGUMENTS</b>
+
+    filename = str: filename of movie file to produce
+
+    mode = draw or ray: {default: check "ray_trace_frames" setting}
+
+    first = int: first frame to export {default: 1}
+
+    last = int: last frame to export {default: last frame of movie}
+
+    preserve = 0 or 1: don't delete temporary files {default: 0}
+
+    encoder = ffmpeg|convert|mpeg_encode: Tool used for video encoding
+
+    quality = 0-100: encoding quality {default: 90 (movie_quality setting)}
+
+    width = int: Width in pixels {default: from viewport}
+
+    height = int: Height in pixels {default: from viewport}
+
+<b>EXAMPLE</b>
+
+    movie.produce video.mp4, height=1080
+    movie.produce video.webm, height=720</pre><p class='api'>api: pymol.movie.produce</p><hr size=1><h2 id='movie.rock'>movie.rock</h2><pre><b>UNDOCUMENTED</b></pre><p class='api'>api: pymol.movie.rock</p><hr size=1><h2 id='movie.roll'>movie.roll</h2><pre><b>UNDOCUMENTED</b></pre><p class='api'>api: pymol.movie.roll</p><hr size=1><h2 id='movie.screw'>movie.screw</h2><pre><b>UNDOCUMENTED</b></pre><p class='api'>api: pymol.movie.screw</p><hr size=1><h2 id='movie.sweep'>movie.sweep</h2><pre><b>UNDOCUMENTED</b></pre><p class='api'>api: pymol.movie.sweep</p><hr size=1><h2 id='movie.tdroll'>movie.tdroll</h2><pre><b>AUTHOR</b>
+
+    Byron DeLaBarre
+
+<b>USAGE</b>
+
+    movie.tdroll(rangx,rangey,rangez,skip=1,mset=0)
+    
+    rangex/y/z = rotation range on respective axis
+    enter 0 for no rotation.
+
+    skip is angle increment in each frame
+    
+    Use skip to reduce final movie size or to speed up rotation.
+    
+<b>EXAMPLE</b>
+
+    movie.tdroll 360,360,360,5</pre><p class='api'>api: pymol.movie.tdroll</p><hr size=1><h2 id='movie.zoom'>movie.zoom</h2><pre><b>UNDOCUMENTED</b></pre><p class='api'>api: pymol.movie.zoom</p><hr size=1><h2 id='mplay'>mplay</h2><pre><b>DESCRIPTION</b>
+
+    "mplay" starts the movie.
+
+<b>USAGE</b>
+
+    mplay
+
+<b>PYMOL API</b>
+
+    cmd.mplay()
+
+<b>SEE ALSO</b>
+
+    <a href='#mstop'>mstop</a>, <a href='#mset'>mset</a>, <a href='#mdo'>mdo</a>, <a href='#mclear'>mclear</a>, <a href='#mmatrix'>mmatrix</a></pre><p class='api'>api: pymol.moving.mplay</p><hr size=1><h2 id='mpng'>mpng</h2><pre><b>DESCRIPTION</b>
+
+    "mpng" writes movie frames as a series of numbered png files.
+
+<b>USAGE</b>
+
+    mpng prefix [, first [, last [, preserve [, modal [, mode [, quiet
+        [, width [, height ]]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    prefix = string: filename prefix for saved images -- output files
+    will be numbered and end in ".png"
+
+    first = integer: starting frame {default: 0 (first frame)}
+
+    last = integer: last frame {default: 0 (last frame)}
+
+    preserve = 0/1: Only write non-existing files {default: 0}
+
+    modal = integer: will frames be rendered with a modal draw loop
+
+    mode = int: 2=ray, 1=draw, 0=normal {default: -1, check
+    ray_trace_frames or draw_frames}
+
+    width = int: width in pixels {default: current viewport}
+
+    height = int: height in pixels {default: current viewport}
+    
+<b>NOTES</b>
+
+    If the "ray_trace_frames" variable is non-zero, then the frames
+    will be ray-traced.  Note that this can take many hours for a long
+    movie with complex content displayed.
+
+    Also, be sure to avoid setting "cache_frames" when rendering a
+    long movie to avoid running out of memory.
+    
+    Arguments "first" and "last" can be used to specify an inclusive
+    interval over which to render frames.  Thus, you can write a smart
+    Python program that will automatically distribute rendering over a
+    cluster of workstations.  If these options are left at zero, then
+    the entire movie will be rendered.
+
+<b>PYMOL API</b>
+
+    cmd.mpng(string prefix, int first, int last)
+
+<b>SEE ALSO</b>
+
+    <a href='#png'>png</a>, <a href='#save'>save</a></pre><p class='api'>api: pymol.moving.mpng</p><hr size=1><h2 id='mse2met'>mse2met</h2><pre><b>DESCRIPTION</b>
+
+    Mutate selenomethionine to methionine</pre><p class='api'>api: pymol.editing.mse2met</p><hr size=1><h2 id='mset'>mset</h2><pre><b>DESCRIPTION</b>
+
+    "mset" sets up a relationship between molecular states and movie
+    frames.  This makes it possible to control which states are shown
+    in which frame.
+
+<b>USAGE</b>
+
+    mset specification [ ,frame ]
+
+<b>PYMOL API</b>
+
+    cmd.mset( string specification [, int frame] )
+
+<b>EXAMPLES</b>
+
+    # simplest case, one state -&gt; one frame
+
+    mset 1
+
+    # ten frames, all corresponding to state 1
+    
+    mset 1 x10     
+
+    # the first thirty frames are state 1
+    # the next 15 frames pass through states 1-15
+    # the next 30 frames are of state 15
+    # the next 15 frames iterate back to state 1
+
+    mset 1 x30 1 -15 15 x30 15 -1
+
+<b>SEE ALSO</b>
+
+    <a href='#madd'>madd</a>, <a href='#mdo'>mdo</a>, <a href='#mplay'>mplay</a>, <a href='#mclear'>mclear</a></pre><p class='api'>api: pymol.moving.mset</p><hr size=1><h2 id='mstop'>mstop</h2><pre><b>DESCRIPTION</b>
+
+    "mstop" stops playing of the movie.
+
+<b>USAGE</b>
+
+    mstop
+
+<b>SEE ALSO</b>
+
+    <a href='#mplay'>mplay</a>, <a href='#mset'>mset</a>, <a href='#mdo'>mdo</a>, <a href='#mclear'>mclear</a>, <a href='#mmatrix'>mmatrix</a></pre><p class='api'>api: pymol.moving.mstop</p><hr size=1><h2 id='mtoggle'>mtoggle</h2><pre><b>DESCRIPTION</b>
+
+    "mtoggle" toggles playing of the movie.</pre><p class='api'>api: pymol.moving.mtoggle</p><hr size=1><h2 id='multifilesave'>multifilesave</h2><pre><b>DESCRIPTION</b>
+
+    For a selection that spans multiple molecular objects and/or states,
+    save each object and/or state to a separate file. Takes a filename
+    argument with placeholders:
+
+    {name}  : object name
+    {state} : state number
+    {title} : state title
+    {num}   : file number
+    {}      : object name (first) or state (second)
+
+<b>EXAMPLES</b>
+
+    multifilesave /tmp/{name}.pdb
+    multifilesave /tmp/{name}-{state}.cif, state=0
+    multifilesave /tmp/{}-{}.cif, state=0
+    multifilesave /tmp/{}-{title}.sdf, state=0</pre><p class='api'>api: pymol.exporting.multifilesave</p><hr size=1><h2 id='multisave'>multisave</h2><pre><b>DESCRIPTION</b>
+
+    "multisave" will save a multi-entry PDB file.
+
+    Every object in the given selection (pattern) will have a HEADER and a
+    CRYST (if symmetry is defined) record, and is terminated with END.
+    Loading such a multi-entry PDB file into PyMOL will load each entry
+    as a separate object.
+
+    This behavior is different to the "save" command, where a multi-object
+    selection is written "flat" to a PDB file, without HEADER or CRYST
+    records.
+
+<b>ARGUMENTS</b>
+
+    filename = string: file path to be written
+
+    pattern = str: atom selection (before 1.8.4: object name pattern)
+
+    state = int: object state (-1=current, 0=all) {default: -1}
+
+    append = 0/1: append to existing file {default: 0}
+
+    format = str: file format {default: guess from extension, or 'pdb'}</pre><p class='api'>api: pymol.exporting.multisave</p><hr size=1><h2 id='mview'>mview</h2><pre><b>DESCRIPTION</b>
+
+    "mview" stores camera and object matrices for use in movie
+    interpolation.
+
+<b>USAGE</b>
+
+    mview [action [, first [, last [, power [, bias [, simple
+       [, linear [, object [, wrap [, hand [, window [, cycles [,scene
+       [, cut [, quiet ]]]]]]]]]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    action = str: one of store, clear, reset, purge, interpolate,
+    uninterpolate, reinterpolate, toggle, toggle_interp, smooth
+    {default: store}
+
+    first = int: frame number or 0 for current frame {default: 0}
+
+    power = float: slow down animation at keyframe (0.0) or not (1.0)
+    {default: 0.0}
+
+    object = str: name of object for object keyframes, or empty for
+    global (camera) keyframes {default: }
+
+    scene = str: name of scene to store scene with key frame {default: }
+
+    cut = float 0.0-1.0: scene switch moment (0.0: beginning of transition,
+    1.0: end of transition) {default: 0.5}
+
+    auto = -1/0/1: if freeze=0, then auto reinterpolate after store, clear,
+    or toggle {default: -1 = use movie_auto_interpolate}
+
+    state = int: if &gt; 0, then store object state {default: 0}
+
+    freeze = 0/1: never auto reinterpolate {default: 0}
+
+<b>SEE ALSO</b>
+
+    <a href='#mplay'>mplay</a>, <a href='#mset'>mset</a>, <a href='#mdo'>mdo</a>, <a href='#mclear'>mclear</a>, <a href='#mmatrix'>mmatrix</a></pre><p class='api'>api: pymol.moving.mview</p><hr size=1><h2 id='order'>order</h2><pre><b>DESCRIPTION</b>
+
+    "order" changes the ordering of names in the control panel.
+
+<b>USAGE</b>
+
+    order names, sort, location
+
+<b>ARGUMENTS</b>
+
+    names = string: a space-separated list of names
+
+    sort = yes or no {default: no}
+
+    location = top, current, or bottom {default: current}
+
+<b>EXAMPLES</b>
+
+    order 1dn2 1fgh 1rnd       # sets the order of these three objects
+    order *,yes                # sorts all names
+    order 1dn2_*, yes          # sorts all names beginning with 1dn2_
+    order 1frg, location=top   # puts 1frg at the top of the list
+
+<b>PYMOL API</b>
+
+    cmd.order(string names, string sort, string location)
+
+<b>NOTES</b>
+
+    "order" can also be used to reorder objects within a group.
+    
+<b>SEE ALSO</b>
+
+    <a href='#set_name'>set_name</a>, <a href='#group'>group</a></pre><p class='api'>api: pymol.controlling.order</p><hr size=1><h2 id='orient'>orient</h2><pre><b>DESCRIPTION</b>
+
+    "orient" aligns the principal components of the atoms in the
+    selection with the XYZ axes.  
+
+<b>USAGE</b>
+
+    orient [ selection [, state [, animate ]]]
+
+<b>ARGUMENTS</b>
+
+    selection = a selection-expression or name-pattern {default: (all)}
+
+    state = 0: use all coordinate states {default}
+    
+    state = -1: uses only coordinates for the current state
+    
+    state &gt; 0: uses coordinates for a specific state
+
+<b>EXAMPLES</b>
+
+    orient organic
+
+<b>NOTES</b>
+
+    The function is similar to the orient command in X-PLOR.
+
+<b>PYMOL API</b>
+
+    cmd.orient(string object-or-selection, int state, float animate)
+
+<b>SEE ALSO</b>
+
+    <a href='#zoom'>zoom</a>, <a href='#origin'>origin</a>, <a href='#reset'>reset</a></pre><p class='api'>api: pymol.viewing.orient</p><hr size=1><h2 id='origin'>origin</h2><pre><b>DESCRIPTION</b>
+
+    "origin" sets the center of rotation about a selection.  If an
+    object name is specified, it can be used to set the center of
+    rotation for the object (for use in animation and editing).
+
+<b>USAGE</b>
+
+    origin [ selection [, object [,position, [, state ]]]]
+
+<b>ARGUMENTS</b>
+
+    selection = string: selection-expression or name-list {default: (all)}
+    
+    state = 0 (default) use all coordinate states
+    
+    state = -1 use only coordinates for the current state
+    
+    state &gt; 0  use coordinates for a specific state
+
+<b>EXAMPLES</b>
+
+    origin chain A
+    
+    origin position=[1.0,2.0,3.0]
+
+<b>PYMOL API</b>
+
+    cmd.origin(string object-or-selection)
+
+<b>SEE ALSO</b>
+
+    <a href='#zoom'>zoom</a>, <a href='#orient'>orient</a>, <a href='#reset'>reset</a></pre><p class='api'>api: pymol.viewing.origin</p><hr size=1><h2 id='overlap'>overlap</h2><pre><b>DESCRIPTION</b>
+
+    "overlap" is an unsupported command that sums up
+    [(VDWi + VDWj) - distance_ij]/2 between pairs of
+    selected atoms.
+
+<b>PYMOL API</b>
+
+    cmd.overlap(string selection1, string selection2 [, int state1=1, int state2=1, float adjust=0.0])
+
+<b>NOTES</b>
+
+    It does not compute the volume overlap,
+    selections with more atoms will have a larger
+    sum.</pre><p class='api'>api: pymol.querying.overlap</p><hr size=1><h2 id='pair_fit'>pair_fit</h2><pre><b>DESCRIPTION</b>
+
+    "pair_fit" fits matched sets of atom pairs between two objects.
+
+<b>USAGE</b>
+
+    pair_fit selection, selection, [ selection, selection [ ... ]]
+
+<b>EXAMPLES</b>
+
+    # superimpose protA residues 10-25 and 33-46 to protB residues 22-37 and 41-54:
+
+    pair_fit protA/10-25+33-46/CA, protB/22-37+41-54/CA
+
+    # superimpose ligA atoms C1, C2, and C4 to ligB atoms C8, C4, and C10, respectively:
+
+    pair_fit ligA////C1, ligB////C8, ligA////C2, ligB////C4, ligA////C3, ligB////C10
+
+<b>NOTES</b>
+
+    So long as the atoms are stored in PyMOL with the same order
+    internally, you can provide just two selections.  Otherwise, you
+    may need to specify each pair of atoms separately, two by two, as
+    additional arguments to pair_fit.
+
+    Script files are usually recommended when using this command.
+
+<b>SEE ALSO</b>
+
+    <a href='#fit'>fit</a>, <a href='#rms'>rms</a>, <a href='#rms_cur'>rms_cur</a>, <a href='#intra_fit'>intra_fit</a>, <a href='#intra_rms'>intra_rms</a>, <a href='#intra_rms_cur'>intra_rms_cur</a></pre><p class='api'>api: pymol.fitting.pair_fit</p><hr size=1><h2 id='pbc_unwrap'>pbc_unwrap</h2><pre><b>DESCRIPTION</b>
+
+    Unwrap molecules or atoms from PBC box so that they don't jump
+    across periodic boundaries.
+
+<b>ARGUMENTS</b>
+
+    oname = str: object name
+
+    bymol = 0/1: Unwrap by molecule, not by atom {default: 1}</pre><p class='api'>api: pymol.editing.pbc_unwrap</p><hr size=1><h2 id='pbc_wrap'>pbc_wrap</h2><pre><b>DESCRIPTION</b>
+
+    Wrap molecules into PBC box.
+
+<b>ARGUMENTS</b>
+
+    oname = str: object name
+
+    center = list or None: Center position in model space, or None
+    to use average of first coordinate state.
+
+<b>EXAMPLE</b>
+
+    pbc_wrap trajectory, center=[0, 0, 0]</pre><p class='api'>api: pymol.editing.pbc_wrap</p><hr size=1><h2 id='phi_psi'>phi_psi</h2><pre><b>DESCRIPTION</b>
+
+    "phi_psi" return the phi and psi angles for a protein atom
+    selection.
+    
+<b>USAGE</b></pre><p class='api'>api: pymol.querying.phi_psi</p><hr size=1><h2 id='pi_interactions'>pi_interactions</h2><pre><b>DESCRIPTION</b>
+
+    Find pi-pi and pi-cation interactions.
+
+    Identical to cmd.distance(..., mode=5, label=0)
+
+<b>SEE ALSO</b>
+
+    <a href='#distance'>distance</a></pre><p class='api'>api: pymol.querying.pi_interactions</p><hr size=1><h2 id='png'>png</h2><pre><b>DESCRIPTION</b>
+
+    "png" saves a PNG format image file of the current display.
+
+<b>USAGE</b>
+
+    png filename [, width [, height [, dpi [, ray]]]]
+
+<b>ARGUMENTS</b>
+
+    filename = string: file path to be written
+    
+    width = integer or string: width in pixels (without units), inches (in)
+    or centimeters (cm). If unit suffix is given, dpi argument is required
+    as well. If only one of width or height is given, the aspect ratio of
+    the viewport is preserved. {default: 0 (current)}
+
+    height = integer or string: height (see width) {default: 0 (current)}
+
+    dpi = float: dots-per-inch {default -1.0 (unspecified)}
+
+    ray = 0 or 1: should ray be run first {default: 0 (no)}
+
+<b>EXAMPLES</b>
+
+    png image.png
+    png image.png, dpi=300
+    png image.png, 10cm, dpi=300, ray=1
+
+<b>NOTES</b>
+
+    PNG is the only image format supported by PyMOL.
+
+<b>SEE ALSO</b>
+
+    <a href='#mpng'>mpng</a>, <a href='#save'>save</a>
+    
+<b>PYMOL API</b>
+
+    cmd.png(string filename, int width, int height, float dpi,
+            int ray, int quiet)</pre><p class='api'>api: pymol.exporting.png</p><hr size=1><h2 id='pop'>pop</h2><pre><b>DESCRIPTION</b>
+
+    "pop" provides a mechanism of iterating through an atom selection
+    atom by atom, where each atom is sequentially assigned to the
+    named selection.
+    
+<b>USAGE</b>
+
+    pop name, source
+    
+<b>EXAMPLE</b>
+
+    select src, name CA
+
+    python
+    while cmd.pop("tmp","src"):
+        cmd.zoom("tmp",2, animate=1)
+        for a in range(30):
+           cmd.refresh()
+           time.sleep(0.05)
+    python end
+    
+<b>PYMOL API</b>
+
+    cmd.deselect()</pre><p class='api'>api: pymol.selecting.pop</p><hr size=1><h2 id='protect'>protect</h2><pre><b>DESCRIPTION</b>
+
+    "protect" protects a set of atoms from tranformations performed
+    using the editing features.  This is most useful when you are
+    modifying an internal portion of a chain or cycle and do not wish
+    to affect the rest of the molecule.
+
+<b>USAGE</b>
+
+    protect (selection)
+
+<b>PYMOL API</b>
+
+    cmd.protect(string selection)
+
+<b>SEE ALSO</b>
+
+    <a href='#deprotect'>deprotect</a>, <a href='#mask'>mask</a>, <a href='#unmask'>unmask</a>, <a href='#mouse'>mouse</a>, editing</pre><p class='api'>api: pymol.editing.protect</p><hr size=1><h2 id='pseudoatom'>pseudoatom</h2><pre><b>DESCRIPTION</b>
+
+    "pseudoatom" adds a pseudoatom to a molecular object, and will
+    creating the molecular object if it does not yet exist.
+    
+<b>USAGE</b>
+
+    pseudoatom object [, selection [, name [, resn [, resi [, chain
+        [, segi [, elem [, vdw [, hetatm [, b [, q [, color [, label
+        [, pos [, state [, mode [, quiet ]]]]]]]]]]]]]]]]]
+
+<b>NOTES</b>
+
+    "pseudoatom" can be used for a wide variety of random tasks where
+    on must place an atom or a label in 3D space.</pre><p class='api'>api: pymol.creating.pseudoatom</p><hr size=1><h2 id='pwd'>pwd</h2><pre><b>DESCRIPTION</b>
+
+    Print current working directory.
+
+<b>USAGE</b>
+
+    pwd
+
+<b>SEE ALSO</b>
+
+    <a href='#cd'>cd</a>, <a href='#ls'>ls</a>, <a href='#system'>system</a></pre><p class='api'>api: pymol.externing.pwd</p><hr size=1><h2 id='python'>python</h2><pre><b>DESCRIPTION</b>
+
+    "python" delimits a block of literal Python code embedded in a
+    PyMOL command script.
+
+<b>EXAMPLE</b>
+
+    python
+
+    for a in range(1,10):
+        b = 10 - a
+        print a, b
+
+    python end
+
+<b>NOTES</b>
+
+    Literal Python blocks avoid the annoying requirement of having to
+    use explicit line continuation markers for multi-line Python
+    commands embedded within Python scripts.  
+    
+<b>SEE ALSO</b>
+
+    <a href='#abort'>abort</a>, <a href='#embed'>embed</a>, <a href='#skip'>skip</a></pre><p class='api'>api: pymol.helping.python</p><hr size=1><h2 id='quit'>quit</h2><pre><b>DESCRIPTION</b>
+
+    "quit" terminates the program. 
+
+<b>USAGE</b>
+
+    quit [code]
+
+<b>ARGUMENTS</b>
+
+    code = int: exit the application with status "code" {default: 0}
+
+<b>PYMOL API</b>
+
+    cmd.quit(int code)</pre><p class='api'>api: pymol.commanding.quit</p><hr size=1><h2 id='ramp_new'>ramp_new</h2><pre><b>DESCRIPTION</b>
+
+    "ramp_new" creates a color ramp based on a map potential value or
+    based on proximity to a molecular object.
+    
+<b>USAGE</b>
+
+    ramp_new name, map_name [, range [, color [, state [, selection [,
+        beyond [, within [, sigma [, zero ]]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    name = string: name of the ramp object
+
+    map_name = string: name of the map (for potential) or molecular
+    object (for proximity)
+    
+    range = list: values corresponding to slots in the ramp
+
+    color = list: colors corresponding to slots in the ramp
+
+    state = integer: state identifier
+
+    selection = selection: for automatic ranging
+    
+    beyond = number: with automatic ranging, are we excluding
+    values beyond a certain distance from the selection?
+
+    within = number: with automatic ranging, are we only including
+    valuess within a certain distance from the selection?
+
+    sigma = number: with automatic ranging, how many standard
+    deviations from the mean do we go?
+
+    zero = integer: with automatic ranging, do we force the central
+    value to be zero?
+
+<b>EXAMPLES</b>
+
+    ramp_new e_pot_color, e_pot_map, [-10,0,10], [red,white,blue]
+
+<b>NOTES</b>
+
+    Color ramps are extremely powerful but complicated to use.
+
+    In the simplest case, they can be used to color representations
+    based on the potential values found in a map object at the
+    corresponding positions in space.
+
+    In another simple case, representations can be colored based on
+    proximity to a target.  Note that since ramp targets must
+    themselves be real objects (not merely selections), the "create"
+    command may be needed in order to generate an appropriate target.
+    
+    In more complicated cases, they can be used to color
+    representations on one object based atoms found in another.
+
+    Ramps can operate recursively.  In other words, the output color
+    from one ramp can be used as the input color for another.  For
+    example, you could color by map potential within a certain
+    distance of the target object, beyond which, a uniform color is applied.
+    
+    
+<b>PYMOL API</b>
+
+    def ramp_new(string name, string map_name, list range, list color,
+                 int state, string selection, float beyond, float
+                 within, float sigma, int zero, int quiet)
+
+<b>SEE ALSO</b>
+
+    <a href='#ramp_update'>ramp_update</a>, <a href='#load'>load</a>, <a href='#color'>color</a>, <a href='#create'>create</a>, slice, <a href='#gradient'>gradient</a></pre><p class='api'>api: pymol.creating.ramp_new</p><hr size=1><h2 id='ramp_update'>ramp_update</h2><pre><b>DESCRIPTION</b>
+
+    "ramp_update" updates range and/or color of a color ramp.
+
+<b>USAGE</b>
+
+    ramp_update name [, range [, color ]]
+
+<b>EXAMPLES</b>
+
+    ramp_new    e_pot_color, e_pot_map, [-10,0,10], [red,white,blue]
+    ramp_update e_pot_color, range=[-15,0,15]
+    ramp_update e_pot_color, color=[green,white,orange]
+
+<b>SEE ALSO</b>
+
+    <a href='#ramp_new'>ramp_new</a></pre><p class='api'>api: pymol.creating.ramp_update</p><hr size=1><h2 id='ray'>ray</h2><pre><b>DESCRIPTION</b>
+
+    "ray" creates a ray-traced image of the current frame. This
+    can take some time (up to several minutes, depending on image
+    complexity).
+
+<b>USAGE</b>
+
+    ray [width [,height [,antialias [,angle [,shift [,renderer [,quiet
+        [,async ]]]]]]]]]
+
+<b>ARGUMENTS</b>
+
+    width = integer {default: 0 (current)}
+
+    height = integer {default: 0 (current)}
+
+    antialias = integer {default: -1 (use antialias setting)}
+
+    angle = float: y-axis rotation for stereo image generation
+    {default: 0.0}
+
+    shift = float: x-axis translation for stereo image generation
+    {default: 0.0}
+
+    renderer = -1, 0, 1, or 2: respectively, default, built-in,
+    pov-ray, or dry-run {default: 0}
+    
+    async = 0 or 1: should rendering be done in a background thread?
+    
+<b>EXAMPLES</b>
+
+    ray
+    ray 1024,768
+    ray renderer=2
+
+<b>NOTES</b>
+
+    Default width and height are taken from the current viewpoint. If
+    one is specified but not the other, then the missing value is
+    scaled so as to preserve the current aspect ratio.
+    
+    angle and shift can be used to generate matched stereo pairs
+
+    renderer = 1 uses PovRay.  This is Unix-only and you must have
+        "povray" in your path.  It utilizes two two temporary files:
+        "tmp_pymol.pov" and "tmp_pymol.png".
+
+    See "help faster" for optimization tips with the builtin renderer.
+    See "help povray" for how to use PovRay instead of PyMOL's
+    built-in ray-tracing engine.
+
+<b>PYMOL API</b>
+
+    cmd.ray(int width, int height, int antialias, float angle,
+            float shift, int renderer, int quiet, int async)
+<b>SEE ALSO</b>
+
+    <a href='#draw'>draw</a>, <a href='#png'>png</a>, <a href='#save'>save</a></pre><p class='api'>api: pymol.viewing.ray</p><hr size=1><h2 id='rebond'>rebond</h2><pre><b>DESCRIPTION</b>
+
+    Discard all bonds and do distance based bonding.
+
+<b>ARGUMENTS</b>
+
+    oname = str: object name
+
+    state = int: object state {default: -1 (current state)}
+
+    pbc = 0/1: Use periodic boundary conditions (only if symmetry
+    is defined for the object) {default: 1}</pre><p class='api'>api: pymol.editing.rebond</p><hr size=1><h2 id='rebuild'>rebuild</h2><pre><b>DESCRIPTION</b>
+
+    "rebuild" forces PyMOL to recreate geometric objects in
+    case any of them have gone out of sync.
+
+<b>USAGE</b>
+
+    rebuild [selection [, representation ]]
+
+<b>ARGUMENTS</b>
+
+    selection = string {default: all}
+
+    representation = string: {default: everything}
+
+<b>PYMOL API</b>
+
+    cmd.rebuild(string selection, string representation)
+
+<b>SEE ALSO</b>
+
+    <a href='#refresh'>refresh</a></pre><p class='api'>api: pymol.viewing.rebuild</p><hr size=1><h2 id='recolor'>recolor</h2><pre><b>DESCRIPTION</b>
+
+    "recolor" forces reapplication of colors to existing objects.
+    
+<b>USAGE</b>
+
+    recolor [selection [, representation ]]
+
+<b>ARGUMENTS</b>
+
+    selection = string {default: all}
+
+    representation = string {default: everything}
+    
+<b>NOTES</b>
+
+    This command often needs to be executed after "set_color" has been
+    used to redefine one or more existing colors.
+    
+<b>PYMOL API</b>
+
+    cmd.recolor(string selection = 'all', string representation = 'everything')
+
+<b>SEE ALSO</b>
+
+    <a href='#color'>color</a>, <a href='#set_color'>set_color</a></pre><p class='api'>api: pymol.viewing.recolor</p><hr size=1><h2 id='redo'>redo</h2><pre><b>DESCRIPTION</b>
+
+    "redo" reapplies the conformational change of the object currently
+    being edited.
+
+<b>USAGE</b>
+
+    redo
+
+<b>SEE ALSO</b>
+
+    <a href='#undo'>undo</a>, push_undo</pre><p class='api'>api: pymol.editing.redo</p><hr size=1><h2 id='reference'>reference</h2><pre><b>UNDOCUMENTED</b></pre><p class='api'>api: pymol.editing.reference</p><hr size=1><h2 id='refresh'>refresh</h2><pre><b>DESCRIPTION</b>
+
+    "refresh" causes the scene to be redrawn as soon as the operating
+    system allows it to be done.
+
+<b>USAGE</b>
+
+    refresh
+
+<b>PYMOL API</b>
+
+    cmd.refresh()
+
+<b>SEE ALSO</b>
+
+    <a href='#rebuild'>rebuild</a></pre><p class='api'>api: pymol.viewing.refresh</p><hr size=1><h2 id='refresh_wizard'>refresh_wizard</h2><pre><b>DESCRIPTION</b>
+
+    "refresh_wizard" is in unsupported internal command.</pre><p class='api'>api: pymol.wizarding.refresh_wizard</p><hr size=1><h2 id='reinitialize'>reinitialize</h2><pre><b>DESCRIPTION</b>
+
+    "reinitialize" reinitializes the program by deleting all objects
+    and restoring the default program settings.
+
+<b>USAGE</b>
+
+    reinitialize</pre><p class='api'>api: pymol.commanding.reinitialize</p><hr size=1><h2 id='remove'>remove</h2><pre><b>DESCRIPTION</b>
+
+    "remove" eleminates the atoms in a selection from their respective
+    molecular objects.
+
+<b>USAGE</b>
+
+    remove selection
+
+<b>EXAMPLES</b>
+
+    remove resi 124 
+
+<b>PYMOL API</b>
+
+    cmd.remove( string selection )
+
+<b>SEE ALSO</b>
+
+    <a href='#delete'>delete</a></pre><p class='api'>api: pymol.editing.remove</p><hr size=1><h2 id='remove_picked'>remove_picked</h2><pre><b>DESCRIPTION</b>
+
+    "remove_picked" removes the atom or bond currently picked for
+    editing.
+
+<b>USAGE</b>
+
+    remove_picked [ hydrogens ]
+
+<b>NOTES</b>
+
+    This function is usually connected to the
+    DELETE key and "CTRL-D".
+
+    By default, attached hydrogens will also be deleted unless
+    hydrogen-flag is zero.
+
+<b>PYMOL API</b>
+
+    cmd.remove_picked(integer hydrogens)
+
+<b>SEE ALSO</b>
+
+    <a href='#attach'>attach</a>, <a href='#replace'>replace</a></pre><p class='api'>api: pymol.editing.remove_picked</p><hr size=1><h2 id='rename'>rename</h2><pre><b>DESCRIPTION</b>
+
+    "rename" creates new atom names which are unique within residues.
+
+<b>USAGE</b>
+
+    rename selection [, force ]
+
+<b>PYMOL API</b>
+
+    cmd.rename(string selection, int force )
+
+<b>SEE ALSO</b>
+
+    <a href='#alter'>alter</a></pre><p class='api'>api: pymol.editing.rename</p><hr size=1><h2 id='replace'>replace</h2><pre><b>DESCRIPTION</b>
+
+    "replace" replaces the picked atom with a new atom.
+
+<b>USAGE</b>
+
+    replace element, geometry, valence [, h_fill [, name ]]
+
+<b>NOTES</b>
+
+    Immature functionality. See code for details.
+
+<b>PYMOL API</b>
+
+    cmd.replace(string element, int geometry, int valence, int h_fill,
+                string name)
+
+<b>SEE ALSO</b>
+
+    <a href='#remove'>remove</a>, <a href='#attach'>attach</a>, <a href='#fuse'>fuse</a>, <a href='#bond'>bond</a>, <a href='#unbond'>unbond</a></pre><p class='api'>api: pymol.editing.replace</p><hr size=1><h2 id='replace_wizard'>replace_wizard</h2><pre><b>DESCRIPTION</b>
+
+    "replace_wizard" is an unsupported internal command.</pre><p class='api'>api: pymol.wizarding.replace_wizard</p><hr size=1><h2 id='reset'>reset</h2><pre><b>DESCRIPTION</b>
+
+    "reset" restores the rotation matrix to identity, sets the origin
+    to the center of mass (approx.) and zooms the window and clipping
+    planes to cover all objects.  Alternatively, it can reset object
+    matrices.
+
+<b>USAGE</b>
+
+    reset [ object ]
+
+<b>PYMOL API</b>
+
+    cmd.reset()</pre><p class='api'>api: pymol.viewing.reset</p><hr size=1><h2 id='resume'>resume</h2><pre><b>DESCRIPTION</b>
+
+    "resume" executes a log file and opens it for recording of
+    additional commands.
+
+<b>USAGE</b>
+
+    resume filename
+
+<b>SEE ALSO</b>
+
+    <a href='#log'>log</a>, <a href='#log_close'>log_close</a></pre><p class='api'>api: pymol.commanding.resume</p><hr size=1><h2 id='rewind'>rewind</h2><pre><b>DESCRIPTION</b>
+
+    "rewind" goes to the beginning of the movie.
+
+<b>USAGE</b>
+
+    rewind
+
+<b>PYMOL API</b>
+
+    cmd.rewind()</pre><p class='api'>api: pymol.moving.rewind</p><hr size=1><h2 id='rms'>rms</h2><pre><b>DESCRIPTION</b>
+
+    "rms" computes a RMS fit between two atom selections, but does not
+    tranform the models after performing the fit.
+
+<b>USAGE</b>
+
+    rms (selection), (target-selection)
+
+<b>EXAMPLES</b>
+
+    fit ( mutant and name CA ), ( wildtype and name CA )
+
+<b>SEE ALSO</b>
+
+    <a href='#fit'>fit</a>, <a href='#rms_cur'>rms_cur</a>, <a href='#intra_fit'>intra_fit</a>, <a href='#intra_rms'>intra_rms</a>, <a href='#intra_rms_cur'>intra_rms_cur</a>, <a href='#pair_fit'>pair_fit</a></pre><p class='api'>api: pymol.fitting.rms</p><hr size=1><h2 id='rms_cur'>rms_cur</h2><pre><b>DESCRIPTION</b>
+
+    "rms_cur" computes the RMS difference between two atom
+    selections without performing any fitting.
+
+<b>USAGE</b>
+
+    rms_cur (selection), (selection)
+
+<b>SEE ALSO</b>
+
+    <a href='#fit'>fit</a>, <a href='#rms'>rms</a>, <a href='#intra_fit'>intra_fit</a>, <a href='#intra_rms'>intra_rms</a>, <a href='#intra_rms_cur'>intra_rms_cur</a>, <a href='#pair_fit'>pair_fit</a></pre><p class='api'>api: pymol.fitting.rms_cur</p><hr size=1><h2 id='rock'>rock</h2><pre><b>DESCRIPTION</b>
+
+    "rock" toggles Y axis rocking.
+
+<b>USAGE</b>
+
+    rock
+
+<b>PYMOL API</b>
+
+    cmd.rock()</pre><p class='api'>api: pymol.viewing.rock</p><hr size=1><h2 id='rotate'>rotate</h2><pre><b>DESCRIPTION</b>
+
+    "rotate" rotates the atomic coordinates of atoms in a selection
+    about an axis.  Alternatively, it modifies the matrix associated
+    with a particular object or object state.
+
+<b>USAGE</b>
+
+    rotate axis, angle [, selection [, state [, camera [, object 
+        [, origin ]]]]]
+
+<b>ARGUMENTS</b>
+
+    axis = x, y, z, or float vector: axis about which to rotate
+
+    angle = float: degrees of rotation
+
+    selection = string: atoms whose coordinates should be modified {default: all}
+    
+    state &gt; 0: only the indicated state is modified
+
+    state = 0: all states are modified
+
+    state = -1: only the current state is modified {default}
+
+    camera = 0 or 1: is the axis specific in camera coordinates? {default: 1}
+
+    object = string: object name (only if rotating object matrix) {default: None}
+
+    origin = float vector: origin of rotateion {default: None}
+        
+<b>EXAMPLES</b>
+
+    rotate x, 45, pept
+
+    rotate [1,1,1], 10, chain A
+
+<b>NOTES</b>
+
+    Behavior differs depending on whether or not the "object"
+    parameter is specified.
+
+    If object is None, then the atomic coordinates are modified
+    directly, and all representation geometries will need to be
+    regenerated to reflect the new atomic coordinates.
+
+    If object is set to an object name, then the selection field is
+    ignored and instead of translating the atomic coordinates, the
+    object matrix is modified.  This option is only intended for use
+    in animations and is not yet fully supported.
+
+<b>PYMOL API</b>
+
+    cmd.rotate(list-or-string axis, float angle, string selection, 
+               int state, int camera, string object)</pre><p class='api'>api: pymol.editing.rotate</p><hr size=1><h2 id='run'>run</h2><pre><b>DESCRIPTION</b>
+
+    "run" executes an external Python script in a local name space,
+    the main Python namespace, the global PyMOL namespace, or in its
+    own namespace (as a module).
+
+<b>USAGE</b>
+
+    run file [, namespace ]
+
+<b>ARGUMENTS</b>
+
+    file = string: a Python program, typically ending in .py or .pym.
+
+    namespace = local, global, module, main, or private {default: global}
+
+<b>NOTES</b>
+
+    Due to an idiosyncracy in Pickle, you can not pickle objects
+    directly created at the main level in a script run as "module",
+    (because the pickled object becomes dependent on that module).
+    Workaround: delegate construction to an imported module.
+
+<b>SEE ALSO</b>
+
+    <a href='#spawn'>spawn</a></pre><p class='api'>api: pymol.parsing.run</p><hr size=1><h2 id='save'>save</h2><pre><b>DESCRIPTION</b>
+
+    "save" writes content to a file.
+    
+<b>USAGE</b>
+
+    save filename [, selection [, state [, format ]]]
+
+<b>ARGUMENTS</b>
+
+    filename = string: file path to be written
+
+    selection = string: atoms to save {default: (all)}
+
+    state = integer: state to save {default: -1 (current state)}
+    
+<b>PYMOL API</b>
+
+    cmd.save(string file, string selection, int state, string format)
+
+<b>NOTES</b>
+
+    The file format is automatically chosen if the extesion is one of
+    the supported output formats: pdb, pqr, mol, sdf, pkl, pkla, mmd, out,
+    dat, mmod, cif, pov, png, pse, psw, aln, fasta, obj, mtl, wrl, dae, idtf,
+    or mol2.
+
+    If the file format is not recognized, then a PDB file is written
+    by default.
+
+    For molecular files and where applicable and supported:
+    
+    * if state = -1 (default), then only the current state is written.
+
+    * if state = 0, then a multi-state output file is written.
+    
+<b>SEE ALSO</b>
+
+    <a href='#load'>load</a>, get_model</pre><p class='api'>api: pymol.exporting.save</p><hr size=1><h2 id='scene'>scene</h2><pre><b>DESCRIPTION</b>
+
+    "scene" saves and restores scenes.  A scene consists of the camera
+    view, all object activity information, all atom-wise visibilities,
+    all atom-wise colors, all representations, the global frame index,
+    and may contain a text message to display on playback.
+
+<b>USAGE</b>
+
+    scene [key [,action [, message, [ new_key=new-key-value ]]]]
+
+<b>ARGUMENTS</b>
+
+    key = string, new, auto, or *: use new for an automatically
+    numbered new scene, use auto for the current scene (if one
+    exists), and use * for all scenes (clear and recall actions only).
+    
+    action = store, recall, insert_after, insert_before, next,
+    previous, update, rename, or clear: (default = recall).  If
+    rename, then a new_key argument must be explicitly defined.
+
+    message = string: a text message to display with the scene.
+
+    new_key = string: the new name for the scene
+    
+<b>EXAMPLES</b>
+
+    scene *
+
+    scene F1, store
+    scene F2, store, Please note the critical hydrogen bond shown in yellow.
+
+    scene F1
+    scene F2
+
+    scene F1, rename, new_key=F5
+
+<b>NOTES</b>
+
+    Scenes F1 through F12 are automatically bound to function keys
+    provided that "set_key" has not been used to redefine the behaviour
+    of the respective key.
+    
+<b>SEE ALSO</b>
+
+    <a href='#view'>view</a>, <a href='#set_view'>set_view</a>, <a href='#get_view'>get_view</a></pre><p class='api'>api: pymol.viewing.scene</p><hr size=1><h2 id='scene_order'>scene_order</h2><pre><b>DESCRIPTION</b>
+
+    "scene_order" changes the ordering of scenes.
+
+<b>USAGE</b>
+
+    scene_order names, sort, location
+
+<b>ARGUMENTS</b>
+
+    names = string: a space-separated list of names
+
+    sort = yes or no {default: no}
+
+    location = top, current, or bottom {default: current}
+
+<b>EXAMPLES</b>
+
+    scene_order *,yes             
+    scene_order F6 F4 F3 
+    scene_order 003 006 004, location=top
+
+    # if names have spaces
+    cmd.scene_order(["name 1", "name 2"])
+
+<b>PYMOL API</b>
+
+    cmd.scene_order(names: Union[list, str], sort: str, location: str)
+
+<b>SEE ALSO</b>
+
+    <a href='#scene'>scene</a></pre><p class='api'>api: pymol.viewing.scene_order</p><hr size=1><h2 id='sculpt_activate'>sculpt_activate</h2><pre><b>DESCRIPTION</b>
+
+    "sculpt_activate" enables sculpting for the given object. The current
+    geometry (bond lengths, angles, etc.) of the given state is remembered as
+    the reference geometry.
+
+<b>ARGUMENTS</b>
+
+    object = str: name of a single object or "all"
+
+    state = int: object state or 0 for current state {default: 0}
+
+<b>SEE ALSO</b>
+
+    <a href='#sculpt_iterate'>sculpt_iterate</a>, <a href='#sculpt_deactivate'>sculpt_deactivate</a></pre><p class='api'>api: pymol.editing.sculpt_activate</p><hr size=1><h2 id='sculpt_deactivate'>sculpt_deactivate</h2><pre><b>DESCRIPTION</b>
+
+    "sculpt_deactivate" deactivates sculpting for the given object and
+    clears the stored restraints.
+
+<b>ARGUMENTS</b>
+
+    object = str: name of a single object or "all"
+
+<b>SEE ALSO</b>
+
+    <a href='#sculpt_activate'>sculpt_activate</a></pre><p class='api'>api: pymol.editing.sculpt_deactivate</p><hr size=1><h2 id='sculpt_iterate'>sculpt_iterate</h2><pre><b>DESCRIPTION</b>
+
+    "sculpt_iterate" performs a simple energy minimization of atomic
+    coordinates based on the geometry restraints which were defined with
+    the "sculpt_activate" invocation and which are selected in the
+    "sculpt_field_mask" setting. Sculpting currently supports local
+    geometry restraints and vdw repulsion, but no solvation or
+    electrostatic effects.
+
+<b>ARGUMENTS</b>
+
+    object = str: name of a single object or "all"
+
+    state = int: object state or -1 for current state, 0 for all states
+    {default: -1} (changed in PyMOL 2.5: 0 used to be "current state" as well)
+
+    cycles = int: number of iterations {default: 10}
+
+<b>SEE ALSO</b>
+
+    commands: <a href='#sculpt_activate'>sculpt_activate</a>, <a href='#sculpt_deactivate'>sculpt_deactivate</a>
+    settings: "sculpting" setting, all "sculpt_*" settings</pre><p class='api'>api: pymol.editing.sculpt_iterate</p><hr size=1><h2 id='sculpt_purge'>sculpt_purge</h2><pre><b>DESCRIPTION</b>
+
+    "sculpt_purge" is an unsupported feature.</pre><p class='api'>api: pymol.editing.sculpt_purge</p><hr size=1><h2 id='select'>select</h2><pre><b>DESCRIPTION</b>
+
+    "select" creates a named atom selection from a
+    selection-expression.
+
+<b>USAGE</b>
+
+    select name, selection [, enable [, quiet [, merge [, state [, domain ]]]]]
+
+<b>ARGUMENTS</b>
+
+    name = a unique name for the selection
+
+    selection = a selection-expression
+
+<b>NOTES</b>
+
+    If a selection-expression with explicit surrounding parethenses is
+    provided as the first argument, then the default selection name
+    is used as the name argument.
+
+<b>EXAMPLES </b>
+
+    select chA, chain A
+    select ( resn HIS )
+    select near142, resi 142 around 5
+
+<b>PYMOL API</b>
+
+    cmd.select(string name, string selection)
+
+<b>SEE ALSO</b>
+
+    <a href='#delete'>delete</a></pre><p class='api'>api: pymol.selecting.select</p><hr size=1><h2 id='set'>set</h2><pre><b>DESCRIPTION</b>
+
+    "set" changes global, object, object-state, or per-atom settings.
+
+<b>USAGE</b>
+
+    set name [,value [,selection [,state ]]]
+
+<b>ARGUMENTS</b>
+
+    name = string: setting name
+
+    value = string: a setting value {default: 1}
+
+    selection = string: name-pattern or selection-expression
+    {default:'' (global)}
+
+    state = a state number {default: 0 (per-object setting)}
+
+<b>EXAMPLES</b>
+
+    set orthoscopic
+
+    set line_width, 3
+
+    set surface_color, white, 1hpv
+    
+    set sphere_scale, 0.5, elem C
+
+<b>NOTES</b>
+
+    The default behavior (with a blank selection) is global.  If the
+    selection is "all", then the setting entry in each individual
+    object will be changed.  Likewise, for a given object, if state is
+    zero, then the object setting will be modified.  Otherwise, the
+    setting for the indicated state within the object will be
+    modified.
+
+    If a selection is provided as opposed to an object name, then the
+    atomic setting entries are modified.
+
+    The following per-atom settings are currently implemented.  Others
+    may seem to be recognized but will have no effect when set on a
+    per-atom basis.
+    
+    * sphere_color
+    * surface_color
+    * mesh_color
+    * label_color
+    * dot_color
+    * cartoon_color
+    * ribbon_color
+    * transparency (for surfaces)
+    * sphere_transparency
+    
+    Note that if you attempt to use the "set" command with a per-bond
+    setting over a selection of atoms, the setting change will appear
+    to take, but no change will be observed.  Please use the
+    "set_bond" command for per-bond settings.
+    
+
+<b>PYMOL API</b>
+
+    cmd.set(string name, string value, string selection, int state,
+            int updates, int quiet)
+
+<b>SEE ALSO</b>
+
+    <a href='#get'>get</a>, <a href='#set_bond'>set_bond</a></pre><p class='api'>api: pymol.setting.set</p><hr size=1><h2 id='set_bond'>set_bond</h2><pre><b>DESCRIPTION</b>
+
+    "set_bond" changes per-bond settings for all bonds which exist
+    between two selections of atoms.
+
+<b>USAGE</b>
+
+    set_bond name, value, selection1 [, selection2 ]
+
+<b>ARGUMENTS</b>
+
+    name = string: name of the setting
+
+    value = string: new value to use
+
+    selection1 = string: first set of atoms
+
+    selection2 = string: seconds set of atoms {default: (selection1)}
+
+<b>EXAMPLE</b>
+
+    set_bond stick_transparency, 0.7, */n+c+ca+o
+
+
+<b>NOTES</b>
+
+    The following per-bond settings are currently implemented.  Others
+    may seem to be recognized but will currently have no effect when
+    set at the per-bond level.
+    
+    * valence
+    * line_width
+    * line_color
+    * stick_radius
+    * stick_color
+    * stick_transparency
+
+    Note that if you attempt to use the "set" command with a per-bond
+    setting over a selection of atoms, the setting change will appear
+    to take, but no change will be observed.
+    
+<b>PYMOL API</b>
+
+    cmd.set_bond ( string name, string value,
+                   string selection1,
+                   string selection2,
+                   int state, int updates, log=0, quiet=1)</pre><p class='api'>api: pymol.setting.set_bond</p><hr size=1><h2 id='set_color'>set_color</h2><pre><b>DESCRIPTION</b>
+
+    "set_color" defines a new color using the red, green, and blue
+    (RGB) color components.
+
+<b>USAGE</b>
+
+    set_color name, rgb
+
+<b>ARGUMENTS</b>
+
+    name = string: name for the new or existing color
+
+    rgb = list of numbers: [red, green, blue] each and all in the range
+    (0.0, 1.0) or (0, 255)
+    
+<b>EXAMPLES </b>
+
+    set_color red, [ 1.0, 0.0, 0.0 ]
+
+    set_color yellow, [ 255, 255, 0 ]
+
+<b>NOTES</b>
+
+    PyMOL automatically infers the range based on the input arguments.
+
+    It may be necessary to issue "recolor" command in order to force
+    recoloring of existing objects.
+    
+<b>SEE ALSO</b>
+
+    <a href='#recolor'>recolor</a>
+    
+<b>PYMOL API</b>
+
+    cmd.set_color(string name, list-of-numbers rgb, int mode )</pre><p class='api'>api: pymol.viewing.set_color</p><hr size=1><h2 id='set_dihedral'>set_dihedral</h2><pre><b>DESCRIPTION</b>
+
+    "set_dihedral" changes the dihedral angle formed between the four
+    bonded atoms provided.  The atoms must be acyclic.
+    
+<b>USAGE</b>
+
+    set_dihedral atom1, atom2, atom3, atom4, angle [, state [, quiet ]]
+
+<b>NOTES</b>
+
+    Because set_dihedral uses the molecular editing capability,
+    numbered "pk" atom selections (if any) will be redefined by this
+    operation.
+    
+<b>PYMOL API</b>
+
+    cmd.set_dihedral(string atom1, string atom2, string atom3, string atom4,
+                     float angle, int state, int quiet)</pre><p class='api'>api: pymol.editing.set_dihedral</p><hr size=1><h2 id='set_geometry'>set_geometry</h2><pre><b>DESCRIPTION</b>
+
+    "set_geometry" changes PyMOL's assumptions about the proper valence
+    and geometry of atoms in the selection.
+
+<b>USAGE</b>
+
+    set_geometry selection, geometry, valence
+
+<b>NOTES</b>
+
+    Immature functionality. See code for details.
+
+<b>PYMOL API</b>
+
+    cmd.set_geometry(string selection, int geometry, int valence)
+
+<b>SEE ALSO</b>
+
+    <a href='#remove'>remove</a>, <a href='#attach'>attach</a>, <a href='#fuse'>fuse</a>, <a href='#bond'>bond</a>, <a href='#unbond'>unbond</a></pre><p class='api'>api: pymol.editing.set_geometry</p><hr size=1><h2 id='set_key'>set_key</h2><pre><b>DESCRIPTION</b>
+
+    "set_key" binds a specific python function to a key press.
+
+    New in PyMOL 1.6.1: second argument can also be a string in PyMOL
+    command syntax.
+
+<b>USAGE</b>
+
+    set_key key, command
+
+<b>EXAMPLE</b>
+
+    set_key F1, as cartoon, polymer; as sticks, organic
+
+<b>PYMOL API (ONLY)</b>
+
+    cmd.set_key( string key, function fn, tuple arg=(), dict kw={})
+
+<b>PYTHON EXAMPLE</b>
+
+    from pymol import cmd
+
+    def color_blue(object): cmd.color("blue",object)
+
+    cmd.set_key( 'F1' , color_blue, ( "object1" ) )
+    // would turn object1 blue when the F1 key is pressed and
+
+    cmd.set_key( 'F2' , color_blue, ( "object2" ) )
+    // would turn object2 blue when the F2 key is pressed.
+
+    cmd.set_key( 'CTRL-C' , cmd.zoom )   
+    cmd.set_key( 'ALT-A' , cmd.turn, ('x',90) )
+
+<b>KEYS WHICH CAN BE REDEFINED</b>
+
+    F1 to F12
+    left, right, pgup, pgdn, home, insert
+    CTRL-A to CTRL-Z 
+    ALT-0 to ALT-9, ALT-A to ALT-Z
+
+<b>SEE ALSO</b>
+
+    <a href='#button'>button</a>, <a href='#alias'>alias</a></pre><p class='api'>api: pymol.controlling.set_key</p><hr size=1><h2 id='set_name'>set_name</h2><pre><b>DESCRIPTION</b>
+
+    "set_name" changes the name of an object or selection.
+    
+<b>USAGE</b>
+
+    set_name old_name, new_name
+    
+<b>PYMOL API</b>
+
+    cmd.set_name(string old_name, string new_name)</pre><p class='api'>api: pymol.editing.set_name</p><hr size=1><h2 id='set_symmetry'>set_symmetry</h2><pre><b>DESCRIPTION</b>
+
+    "set_symmetry" defines or redefines the crystal and spacegroup
+    parameters for a molecule or map object.
+
+<b>USAGE</b>
+
+    set_symmetry selection, a, b, c, alpha, beta, gamma, spacegroup
+
+<b>ARGUMENTS</b>
+
+    selection = str: object name pattern
+
+<b>PYMOL API</b>
+
+    cmd.set_symmetry(string selection, float a, float b, float c,
+          float alpha, float beta, float gamma, string spacegroup)</pre><p class='api'>api: pymol.editing.set_symmetry</p><hr size=1><h2 id='set_title'>set_title</h2><pre><b>DESCRIPTION</b>
+
+    "set_title" attaches a text string to the state of a particular
+    object which can be displayed next to the object name when that
+    state is active.  This is useful for display the energies of a set
+    of conformers.
+
+<b>USAGE</b>
+
+    set_title object, state, text
+
+<b>PYMOL API</b>
+
+    cmd.set_title(string object, int state, string text)</pre><p class='api'>api: pymol.editing.set_title</p><hr size=1><h2 id='set_view'>set_view</h2><pre><b>DESCRIPTION</b>
+
+    "set_view" sets viewing information for the current scene,
+    including the rotation matrix, position, origin of rotation,
+    clipping planes, and the orthoscopic flag.
+
+<b>USAGE</b>
+
+    set_view [ view ] 
+
+<b>EXAMPLE</b>
+
+    set_view (\
+        0.999876618,   -0.000452542,   -0.015699286,\
+        0.000446742,    0.999999821,   -0.000372844,\
+        0.015699454,    0.000365782,    0.999876678,\
+        0.000000000,    0.000000000, -150.258514404,\
+        11.842411041,   20.648729324,    8.775371552,\
+        118.464958191,  182.052062988,    0.000000000 )
+
+<b>PYMOL API</b>
+
+    cmd.set_view(string-or-sequence view)  
+
+<b>SEE ALSO</b>
+
+    <a href='#get_view'>get_view</a></pre><p class='api'>api: pymol.viewing.set_view</p><hr size=1><h2 id='show'>show</h2><pre><b>DESCRIPTION</b>
+
+    "show" turns on representations for objects and selections.
+
+<b>USAGE</b>
+
+    show [ representation [, selection ]]
+
+<b>ARGUMENTS</b>
+
+    representation = lines, spheres, mesh, ribbon, cartoon, sticks,
+       dots, surface, labels, extent, nonbonded, nb_spheres, slice,
+       extent, slice, dashes, angles, dihedrals, cgo, cell, callback,
+       or everything
+
+    selection = string: a selection-expression or name-pattern
+
+<b>NOTES</b>
+
+    With no arguments, "show" alone turns on lines for all bonds and
+    nonbonded for all atoms in all molecular objects.
+
+<b>EXAMPLES</b>
+
+    show
+    show ribbon
+    show lines, (name CA+C+N)
+
+<b>SEE ALSO</b>
+
+    <a href='#hide'>hide</a>, <a href='#enable'>enable</a>, <a href='#disable'>disable</a></pre><p class='api'>api: pymol.viewing.show</p><hr size=1><h2 id='skip'>skip</h2><pre><b>DESCRIPTION</b>
+
+    "skip" delimits a block of commands that are skipped instead of
+    being executed.
+
+<b>EXAMPLE</b>
+
+
+    skip
+
+    # the following command will not be executed
+    color blue, all
+    
+    skip end
+
+<b>NOTES</b>
+
+    If the "skip" command is commented out, the subsequent "skip end"
+    can be left in place, and will have no effect upon execution of
+    subsequent commands.
+    
+<b>SEE ALSO</b>
+
+    <a href='#abort'>abort</a>, <a href='#embed'>embed</a>, <a href='#python'>python</a></pre><p class='api'>api: pymol.helping.skip</p><hr size=1><h2 id='slice_new'>slice_new</h2><pre><b>DESCRIPTION</b>
+
+    "slice_map" creates a slice object from a map object.
+
+<b>USAGE</b>
+
+    slice_map name, map, [opacity, [resolution, [state, [source_state]]]]
+
+<b>ARGUMENTS</b>
+
+    name = the name for the new slice object.
+
+    map = the name of the map object to use for computing the slice.
+
+    opacity = opacity of the new slice (default=1)
+
+    resolution = the number of pixels per sampling (default=5)
+
+    state = the state into which the object should be loaded (default=1)
+        (set state=0 to append new mesh as a new state)
+
+    source_state = the state of the map from which the object should be loaded (default=0)
+    
+<b>SEE ALSO</b>
+
+    <a href='#isomesh'>isomesh</a>, <a href='#isodot'>isodot</a>, <a href='#load'>load</a></pre><p class='api'>api: pymol.creating.slice_new</p><hr size=1><h2 id='smooth'>smooth</h2><pre><b>DESCRIPTION</b>
+
+    "smooth" performs a window average of coordinate states.  
+
+<b>USAGE</b>
+
+    smooth [ selection [, passes [, window [, first [, last [, ends]]]]]]
+
+<b>ARGUMENTS</b>
+
+    ends = 0 or 1: controls whether or not the end states are also smoothed
+    using a weighted asymmetric window
+
+    cutoff = float: Distance cutoff for atom movement between two frames.
+
+    pbc = 0/1: Consider periodic boundary conditions {default: 1}
+
+<b>NOTES</b>
+
+    This type of averaging is often used to suppress high-frequency
+    vibrations in a molecular dynamics trajectory.
+
+<b>SEE ALSO</b>
+
+    <a href='#load_traj'>load_traj</a></pre><p class='api'>api: pymol.editing.smooth</p><hr size=1><h2 id='sort'>sort</h2><pre><b>DESCRIPTION</b>
+
+    "sort" reorders atoms in the structure.  It usually only necessary
+    to run this routine after an "alter" command which has modified the
+    names of atom properties.  Without an argument, sort will resort
+    all atoms in all objects.
+
+<b>USAGE</b>
+
+    sort [object]
+
+<b>PYMOL API</b>
+
+    cmd.sort(string object)
+
+<b>SEE ALSO</b>
+
+    <a href='#alter'>alter</a></pre><p class='api'>api: pymol.editing.sort</p><hr size=1><h2 id='space'>space</h2><pre><b>DESCRIPTION</b>
+
+    "space" selects a color palette (or color space).
+    
+<b>USAGE</b>
+
+    space space [, gamma]
+
+<b>ARGUMENTS</b>
+
+    space = rgb, cmyk, or pymol: {default: rgb}
+
+    gamma = floating point gamma transformation
+    
+<b>EXAMPLES</b>
+
+    space rgb
+    space cmyk
+    space pymol
+
+<b>NOTES</b>
+
+    Whereas computer displays use the RGB color space, computer
+    printers typically use the CMYK color space.  The two spaces are
+    non-equivalent, meaning that certain RGB colors cannot be
+    expressed in the CMYK space and vice-versa.  And as a result,
+    molecular graphics images prepared using RGB often turn out poorly
+    when converted to CMYK, with purplish blues or yellowish greens.
+    
+    "space cmyk" forces PyMOL to restrict its use of the RGB color
+    space to subset that can be reliably converted to CMYK using
+    common tools such as Adobe Photoshop.  Thus, what you see on the
+    screen is much closer to what you will get in print.
+
+    Analog video systems as well as digital video compression codecs
+    based on the YUV color space also have incompatibilities with RGB.
+    Oversaturated colors usually cause the most problems.
+
+    Although PyMOL lacks "space yuv", "space pymol" will help PyMOL
+    avoid oversaturated colors can cause problems when exporting
+    animations to video.
+
+<b>PYMOL API</b>
+
+    cmd.space(string space, float gamma)
+    
+<b>SEE ALSO</b>
+
+    <a href='#color'>color</a></pre><p class='api'>api: pymol.importing.space</p><hr size=1><h2 id='spawn'>spawn</h2><pre><b>DESCRIPTION</b>
+
+    "spawn" launches a Python script in a new thread which will run
+    concurrently with the PyMOL interpreter. It can be run in its own
+    namespace (like a Python module, default), a local name space, or
+    in the global namespace.
+
+<b>USAGE</b>
+
+    spawn file [, namespace ]
+
+<b>NOTES</b>
+
+    The default namespace for spawn is "module".
+
+    The best way to spawn processes at startup is to use the -l option
+    (see "help launching").
+
+<b>SEE ALSO</b>
+
+    <a href='#run'>run</a></pre><p class='api'>api: pymol.parsing.spawn</p><hr size=1><h2 id='spectrum'>spectrum</h2><pre><b>DESCRIPTION</b>
+
+    "spectrum" colors atoms with a spectrum of colors based on an atomic
+    property.
+    
+<b>USAGE</b>
+
+    spectrum [expression [, palette [, selection [, minimum [, maximum [, byres ]]]]]]
+
+<b>ARGUMENTS</b>
+
+    expression = count, b, q, or pc: respectively, atom count, temperature factor,
+    occupancy, or partial charge {default: count}
+    
+    palette = string: palette name or space separated list of colors
+    {default: rainbow}
+
+    selection = string: atoms to color {default: (all)}
+
+    minimum = float: {default: None (automatic)}
+
+    maximum = float: {default: None (automatic)}
+
+    byres = integer: controls whether coloring is applied per-residue {default: 0}
+
+<b>EXAMPLES</b>
+
+    spectrum b, blue_red, minimum=10, maximum=50
+
+    spectrum count, rainbow_rev, chain A, byres=1
+
+<b>NOTES</b>
+
+    Available palettes include:
+
+       blue_green blue_magenta blue_red blue_white_green
+       blue_white_magenta blue_white_red blue_white_yellow blue_yellow
+       cbmr cyan_magenta cyan_red cyan_white_magenta cyan_white_red
+       cyan_white_yellow cyan_yellow gcbmry green_blue green_magenta
+       green_red green_white_blue green_white_magenta green_white_red
+       green_white_yellow green_yellow green_yellow_red magenta_blue
+       magenta_cyan magenta_green magenta_white_blue
+       magenta_white_cyan magenta_white_green magenta_white_yellow
+       magenta_yellow rainbow rainbow2 rainbow2_rev rainbow_cycle
+       rainbow_cycle_rev rainbow_rev red_blue red_cyan red_green
+       red_white_blue red_white_cyan red_white_green red_white_yellow
+       red_yellow red_yellow_green rmbc yellow_blue yellow_cyan
+       yellow_cyan_white yellow_green yellow_magenta yellow_red
+       yellow_white_blue yellow_white_green yellow_white_magenta
+       yellow_white_red yrmbcg
+
+<b>PYMOL API</b>
+
+    def spectrum(string expression, string palette,
+                 string selection, float minimum, float maximum,
+                 int byres, int quiet)</pre><p class='api'>api: pymol.viewing.spectrum</p><hr size=1><h2 id='spheroid'>spheroid</h2><pre><b>DESCRIPTION</b>
+
+    "spheroid" averages trajectory frames together to create
+    an ellipsoid-like approximation of the actual anisotropic
+    motion exhibited by the atom over a series of trajectory frames.
+
+<b>USAGE</b>
+
+    spheroid object,average
+
+    average = number of states to average for each resulting spheroid state</pre><p class='api'>api: pymol.experimenting.spheroid</p><hr size=1><h2 id='splash'>splash</h2><pre><b>UNDOCUMENTED</b></pre><p class='api'>api: pymol.commanding.splash</p><hr size=1><h2 id='split_chains'>split_chains</h2><pre><b>DESCRIPTION</b>
+
+    Create a single object for each chain in selection
+
+<b>SEE ALSO</b>
+
+    <a href='#split_states'>split_states</a></pre><p class='api'>api: pymol.editing.split_chains</p><hr size=1><h2 id='split_states'>split_states</h2><pre><b>DESCRIPTION</b>
+
+    "split_states" separates a multi-state molecular object into a set
+    of single-state molecular objects.
+
+<b>USAGE</b>
+
+    split_states object [, first [, last [, prefix ]]]
+    
+<b>EXAMPLE</b>
+
+    load docking_hits.sdf
+    split_states docking_hits, prefix=hit
+    delete docking_hits
+    
+<b>SEE ALSO</b>
+
+    <a href='#join_states'>join_states</a></pre><p class='api'>api: pymol.editing.split_states</p><hr size=1><h2 id='stereo'>stereo</h2><pre><b>DESCRIPTION</b>
+
+    "stereo" activates or deactives stereo mode.
+
+<b>USAGE</b>
+
+    stereo [toggle]
+
+<b>ARGUMENTS</b>
+
+    toggle = on, off, crosseye, walleye, quadbuffer, sidebyside, geowall, or openvr
+    
+<b>EXAMPLES</b>
+
+    stereo on
+    stereo off
+    stereo crosseye
+
+<b>NOTES</b>
+
+    "quadbuffer" is the default stereo mode if hardware stereo is available.
+    otherwise, "crosseye" is the default.
+
+<b>PYMOL API</b>
+
+    cmd.stereo(string toggle)</pre><p class='api'>api: pymol.viewing.stereo</p><hr size=1><h2 id='super'>super</h2><pre><b>DESCRIPTION</b>
+
+    "super" performs a residue-based pairwise alignment followed by a
+    structural superposition, and then carries out zero or more cycles
+    of refinement in order to reject outliers.
+
+<b>USAGE </b>
+
+    super mobile, target [, object=name ]
+
+<b>NOTES</b>
+
+    By adjusting various parameters, the nature of the initial
+    alignment can be modified to include or exclude various factors
+    including sequence similarity, main chain path, secondary &
+    tertiary structure, and current coordinates.
+
+<b>EXAMPLE</b>
+
+    super protA////CA, protB////CA, object=supeAB
+
+<b>SEE ALSO</b>
+
+    <a href='#align'>align</a>, <a href='#pair_fit'>pair_fit</a>, <a href='#fit'>fit</a>, <a href='#rms'>rms</a>, <a href='#rms_cur'>rms_cur</a>, <a href='#intra_rms'>intra_rms</a>, <a href='#intra_rms_cur'>intra_rms_cur</a></pre><p class='api'>api: pymol.fitting.super</p><hr size=1><h2 id='symexp'>symexp</h2><pre><b>DESCRIPTION</b>
+
+    "symexp" creates all symmetry-related objects for the specified
+    object that occur within a cutoff about an atom selection.
+
+<b>USAGE</b>
+
+    symexp prefix, object, selection, cutoff
+
+<b>NOTES</b>
+
+    The newly objects are labeled using the prefix provided along with
+    their crystallographic symmetry operation and translation.
+
+<b>SEE ALSO</b>
+
+    <a href='#load'>load</a></pre><p class='api'>api: pymol.creating.symexp</p><hr size=1><h2 id='symmetry_copy'>symmetry_copy</h2><pre><b>DESCRIPTION</b>
+
+    "symmetry_copy" copies symmetry information from one object to another.
+
+<b>USAGE</b>
+
+    symmetry_copy source_name, target_name, source_state, target_state
+
+<b>ARGUMENTS</b>
+
+    source_name = str: object name
+    target_name = str: object name pattern
+    source_state = int: object state (maps only)
+    target_state = int: object state (maps only)
+
+<b>NOTES</b>
+
+    Molecular objects don't support individual states yet.</pre><p class='api'>api: pymol.editing.symmetry_copy</p><hr size=1><h2 id='system'>system</h2><pre><b>DESCRIPTION</b>
+
+    "system" executes a command in a subshell under Unix or Windows.
+
+<b>USAGE</b>
+
+    system command 
+
+<b>PYMOL API</b>
+
+    cmd.system(string command,int async=0)
+
+<b>NOTES</b>
+
+    async can only be specified from the Python level (not the command language)
+
+    if async is 0 (default), then the result code from "system" is returned in r
+
+    if async is 1, then the command is run in a separate thread whose object is
+    returned
+
+<b>SEE ALSO</b>
+
+    <a href='#ls'>ls</a>, <a href='#cd'>cd</a>, <a href='#pwd'>pwd</a></pre><p class='api'>api: pymol.externing.system</p><hr size=1><h2 id='toggle'>toggle</h2><pre><b>DESCRIPTION</b>
+
+    "toggle" toggles the visibility of a representation within a
+    selection.
+    
+<b>USAGE</b>
+
+    toggle [ representation [, selection ]]
+
+<b>ARGUMENTS</b>
+
+    representation = string: named representation {default: lines}
+
+    selection = string: atom selection {default: all}
+
+<b>NOTES</b>
+
+    If the representation is enabled for any atom in the selection, it will
+    be turned off.
+
+<b>PYMOL API</b>
+
+    cmd.toggle(string representation, string selection)
+
+<b>SEE ALSO</b>
+
+    <a href='#show'>show</a>, <a href='#hide'>hide</a></pre><p class='api'>api: pymol.viewing.toggle</p><hr size=1><h2 id='torsion'>torsion</h2><pre><b>DESCRIPTION</b>
+
+    "torsion" rotates the torsion on the bond currently
+    picked for editing.  The rotated fragment will correspond
+    to the first atom specified when picking the bond (or the
+    nearest atom, if picked using the mouse).
+
+<b>USAGE</b>
+
+    torsion angle
+
+<b>PYMOL API</b>
+
+    cmd.torsion( float angle )
+
+<b>SEE ALSO</b>
+
+    <a href='#edit'>edit</a>, <a href='#unpick'>unpick</a>, <a href='#remove_picked'>remove_picked</a>, <a href='#cycle_valence'>cycle_valence</a></pre><p class='api'>api: pymol.editing.torsion</p><hr size=1><h2 id='translate'>translate</h2><pre><b>DESCRIPTION</b>
+
+    "translate" translates the atomic coordinates of atoms in a
+    selection.  Alternatively, is modifies the matrix associated with
+    a particular object or object-state.
+
+<b>USAGE</b>
+
+    translate vector [, selection [, state [, camera [, object ]]]]
+
+<b>ARGUMENTS</b>
+
+    vector = float vector: translation vector
+
+    selection = string: atoms whose coordinates should be modified {default: all}
+
+    state &gt; 0: only the indicated state is modified
+
+    state = 0: all states are modified
+
+    state = -1: only current state is modified {default}
+
+    camera = 0 or 1: is the vector in camera coordinates? {default: 1 (yes)}
+
+    object = string: object name (only if rotating object matrix) {default: None}
+
+
+<b>PYMOL API</b>
+
+    cmd.translate(list vector, string selection, int state, int
+                  camera, string object)
+
+<b>EXAMPLES</b>
+
+    translate [1,0,0], name CA
+
+<b>NOTES</b>
+
+    "translate" can be used to translate the atomic coordinates of a
+    molecular object.  Behavior differs depending on whether or not
+    the "object" parameter is specified.
+
+    If object is None, then translate translates atomic coordinates
+    according to the vector provided for the selection and in the state
+    provided.  All representation geometries will need to be
+    regenerated to reflect the new atomic coordinates.
+
+    If object is set to an object name, then selection is ignored and
+    instead of translating the atomic coordinates, the object's
+    overall representation display matrix is modified.  This option is
+    for use in animations only.
+
+    The "camera" option controls whether the camera or the model's
+    axes are used to interpret the translation vector.</pre><p class='api'>api: pymol.editing.translate</p><hr size=1><h2 id='turn'>turn</h2><pre><b>DESCRIPTION</b>
+
+    "turn" rotates the camera about one of the three primary axes,
+    centered at the origin.
+
+<b>USAGE</b>
+
+    turn axis, angle
+
+<b>EXAMPLES</b>
+
+    turn x, 90
+    turn y, 45
+
+<b>PYMOL API</b>
+
+    cmd.turn(string axis, float angle)
+
+<b>SEE ALSO</b>
+
+    <a href='#move'>move</a>, <a href='#rotate'>rotate</a>, <a href='#translate'>translate</a>, <a href='#zoom'>zoom</a>, <a href='#center'>center</a>, <a href='#clip'>clip</a></pre><p class='api'>api: pymol.viewing.turn</p><hr size=1><h2 id='unbond'>unbond</h2><pre><b>DESCRIPTION</b>
+
+    "unbond" removes all bonds between two selections.
+
+<b>USAGE</b>
+
+    unbond atom1,atom2
+
+<b>ARGUMENTS</b>
+
+    atom1 = string {default: (pk1)}
+
+    atom2 = string {default: (pk2)}
+
+<b>PYMOL API</b>
+
+    cmd.unbond(selection atom1, selection atom2)
+
+<b>SEE ALSO</b>
+
+    <a href='#bond'>bond</a>, <a href='#fuse'>fuse</a>, <a href='#remove_picked'>remove_picked</a>, <a href='#attach'>attach</a>, detach, <a href='#replace'>replace</a></pre><p class='api'>api: pymol.editing.unbond</p><hr size=1><h2 id='undo'>undo</h2><pre><b>DESCRIPTION</b>
+
+    "undo" restores the previous conformation of the object currently
+    being edited.
+
+<b>USAGE</b>
+
+    undo
+
+<b>SEE ALSO</b>
+
+    <a href='#redo'>redo</a>, push_undo</pre><p class='api'>api: pymol.editing.undo</p><hr size=1><h2 id='ungroup'>ungroup</h2><pre><b>DESCRIPTION</b>
+
+    "ungroup" removes an object from a group object, returning it to
+    the top level.
+
+<b>USAGE</b>
+
+    ungroup name
+
+
+<b>SEE ALSO</b>
+
+    <a href='#group'>group</a></pre><p class='api'>api: pymol.creating.ungroup</p><hr size=1><h2 id='uniquify'>uniquify</h2><pre><b>DESCRIPTION</b>
+
+    Make `identifier` unique with respect to reference selection.
+
+<b>ARGUMENTS</b>
+
+    identifier = str: atom identifier (chain, segi, etc.)
+
+    selection = str: atom selection to modify
+
+    reference = str: atom selection whose identifiers must not be
+    present in the first selection {default: !selection}
+
+<b>EXAMPLE</b>
+
+    fetch 1a00 1hbb, async=0
+    uniquify chain, 1hbb
+    # 1hbb now has chains E,F,G,H</pre><p class='api'>api: pymol.editing.uniquify</p><hr size=1><h2 id='unmask'>unmask</h2><pre><b>DESCRIPTION</b>
+
+    "unmask" reverses the effect of "mask" on the indicated atoms.
+
+<b>PYMOL API</b>
+
+    cmd.unmask( string selection="(all)" )
+
+<b>USAGE</b>
+
+    unmask (selection)
+
+<b>SEE ALSO</b>
+
+    <a href='#mask'>mask</a>, <a href='#protect'>protect</a>, <a href='#deprotect'>deprotect</a>, <a href='#mouse'>mouse</a></pre><p class='api'>api: pymol.controlling.unmask</p><hr size=1><h2 id='unpick'>unpick</h2><pre><b>DESCRIPTION</b>
+
+    "unpick" deletes the special "pk" atom selections (pk1, pk2, etc.)
+    used in atom picking and molecular editing.
+
+<b>USAGE</b>
+
+    unpick
+
+<b>PYMOL API</b>
+
+    cmd.unpick()
+
+<b>SEE ALSO</b>
+
+    <a href='#edit'>edit</a></pre><p class='api'>api: pymol.editing.unpick</p><hr size=1><h2 id='unset'>unset</h2><pre><b>DESCRIPTION</b>
+
+    "unset" clears a setting and restores its default value.
+
+    WARNING: The behavior for global settings changed in PyMOL 2.5.
+    Previously, "unset settingname" would set the global value of
+    "settingname" to zero/off instead of the default value.
+    To set a setting to zero, do "set settingname, 0".
+
+<b>USAGE</b>
+
+    unset name [,selection [,state ]]
+
+<b>EXAMPLE</b>
+
+    unset orthoscopic
+
+    unset surface_color, 1hpv
+
+    unset sphere_scale, elem C
+    
+<b>NOTES</b>
+
+    If selection is not provided, unset changes the named global
+    setting to its default value.
+
+    If a selection is provided, then "unset" undefines per-object,
+    per-state, or per-atom settings.
+
+<b>PYMOL API</b>
+
+    cmd.unset(string name, string selection, int state, int updates,
+                int log)
+
+<b>SEE ALSO</b>
+
+    <a href='#unset_deep'>unset_deep</a>, <a href='#set'>set</a>, <a href='#set_bond'>set_bond</a></pre><p class='api'>api: pymol.setting.unset</p><hr size=1><h2 id='unset_bond'>unset_bond</h2><pre><b>DESCRIPTION</b>
+
+    "unset_bond" removes a per-bond setting for a given set of bonds.
+    
+<b>USAGE</b>
+
+    unset name [,selection [, selection [,state ]]]</pre><p class='api'>api: pymol.setting.unset_bond</p><hr size=1><h2 id='unset_deep'>unset_deep</h2><pre><b>DESCRIPTION</b>
+
+    Unset all object, object-state, atom, and bond level settings.
+
+    Note: Does currently NOT unset atom-state level settings. Check for
+    atom-state level settings with:
+    PyMOL&gt; iterate_state 1, *, print(list(s))
+    Unset e.g. atom-state level "label_screen_point" (index 728) with:
+    PyMOL&gt; alter_state 1, *, del s[728]
+
+<b>ARGUMENTS</b>
+
+    settings = str: space separated list of setting names or empty string
+    for all settings {default: }
+
+    object = str: name of one object or * for all objects {default: *}</pre><p class='api'>api: pymol.setting.unset_deep</p><hr size=1><h2 id='update'>update</h2><pre><b>DESCRIPTION</b>
+
+    "update" transfers coordinates from one selection to another.
+<b>USAGE</b>
+
+    update (target-selection),(source-selection)
+
+<b>EXAMPLES</b>
+
+    update target,(variant)
+
+<b>NOTES</b>
+
+    Currently, this applies across all pairs of states.  Fine
+    control will be added later.
+
+<b>SEE ALSO</b>
+
+    <a href='#load'>load</a></pre><p class='api'>api: pymol.editing.update</p><hr size=1><h2 id='util.cbab'>util.cbab</h2><pre>Wrapper around "color atomic"</pre><p class='api'>api: pymol.util.cbab</p><hr size=1><h2 id='util.cbac'>util.cbac</h2><pre>Wrapper around "color atomic"</pre><p class='api'>api: pymol.util.cbac</p><hr size=1><h2 id='util.cbag'>util.cbag</h2><pre>Wrapper around "color atomic"</pre><p class='api'>api: pymol.util.cbag</p><hr size=1><h2 id='util.cbak'>util.cbak</h2><pre>Wrapper around "color atomic"</pre><p class='api'>api: pymol.util.cbak</p><hr size=1><h2 id='util.cbam'>util.cbam</h2><pre>Wrapper around "color atomic"</pre><p class='api'>api: pymol.util.cbam</p><hr size=1><h2 id='util.cbao'>util.cbao</h2><pre>Wrapper around "color atomic"</pre><p class='api'>api: pymol.util.cbao</p><hr size=1><h2 id='util.cbap'>util.cbap</h2><pre>Wrapper around "color atomic"</pre><p class='api'>api: pymol.util.cbap</p><hr size=1><h2 id='util.cbas'>util.cbas</h2><pre>Wrapper around "color atomic"</pre><p class='api'>api: pymol.util.cbas</p><hr size=1><h2 id='util.cbaw'>util.cbaw</h2><pre>Wrapper around "color atomic"</pre><p class='api'>api: pymol.util.cbaw</p><hr size=1><h2 id='util.cbay'>util.cbay</h2><pre>Wrapper around "color atomic"</pre><p class='api'>api: pymol.util.cbay</p><hr size=1><h2 id='util.cbc'>util.cbc</h2><pre>Color all chains a different color</pre><p class='api'>api: pymol.util.cbc</p><hr size=1><h2 id='util.chainbow'>util.chainbow</h2><pre>Color all chains in rainbow</pre><p class='api'>api: pymol.util.chainbow</p><hr size=1><h2 id='util.cnc'>util.cnc</h2><pre>Wrapper around "color atomic"</pre><p class='api'>api: pymol.util.cnc</p><hr size=1><h2 id='util.rainbow'>util.rainbow</h2><pre>Legacy spectrum coloring routine. Don't use.
+
+    Use instead: spectrum</pre><p class='api'>api: pymol.util.rainbow</p><hr size=1><h2 id='util.ss'>util.ss</h2><pre>Legacy secondary structure assignment routine. Don't use.
+
+    Use instead: dss</pre><p class='api'>api: pymol.util.ss</p><hr size=1><h2 id='valence'>valence</h2><pre><b>DESCRIPTION</b>
+
+    "valence" modifies the valences of all existing bonds formed
+    between two atom selections.
+    
+<b>USAGE</b>
+
+    valence 2, (name C), (name O)
+
+<b>PYMOL API</b>
+
+    cmd.valence(string selection1, selection2)
+
+<b>SEE ALSO</b>
+
+    <a href='#unbond'>unbond</a>, <a href='#fuse'>fuse</a>, <a href='#attach'>attach</a>, <a href='#replace'>replace</a>, <a href='#remove_picked'>remove_picked</a></pre><p class='api'>api: pymol.editing.valence</p><hr size=1><h2 id='vdw_fit'>vdw_fit</h2><pre><b>DESCRIPTION</b>
+
+    "vdw_fit" is an unsupported feature.</pre><p class='api'>api: pymol.editing.vdw_fit</p><hr size=1><h2 id='view'>view</h2><pre><b>DESCRIPTION</b>
+
+    "view" saves and restore camera views.
+
+<b>USAGE</b>
+
+    view key [, action [, animate]]
+    
+<b>ARGUMENTS</b>
+
+    key = string or *
+
+    action = store, recall, clear: {default: recall}
+
+<b>NOTES</b>
+
+    Views F1 through F12 are automatically bound to function keys
+    provided that "set_key" has not been used to redefine the
+    behaviour of the respective key, and that a "scene" has not been
+    defined for that key.
+
+<b>EXAMPLES</b>
+
+    view 0, store
+    view 0
+
+<b>PYMOL API</b>
+
+    cmd.view(string key, string action)
+
+<b>SEE ALSO</b>
+
+    <a href='#scene'>scene</a>, <a href='#set_view'>set_view</a>, <a href='#get_view'>get_view</a></pre><p class='api'>api: pymol.viewing.view</p><hr size=1><h2 id='viewport'>viewport</h2><pre><b>DESCRIPTION</b>
+
+    "viewport" changes the size of the graphics display area.
+
+<b>USAGE</b>
+
+    viewport width, height
+
+<b>PYMOL API</b>
+
+    cmd.viewport(int width, int height)</pre><p class='api'>api: pymol.viewing.viewport</p><hr size=1><h2 id='volume'>volume</h2><pre><b>DESCRIPTION</b>
+
+    "volume" creates a volume object from a map object.
+
+<b>USAGE</b>
+
+    volume name, map [, ramp [, selection [, buffer [, state [, carve ]]]]]
+
+<b>ARGUMENTS</b>
+
+    name = the name for the new volume object.
+
+    map = the name of the map object to use for computing the volume.
+
+    ramp = str: named color ramp {default: }
+
+    selection = an atom selection about which to display the mesh with
+        an additional "buffer" (if provided).
+
+    state = specifies which state to create.
+
+    carve = a radius about each atom in the selection for which to
+        include density. If "carve" is not provided, then the whole
+        brick is displayed.
+
+<b>NOTES</b>
+
+    If the volume object already exists, then the new volume will 
+    overwrite the existing object.
+
+<b>EXAMPLE</b>
+
+    fetch 1oky, async=0
+    fetch 1oky, type=2fofc, async=0
+    volume 1okyVol, 1oky_2fofc
+
+<b>SEE ALSO</b>
+
+    <a href='#map_new'>map_new</a>, <a href='#isosurface'>isosurface</a>, <a href='#isomesh'>isomesh</a>, <a href='#volume_color'>volume_color</a>, <a href='#volume_ramp_new'>volume_ramp_new</a></pre><p class='api'>api: pymol.creating.volume</p><hr size=1><h2 id='volume_color'>volume_color</h2><pre><b>DESCRIPTION</b>
+
+    Set or get the volume colors.
+
+<b>ARGUMENTS</b>
+
+    name = str: volume object name
+
+    ramp = str, list or empty: named ramp, space delimited string or list
+    with (x, color, alpha, ...) or (x, r, g, b, alpha, ...) values. If empty, get
+    the current volume colors.
+
+    state = int: state of volume to color
+
+<b>EXAMPLE</b>
+
+    fetch 1a00, map, type=2fofc
+    volume vol, map
+    volume_color vol, .8 cyan 0. 1. blue .3 2. yellow .3</pre><p class='api'>api: pymol.colorramping.volume_color</p><hr size=1><h2 id='volume_panel'>volume_panel</h2><pre><b>DESCRIPTION</b>
+
+    Open an interactive volume ramp panel
+
+<b>ARGUMENTS</b>
+
+    name = str: name of volume object</pre><p class='api'>api: pymol.colorramping.volume_panel</p><hr size=1><h2 id='volume_ramp_new'>volume_ramp_new</h2><pre><b>DESCRIPTION</b>
+
+    Register a named volume ramp which can be used as a preset
+    when creating or coloring volumes. The name will appear in the
+    internal menu at "A &gt; volume" and "C".
+
+<b>ARGUMENTS</b>
+
+    name = string: name of the new ramp
+
+    ramp = list: space delimited list of value, color, alpha
+
+<b>EXAMPLE</b>
+
+    volume_ramp_new pink1sigma, \
+       0.9 violet 0.0 \
+       1.0 magenta 0.3 \
+       1.5 pink 0.0
+
+<b>SEE ALSO</b>
+
+    <a href='#volume'>volume</a>, <a href='#volume_color'>volume_color</a></pre><p class='api'>api: pymol.colorramping.volume_ramp_new</p><hr size=1><h2 id='window'>window</h2><pre><b>DESCRIPTION</b>
+
+    "window" controls the visibility of PyMOL's output window
+
+<b>USAGE</b>
+
+    window [ action [, x [, y [, width [, height ]]]]]
+
+<b>PYMOL API</b>
+
+    cmd.window(string action, int x, int y, int width, int height)</pre><p class='api'>api: pymol.viewing.window</p><hr size=1><h2 id='wizard'>wizard</h2><pre><b>DESCRIPTION</b>
+
+    "wizard" launches on of the built-in wizards.  There are special
+    Python scripts which work with PyMOL in order to obtain direct user
+    interaction and easily peform complicated tasks.
+
+<b>USAGE</b>
+
+    wizard name
+
+<b>PYMOL API</b>
+
+    cmd.wizard(string name)
+
+<b>EXAMPLE</b>
+
+    wizard distance  # launches the distance measurement wizard</pre><p class='api'>api: pymol.wizarding.wizard</p><hr size=1><h2 id='zoom'>zoom</h2><pre><b>DESCRIPTION</b>
+
+    "zoom" scales and translates the window and the origin to cover the
+    atom selection.
+
+<b>USAGE</b>
+
+    zoom [ selection [, buffer [, state [, complete [, animate ]]]]]
+    
+<b>EXAMPLES</b>
+
+    zoom 
+    zoom complete=1
+    zoom 142/, animate=3
+    zoom (chain A)
+
+<b>ARGUMENTS</b>
+
+    selection = string: selection-expression or name pattern {default: all}
+
+    buffer = float: distance  {default: 0}
+    
+    state = 0: uses all coordinate states {default}
+    
+    state = -1: uses only coordinates for the current state
+    
+    state &gt; 0: uses coordinates for a specific state
+
+    complete = 0 or 1: will insure no atoms centers are clipped
+
+    animate &lt; 0: uses the default animation duration
+    
+    animate = 0: no animation
+    
+    animate &gt; 0: animates using the provided duration in seconds
+    
+<b>PYMOL API</b>
+
+    cmd.zoom(string selection, float buffer, int state, int complete,
+             int animate)
+
+<b>NOTES</b>
+
+    The zoom command normally tries to guess an optimal zoom level for
+    visualization, balancing closeness against occasional clipping of
+    atoms out of the field of view.  You can change this behavior by
+    setting the complete option to 1, which will guarantee that the
+    atom positions for the entire selection will fit in the field of
+    an orthoscopic view.
+
+    To absolutely prevent clipping, you may also need to add an
+    additional buffer (typically 2 A) to account for graphical
+    representations which extend beyond the atom coordinates.  
+
+<b>SEE ALSO</b>
+
+    <a href='#origin'>origin</a>, <a href='#orient'>orient</a>, <a href='#center'>center</a></pre><p class='api'>api: pymol.viewing.zoom</p></BODY></HTML>
