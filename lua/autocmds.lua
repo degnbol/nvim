@@ -15,6 +15,14 @@ local defaultlines = {
     jl = {
         "using DataFrames, CSV",
     },
+    ["activate.sh"] = {
+        "#!/usr/bin/env zsh",
+        "conda activate ENVIRONMENT 2> /dev/null"
+    },
+    ["deactivate.sh"] = {
+        "#!/usr/bin/env zsh",
+        "[ $CONDA_DEFAULT_ENV = base ] || conda deactivate"
+    },
     -- complgen in config/complgen/*.usage
     usage = function ()
         -- assume filename is command name
