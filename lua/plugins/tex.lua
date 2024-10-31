@@ -1,7 +1,6 @@
 local latexmk = require "tex.latexmk"
 local g = vim.g
 
--- :VimtexCompile. Adds so much more good stuff, e.g. dse, cse to delete or change surrounding env
 return {
     -- more aggressive conceal
     {
@@ -47,8 +46,14 @@ return {
             g.vimtex_view_skim_activate = true
             g.vimtex_view_skim_reading_bar = true
 
-            g.vimtex_log_ignore = { "Underfull", "Overfull" }
-            g.vimtex_quickfix_ignore_filters = { "Underfull", "Overfull" }
+            local ignore = {
+                "Underfull",
+                "Overfull",
+                "biblatex: Duplicate entry key", -- same paper in two zotero folders
+                "Text page [0-9]* contains only floats.", -- on purpose in some cases for large full page figure
+            }
+            g.vimtex_log_ignore = ignore
+            g.vimtex_quickfix_ignore_filters = ignore
             g.vimtex_quickfix_open_on_warning = false
 
             -- :h vimtex-af-enhanced-matchparen
@@ -60,6 +65,15 @@ return {
                 aux_dir = "aux",
                 out_dir = "aux",
                 -- callback = true,
+                options = {
+                    -- defaults:
+                    "-verbose",
+                    "-file-line-error",
+                    "-synctex=1",
+                    "-interaction=nonstopmode",
+                    -- not defaults:
+                    "--shell-escape", -- to let package minted run pygmentize
+                },
             }
             -- set default latex engine to the modern lualatex over pdflatex
             g.vimtex_compiler_latexmk_engines = {
@@ -107,7 +121,7 @@ return {
                     local VimtexCompiling = true
                 end
             })
-            
+
             vim.api.nvim_create_autocmd("User", {
                 pattern = "VimtexEventCompileFailed",
                 group = grp,

@@ -1,5 +1,8 @@
 % Code blocks and verbatim
 % https://www.overleaf.com/learn/latex/Code_listing
 % https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
-\usepackage{listings}
-% \usepackage{minted} % supports julia.
+\usepackage{listings} % simpler to install than minted but doesn't support julia.
+% Requires pygmentize installed:
+% `brew install pygments`
+% and --shell-escape latex flag
+% \usepackage[outputdir=aux]{minted} % supports julia.
