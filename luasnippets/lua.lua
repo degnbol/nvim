@@ -7,7 +7,7 @@ local i = ls.i
 return {
 -- core lang snippets similar to other bracket related ones found in all.lua
 
-s({trig="edn", dscr="Typo end", snippetType='autosnippet', condition=conds.line_begin},
+s({trig="edn", dscr="Typo end", snippetType='autosnippet'},
 {t"end"}),
 
 s({
