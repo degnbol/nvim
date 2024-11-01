@@ -51,7 +51,9 @@ return {
                 "Overfull",
                 "biblatex: Duplicate entry key", -- same paper in two zotero folders
                 "Text page [0-9]* contains only floats.", -- on purpose in some cases for large full page figure
-                "No \\printglossary or \\printglossaries found.", -- we can have glossaries package in preamble without using it.
+                -- It's ok to have glossaries package in preamble without using it (e.g. yet).
+                -- \\ in literal tested to work
+                [[No \\printglossary or \\printglossaries found]],
             }
             g.vimtex_log_ignore = ignore
             g.vimtex_quickfix_ignore_filters = ignore
