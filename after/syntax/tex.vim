@@ -42,7 +42,7 @@ syntax region acroinsert matchgroup=Delimiter start=/\[/ end=/\]/ contained
 " hl cite key in custom function \citea the same way as in \cite and \citeauthor
 syntax match citea /\\citea\ze[{\[]/ containedin=texCmd nextgroup=citeaOpt,citeaArg
 syntax region citeaOpt matchgroup=texDelim start='\[' end='\]' contained nextgroup=citeaArg
-syntax region citeaArg matchgroup=texDelim start='{' end='}' containedin=texGroup contained
+syntax region citeaArg matchgroup=texDelim start='{' end='}' contained
 hi def link citea texCmd " not using texCmdRef to make it clear it is custom cmd that adds more text.
 hi def link citeaArg texRefConcealedArg
 
