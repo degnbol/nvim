@@ -95,7 +95,8 @@ return {
             -- vimtex solution doesn't work: https://github.com/lervag/vimtex/issues/2599
             -- use builtin indent function GetTexIndent since the solution for that does work:
             -- https://github.com/vim/vim/blob/eb3dc87f01391bb075d97aef3d00f91b4e08a25c/runtime/indent/tex.vim#L70-L122
-            g.vimtex_indent_enabled = false
+            -- Update: I don't use conceal anymore, and we want \if \else etc. to have indent.
+            g.vimtex_indent_enabled = true
             -- builtin vim setting for tex files, not a vimtex setting
             g.tex_indent_items = 0
 
