@@ -25,3 +25,7 @@ hej_*
 # binaries
 pandoc-unicode-math
 pandoc-unicode-math-from-latex
+
+# latex
+*.synctex.gz
+aux/
