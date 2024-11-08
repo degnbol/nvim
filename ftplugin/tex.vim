@@ -65,3 +65,6 @@ let @l=']4 lU'
 " The unicode em-dash can then be mapped with the newunicodechar package
 iabbrev --- ⎯
 
+" local to window. Some window I'm switching to sometimes must be setting it 
+" so I disable it here.
+setlocal signcolumn=no
