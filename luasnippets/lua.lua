@@ -228,14 +228,18 @@ s({
     dscr="call external cmd asynchronously",
     snippetType='autosnippet',
     condition=conds.line_begin,
-}, {t'vim.system(', i(1, "{'echo', 'hello'}"), t{
-', {text=true}, function(obj)',
-'    print(obj.code)',
-'    print(obj.signal)',
-'    print(obj.stdout)',
-'    print(obj.stderr)',
-'end)',
-}}),
+}, fmta([[vim.system({<>}, {text=true}, function(obj)
+    if obj.code ~= 0 then
+        -- needs local util = require "utils/init"
+        util.schedule_notify(obj)
+    else
+        <>
+    end
+end)
+]], {i(1, "'echo', 'hello'"), i(2, {'print(obj.signal)',
+                '        print(obj.stdout)',
+                '        print(obj.stderr)'
+            })})),
 
 s({trig="cword", dscr="current word under cursor"},
 {t'vim.fn.expand("<cword>")'}),
