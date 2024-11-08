@@ -1,4 +1,5 @@
-require"utils/keymap" -- set_keymap_desc
+local util = require "utils/init"
+require "utils/keymap" -- set_keymap_desc
 
 return {
     -- core behaviour
@@ -248,7 +249,6 @@ return {
             }
             -- custom gx function that opens github repos given the short 
             -- version written in these config files.
-            local open = require("utils/init").open
             vim.keymap.set("n", "gx", function()
                 -- go to github for plugin easily.
                 -- First check if we are editing a file read by lazy.nvim
@@ -258,9 +258,20 @@ return {
                     local repo = line:match([["([%w%p]+/[%w%p]+)"]])
                     repo = repo or line:match([['([%w%p]+/[%w%p]+)']])
                     if repo then
-                        return open("https://github.com/" .. repo)
+                        return util.open("https://github.com/" .. repo)
                     end
                 end
+
+                -- for latex packages...
+                if vim.bo.filetype == "tex" then
+                    local line = vim.api.nvim_get_current_line()
+                    local pac = line:match("\\usepackage.*{([%w_-]+)}")
+                    if pac ~= nil then
+                        local ctan = "https://ctan.org/pkg/"..pac.."?lang=en"
+                        return util.open(ctan)
+                    end
+                end
+
                 -- visually select URL
                 require("various-textobjs").url()
                 -- plugin only switches to visual mode when textobj found
@@ -268,7 +279,7 @@ return {
                 -- retrieve URL with the z-register as intermediary
                 vim.cmd.normal { '"zy', bang = true }
                 local url = vim.fn.getreg("z")
-                open(url)
+                util.open(url)
             end, { desc = "Smart URL opener" })
         end
     },
