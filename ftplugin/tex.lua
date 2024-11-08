@@ -4,7 +4,7 @@ local tbl = require "tex.tables"
 require "tex.cmds"
 require "tex.textcolor"
 local hi = require "utils/highlights"
-require "utils/init" -- string.contains
+local util = require "utils/init" -- string.contains and schedule_notify
 local latexmk = require "tex.latexmk"
 
 -- also defined in lua/plugins/mini.lua as shift+` but we can just use ` since 
@@ -83,19 +83,6 @@ vim.keymap.set('n', '<leader>cg', function ()
     end)
 end, { buffer=true, desc="Compile glossary" })
 
----Notify of stderr or stdout from a vim.system call obj.
----Intended for stderr. Uses stdout if stderr is empty, which may be the case if program doesn't utilise stderr at all.
----@param obj any
-local function schedule_notify(obj)
-    local text = obj.stderr:gsub("\n$", "")
-    if text == "" then
-        text = obj.stdout:gsub("\n$", "")
-    end
-    vim.schedule(function () -- notify when we are ready
-        vim.notify(text) -- vim.notify instead of print to see multiple lines
-    end)
-end
-
 ---Run `biber --cache` to get biber cache dir, so far found in /var/folders/...
 ---Then call `rm -rf` on it.
 ---Then call the supplied on_exit function if given.
@@ -103,13 +90,13 @@ end
 local function biber_clear_cache(on_exit)
     vim.system({"biber", "--cache"}, {text=true}, function (obj)
         if obj.code ~= 0 then
-            schedule_notify(obj)
+            util.schedule_notify(obj)
         else
             local cachepath = obj.stdout:gsub('\n$', '')
             if cachepath:match("^/var/folders/") then
                 vim.system({"rm", "-rf", cachepath}, {text=true}, function (obj)
                     if obj.code ~= 0 then
-                        schedule_notify(obj)
+                        util.schedule_notify(obj)
                     else
                         print("biber cache cleared")
                         if on_exit ~= nil then
@@ -149,11 +136,39 @@ vim.keymap.set('n', '<leader>cb', function (main)
                     print("biber complete")
                     return
                 end
-                schedule_notify(obj)
+                util.schedule_notify(obj)
             end)
         end)
     end)
 end, { buffer=true, desc="Compile bibliography" })
+
+-- gx can open ctan main site, see plugins/init.lua
+vim.keymap.set('n', 'gX', function ()
+    local line = vim.api.nvim_get_current_line()
+    local pac = line:match("\\usepackage.*{([%w_-]+)}")
+    if pac ~= nil then
+        local ctan = "https://ctan.org/pkg/"..pac.."?lang=en"
+        -- open manual pdf directly.
+        -- We read it from ctan site since the url may vary (e.g. font doc at https://au.mirrors.cicku.me/ctan/fonts/baskervillef/doc/baskervillef-doc.pdf)
+        print("Opening manual pdf(s)...")
+        return vim.system({'curl', ctan}, {text=true, stdout=function (err, data)
+            if err ~= nil then
+                print("Error opening ctan manual pdf.")
+            else
+                vim.system({'grep', '-o', [["http[^"]*\.pdf"]]}, {text=true, stdin=data}, function (obj)
+                    if obj.code ~= 0 then
+                        util.schedule_notify(obj)
+                    else
+                        for _, quoted_url in ipairs(vim.split(obj.stdout, '\n')) do
+                            util.open(quoted_url:match('^"(.*)"$'))
+                        end
+                        return
+                    end
+                end)
+            end
+        end})
+    end
+end, { desc="Open CTAN manual(s) for package" })
 
 vim.keymap.set('n', '<leader><leader>s', "<Plug>(vimtex-status)", { buffer=true, desc="Status"})
 vim.keymap.set('n', '<leader><leader>S', "<Plug>(vimtex-status-all)", { buffer=true, desc="Status all"})
