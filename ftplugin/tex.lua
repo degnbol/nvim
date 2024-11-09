@@ -209,6 +209,7 @@ end, {buffer=true, desc="Compile continuously"})
 vim.keymap.set('n', '<leader>cl', '<Plug>(vimtex-compile-output)', {buffer=true, desc="Output"})
 vim.keymap.set('x', '<leader>cc', '<Plug>(vimtex-compile-selected)', {buffer=true, desc="Compile selected"})
 vim.keymap.set('n', '<CR>', "<plug>(vimtex-compile-selected)", { desc="Compile motion" })
+vim.keymap.set('x', '<CR>', "<plug>(vimtex-compile-selected)", { desc="Compile selection" })
 
 -- e.g. \section*{}
 set_keymap_desc('n', 'tsc', "Cmd/Star")
