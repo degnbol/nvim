@@ -222,6 +222,19 @@ function M.set_mode(mode)
     end
 end
 
+---Notify of stderr or stdout from a vim.system call obj.
+---Intended for stderr. Uses stdout if stderr is empty, which may be the case if program doesn't utilise stderr at all.
+---@param obj any
+function M.schedule_notify(obj)
+    local text = obj.stderr:gsub("\n$", "")
+    if text == "" then
+        text = obj.stdout:gsub("\n$", "")
+    end
+    vim.schedule(function () -- notify when we are ready
+        vim.notify(text) -- vim.notify instead of print to see multiple lines
+    end)
+end
+
 -- open with the OS-specific shell command
 local opener
 if vim.fn.has("macunix") == 1 then
