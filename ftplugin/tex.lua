@@ -142,6 +142,17 @@ vim.keymap.set('n', '<leader>cb', function (main)
     end)
 end, { buffer=true, desc="Compile bibliography" })
 
+vim.keymap.set('n', 'gK', function ()
+    local line = vim.api.nvim_get_current_line()
+    local pac = line:match("\\usepackage.*{([%w_-]+)}")
+    if pac == nil then
+        return print("No package name found on line.")
+    end
+    local obj = vim.system({'texdoc', pac}):wait()
+    if obj.code ~= 0 then
+        print("texdoc " .. pac .. " failed.")
+    end
+end, { desc="texdoc help" })
 -- gx can open ctan main site, see plugins/init.lua
 vim.keymap.set('n', 'gX', function ()
     local line = vim.api.nvim_get_current_line()
