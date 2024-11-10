@@ -1,7 +1,16 @@
 % \cref which auto adds e.g. "Table " to \ref
 \usepackage[capitalise]{cleveref}
-% remove default abbreviation dot
+
 \Crefname{equation}{Eq}{Eqs}
 \Crefname{figure}{Fig}{Figs}
 \Crefname{tabular}{Tab}{Tabs}
+
+% Best approach to being able to reference the same footnote multiple times.
+% https://tex.stackexchange.com/questions/10102/multiple-references-to-the-same-footnote-with-hyperref-support-is-there-a-bett/10116#10116
+\crefformat{footnote}{#2\footnotemark[#1]#3}
+
+% \see{...} -> (see Fig 1).
+% \see[\subref{...}]{...} -> (see Fig 1a).
+% \see[\subref{...}--\subref{...}]{...} -> (see Fig 1a--b).
+\newcommand{\see}[2][]{(see~\cref{#2}#1)}
 
