@@ -10,6 +10,14 @@ return {
 s({trig="edn", dscr="Typo end", snippetType='autosnippet'},
 {t"end"}),
 
+s({trig="popen", dscr="popen template"},
+fmta([[local handle = io.popen("<>")
+if handle ~= nil then
+    local result = handle:read("*a")
+    handle:close()
+end
+]], {i(1, "COMMAND")})),
+
 s({
     trig='%[%[%[%]%]',
     dscr="Third bracket in trig pattern is typed last.",
