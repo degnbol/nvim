@@ -2,6 +2,9 @@
 -- default contents in new files of specific types.
 -- Either lines, or function producing lines
 local defaultlines = {
+    sh = {
+        "cd $0:h",
+    },
     scm = {
         ";extends",
     },
