@@ -17,10 +17,10 @@ vim.api.nvim_create_autocmd("Colorscheme", {
 
 -- also set for latex.
 local pymol = "/opt/homebrew/Caskroom/miniforge/base/envs/pymol/bin/python"
-map('n', '<leader><leader>2', function ()
+vim.map.set('n', '<leader><leader>2', function ()
     os.execute("rectangle "..pymol.." right-half kitty left-half")
 end, { desc="Half screen layout" })
-map('n', '<leader><leader>3', function ()
+vim.map.set('n', '<leader><leader>3', function ()
     os.execute("rectangle "..pymol.." last-third kitty first-two-thirds")
 end, { desc="Third screen layout" })
 
