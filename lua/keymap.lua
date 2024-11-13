@@ -185,7 +185,7 @@ map('i', "<C-S-]>", '{}<left>')
 -- hack map of shift+space
 local bracketJumpCode =  "\x1F"
 local triples = { '"""', "'''", "```" }
-local pairs   = { '""', "''", "``", "()", '[]', "{}", "<>", "$$" }
+local doubles = { '""', "''", "``", "()", '[]', "{}", "<>", "$$" }
 local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>', '$' }
 local function bracketJump(line, c)
     if vim.tbl_contains(triples, line:sub(c-2,c)) then
@@ -193,9 +193,9 @@ local function bracketJump(line, c)
     elseif vim.tbl_contains(triples, line:sub(c+1,c+3)) then
         return "<right><right><right>"
     -- left priority over right for pairs so we go back first for e.g. Matrix{}|[]
-    elseif vim.tbl_contains(pairs, line:sub(c-1,c)) then
+    elseif vim.tbl_contains(doubles, line:sub(c-1,c)) then
         return "<left>"
-    elseif vim.tbl_contains(pairs, line:sub(c+1,c+2)) then
+    elseif vim.tbl_contains(doubles, line:sub(c+1,c+2)) then
         return "<right>"
         -- right priority over left for singles, since they are usually half of a 
         -- filled out pair and we want to prioritize progressing in that case.
@@ -345,26 +345,46 @@ map('i', '<D-v>', function ()
 end, {desc="Paste, auto-indent, place cursor after"})
 map('c', '<D-v>', '<C-r>+', {desc="Paste, place cursor after"})
 
--- may be overridden to control other window at the same time
-vim.keymap.set('n', '<leader><leader>1', function ()
-    vim.system({"rectangle", "kitty", "maximize"}, {}, function(obj)
-        if obj.code ~= 0 then
-            util.schedule_notify(obj)
+
+-- window layout.
+local grp = vim.api.nvim_create_augroup("WindowLayout", {clear=true})
+vim.api.nvim_create_autocmd("Filetype", {
+    pattern = "*",
+    group = grp,
+    callback = function ()
+        local ftapp = {
+            tex = "skim",
+            -- pymol
+            python = "/opt/homebrew/Caskroom/miniforge/base/envs/pymol/bin/python",
+        }
+        local rectangle = function (layouts)
+            local cmd = {"rectangle"}
+            for layout, app in pairs(layouts) do
+                if app ~= nil then
+                    table.insert(cmd, app)
+                    table.insert(cmd, layout)
+                end
+            end
+            return function ()
+                vim.system(cmd, {timeout=1500}, function(obj)
+                    if obj.code ~= 0 then
+                        util.schedule_notify(obj)
+                    end
+                end)
+            end
         end
-    end)
-end, { desc="Half screen layout" })
-vim.keymap.set('n', '<leader><leader>2', function ()
-    vim.system({"rectangle", "kitty", "left-half"}, {}, function(obj)
-        if obj.code ~= 0 then
-            util.schedule_notify(obj)
-        end
-    end)
-end, { desc="Half screen layout" })
-vim.keymap.set('n', '<leader><leader>3', function ()
-    vim.system({"rectangle", "kitty", "first-two-thirds"}, {}, function(obj)
-        if obj.code ~= 0 then
-            util.schedule_notify(obj)
-        end
-    end)
-end, { desc="Third screen layout" })
+        local this = "kitty"
+        local other = ftapp[vim.bo.filetype]
+        vim.keymap.set('n', '<leader><leader>1',
+            rectangle {maximize=this},
+            { desc="Whole screen layout" })
+        vim.keymap.set('n', '<leader><leader>2',
+            rectangle {["right-half"]=other, ["left-half"]=this},
+            { desc="Half screen layout" })
+        vim.keymap.set('n', '<leader><leader>3',
+            rectangle {["last-third"]=other, ["first-two-thirds"]=this},
+            { desc="Two-thirds screen layout" })
+
+    end
+})
 
