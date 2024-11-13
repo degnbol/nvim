@@ -344,3 +344,27 @@ map('i', '<D-v>', function ()
     end
 end, {desc="Paste, auto-indent, place cursor after"})
 map('c', '<D-v>', '<C-r>+', {desc="Paste, place cursor after"})
+
+-- may be overridden to control other window at the same time
+vim.keymap.set('n', '<leader><leader>1', function ()
+    vim.system({"rectangle", "kitty", "maximize"}, {}, function(obj)
+        if obj.code ~= 0 then
+            util.schedule_notify(obj)
+        end
+    end)
+end, { desc="Half screen layout" })
+vim.keymap.set('n', '<leader><leader>2', function ()
+    vim.system({"rectangle", "kitty", "left-half"}, {}, function(obj)
+        if obj.code ~= 0 then
+            util.schedule_notify(obj)
+        end
+    end)
+end, { desc="Half screen layout" })
+vim.keymap.set('n', '<leader><leader>3', function ()
+    vim.system({"rectangle", "kitty", "first-two-thirds"}, {}, function(obj)
+        if obj.code ~= 0 then
+            util.schedule_notify(obj)
+        end
+    end)
+end, { desc="Third screen layout" })
+

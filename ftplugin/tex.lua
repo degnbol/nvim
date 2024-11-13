@@ -263,13 +263,6 @@ vim.keymap.set("n", "]M", "<Plug>(vimtex-]N)", { buffer=true, desc="Math end" })
 vim.keymap.set("n", "]4", "<Plug>(vimtex-]n)", { buffer=true, desc="Math start" })
 vim.keymap.set("n", "]$", "<Plug>(vimtex-]N)", { buffer=true, desc="Math end" })
 
-vim.keymap.set('n', '<leader><leader>2', function ()
-    os.execute("rectangle Skim right-half kitty left-half")
-end, { desc="Half screen layout" })
-vim.keymap.set('n', '<leader><leader>3', function ()
-    os.execute("rectangle Skim last-third kitty first-two-thirds")
-end, { desc="Third screen layout" })
-
 -- colorscheme aucmd to fix missing or inconsistent hl links
 local grp = vim.api.nvim_create_augroup("Tex", {clear=true})
 vim.api.nvim_create_autocmd("Colorscheme", {

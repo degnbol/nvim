@@ -1,4 +1,6 @@
 #!/usr/bin/env lua
+local util = require "utils/init"
+
 -- remove o, we want to continue comments while editing them only (r).
 -- no t and having c+a means only comments are autoformatted. 
 -- However, a made comment reformat slow, so don't use by default.
@@ -14,13 +16,4 @@ vim.api.nvim_create_autocmd("Colorscheme", {
         vim.api.nvim_set_hl(0, "@cell", {reverse=true})
     end
 })
-
--- also set for latex.
-local pymol = "/opt/homebrew/Caskroom/miniforge/base/envs/pymol/bin/python"
-vim.map.set('n', '<leader><leader>2', function ()
-    os.execute("rectangle "..pymol.." right-half kitty left-half")
-end, { desc="Half screen layout" })
-vim.map.set('n', '<leader><leader>3', function ()
-    os.execute("rectangle "..pymol.." last-third kitty first-two-thirds")
-end, { desc="Third screen layout" })
 
