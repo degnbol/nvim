@@ -24,11 +24,39 @@ local defaultlines = {
     ["deactivate.sh"] = {
         "[ \"$CONDA_DEFAULT_ENV\" = base ] || conda deactivate"
     },
+    lua = function ()
+        local filepath = vim.api.nvim_buf_get_name(0)
+        -- if writing luasnippets
+        if filepath:match("/luasnippets/") then
+            return {
+                'local ls = require "luasnip"',
+                'local extras = require "luasnip/extras"',
+                'local s = ls.s',
+                'local t = ls.t',
+                'local f = ls.f',
+                'local c = ls.c',
+                'local fmta = extras.fmta',
+                '',
+                'local lsu = require "utils/luasnip"',
+                'local re = lsu.re', -- my convenience function for regex match
+                '',
+                'return {',
+                '}',
+            }
+        elseif filepath:match("lua/plugins") then
+            return {
+                '',
+                'return {',
+                '}',
+            }
+        end
+        return {}
+    end,
     -- complgen in config/complgen/*.usage
     usage = function ()
         -- assume filename is command name
         local cmdname = vim.fn.expand('%:r')
-        lines = {
+        return {
             "# || syntax allows <PATH> to take completion precidence over options (otherwise they would be suggested together)",
             cmdname .. " <PATH>... || [<OPTION>]... <PATH>...;",
             "",
@@ -40,7 +68,6 @@ local defaultlines = {
             "# Fix PATH not adding space after completion.",
             [[<PATH@zsh> ::= {{{ _path_files | sed '/\/$/!s/$/ /' }}};]],
         }
-        return lines
     end,
 }
 
