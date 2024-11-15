@@ -54,7 +54,7 @@ local defaultlines = {
     end,
     vim = function ()
         if vim.api.nvim_buf_get_name(0):match("ftdetect/") then
-            return {[[autocmd BufNewFile,BufRead *.EXT setfiletype FILETYPE]]}
+            return {[[au BufNewFile,BufRead *.EXT set filetype=FILETYPE]]}
         end
         return {}
     end,

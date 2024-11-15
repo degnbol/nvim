@@ -165,8 +165,6 @@ return {
     -- basic kotlin support
     "udalov/kotlin-vim",
 
-    "jaredsampson/vim-pymol",
-
     {
         -- pretty decorations on help.
         -- Currently a bit buggy, might use later when you can toggle it without getting error.
@@ -177,5 +175,10 @@ return {
             "nvim-treesitter/nvim-treesitter"
         }
     },
+    "mityu/vim-applescript",
+    -- pymol. syntax groups are builtin it seems, but hls are missing.
+    -- Benefit of this package is it hls PymolCommands and distinguishes 
+    -- keyword operator with PymolOperatorK which is useful for italics only on keywords.
+    "speleo3/PyMol-syntax",
 }
 
