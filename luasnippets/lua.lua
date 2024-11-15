@@ -10,6 +10,9 @@ return {
 s({trig="edn", dscr="Typo end", snippetType='autosnippet'},
 {t"end"}),
 
+s({trig="stdin", dscr="Read stdin"},
+{t[[local text = io.read("*a")]]}),
+
 s({trig="popen", dscr="popen template"},
 fmta([[local handle = io.popen("<>")
 if handle ~= nil then
@@ -17,6 +20,12 @@ if handle ~= nil then
     handle:close()
 end
 ]], {i(1, "COMMAND")})),
+
+-- keep misremembering and LSP doesn't show it.
+s({trig=":lower", dscr="Lowercase text."},
+{t":lower()"}),
+s({trig=":upper", dscr="Uppercase text."},
+{t":upper()"}),
 
 s({
     trig='%[%[%[%]%]',
@@ -88,7 +97,8 @@ s({trig="show_condition", dscr="Set show_condition for non-auto snippet."},
 {t'show_condition=', i(1, 'conds.line_end')}),
 
 s({trig="fmta", dscr="Convenience function for formatting snippets, especially multi line snippets."},
-fmta([=[fmta([[<>
+fmta([=[-- NOTE: no surrounding curly brackets
+fmta([[<>
 ]], {<>})]=], {i(1, "<>"), i(2, "i(1)")})),
 
 -- config snippets
