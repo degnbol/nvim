@@ -19,6 +19,7 @@ return {
             'hrsh7th/cmp-path',
             'hrsh7th/cmp-nvim-lsp-signature-help',
             'hrsh7th/cmp-nvim-lua', -- neovim Lua API
+            'hrsh7th/cmp-omni',
             -- 'L3MON4D3/cmp-luasnip-choice', -- show choice node choices
             'tamago324/cmp-zsh', -- neovim zsh completion
             'hrsh7th/cmp-calc', -- quick math in completion
@@ -151,6 +152,7 @@ return {
                     { name = 'luasnip', options = {show_autosnippets=true} },
                     -- { name = 'luasnip_choice' },
                     { name = 'calc' },
+                    { name = 'omni', group_index=2 },
                     { name = 'buffer', group_index=2 },
                 },
                 -- :h cmp-config.formatting.
@@ -163,6 +165,7 @@ return {
                         ellipsis_char='…',
                         menu = {
                             buffer        = "",
+                            omni          = "", -- most likely set to syntax keyword completion
                             nvim_lsp      = "", -- minimal
                             luasnip       = "", -- "", -- <> is also shown as the type, so it is redudant.
                             nvim_lua      = "",

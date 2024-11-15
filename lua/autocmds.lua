@@ -91,3 +91,16 @@ for ext, lines in pairs(defaultlines) do
     })
 end
 
+
+local grp = vim.api.nvim_create_augroup("cmp-syntax", {clear=true})
+vim.api.nvim_create_autocmd("Filetype", {
+    pattern = "*",
+    group = grp,
+    callback = function ()
+
+        if vim.opt_local.omnifunc:get() == "" then
+            vim.opt_local.omnifunc = "syntaxcomplete#Complete"
+        end
+    end
+})
+
