@@ -184,19 +184,29 @@ map('i', "<C-S-]>", '{}<left>')
 
 -- hack map of shift+space
 local bracketJumpCode =  "\x1F"
-local triples = { '"""', "'''", "```" }
-local doubles = { '""', "''", "``", "()", '[]', "{}", "<>", "$$" }
+local paired = { '""', "''", "``", "()", '[]', "{}", "<>", "$$" }
+local paireddouble = { '[[]]' }
 local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>', '$' }
+local doubles = { "[[", "]]" }
+local triples = { '"""', "'''", "```" }
 local function bracketJump(line, c)
     if vim.tbl_contains(triples, line:sub(c-2,c)) then
         return "<left><left><left>"
     elseif vim.tbl_contains(triples, line:sub(c+1,c+3)) then
         return "<right><right><right>"
+    elseif vim.tbl_contains(paireddouble, line:sub(c-3,c)) then
+        return "<left><left>"
+    elseif vim.tbl_contains(paireddouble, line:sub(c+1,c+4)) then
+        return "<right><right>"
     -- left priority over right for pairs so we go back first for e.g. Matrix{}|[]
-    elseif vim.tbl_contains(doubles, line:sub(c-1,c)) then
+    elseif vim.tbl_contains(paired, line:sub(c-1,c)) then
         return "<left>"
-    elseif vim.tbl_contains(doubles, line:sub(c+1,c+2)) then
+    elseif vim.tbl_contains(paired, line:sub(c+1,c+2)) then
         return "<right>"
+    elseif vim.tbl_contains(doubles, line:sub(c+1,c+2)) then
+        return "<right><right>"
+    elseif vim.tbl_contains(doubles, line:sub(c-1,c)) then
+        return "<left><left>"
         -- right priority over left for singles, since they are usually half of a 
         -- filled out pair and we want to prioritize progressing in that case.
     elseif vim.tbl_contains(singles, line:sub(c+1,c+1)) then
