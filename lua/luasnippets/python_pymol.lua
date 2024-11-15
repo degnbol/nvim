@@ -2,6 +2,7 @@
 local ls = require "luasnip"
 local extras = require "luasnip/extras"
 local s = ls.s
+local i = ls.i
 local t = ls.t
 local f = ls.f
 local c = ls.c

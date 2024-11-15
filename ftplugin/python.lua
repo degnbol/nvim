@@ -17,3 +17,20 @@ vim.api.nvim_create_autocmd("Colorscheme", {
     end
 })
 
+function Load_pymol_snippets()
+    if not Loaded_pymol then
+        Loaded_pymol = true
+        require("luasnip").add_snippets("python",
+            require 'luasnippets.python_pymol')
+    end
+end
+-- manually load
+vim.keymap.set('n', '<leader><leader>s', Load_pymol_snippets, { desc="Load pymol snippets." })
+-- check if pymol is loaded by scanning first 10 lines
+for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 10, false)) do
+    -- might be using e.g. `from pymol_util import *`
+    if line:match("import") and line:match("pymol") then
+        return Load_pymol_snippets()
+    end
+end
+
