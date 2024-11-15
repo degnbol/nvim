@@ -10,19 +10,14 @@ local fmta = extras.fmta
 local lsu = require "utils/luasnip"
 local re = lsu.re
 
-local snippets = {}
-
-for _, trig in ipairs({
-    "^([\t ]*)(%w+) ?=",
-    "^([\t ]*)set (%w+) ?=",
-}) do
-    table.insert(snippets, s({
-        trig=trig,
+return {
+    ms({
+        "^([\t ]*)(%w+) ?=",
+        "^([\t ]*)set (%w+) ?=",
+        common={
         trigEngine="pattern",
         snippetType='autosnippet',
         dscr="Variable assignment",
-    },
-        {re(1), t"set ", re(2), t" to"}))
-end
-
-return snippets
+    }},
+    {re(1), t"set ", re(2), t" to"}),
+}
