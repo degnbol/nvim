@@ -31,4 +31,10 @@ s({trig="import matplotlib.pyplot as plt", dscr="Import pyplot.", wordTrig=false
 s({trig="DF", dscr="Pandas DataFrame.", snippetType="autosnippet"},
 {t"pd.DataFrame(", i(1), t")"}),
 
+s({trig="pymol", dscr="Load pymol commands (and load snippets).", show_condition=conds.line_end},
+{f(function ()
+            Load_pymol_snippets()
+            return "from pymol import cmd"
+end)}),
+
 }
