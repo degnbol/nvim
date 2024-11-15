@@ -66,7 +66,7 @@ return {
             -- defaults at :h vimtex_compiler_latexmk
             g.vimtex_compiler_latexmk = {
                 aux_dir = "aux",
-                out_dir = "aux",
+                -- out_dir = "out", -- compile selected only works if using default
                 -- callback = true,
                 options = {
                     -- defaults:
