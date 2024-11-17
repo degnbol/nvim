@@ -3,7 +3,7 @@
 syntax region String start='"' skip='\"' end='"'
 syntax region String start="'" skip="\'" end="'"
 
-syntax keyword Italic
+syntax keyword PymolStringKeyword
     \ all
     \ none
     \ enabled
@@ -59,7 +59,6 @@ syntax keyword Italic
     \ organic
     \ inorganic
     \ solvent
-    \ polymer
     \ guide
     \ hetatm
     \ hydrogens
@@ -82,52 +81,68 @@ syntax keyword Italic
     \ z
     \ numeric_type containedin=String contained
 
-syntax match Italic /m\./ containedin=String contained
-syntax match Italic /c\./ containedin=String contained
-syntax match Italic /s\./ containedin=String contained
-syntax match Italic /r\./ containedin=String contained
-syntax match Italic /i\./ containedin=String contained
-syntax match Italic /n\./ containedin=String contained
-syntax match Italic /idx\./ containedin=String contained
-syntax match Italic /ps\./ containedin=String contained
-syntax match Italic /bs\./ containedin=String contained
-syntax match Italic /bc\./ containedin=String contained
-syntax match Italic /br\./ containedin=String contained
-syntax match Italic /bca\./ containedin=String contained
-syntax match Italic /bm\./ containedin=String contained
-syntax match Italic /bf\./ containedin=String contained
-syntax match Italic /bto\./ containedin=String contained
-syntax match Italic /nbr\./ containedin=String contained
-syntax match Italic /xt\./ containedin=String contained
-syntax match Italic /w\./ containedin=String contained
-syntax match Italic /a\./ containedin=String contained
-syntax match Italic /x\./ containedin=String contained
-syntax match Italic /nto\./ containedin=String contained
-syntax match Italic /be\./ containedin=String contained
-syntax match Italic /pc\./ containedin=String contained
-syntax match Italic /fc\./ containedin=String contained
-syntax match Italic /e\./ containedin=String contained
-syntax match Italic /fxd\./ containedin=String contained
-syntax match Italic /rst\./ containedin=String contained
-syntax match Italic /msk\./ containedin=String contained
-syntax match Italic /f\./ containedin=String contained
-syntax match Italic /org\./ containedin=String contained
-syntax match Italic /ino\./ containedin=String contained
-syntax match Italic /sol\./ containedin=String contained
-syntax match Italic /pol\./ containedin=String contained
-syntax match Italic /polymer\.protein/ containedin=String contained
-syntax match Italic /polymer\.nucleic/ containedin=String contained
-syntax match Italic /h\./ containedin=String contained
-syntax match Italic /bb\./ containedin=String contained
-syntax match Italic /sc\./ containedin=String contained
-syntax match Italic /don\./ containedin=String contained
-syntax match Italic /acc\./ containedin=String contained
-syntax match Italic /v\./ containedin=String contained
-syntax match Italic /pr\./ containedin=String contained
-syntax match Italic /nt\./ containedin=String contained
+syntax match PymolStringKeyword /m\./ containedin=String contained
+syntax match PymolStringKeyword /c\./ containedin=String contained
+syntax match PymolStringKeyword /s\./ containedin=String contained
+syntax match PymolStringKeyword /r\./ containedin=String contained
+syntax match PymolStringKeyword /i\./ containedin=String contained
+syntax match PymolStringKeyword /n\./ containedin=String contained
+syntax match PymolStringKeyword /idx\./ containedin=String contained
+syntax match PymolStringKeyword /ps\./ containedin=String contained
+syntax match PymolStringKeyword /bs\./ containedin=String contained
+syntax match PymolStringKeyword /bc\./ containedin=String contained
+syntax match PymolStringKeyword /br\./ containedin=String contained
+syntax match PymolStringKeyword /bca\./ containedin=String contained
+syntax match PymolStringKeyword /bm\./ containedin=String contained
+syntax match PymolStringKeyword /bf\./ containedin=String contained
+syntax match PymolStringKeyword /bto\./ containedin=String contained
+syntax match PymolStringKeyword /nbr\./ containedin=String contained
+syntax match PymolStringKeyword /xt\./ containedin=String contained
+syntax match PymolStringKeyword /w\./ containedin=String contained
+syntax match PymolStringKeyword /a\./ containedin=String contained
+syntax match PymolStringKeyword /x\./ containedin=String contained
+syntax match PymolStringKeyword /nto\./ containedin=String contained
+syntax match PymolStringKeyword /be\./ containedin=String contained
+syntax match PymolStringKeyword /pc\./ containedin=String contained
+syntax match PymolStringKeyword /fc\./ containedin=String contained
+syntax match PymolStringKeyword /e\./ containedin=String contained
+syntax match PymolStringKeyword /fxd\./ containedin=String contained
+syntax match PymolStringKeyword /rst\./ containedin=String contained
+syntax match PymolStringKeyword /msk\./ containedin=String contained
+syntax match PymolStringKeyword /f\./ containedin=String contained
+syntax match PymolStringKeyword /org\./ containedin=String contained
+syntax match PymolStringKeyword /ino\./ containedin=String contained
+syntax match PymolStringKeyword /sol\./ containedin=String contained
+syntax match PymolStringKeyword /pol\./ containedin=String contained
+" Polymer matched instead of keyword to avoid it having priority over 
+" polymer.protein and polymer.nucleic
+syntax match PymolStringKeyword /polymer/ containedin=String contained
+syntax match PymolStringKeyword /polymer\.protein/ containedin=String contained
+syntax match PymolStringKeyword /polymer\.nucleic/ containedin=String contained
+syntax match PymolStringKeyword /h\./ containedin=String contained
+syntax match PymolStringKeyword /bb\./ containedin=String contained
+syntax match PymolStringKeyword /sc\./ containedin=String contained
+syntax match PymolStringKeyword /don\./ containedin=String contained
+syntax match PymolStringKeyword /acc\./ containedin=String contained
+syntax match PymolStringKeyword /v\./ containedin=String contained
+syntax match PymolStringKeyword /pr\./ containedin=String contained
+syntax match PymolStringKeyword /nt\./ containedin=String contained
 
-syntax match Bold "/" containedin=String contained
-syntax match Bold "*" containedin=String contained
-syntax match Bold "!" containedin=String contained
-syntax match Bold "&" containedin=String contained
-syntax match Bold "|" containedin=String contained
+syntax match PymolStringOperator "/" containedin=String contained
+syntax match PymolStringOperator "*" containedin=String contained
+syntax match PymolStringOperator "!" containedin=String contained
+syntax match PymolStringOperator "&" containedin=String contained
+syntax match PymolStringOperator "|" containedin=String contained
+syntax match PymolStringDelimiter "(" containedin=String contained
+syntax match PymolStringDelimiter ")" containedin=String contained
+
+" We can give them colour that is inbetween e.g.
+" string with #7AA4A1
+" keyword with #AD5C7C
+" Resulting in #94808F
+" However, treesitter hl takes priority as usual so we would need to disable 
+" that, then only use regex hi for string and also make sure that priority 
+" works. Otherwise, bold and italics are great by themselves.
+hi def link PymolStringKeyword Italic
+hi def link PymolStringOperator Bold
+hi def link PymolStringDelimiter Bold
