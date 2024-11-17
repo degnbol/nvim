@@ -176,9 +176,5 @@ return {
         }
     },
     "mityu/vim-applescript",
-    -- pymol. syntax groups are builtin it seems, but hls are missing.
-    -- Benefit of this package is it hls PymolCommands and distinguishes 
-    -- keyword operator with PymolOperatorK which is useful for italics only on keywords.
-    "speleo3/PyMol-syntax",
 }
 

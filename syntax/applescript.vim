@@ -242,4 +242,3 @@ syn keyword scptTodo contained TODO FIXME XXX
 hi def link scptTodo Todo
 
 let b:current_syntax = "applescript"
-
