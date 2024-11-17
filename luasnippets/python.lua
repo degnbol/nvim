@@ -33,7 +33,7 @@ s({trig="DF", dscr="Pandas DataFrame.", snippetType="autosnippet"},
 
 s({trig="pymol", dscr="Load pymol commands (and load snippets).", show_condition=conds.line_end},
 {f(function ()
-            Load_pymol_snippets()
+            Load_pymol()
             return "from pymol import cmd"
 end)}),
 
