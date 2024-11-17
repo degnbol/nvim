@@ -14,5 +14,5 @@ vim.opt.concealcursor = "nvc"
 
 vim.opt.list = false
 
-require"completion/plotlyjs".setup()
+require"completion/plotlyjs/plotlyjs".setup()
 
