@@ -8,6 +8,17 @@ M.get_text = function(node)
     return ts.get_node_text(node, 0)
 end
 
+M.in_comment = function ()
+    -- for some reason the in_set function ignores it when we are in a comment, 
+    -- and similarly vim.treesitter.get_captures_at_cursor and get_node doesn't 
+    -- seem to see the comment here, even though they see it just fine when run 
+    -- in normal mode. We fallback to using regex.
+    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+    local line = vim.api.nvim_get_current_line()
+    local comment_match = line:match("^[ \t]+#")
+    return comment_match ~= nil and c > #comment_match
+end
+
 M.in_set = function()
     local node = vim.treesitter.get_node()
     if node == nil or node:type() ~= "argument_list" then return false end
@@ -69,7 +80,7 @@ M.setup = function()
     ---@param params cmp.SourceCompletionApiParams
     ---@param callback fun(response: lsp.CompletionResponse|nil)
     function source:complete(params, callback)
-        if M.in_set() then
+        if M.in_set() and not M.in_comment() then
             callback {items=items, isIncomplete=true}
             return
         end
