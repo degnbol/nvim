@@ -10,3 +10,9 @@ done
 
 # cleanup
 rm temp.html
+# remove empty files
+for filename in ./pymol_settings_descriptions/*.txt; do
+    if [ ! -s "$filename" ]; then
+        rm "$filename"
+    fi
+done
