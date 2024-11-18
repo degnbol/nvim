@@ -1,3 +1,5 @@
+" https://pymolwiki.org/index.php/Selection_Algebra
+
 " Even though treesitter has string covered, we need a regex string match for 
 " contained to work.
 syntax region String start='"' skip='\"' end='"'
@@ -133,6 +135,10 @@ syntax match PymolStringOperator "*" containedin=String contained
 syntax match PymolStringOperator "!" containedin=String contained
 syntax match PymolStringOperator "&" containedin=String contained
 syntax match PymolStringOperator "|" containedin=String contained
+" prefix for object/selection. Difference from no prefix is that this is explicitly an object/selection, so can be named the same as any operator.
+syntax match PymolStringOperator "%" containedin=String contained
+" prefix for object/selection where empty selection is used if object/selection doesn't exist.
+syntax match PymolStringOperator "?" containedin=String contained
 syntax match PymolStringDelimiter "(" containedin=String contained
 syntax match PymolStringDelimiter ")" containedin=String contained
 
