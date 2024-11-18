@@ -1,0 +1,1 @@
+<p><b>orthoscopic</b> turns on and off the perspective handling.  Turning <b>on</b> orthoscopic rendering removes the effects of perspective.  To adjust perspective rendering see, the <a href="/index.php/Field_Of_View" title="Field Of View">Field of View</a> command.

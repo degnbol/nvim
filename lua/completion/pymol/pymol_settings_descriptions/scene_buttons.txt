@@ -1,0 +1,1 @@
+<p>This setting controls whether or not PyMOL displays <a class="mw-selflink selflink">Scene_buttons</a> or openGL buttons in the lower left hand corner that allows interaction with scenes.

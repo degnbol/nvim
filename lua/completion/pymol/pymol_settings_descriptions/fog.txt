@@ -1,0 +1,1 @@
+<p>set <a class="mw-selflink selflink">fog</a> allows Depth Cue (or fog!) to be turned on or off in the interactive viewer, not for ray traced images, for this see <a href="/index.php/Ray_Trace_Fog" title="Ray Trace Fog">Ray_Trace_Fog</a>

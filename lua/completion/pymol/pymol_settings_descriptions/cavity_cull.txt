@@ -1,0 +1,1 @@
+<p>set <a class="mw-selflink selflink">cavity_cull</a> allows the user to define how sensitive pymol it to detecting cavities within the interior of a molecule.  Smaller cavities are not detected as the cavity cull value is increased. The value <i>may</i> correspond in angstroms a dimension of the cavity approximately.

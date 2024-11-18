@@ -1,0 +1,1 @@
+<p><b>surface_color</b> controls the color of surfaces as drawn in PyMOL.

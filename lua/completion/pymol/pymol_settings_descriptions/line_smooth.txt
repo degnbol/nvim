@@ -1,0 +1,2 @@
+<p>This is a display setting.
+</p><p>The <b>line_smooth setting</b> determines whether lines are <b><a href="/index.php/Antialias" title="Antialias">antialias</a></b>ed.  The default is to use antialiased lines.

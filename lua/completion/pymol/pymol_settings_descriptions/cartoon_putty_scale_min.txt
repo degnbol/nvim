@@ -1,0 +1,1 @@
+<p><a class="mw-selflink selflink">cartoon_putty_scale_min</a> sets the minimum scale that PyMOL will use for rendering cartoon putty.

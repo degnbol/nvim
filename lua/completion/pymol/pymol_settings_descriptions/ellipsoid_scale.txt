@@ -1,0 +1,1 @@
+<p>This sets the relative scale of drawing <a href="/index.php/Ellipsoids" title="Ellipsoids">Ellipsoids</a>.  Larger numbers make larger ellipsoids.

@@ -1,0 +1,2 @@
+<p>This determines if PyMOL takes up the entire desktop screen or not.
+</p><p>You can also use the "F" button in the bottom-right corner of the <a href="/index.php/Internal_Gui" title="Internal Gui">internal GUI</a> to toggle full screen.

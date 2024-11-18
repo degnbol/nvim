@@ -1,0 +1,1 @@
+<p>PyMOL provides a variety of representations for illustrating nucleic acid structures.  This setting, <b>ring_mode</b>, affects how PyMol draws the bases in a nucleic acid representation.

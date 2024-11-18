@@ -1,0 +1,2 @@
+<p>This defines the solvent radius.  Changing the solvent radius in PyMOL affects how PyMOL interprets <a href="/index.php/Surface_solvent" title="Surface solvent">surfaces</a>, <a href="/index.php/Displaying_Biochemical_Properties#Surface-Related" title="Displaying Biochemical Properties">surface area</a>.  
+</p><p>The default solvent radius is 1.4 Angstroms.

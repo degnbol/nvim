@@ -1,0 +1,1 @@
+<p>When <a href="/index.php/Grid_mode" title="Grid mode">Grid_mode</a> is turned on, <a class="mw-selflink selflink">Grid_max</a> determines the maximum number of slots that PyMOL will show.

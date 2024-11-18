@@ -1,0 +1,2 @@
+<p>This controls how PyMOL displays specular reflections in the GUI (unrendered).  This is analogous to <a href="/index.php/Spec_power" title="Spec power">Spec_power</a> for ray traced images.
+</p><p>Values range form [0, 200+].

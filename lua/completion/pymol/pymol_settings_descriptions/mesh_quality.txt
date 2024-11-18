@@ -1,0 +1,1 @@
+<p>Altering the <b>mesh_quality</b> setting adjusts how precisely the mesh represents the surface.  The higher the value the more curved and precise the surface is defined. The default is good compromise for quality and <a href="/index.php/Category:Performance" title="Category:Performance">speed</a> (mesh calculation time).

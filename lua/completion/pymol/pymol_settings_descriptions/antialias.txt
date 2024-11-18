@@ -1,0 +1,1 @@
+<p>The <b>antialias</b> setting in pymol controls the level of antialiasing that pymol does in the <b><a href="/index.php/Ray" title="Ray">ray</a></b>-tracing routine.  Higher numbers take longer to ray trace but provide much smoother and better looking images.

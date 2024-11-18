@@ -1,0 +1,2 @@
+<p>The <b>sphere_mode</b> setting controls how PyMOL draws spheres in the OpenGL interface.  It does not affect rendering, using <a href="/index.php/Ray" title="Ray">ray</a>.
+</p><p>Sphere mode set to <b>5</b>, which looks beautiful, requires have <a href="/index.php/Spheres#Enabling_Shaders" title="Spheres">OpenGL Shaders Installed</a>.

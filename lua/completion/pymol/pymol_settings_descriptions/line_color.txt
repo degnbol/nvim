@@ -1,0 +1,1 @@
+<p><a class="mw-selflink selflink">Line_color</a> controls per atom/bond coloring in objects or selections.

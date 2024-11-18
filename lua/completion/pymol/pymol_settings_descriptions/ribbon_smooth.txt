@@ -1,0 +1,1 @@
+<p>This PyMOL setting determines smoothly how PyMOL draws ribbons.  Turning <i>on</i> the setting smooths out the ribbons and make the image look cleaner.  The setting is by default <b>off</b>, and yet, when turned <b>on</b> shows absolutely no decreased <a href="/index.php/Category:Performance" title="Category:Performance">performance</a>.

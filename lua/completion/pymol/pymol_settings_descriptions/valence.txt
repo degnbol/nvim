@@ -1,0 +1,1 @@
+<p>Turning on the <b>valence</b> setting will enable the display of double bonds.<br />

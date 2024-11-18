@@ -1,0 +1,1 @@
+<p><b>Stereo_angle</b> sets the angle between the right and left frames for cross-eyed stereo.  See <a href="/index.php/Stereo" title="Stereo">stereo</a>.

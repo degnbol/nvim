@@ -1,0 +1,2 @@
+<p>This setting affects the radius of sticks in the sticks representation. Default scale is set to 0.25.
+</p><p>In newer versions of PyMOL, one may set the <a class="mw-selflink selflink">Stick_radius</a> on a per-bond basis.  So, you can set for example, the radius of only selected bonds if you want.  This is done through the <a href="/index.php/Set_bond" title="Set bond">Set_bond</a> command.

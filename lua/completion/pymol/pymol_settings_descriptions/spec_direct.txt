@@ -1,0 +1,2 @@
+<p>This setting controls how PyMOL renders the direct specular reflection from a representation.
+</p><p>This image shows an increasing <a class="mw-selflink selflink">Spec_direct</a> setting from 0 to 1.0

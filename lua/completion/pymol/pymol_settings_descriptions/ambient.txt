@@ -1,0 +1,2 @@
+<p>Setting <a class="mw-selflink selflink">Ambient</a> controls the amount of ambient light.
+</p><p><br />

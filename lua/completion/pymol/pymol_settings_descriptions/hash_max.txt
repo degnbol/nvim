@@ -1,0 +1,1 @@
+<p><a class="mw-selflink selflink">hash_max</a> sets how much memory PyMOL uses when ray tracing.

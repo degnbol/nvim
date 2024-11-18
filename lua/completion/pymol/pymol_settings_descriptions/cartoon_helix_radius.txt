@@ -1,0 +1,1 @@
+<p>set cartoon_helix_radius allows the radius to be definied of helices shown in cylinder form (see <a href="/index.php/Cartoon_Helix_Settings" title="Cartoon Helix Settings">Cartoon_Helix_Settings</a>)

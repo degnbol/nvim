@@ -1,0 +1,1 @@
+<p>When ray tracing, PyMOL knows the Z-depth of coordinates.  The <a class="mw-selflink selflink">ray_trace_gain</a> setting darkens pixels based on their Z-depth.

@@ -1,0 +1,1 @@
+<p><a class="mw-selflink selflink">label_distance_digits</a> sets the precision of distance labels

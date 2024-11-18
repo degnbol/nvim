@@ -1,0 +1,2 @@
+<p>This setting determines how much refinement PyMOL uses in rendering ellipsoids.  Other <a href="/index.php/Category:Representations" title="Category:Representations">representations</a> have similar settings.  The most often used is <a href="/index.php/Surface_quality" title="Surface quality">Surface_quality</a>.
+</p><p>This set to 0 is a rough approximation.  Higher values, like 1, 2, 3 make truer representations.

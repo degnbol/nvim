@@ -1,0 +1,1 @@
+<p><a class="mw-selflink selflink">Ribbon_width</a> sets the width of the ribbons in the <a href="/index.php/Ribbon" title="Ribbon">ribbon</a> representation. Default is 3.

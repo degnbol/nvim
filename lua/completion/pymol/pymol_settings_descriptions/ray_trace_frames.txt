@@ -1,0 +1,1 @@
+<p>This setting determines whether or not PyMol <a href="/index.php/Ray" title="Ray">ray</a> traces your images or just takes a screen capture of them.

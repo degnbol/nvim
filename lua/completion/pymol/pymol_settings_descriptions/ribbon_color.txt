@@ -1,0 +1,1 @@
+<p><a class="mw-selflink selflink">Ribbon_color</a> allows one to explicitly state the color to be applied to a ribbon object.

@@ -1,0 +1,1 @@
+<p>A <i>beta</i> setting.  This setting controls how PyMOL sends out the geometry tasks for certain commands.  Turning this on, should <a href="/index.php/Category:Performance" title="Category:Performance">speed</a> up PyMOL in general.

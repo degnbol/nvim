@@ -1,0 +1,2 @@
+<p>This setting changes the transparency of the cartoon representation.
+</p><p>As of PyMOL version <a rel="nofollow" class="external text" href="https://pymol.org/dokuwiki/?id=media:new23">2.3</a>, cartoon transparency is now an atom-level setting. This allows for a cartoon selection to be transparent without creating an additional object.

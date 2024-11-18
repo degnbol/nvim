@@ -1,0 +1,1 @@
+<p>set <b>cartoon_color</b> allows one to color cartoons independently from the rest of the representations.

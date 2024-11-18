@@ -1,0 +1,2 @@
+<p><b>backface_cull</b> controls whether or not backward facing triangles are not filtered out when ray tracing.
+</p><p><br />

@@ -1,0 +1,1 @@
+<p>Only relevent when oval (default) helices is turned on, see <a href="/index.php/Cartoon_Helix_Settings" title="Cartoon Helix Settings">Cartoon_Helix_Settings</a>.  set <b>cartoon_oval_quality</b> defines the visual quality (the number of points defining the oval) of the helix.

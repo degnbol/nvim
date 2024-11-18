@@ -1,0 +1,1 @@
+<p>This setting changes how PyMol handles specular reflections.  Essentially, this setting, when combined with <a href="/index.php/Spec_power" title="Spec power">spec_power</a> adjusts how sharp or diffuse the reflection is, giving you shiny looking surface or duller surfaces.

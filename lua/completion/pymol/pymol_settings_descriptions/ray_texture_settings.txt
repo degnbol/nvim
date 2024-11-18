@@ -1,0 +1,2 @@
+<p><a class="mw-selflink selflink">ray_texture_settings</a> controls the wobble and wiggle settings for texturing. Playing with these settings can produce interesting effects. The values take on different meaning for each <a href="/index.php/Ray_texture" title="Ray texture">ray_texture</a> type. For example, if ray_texture is set to 3, then the three values are the power of the circular shift in X, Y, and Z directions.
+</p><p>In this example below, ray_texture=2, and ray_texture_settings=5 10 10.

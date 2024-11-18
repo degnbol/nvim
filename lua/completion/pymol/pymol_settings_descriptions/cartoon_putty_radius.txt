@@ -1,0 +1,1 @@
+<p><a class="mw-selflink selflink">cartoon_putty_radius</a> sets the base putty radius.

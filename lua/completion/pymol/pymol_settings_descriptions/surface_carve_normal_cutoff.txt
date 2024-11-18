@@ -1,0 +1,1 @@
+<p><b><a class="mw-selflink selflink">surface_carve_normal_cutoff</a></b> will hide all triangles in a selection not facing the carved selection.

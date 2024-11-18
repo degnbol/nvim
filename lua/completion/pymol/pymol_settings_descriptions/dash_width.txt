@@ -1,0 +1,1 @@
+<p>PyMOL has great control over its representation of dashes.  You can use the default <a class="mw-selflink selflink">Dash_width</a>, or

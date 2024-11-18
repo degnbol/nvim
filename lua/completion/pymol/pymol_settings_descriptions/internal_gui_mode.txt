@@ -1,0 +1,1 @@
+<p>This sets how PyMOL renders the internal GUI &amp; controls.  The default setting, 0.
