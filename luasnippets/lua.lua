@@ -150,6 +150,9 @@ s({trig="setlocal", dscr="Set local option.", condition=conds.line_begin*conds.l
 s({trig="count", dscr="Count prefix for functions."},
 {t{"local count = vim.v.count", "if count == 0 then count = 1 end"}}),
 
+s({trig="isfile", dscr="Is file readable neovim function."},
+{t"vim.fn.filereadable(", i(1,"FILENAME"), t")"}),
+
 -- api
 
 s({trig="nvim", dscr="Api functions", trigEngine="pattern", snippetType='autosnippet', condition=conds.line_begin},
