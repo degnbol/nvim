@@ -1,0 +1,2 @@
+This setting determines the color of the sugar bb, when in nucleic acid
+mode.

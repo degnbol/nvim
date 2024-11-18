@@ -1,0 +1,1 @@
+This setting controls the color of ellipsoids.

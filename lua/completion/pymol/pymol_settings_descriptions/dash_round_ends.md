@@ -1,0 +1,2 @@
+This setting determines if PyMOL draws the ends of the gaps as flat or
+rounded. The default is set to \'off\'.

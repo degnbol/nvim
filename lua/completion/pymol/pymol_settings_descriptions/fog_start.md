@@ -1,0 +1,1 @@
+set fog_start adjusts the gradient strength of Depth Cue/fog.\

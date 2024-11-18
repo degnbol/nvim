@@ -38,6 +38,17 @@ M.setup = function()
         item["insertText"] = item["label"] .. "="
     end
 
+    -- add descriptions if available
+    for _, item in ipairs(items) do
+        local filepath = rtp .. "/lua/completion/pymol/pymol_settings_descriptions/" .. item.label .. ".md"
+        local fh = io.open(filepath)
+        if fh ~= nil then
+            local content = fh:read("*a")
+            fh:close()
+            item["documentation"] = content:gsub("<p>", ""):gsub("<\\p>", "")
+        end
+    end
+
     -- the rest is modified from :help cmp-develop
 
     local source = {}

@@ -1,0 +1,1 @@
+Controls the width that PyMOL draws lines.

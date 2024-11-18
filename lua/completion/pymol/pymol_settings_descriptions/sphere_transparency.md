@@ -1,0 +1,1 @@
+set sphere_transparency is used to adjust the transparency of spheres!

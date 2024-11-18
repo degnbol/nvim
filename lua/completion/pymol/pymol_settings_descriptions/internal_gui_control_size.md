@@ -1,0 +1,3 @@
+This sets how large the internal gui controls are. An internal GUI
+control is the button you click on to enable/disable a protein, select
+colors, etc.

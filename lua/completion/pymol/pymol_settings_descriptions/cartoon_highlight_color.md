@@ -1,0 +1,2 @@
+This setting allows one to specify a contrasting color for the interior
+face of helices and the side faces of strands.
