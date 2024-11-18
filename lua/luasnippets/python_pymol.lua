@@ -39,11 +39,11 @@ local cond = {show_condition=in_string}
 
 return {
     ms({
-        "/",
+        {trig="[^%w]/", trigEngine="pattern"},
         {trig="///", snippetType="autosnippet"},
         common={dscr="Selection macro https://pymolwiki.org/index.php/Selection_Macros"},
     },
-    fmta([[/<>/<>/<>/<>/<>/]], {
+    fmta([[/<>/<>/<>/<>/<>]], {
         i(1, "OBJ"),
         i(2, "SEGI"),
         i(3, "CHAIN"),
