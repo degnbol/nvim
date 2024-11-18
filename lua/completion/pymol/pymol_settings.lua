@@ -49,6 +49,11 @@ M.setup = function()
         return [[\k]]
     end
 
+    -- Adding trigger chars so we get suggestions pop up automatically (otherwise it says **kwargs for my custom set function which is useless)
+    function source:get_trigger_characters()
+        return { ',', ' ' }
+    end
+
     ---Invoke completion (required).
     ---@param params cmp.SourceCompletionApiParams
     ---@param callback fun(response: lsp.CompletionResponse|nil)
