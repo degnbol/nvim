@@ -28,8 +28,9 @@ function Load_pymol()
     if not Loaded_pymol then
         Loaded_pymol = true
         -- load pymol snippets
-        require("luasnip").add_snippets("python",
-            require 'luasnippets.python_pymol')
+        require("luasnip").add_snippets("python", require 'luasnippets.python_pymol')
+        -- load pymol settings cmp source
+        require "completion.pymol.pymol_settings".setup()
     end
 end
 -- manually load
