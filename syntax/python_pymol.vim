@@ -2,8 +2,8 @@
 
 " Even though treesitter has string covered, we need a regex string match for 
 " contained to work.
-syntax region String start='"' skip='\"' end='"'
-syntax region String start="'" skip="\'" end="'"
+syntax region String start='"' skip='\\"' end='"'
+syntax region String start="'" skip="\\'" end="'"
 
 syntax keyword PymolStringKeyword
     \ all
