@@ -72,15 +72,15 @@ fmta([[\begin{<>}
 ),
 
 s({trig="h1", dscr="Top-level section", snippetType="autosnippet"},
-  fmta([[\section{<>}]], { i(1) }), 
+  fmta([[\section{<>}]], { i(1) }),
   {condition = conds.line_begin}
 ),
 s({trig="h2", dscr="Sub-section", snippetType="autosnippet"},
-  fmta([[\subsection{<>}]], { i(1) }), 
+  fmta([[\subsection{<>}]], { i(1) }),
   {condition = conds.line_begin}
 ),
 s({trig="h3", dscr="Sub-sub-section", snippetType="autosnippet"},
-  fmta([[\subsubsection{<>}]], { i(1) }), 
+  fmta([[\subsubsection{<>}]], { i(1) }),
   {condition = conds.line_begin}
 ),
 
@@ -95,6 +95,8 @@ s({trig="\\?__", descr="subscript",   condition=in_text, regTrig=true, wordTrig=
 s({trig="^^", descr="superscript", condition=in_text, snippetType="autosnippet", wordTrig=false},
 {t"\\textsuperscript{", i(1), t"}"}),
 
+s({trig="sansserif", dscr="Sans serif"},
+{t"{\\sffamily ", i(1), t"}"}),
 
 s({trig="href", dscr="The hyperref package's href{}{} command (for url links)"},
   fmta(
