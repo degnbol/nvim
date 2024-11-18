@@ -226,11 +226,15 @@ fmta([[\begin{figure}[ht]
 		\caption{}
 		\includegraphics[width=0.95\textwidth]{./figures<>}
 	\end{subfigure}
-	\caption{<>}
+	\caption{
+	    \textbf{<>.}
+	    \subfig{A}.
+	    \subfig{B}.
+	}
 	\label{fig:<>}
 \end{figure}
 
-]], {i(1), i(2), i(3, "\\textbf{Title.} Caption."), i(4)})),
+]], {i(1), i(2), i(3, "TITLE"), i(4)})),
 
 
 s({trig="tab", dscr="Table", condition=conds.line_begin*conds.line_end, snippetType="autosnippet"},
