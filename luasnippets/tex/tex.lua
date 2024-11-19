@@ -221,17 +221,19 @@ fmta([[\begin{figure}[ht]
 		\centering
 		\caption{}
 		\includegraphics[width=0.95\textwidth]{./figures<>}
+		\label{fig:}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\caption{}
 		\includegraphics[width=0.95\textwidth]{./figures<>}
+		\label{fig:}
 	\end{subfigure}
 	\caption{
 	    \textbf{<>.}
 	    \subfig{A}.
-	    \subfig{B}.
+	    \subfig{B} refers back to \subfigother{A}.
 	}
 	\label{fig:<>}
 \end{figure}
