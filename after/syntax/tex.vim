@@ -40,9 +40,8 @@ syntax region acroinsert matchgroup=Delimiter start=/\[/ end=/\]/ contained
 " basically just text. texCmdAcro is colored in ftplugin/tex.lua
 
 " hl cite key in custom function \citea, \citepdb etc. the same way as in \cite and \citeauthor
-syntax match citeCustom /\\cite[a-z]\+\ze[{\[]/ containedin=texCmd nextgroup=citeOpt,citeArg
+syntax match citeCustom /\\cite[A-Za-z]\+\ze[{\[]/ containedin=texCmd nextgroup=citeOpt,citeArg
 syntax region citeOpt matchgroup=texDelim start='\[' end='\]' contained nextgroup=citeArg
 syntax region citeArg matchgroup=texDelim start='{' end='}' contained
 hi def link citeCustom texCmd " not using texCmdRef to make it clear it is custom cmd that adds more text.
 hi def link citeArg texRefConcealedArg
-
