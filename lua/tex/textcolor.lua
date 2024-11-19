@@ -3,7 +3,7 @@
 local ns = vim.api.nvim_create_namespace("textcolor")
 vim.api.nvim_set_hl_ns(ns)
 
-local colors = {"gray", "red", "green", "blue", "magenta", "cyan", "yellow", "purple", "pink"}
+local colors = {"gray", "red", "green", "blue", "magenta", "cyan", "yellow", "purple", "pink", "orange"}
 local fgs = {}
 for _, col in ipairs(colors) do
     fgs[col] = col
