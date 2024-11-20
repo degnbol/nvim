@@ -180,8 +180,8 @@ return {
                 -- https://github.com/latex-lsp/texlab/wiki/Configuration
                 settings = { texlab = { experimental = {
                     -- custom citation function completion.
-                    -- In some projects I use \citea{...} as \citeauthor{...}~\cite{...}
-                    citationCommands = {"citea", "citepdb"},
+                    -- In some projects I use \citea{...} as \citeauthor{...}~\cite{...} and \citePDBlit etc.
+                    citationCommands = {"citea", "citePDB", "citePDBlit"},
                     -- \subref from the subpcation package.
                     -- In some projects I use \see[...]{...} as (see~\cref{...}...)
                     labelReferenceCommands = {"subref", "see"},
