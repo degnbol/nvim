@@ -95,6 +95,8 @@ opt.iminsert = 0
 vim.opt.spelllang = { 'en', 'da' }
 -- never complain about sentence starting with lowercase word
 vim.opt.spellcapcheck = ""
+-- look for spelling in a camelCase word as multiple distinct words
+vim.opt.spelloptions = "camel"
 -- synonyms <C-xt>
 vim.opt.thesaurus = rtp .. "/thesaurus/english.txt"
 -- complete word spelling <C-xk>
