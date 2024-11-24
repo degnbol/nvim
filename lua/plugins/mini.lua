@@ -73,6 +73,11 @@ return {
 
                     -- Highlight hex color strings (`#rrggbb`) using that color
                     hex_color = hipatterns.gen_highlighter.hex_color(),
+                    -- Highlight hex color in latex \definecolor{...}{HTML}{...}
+                    tex = { pattern = [[\definecolor{[%w_-]+}{HTML}{()%w+()}]], group=function (_, match)
+                        if #match ~= 6 then return nil end
+                        return hipatterns.compute_hex_color_group("#"..match, 'bg')
+                    end },
                 }
             }
 
