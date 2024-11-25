@@ -232,13 +232,26 @@ fmta([[\begin{figure}[ht]
 	\end{subfigure}
 	\caption{
 	    \textbf{<>.}
-	    \subfig{A}.
-	    \subfig{B} refers back to \subfigother{A}.
+	    \subfig{A}~.
+	    \subfig{B}~refers back to \subfigother{A}.
 	}
 	\label{fig:<>}
 \end{figure}
 
 ]], {i(1), i(2), i(3, "TITLE"), i(4)})),
+
+s({trig="wrapfig", dscr="Text wrapping around figure.", condition=conds.line_begin*conds.line_end, snippetType='autosnippet'},
+fmta([[\begin{wrapfigure}<>{<>}{0.5\textwidth}
+	\centering
+	\includegraphics[width=\linewidth]{./figures<>}
+	\caption{
+	    \textbf{TITLE.}
+	    CAPTION.
+	}
+	\label{fig:<>}
+\end{wrapfigure}
+
+]], {c(1, {t"", t"[NUM LINES]"}), c(2, {t"r", t("R",virt("Uppercase=float"))}), i(3, "FILENAME"), i(4)})),
 
 
 s({trig="tab", dscr="Table", condition=conds.line_begin*conds.line_end, snippetType="autosnippet"},
