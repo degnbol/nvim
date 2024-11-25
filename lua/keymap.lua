@@ -250,8 +250,17 @@ map("n", "<leader>Sr", "<cmd>source $XDG_CONFIG_HOME/nvim/after/plugin/luasnip.l
 -- with git: https://github.com/gillescastel/latex-snippets
 -- "i_ctrl-g u" = something about undo history, probably to keep the edit part of the insert edit?
 -- [s = goto last misspelled, 1z= = replace with first spell suggestion. 
-map('i', '<C-s>', [[<c-g>u<Esc>[s1z=ea<c-g>u]], { desc="Spell correct closest" })
-map('n', '<C-s>', [=[[s1z=e]=], { desc="Spell correct closest" })
+map('i', '<C-s>', function ()
+    -- enable spell temporarily to spell correct
+    if not vim.opt_local.spell:get() then
+        vim.opt_local.spell = true
+        vim.schedule(function ()
+            vim.opt_local.spell = false
+        end)
+    end
+    return [[<c-g>u<Esc>[s1z=ea<c-g>u]]
+end, { expr=true, desc="Spell correct closest" })
+map('n', '<C-s>', [=[:set spell<CR>[s1z=e]=], { desc="Spell correct closest" })
 
 -- not the most elegant but it works.
 -- LeftMouse to move cursor to pressed location.
