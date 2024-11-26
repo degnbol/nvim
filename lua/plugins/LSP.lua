@@ -184,7 +184,7 @@ return {
                     citationCommands = {"citea", "citePDB", "citePDBlit"},
                     -- \subref from the subpcation package.
                     -- In some projects I use \see[...]{...} as (see~\cref{...}...)
-                    labelReferenceCommands = {"subref", "see"},
+                    labelReferenceCommands = {"subref", "see", "seename", "seefull"},
                 }}}
             }
 
