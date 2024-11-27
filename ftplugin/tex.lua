@@ -263,6 +263,76 @@ vim.keymap.set("n", "]M", "<Plug>(vimtex-]N)", { buffer=true, desc="Math end" })
 vim.keymap.set("n", "]4", "<Plug>(vimtex-]n)", { buffer=true, desc="Math start" })
 vim.keymap.set("n", "]$", "<Plug>(vimtex-]N)", { buffer=true, desc="Math end" })
 
+---Get latex root.
+---@param main string? name of main tex file, by default "main".
+---@return string? path to root directory.
+local function get_root(main)
+    if main == nil then
+        main = "main.tex"
+    else
+        -- add .tex extension if not given
+        main = main:gsub("%.%w+", "") .. ".tex"
+    end
+    local mains = vim.fs.find(main, {upward=true, limit=5})
+    if #mains == 0 then
+        return nil
+    else
+        return vim.fs.dirname(mains[1])
+    end
+end
+
+---Get mappings of the project input tree.
+---@param root string Root folder to search. E.g. use get_root()
+---@return table input_mapping Keys are referenced files without extension and values are {parent,linenum}, 
+---where parent is the file that includes them relative to root also without extension, and linenum is the linenumber within parent.
+---Since keys are unique this assumes a file is only referenced in one place.
+local function get_inputs(root)
+    local stdouts = ""
+    for _, cmd in ipairs{
+        -- rg '^[^%]*\\input\{([\w./_-]+)\}' -t tex -r '$1' --vimgrep --no-column,
+        -- rg '^[^%]*\\include\{([\w./_-]+)\}' -t tex -r '$1' --vimgrep --no-column,
+        -- rg '^[^%]*\\import\{([\w./_-]+)\}\{([\w./_-]+)\}' -t tex -r '$1$2' --vimgrep --no-column,
+        [[rg ^[^%]*\\input\{([\w./_-]+)\} -t tex -r $1 --vimgrep --no-column]],
+        [[rg ^[^%]*\\include\{([\w./_-]+)\} -t tex -r $1 --vimgrep --no-column]],
+        [[rg ^[^%]*\\import\{([\w./_-]+)\}\{([\w./_-]+)\} -t tex -r $1$2 --vimgrep --no-column]],
+    } do
+        stdouts = stdouts .. vim.system(vim.split(cmd, ' '), {text=true, cwd=root}):wait().stdout
+    end
+    local input_mapping = {}
+    for filepath, linenum, input in stdouts:gmatch("([^:]+)%.tex:(%d+):([^:]+)\n") do
+        input_mapping[input:gsub("%.tex$", "")] = {filepath, linenum}
+    end
+    return input_mapping
+end
+
+---Get the filename of a file that inputs, includes or imports a given file.
+---@param filepath string?
+---@return string? parent Absolute path of parent file with extension.
+---@return integer? linenum Line number within parent where the given file is inputted.
+local function get_file_reference(filepath)
+    filepath = filepath or vim.api.nvim_buf_get_name(0)
+    local root = get_root()
+    if root == nil then return nil end
+    -- filepath relative to root without extension
+    filepath = filepath:gsub("^"..root.."/?", ""):gsub("%.tex", "")
+    local input_mapping = get_inputs(root)
+    local input = input_mapping[filepath]
+    if input == nil then
+        return nil
+    else
+        return vim.fs.joinpath(root, input[1]) .. ".tex", input[2]
+    end
+end
+
+vim.keymap.set('n', '<leader><leader>-', function ()
+    local parent, linenum = get_file_reference()
+    if parent == nil then
+        print("No file references found.")
+    else
+        vim.cmd("edit +" .. linenum .. " " .. parent)
+    end
+end, { desc="Go up in latex structure" })
+
 -- colorscheme aucmd to fix missing or inconsistent hl links
 local grp = vim.api.nvim_create_augroup("Tex", {clear=true})
 vim.api.nvim_create_autocmd("Colorscheme", {
