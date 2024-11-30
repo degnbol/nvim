@@ -10,7 +10,7 @@ iabbrev THeres There's
 " iabbrev im I'm " TODO: OMG!!! stop changing this in lua code when writing vim. ...
 iabbrev Im I'm
 iabbrev IM I'm
-Abolish ive I've
+" Abolish ive I've " keeps annoying me when writing five
 iabbrev Ill I'll
 iabbrev youll you'll
 " id is a word but I would never spell it Id by itself
