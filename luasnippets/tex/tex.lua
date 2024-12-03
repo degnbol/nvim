@@ -349,7 +349,7 @@ fmta(
 s({trig="@(%w+)(%W)", trigEngine="pattern", snippetType="autosnippet"}, { f(acro, {}), re(2)}),
 s({trig="(%w+)@", trigEngine="pattern", snippetType="autosnippet"}, { f(acro, {})}),
 -- use @ as postifx multiple times to toggle acronym version between long, short, and default.
-s({trig="(\\[Aa]cp?)({%w+})@", trigEngine="pattern", snippetType="autosnippet"}, { re(1), t"l", re(2) }),
+s({trig="(\\[Aa]c)(p?{%w+})@", trigEngine="pattern", snippetType="autosnippet"}, { re(1), t"l", re(2) }),
 s({trig="(\\[Aa]c)l(p?{%w+})@", trigEngine="pattern", snippetType="autosnippet"}, { re(1), t"s", re(2) }),
 s({trig="(\\[Aa]c)s(p?{%w+})@", trigEngine="pattern", snippetType="autosnippet"}, { re(1), re(2) }),
 
