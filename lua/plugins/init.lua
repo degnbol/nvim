@@ -287,26 +287,32 @@ return {
     {"monaqa/dial.nvim",
     keys = {"<C-a>", "<C-x>", "g<C-a>", "g<C-x>"},
     config=function()
-        local augend = require("dial.augend")
-        require("dial.config").augends:register_group {
-            default = {
-                augend.integer.alias.decimal_int,
-                augend.constant.alias.bool,    -- boolean value (true <-> false)
-                augend.constant.new{ elements={"True", "False"}, word=true, cyclic=true, }, -- python
-                augend.hexcolor.new{ case="lower", },
-                augend.date.alias["%Y/%m/%d"],
-                augend.date.alias["%Y-%m-%d"],
-                augend.date.alias["%m/%d"],
-                augend.date.alias["%H:%M"],
-            },
-        }
+            local augend = require("dial.augend")
+            require("dial.config").augends:register_group {
+                -- you can make other groups than "default" but it's not about filetype, so it's more effort than just adding a new key below.
+                default = {
+                    augend.integer.alias.decimal_int,
+                    augend.constant.alias.bool,    -- boolean value (true <-> false)
+                    augend.hexcolor.new{ case="lower", },
+                    augend.date.alias["%Y/%m/%d"],
+                    augend.date.alias["%Y-%m-%d"],
+                    augend.date.alias["%m/%d"],
+                    augend.date.alias["%H:%M"],
+                    -- tex
+                    augend.constant.new{ elements={
+                        "tiny", "scriptsize", "footnotesize", "small", "normalsize", "large", "Large", "LARGE", "huge", "Huge"},
+                        word=true, cyclic=false, },
+                    -- python
+                    augend.constant.new{ elements={"True", "False"}, word=true, cyclic=true, },
+                },
+            }
 
-        vim.api.nvim_set_keymap("n", "<C-a>",  require("dial.map").inc_normal(),  {desc="Value incr"})
-        vim.api.nvim_set_keymap("n", "<C-x>",  require("dial.map").dec_normal(),  {desc="Value decr"})
-        vim.api.nvim_set_keymap("v", "<C-a>",  require("dial.map").inc_visual(),  {desc="Value incr"})
-        vim.api.nvim_set_keymap("v", "<C-x>",  require("dial.map").dec_visual(),  {desc="Value decr"})
-        vim.api.nvim_set_keymap("v", "g<C-a>", require("dial.map").inc_gvisual(), {desc="Value incr"})
-        vim.api.nvim_set_keymap("v", "g<C-x>", require("dial.map").dec_gvisual(), {desc="Value decr"})
+            vim.api.nvim_set_keymap("n", "<C-a>",  require("dial.map").inc_normal(),  {desc="Value incr"})
+            vim.api.nvim_set_keymap("n", "<C-x>",  require("dial.map").dec_normal(),  {desc="Value decr"})
+            vim.api.nvim_set_keymap("v", "<C-a>",  require("dial.map").inc_visual(),  {desc="Value incr"})
+            vim.api.nvim_set_keymap("v", "<C-x>",  require("dial.map").dec_visual(),  {desc="Value decr"})
+            vim.api.nvim_set_keymap("v", "g<C-a>", require("dial.map").inc_gvisual(), {desc="Value incr"})
+            vim.api.nvim_set_keymap("v", "g<C-x>", require("dial.map").dec_gvisual(), {desc="Value decr"})
     end},
 
     "lervag/file-line", -- open a file on a line with vi filepath:linenumber
