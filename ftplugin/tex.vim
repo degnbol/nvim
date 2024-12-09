@@ -1,3 +1,8 @@
+" Most of the time _ is for math and does not belong within a keyword.
+" Other times it appears in e.g. links it has to be escaped, so wouldn't work 
+" as a keyword anyways.
+setlocal iskeyword-=_
+
 " insert real tab by default
 setlocal noexpandtab
 " there was some annoying issue with indents inserted in regular text
