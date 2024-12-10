@@ -360,6 +360,7 @@ vim.api.nvim_create_autocmd("Colorscheme", {
         hi.link("texCmdTitle", "@function.builtin") -- italic \title
         hi.link("texCmdAuthor", "@function.builtin") -- italic \author
         hi.link("texCmdLet", "@function.builtin") -- italic \let
+        hi.link("texStatement", "@function.builtin") -- only seen for \mathrm so far
         hi.mod("texMatcher", {underline=true}) -- matched parenthesis, \underline body, etc.
         hi.link("texEnvArgName", "@method") -- bold and shine instead of nothing
         hi.link("texCmdBeamer", "@function")
