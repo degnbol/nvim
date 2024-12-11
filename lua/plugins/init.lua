@@ -241,11 +241,12 @@ return {
     -- nvim version of the kana plugin
     {
         "chrisgrieser/nvim-various-textobjs",
-        -- opts = { useDefaultKeymaps = true },
         config = function ()
             require("various-textobjs").setup {
-                useDefaultKeymaps = true,
-                disabledKeymaps = {"gc"}, -- breaks go comment in visual
+                keymaps = {
+                    useDefaults = true,
+                    disabledDefaults = {"gc"}, -- breaks go comment in visual
+                },
             }
             -- custom gx function that opens github repos given the short 
             -- version written in these config files.

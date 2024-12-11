@@ -131,7 +131,7 @@ return {
     },
     -- unmaintained but using it (my fork fixing linewise visual) since it's the only one with visual and motion
     {
-        dir = "$XDG_CONFIG_HOME/nvim/nvim-revJ.lua",
+        dir = vim.opt.runtimepath:get()[1] .. "/nvim-revJ.lua",
         dev = true,
         dependencies={'kana/vim-textobj-user', 'sgur/vim-textobj-parameter'},
         opts={

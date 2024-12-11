@@ -10,7 +10,7 @@ return {
     -- :Capture hi to call :hi where you can search etc.
     {"tyru/capture.vim", cmd="Capture"},
     {
-        dir = "$XDG_CONFIG_HOME/nvim/kittyREPL.nvim", dev=true, opts={
+        dir = vim.opt.runtimepath:get()[1] .. "/kittyREPL.nvim", dev=true, opts={
             keymap={
                 focus="<C-CR>",
                 setlast="<leader>rr",
