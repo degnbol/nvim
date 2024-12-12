@@ -2,9 +2,15 @@
 -- default contents in new files of specific types.
 -- Either lines, or function producing lines
 local defaultlines = {
-    sh = {
-        "cd $0:h",
-    },
+    -- as a function instead of separate patterns as otherwise they would all get triggered.
+    sh = function (filepath)
+        if filepath:match(".activate.sh$") then
+            return "conda activate ENVIRONMENT 2> /dev/null"
+        elseif filepath:match(".deactivate.sh$") then
+            return "[ \"$CONDA_DEFAULT_ENV\" = base ] || conda deactivate"
+        end
+        return "cd $0:h"
+    end,
     scm = {
         ";extends",
     },
@@ -18,14 +24,7 @@ local defaultlines = {
     jl = {
         "using DataFrames, CSV",
     },
-    ["activate.sh"] = {
-        "conda activate ENVIRONMENT 2> /dev/null"
-    },
-    ["deactivate.sh"] = {
-        "[ \"$CONDA_DEFAULT_ENV\" = base ] || conda deactivate"
-    },
-    lua = function ()
-        local filepath = vim.api.nvim_buf_get_name(0)
+    lua = function (filepath)
         -- if writing luasnippets
         if filepath:match("/luasnippets/") then
             return {
@@ -72,8 +71,8 @@ local defaultlines = {
         end
         return {}
     end,
-    vim = function ()
-        if vim.api.nvim_buf_get_name(0):match("ftdetect/") then
+    vim = function (filepath)
+        if filepath:match("ftdetect/") then
             return {[[au BufNewFile,BufRead *.EXT set filetype=FILETYPE]]}
         end
         return {}
@@ -103,7 +102,8 @@ for ext, lines in pairs(defaultlines) do
     local callback
     if type(lines) == "function" then
         callback = function ()
-            vim.api.nvim_put(lines(), "l", false, true)
+            local filepath = vim.api.nvim_buf_get_name(0)
+            vim.api.nvim_put(lines(filepath), "l", false, true)
         end
     else
         callback = function ()
