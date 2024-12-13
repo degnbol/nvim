@@ -2,6 +2,7 @@
 local ls = require "luasnip"
 local s = ls.s
 
+
 return {
 -- not auto
 
@@ -35,6 +36,44 @@ s({trig="SparseMatrix", dscr="Sparse matrix"}, {t"SparseMatrixCSC"}),
 s({trig="agg", dscr="Aggregate DataFrame", condition=conds.line_end},
 {t"combine(groupby(", i(1,"df"), t", ", i(2, ":COL"), t"), ", i(3, ":COL2 => sum"), t")"}),
 
+
+s({trig="argparse", dscr="ArgParse template"},
+fmta([[using ArgParse
+args_settings = ArgParseSettings(autofix_names=true)
+@add_arg_table args_settings begin
+    <>
+    "--out", "-o"
+    help = "Output directory"
+    default = "."
+    "infiles"
+    help = "One or more input files"
+    nargs = '+'
+    arg_type = String
+    required = true
+end
+args = NamedTuple(parse_args(args_settings; as_symbols=true))
+]], {i(1, '# use e.g. snip "flag"')})),
+
+s({trig="flag", dscr="ArgParse flag", show_condition=conds.line_end},
+fmta([["--<>", "-<>"
+action = :store_true
+help = "<>"
+]], {
+        i(1, "FLAG"),
+        -- guess a useful single letter abbreviation of the long form of the flag
+        f(function (args, parent, user_args)
+            local flag = args[1][1]
+            -- if it says "no" something, make uppercase version of first letter after "no"
+            if flag:match("^no[^%a]") then
+                return (flag:sub(3):match("%w") or ""):upper()
+            end
+            return flag:match("%w")
+        end, {1}),
+        i(2)
+    }
+)),
+
+    
 }, {
 -- auto
 
