@@ -5,11 +5,11 @@ local defaultlines = {
     -- as a function instead of separate patterns as otherwise they would all get triggered.
     sh = function (filepath)
         if filepath:match(".activate.sh$") then
-            return "conda activate ENVIRONMENT 2> /dev/null"
+            return {"conda activate ENVIRONMENT 2> /dev/null"}
         elseif filepath:match(".deactivate.sh$") then
-            return "[ \"$CONDA_DEFAULT_ENV\" = base ] || conda deactivate"
+            return {"[ \"$CONDA_DEFAULT_ENV\" = base ] || conda deactivate"}
         end
-        return "cd $0:h"
+        return {"cd $0:h"}
     end,
     scm = {
         ";extends",
