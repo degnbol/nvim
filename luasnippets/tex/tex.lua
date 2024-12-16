@@ -353,4 +353,12 @@ s({trig="(\\[Aa]c)(p?{%w+})@", trigEngine="pattern", snippetType="autosnippet"},
 s({trig="(\\[Aa]c)l(p?{%w+})@", trigEngine="pattern", snippetType="autosnippet"}, { re(1), t"s", re(2) }),
 s({trig="(\\[Aa]c)s(p?{%w+})@", trigEngine="pattern", snippetType="autosnippet"}, { re(1), re(2) }),
 
+s({trig="pdftex", dscr="Include figure with text in separate tex file.", show_condition=conds.line_end},
+fmta([[\pdftex[<>]{<>}{<>}
+]], {
+    i(1, "\\textwidth"),
+    i(2, "figures/"),
+    i(3, "filename.pdf"),
+})),
+
 }
