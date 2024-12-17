@@ -91,8 +91,10 @@ s({trig="([^\\])lim", descr="limit", regTrig=true},
 -- or having separate keys for expand and jump
 {re(1), t"\\lim_{", i(1, "n"), t"→", i(2, "∞"), t"}"}, optm),
 
-s({trig="sum", descr="sum"},
+s({trig="\\?sum", descr="Sum symbol and expression", trigEngine="pattern", condition=conds.line_end},
 {t"∑_{", i(1, "n=1"), t"}^{", i(2,"∞"), t"}"}, optm),
+s({trig="\\?sum", descr="Sum symbol", trigEngine="pattern"},
+{t"∑"}, optm),
 
 s({trig="part", dscr="d/dx", snippetType="snippet"},
 {t"\\frac{∂ ", i(1,"V"), t"}{∂ ", i(2,"x"), t"}"}, optm),
@@ -108,6 +110,7 @@ s({trig="<-", descr="left arrow"}, t"←", optm),
 s({trig="!>", descr="maps to"}, t"↦", optm),
 s({trig="\\mapsto", descr="maps to"}, t"↦", optm),
 
+s({trig="\\ne ", descr="not equal", wordTrig=false}, t"≠", optm),
 s({trig="!=", descr="not equal", wordTrig=false}, t"≠", optm),
 -- can't be used when we have '==' -> '&= ' which is more important
 -- s({trig="===", dscr="equivalent"}, t"≡", optm),
