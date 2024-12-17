@@ -110,7 +110,7 @@ s({trig="<-", descr="left arrow"}, t"←", optm),
 s({trig="!>", descr="maps to"}, t"↦", optm),
 s({trig="\\mapsto", descr="maps to"}, t"↦", optm),
 
-s({trig="\\ne ", descr="not equal", wordTrig=false}, t"≠", optm),
+s({trig="\\ne ", descr="not equal", wordTrig=false}, t"≠ ", optm),
 s({trig="!=", descr="not equal", wordTrig=false}, t"≠", optm),
 -- can't be used when we have '==' -> '&= ' which is more important
 -- s({trig="===", dscr="equivalent"}, t"≡", optm),
