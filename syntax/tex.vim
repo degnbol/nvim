@@ -6,9 +6,9 @@
 " syntax region texBeamerOpt matchgroup=texBeamerDelim start='<' end='>' containedin=texGroup
 
 " hack for fixing \subref from subcaption package and custom cmds such as \see
-syntax match texRefArg /sec:[A-Za-z0-9_]\+/
-syntax match texRefArg /fig:[A-Za-z0-9_]\+/
-syntax match texRefArg /tab:[A-Za-z0-9_]\+/
-syntax match texRefArg /eq:[A-Za-z0-9_]\+/
+syntax match texRefArg /sec:[A-Za-z0-9_-]\+/
+syntax match texRefArg /fig:[A-Za-z0-9_-]\+/
+syntax match texRefArg /tab:[A-Za-z0-9_-]\+/
+syntax match texRefArg /eq:[A-Za-z0-9_-]\+/
 
 hi def link texItemLabelDelim Delimiter
