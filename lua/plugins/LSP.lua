@@ -8,7 +8,9 @@ return {
     },
     {
         "neovim/nvim-lspconfig",
-        dependencies = "folke/neodev.nvim", -- signature on nvim lua calls which helps in messing with plugins etc
+        dependencies = {
+            "folke/neodev.nvim", -- signature on nvim lua calls which helps in messing with plugins etc
+        },
         config = function()
             -- default config copied from https://github.com/neovim/nvim-lspconfig
             -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
@@ -22,45 +24,63 @@ return {
             vim.fn.sign_define("LspDiagnosticsSignInformation", { text = "", numhl = "LspDiagnosticsDefaultInformation" })
             vim.fn.sign_define("LspDiagnosticsSignHint", { text = "", numhl = "LspDiagnosticsDefaultHint" })
 
-            -- now for adding the language servers
-            local lsp = require "lspconfig"
+            -- LSP and completion status, overall conf etc.
+            vim.keymap.set('n', '<leader>li', "<Cmd>LspInfo<CR>", { desc="Info" })
+            vim.keymap.set('n', '<leader>l<BS>', "<Cmd>LspStop<CR>", { desc="Stop" })
+            vim.keymap.set('n', '<leader>l1', "<Cmd>LspStart<CR>", { desc="Start" })
+            vim.keymap.set('n', '<leader>l!', "<Cmd>LspRestart<CR>", { desc="Restart" })
+            vim.keymap.set('n', '<leader>lL', "<Cmd>LspLog<CR>", { desc="Log" })
+            -- match other completion related entries under x
+            vim.keymap.set('n', '<leader>xS', "<Cmd>CmpStatus<CR>", { desc="Cmp status" })
 
             -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-            vim.keymap.set('n', '<space>dd', vim.diagnostic.open_float, { desc = "Line diagnostic" })
-            vim.keymap.set('n', '<space>dk', vim.diagnostic.disable, { desc = "Disable diagnostics" })
-            vim.keymap.set('n', '<space>ds', vim.diagnostic.enable, { desc = "Enable diagnostics" })
-            vim.keymap.set('n', '<space>fd', "<cmd>Telescope diagnostics<CR>", { desc = "Diagnostics" })
+            vim.keymap.set('n', '<leader>dd', vim.diagnostic.open_float, { desc = "Line diagnostic" })
+            vim.keymap.set('n', '<leader>d<BS>', vim.diagnostic.disable, { desc = "Disable diagnostics" })
+            vim.keymap.set('n', '<leader>d1', vim.diagnostic.enable, { desc = "Enable diagnostics" })
             vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Diagnostic" })
             vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Diagnostic" })
-            vim.keymap.set('n', '<space>dl', vim.diagnostic.setloclist, { desc = "Loclist diagnostics" })
-            -- LSP shorthand keymaps
-            vim.keymap.set('n', '<leader>li', "<Cmd>LspInfo<CR>", { buffer=bufnr, desc="Info" })
-            vim.keymap.set('n', '<leader>lr', "<Cmd>LspRestart<CR>", { buffer=bufnr, desc="Restart" })
-            vim.keymap.set('n', '<leader>lk', "<Cmd>LspStop<CR>", { buffer=bufnr, desc="Stop" })
-            vim.keymap.set('n', '<leader>ls', "<Cmd>LspStart<CR>", { buffer=bufnr, desc="Start" })
-            vim.keymap.set('n', '<leader>ll', "<Cmd>LspLog<CR>", { buffer=bufnr, desc="Log" })
-            vim.keymap.set('n', '<leader>lc', "<Cmd>CmpStatus<CR>", { buffer=bufnr, desc="Cmp status" })
+            vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist, { desc = "Loclist diagnostics" })
 
             -- Use an on_attach function to only map the following keys
             -- after the language server attaches to the current buffer
             local on_attach = function(client, bufnr)
+                local function map(desc, keys, func, mode)
+                    mode = mode or 'n'
+                    vim.keymap.set(mode, keys, func, { buffer = bufnr, desc = desc })
+                end
+                local function mapfzf(desc, keys, funcname, mode)
+                    map(desc, keys, function ()
+                        require"fzf-lua"["lsp_" .. funcname]()
+                    end, mode)
+                end
                 -- Enable completion triggered by <c-x><c-o>
                 vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
                 -- See `:help vim.lsp.*` for documentation on any of the below functions
-                vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = bufnr, desc = "Goto declaration" })
-                vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr, desc = "Goto definition" })
-                vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = bufnr, desc = "Hover" })
-                -- gi is for goto last insert and switch to insert mode so we use gI
-                vim.keymap.set('n', 'gI', vim.lsp.buf.implementation, { buffer = bufnr, desc = "Goto implementation" })
-                vim.keymap.set('n', 'gh', vim.lsp.buf.signature_help, { buffer = bufnr, desc = "Signature" })
-                vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { buffer = bufnr, desc = "Add" })
-                vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { buffer = bufnr, desc = "Remove" })
-                vim.keymap.set('n', '<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, { buffer = bufnr, desc = "List" })
-                vim.keymap.set('n', '<leader>dt', vim.lsp.buf.type_definition, { buffer = bufnr, desc = "Type def" })
-                vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { buffer = bufnr, desc = "Rename" })
-                vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { buffer = bufnr, desc = "Code action" })
-                -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, { buffer=bufnr, desc="Goto references" })
-                vim.keymap.set('n', 'gr', "<cmd>Telescope lsp_references<CR>", { buffer = bufnr, desc = "Goto references" })
+                -- TODO: have a simpler go to references with treesitter as fallback if LSP is not attached.
+                -- `vim.lsp.buf.references`
+                mapfzf("Goto references", "gr", "references")
+                -- `vim.lsp.buf.definition`
+                mapfzf("Goto definition", "gd", "definitions")
+                -- `vim.lsp.buf.declaration`
+                mapfzf("Goto declaration", "gD", "declarations")
+                -- `vim.lsp.buf.type_definition`
+                mapfzf("Goto type definition", "g<C-d>", "typedefs")
+                -- gi is for goto last insert and switch to insert mode, and gI is to insert at first column <count> times.
+                -- We rarely use go to implementation though
+                mapfzf("Goto implementation", "g<C-i>", "implementations")
+                mapfzf("Goto defs+refs+impl+...", "g<C-S-d>", "finder")
+                -- `vim.lsp.buf.code_action`
+                mapfzf("Code action", '<leader>la', "code_actions")
+                mapfzf("Symbols", '<leader>ls', "document_symbols")
+                mapfzf("Symbols", '<leader>ws', "workspace_symbols")
+                -- a for all diagnostics, no filtering
+                mapfzf("Diagnostics", '<leader>da', "document_diagnostics")
+                mapfzf("Diagnostics", '<leader>wd', "workspace_diagnostics")
+
+                map("Hover", 'K', vim.lsp.buf.hover)
+                map("Signature", 'gh', vim.lsp.buf.signature_help)
+                map("Rename", '<leader>rn', vim.lsp.buf.rename)
                 vim.keymap.set({'n', 'v'}, '<leader>lf', vim.lsp.buf.format, { buffer = bufnr, desc = "Format" })
             end
 
@@ -71,6 +91,9 @@ return {
                 dynamicRegistration = false,
                 lineFoldingOnly = true
             }
+
+            -- now for adding the language servers
+            local lsp = require "lspconfig"
 
             -- add to lsp default config
             lsp.util.default_config = vim.tbl_deep_extend('force', lsp.util.default_config, {
@@ -105,6 +128,7 @@ return {
                 }
             }
 
+            -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#julials
             lsp.julials.setup {
                 -- cmd = {
                 --     "julia", "--startup-file=no", "--history-file=no",
@@ -384,5 +408,4 @@ return {
             vim.keymap.set("n", "<leader><leader>L", crates.open_lib_rs, {desc="lib.rs"})
         end,
     },
-
 }

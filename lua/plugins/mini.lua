@@ -3,7 +3,8 @@ return {
     {
         'echasnovski/mini.nvim',
         version = false,
-        priority = 100, -- higher than default 50 to allow mini parts loaded in other files.
+        -- higher than default 50 to allow mini parts loaded in other files.
+        priority = 100,
         config = function ()
 
             require('mini.bracketed').setup {
@@ -122,23 +123,28 @@ return {
 
                 clues = {
                     -- use e.g. postkeys='<C-w>' to make a submode. 
+                    { mode = 'n', keys = '<leader><leader>', desc = "Filetype specific" },
+                    { mode = 'n', keys = '<leader>:', desc = "Ex cmd related" },
+                    { mode = 'n', keys = '<leader>]', desc = "Tag" },
                     { mode = 'n', keys = '<leader>a', desc = "Argument" },
-                    { mode = 'n', keys = '<leader>b', desc = "Buffer/Tab" },
-                    { mode = 'n', keys = '<leader>c', desc = "Compile|Code|Color" },
-                    { mode = 'n', keys = '<leader>d', desc = "Diagnostic|Definition" },
+                    { mode = 'n', keys = '<leader>b', desc = "Buffer|Tab" },
+                    { mode = 'n', keys = '<leader>c', desc = "Compilation" },
+                    { mode = 'n', keys = '<leader>d', desc = "Diagnostics" },
+                    { mode = 'n', keys = '<leader>e', desc = "Explore/manipulate directories" },
                     { mode = 'n', keys = '<leader>f', desc = "Find|File" },
                     { mode = 'n', keys = '<leader>g', desc = "Git" },
-                    { mode = 'n', keys = '<leader>l', desc = "LSP|Lang|Completion" },
+                    { mode = 'n', keys = '<leader>l', desc = "LSP" },
                     { mode = 'n', keys = '<leader>m', desc = "Multicursor" },
                     -- UnconditionalPaste
                     { mode = 'n', keys = '<leader>p', desc = "Paste after" },
                     { mode = 'n', keys = '<leader>P', desc = "Paste before" },
 
-                    { mode = 'n', keys = '<leader>r', desc = "Re|REPL" },
+                    { mode = 'n', keys = '<leader>r', desc = "REPL|Re" },
                     { mode = 'n', keys = '<leader>t', desc = "Tree-sitter" },
                     { mode = 'n', keys = '<leader>w', desc = "Workspace" },
                     { mode = 'n', keys = '<leader>q', desc = "Quickfix" },
                     { mode = 'n', keys = '<leader>Q', desc = "Locationlist" },
+                    { mode = 'n', keys = '<leader>x', desc = "Completion" },
                     { mode = 'n', keys = ']s', desc = "Spell" },
                     { mode = 'n', keys = '[s', desc = "Spell" },
                     -- vim unimpaired
@@ -188,9 +194,7 @@ return {
                 },
 
                 window = {
-                    config = {
-                        width = "auto",
-                    },
+                    width = "auto",
                 },
             })
 
@@ -209,7 +213,7 @@ return {
             local minifiles_toggle = function(...)
                 if not MiniFiles.close() then MiniFiles.open(...) end
             end
-            vim.keymap.set('n', '<leader>e', minifiles_toggle, { desc="Toggle mini.files" })
+            vim.keymap.set('n', '<leader>ee', minifiles_toggle, { desc="Toggle mini.files" })
             -- :h MiniFiles-examples
             local show_dotfiles = false
             local filter_show = function(fs_entry) return true end

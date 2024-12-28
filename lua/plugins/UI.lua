@@ -40,19 +40,20 @@ return {
             closepager = true,
         },
     },
-    -- file explorer as a buffer
-    {"stevearc/oil.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    config=function ()
-        local oil = require "oil"
-        oil.setup {
+    -- File explorer as a buffer with manipulation abilities.
+    -- Differes from mini.files by only having a single view taking up the whole screen and has different default keymaps and preview behaviour.
+    {
+        "stevearc/oil.nvim",
+        lazy = true,
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        init = function ()
+            -- use <leader>e for explore followed by E since e is for mini.files
+            vim.keymap.set("n", "<leader>eE", function () require"oil".open() end, { desc = "Oil" })
+        end,
+        opts = {
             -- no prompt on rename, including folder change.
             -- The prompt is a nice list of the performed changes.
             -- skip_confirm_for_simple_edits = true,
-        }
-        vim.keymap.set("n", "-", oil.open, { desc = "Open parent directory" })
-        -- Move the builtin - to _ since - is used here above and it also is natural to use shift for both + and -
-        -- -+ are different from jk since they go at start of line
-        vim.keymap.set('n', "_", "-")
-    end}
+        },
+    }
 }

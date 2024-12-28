@@ -64,8 +64,8 @@ return {
             local gs = require "gitsigns"
             local map = vim.keymap.set
 
-            map("n", "<leader>gs", gs.stage_hunk     , { desc="Stage hunk" })
-            map("n", "<leader>gS", gs.stage_buffer   , { desc="Stage buffer" })
+            map("n", "<leader>ga", gs.stage_hunk     , { desc="Add/stage hunk" })
+            map("n", "<leader>gA", gs.stage_buffer   , { desc="Add/stage buffer" })
             map("n", "<leader>gu", gs.undo_stage_hunk, { desc="Unstage hunk" })
             map("n", "<leader>gb", gs.blame_line     , { desc="Blame line" })
             map("n", "<leader>gp", gs.preview_hunk   , { desc="Preview hunk" })

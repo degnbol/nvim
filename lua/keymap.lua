@@ -135,7 +135,7 @@ map('n', '<Ins>', 'i<C-6>', { remap=true, desc="Insert + Toggle dansk" })
 map("n", "yod", "i<C-6>", { remap=true, desc="Danish (<C-^>)" })
 
 map('i', "<C-S-6>",    toggle_danish_imaps, {desc="Toggle Danish imaps"})
-map('n', "<leader>ld", function ()
+map('n', "<leader>D", function ()
     toggle_danish_imaps(true)
     toggle_danglish(true)
     if vim.g.danish_imaps then

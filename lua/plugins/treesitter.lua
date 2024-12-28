@@ -245,8 +245,11 @@ return {
                         enable = true,
                         border = 'none',
                         peek_definition_code = {
-                            ["<leader>df"] = {query="@function.outer", desc="Peek function"},
-                            ["<leader>dF"] = {query="@class.outer", desc="Peek class"},
+                            -- similar to hover help so we use similar keymap as hover.
+                            -- Hover currently uses gh for "go hover", similar to gd, gf, etc.
+                            -- gh and gH are used for starting select mode by default which we never use.
+                            ["gH"] = {query="@function.outer", desc="Peek function"},
+                            ["g<C-H>"] = {query="@class.outer", desc="Peek class"},
                         }
                     },
                 },
