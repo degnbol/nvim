@@ -17,7 +17,7 @@ vim.api.nvim_create_autocmd("Colorscheme", {
     end
 })
 
-function Load_pymol()
+local function load_pymol()
     -- load additional pymol syntax hl
     local rtp = vim.opt.runtimepath:get()[1]
     vim.schedule(function ()
@@ -25,21 +25,23 @@ function Load_pymol()
     end)
     -- The above needs to be done for each new buffer but the following only needs to be run once,
     -- hence the bool check.
-    if not Loaded_pymol then
-        Loaded_pymol = true
+    -- This global var is also used by blink to enable pymol_settings provider
+    if not vim.g.loaded_pymol then
+        vim.g.loaded_pymol = true
         -- load pymol snippets
         require("luasnip").add_snippets("python", require 'luasnippets.python_pymol')
-        -- load pymol settings cmp source
-        require "completion.pymol.pymol_settings".setup()
+        -- Load pymol settings completion source.
+        -- Using blink.cmp instead.
+        -- require "completion.pymol.cmp_pymol_settings".setup()
     end
 end
 -- manually load
-vim.keymap.set('n', '<leader><leader>s', Load_pymol, { desc="Load pymol snippets." })
+vim.keymap.set('n', '<leader><leader>+', load_pymol, { desc="Manually load pymol snippets+completion+syntax" })
 -- check if pymol is loaded by scanning first 10 lines
 for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 10, false)) do
     -- might be using e.g. `from pymol_util import *`
     if line:match("import") and line:match("pymol") then
-        return Load_pymol()
+        return load_pymol()
     end
 end
 

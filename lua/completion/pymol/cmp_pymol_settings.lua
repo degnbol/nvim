@@ -4,6 +4,10 @@ local M = {}
 
 local registered = false
 
+M.new = function()
+    return setmetatable({}, { __index = M })
+end
+
 M.get_text = function(node)
     return ts.get_node_text(node, 0)
 end
@@ -13,7 +17,7 @@ M.in_comment = function ()
     -- and similarly vim.treesitter.get_captures_at_cursor and get_node doesn't 
     -- seem to see the comment here, even though they see it just fine when run 
     -- in normal mode. We fallback to using regex.
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+    local r, c = table.unpack(vim.api.nvim_win_get_cursor(0))
     local line = vim.api.nvim_get_current_line()
     local comment_match = line:match("^[ \t]+#")
     return comment_match ~= nil and c > #comment_match

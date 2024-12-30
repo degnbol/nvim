@@ -1,4 +1,5 @@
 #!/usr/bin/env lua
+
 return {
     -- scala (not yet in Mason)
     {
@@ -9,14 +10,11 @@ return {
     {
         "neovim/nvim-lspconfig",
         dependencies = {
-            "folke/neodev.nvim", -- signature on nvim lua calls which helps in messing with plugins etc
+            'saghen/blink.cmp',
         },
         config = function()
             -- default config copied from https://github.com/neovim/nvim-lspconfig
             -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
-
-            -- call before rest of lspconfig
-            require "neodev".setup {}
 
             -- replace the default lsp diagnostic letters with prettier symbols
             vim.fn.sign_define("LspDiagnosticsSignError", { text = "", numhl = "LspDiagnosticsDefaultError" })
@@ -35,7 +33,7 @@ return {
 
             -- See `:help vim.diagnostic.*` for documentation on any of the below functions
             vim.keymap.set('n', '<leader>dd', vim.diagnostic.open_float, { desc = "Line diagnostic" })
-            vim.keymap.set('n', '<leader>d<BS>', vim.diagnostic.disable, { desc = "Disable diagnostics" })
+            vim.keymap.set('n', '<leader>d<BS>', function() vim.diagnostic.enable(false) end, { desc = "Disable diagnostics" })
             vim.keymap.set('n', '<leader>d1', vim.diagnostic.enable, { desc = "Enable diagnostics" })
             vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Diagnostic" })
             vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Diagnostic" })
@@ -53,9 +51,6 @@ return {
                         require"fzf-lua"["lsp_" .. funcname]()
                     end, mode)
                 end
-                -- Enable completion triggered by <c-x><c-o>
-                vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
                 -- See `:help vim.lsp.*` for documentation on any of the below functions
                 -- TODO: have a simpler go to references with treesitter as fallback if LSP is not attached.
                 -- `vim.lsp.buf.references`
@@ -84,7 +79,8 @@ return {
                 vim.keymap.set({'n', 'v'}, '<leader>lf', vim.lsp.buf.format, { buffer = bufnr, desc = "Format" })
             end
 
-            local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+            -- local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+            local capabilities = require('blink.cmp').get_lsp_capabilities()
 
             -- added for https://github.com/kevinhwang91/nvim-ufo see ufo-conf etc
             capabilities.textDocument.foldingRange = {
@@ -199,6 +195,7 @@ return {
             }
             lsp.matlab_ls.setup {}
             lsp.marksman.setup { filetypes = { "markdown" } }
+            -- Don't autoshow completion in cmdline
             -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#texlab
             lsp.texlab.setup {
                 -- https://github.com/latex-lsp/texlab/wiki/Configuration
@@ -285,6 +282,7 @@ return {
                 end,
                 group = nvim_metals_group,
             })
+
         end
     },
     -- add :LspInstall <language> and :Mason for conveniently installing LSP language specific servers
@@ -312,7 +310,6 @@ return {
                 -- "pyright",
                 -- "pylsp",
                 "basedpyright",
-
                 "julials",
                 -- "ltex", -- grammar check for latex, markdown, etc
                 "texlab",
@@ -326,7 +323,6 @@ return {
                 "matlab_ls",
                 -- "kotlin-language-server",
                 "yamlls",
-                "typst_lsp",
                 -- "awk_ls",
                 -- "cypher_ls", -- neo4j
                 -- spell check/autocorrectors:
@@ -384,28 +380,32 @@ return {
                 },
             }
 
-            vim.keymap.set("n", "<leader><leader>t", crates.toggle, {desc="Toggle crates"})
-            vim.keymap.set("n", "<leader><leader>r", crates.reload, {desc="Reload crates"})
+            local function localmap(key, func, desc)
+                vim.keymap.set("n", "<LocalLeader>" .. key, crates[func], {desc=desc})
+            end
 
-            vim.keymap.set("n", "<leader><leader>v", crates.show_versions_popup, {desc="Show versions"})
-            vim.keymap.set("n", "<leader><leader>f", crates.show_features_popup, {desc="Show features"})
-            vim.keymap.set("n", "<leader><leader>d", crates.show_dependencies_popup, {desc="Show dependencies"})
+            localmap("t", "toggle", "Toggle crates")
+            localmap("r", "reload", "Reload crates")
 
-            vim.keymap.set("n", "<leader><leader>u", crates.update_crate, {desc="Update"})
-            vim.keymap.set("v", "<leader><leader>u", crates.update_crates, {desc="Update"})
-            vim.keymap.set("n", "<leader><leader>a", crates.update_all_crates, {desc="Update all"})
-            vim.keymap.set("n", "<leader><leader>U", crates.upgrade_crate, {desc="Upgrade"})
-            vim.keymap.set("v", "<leader><leader>U", crates.upgrade_crates, {desc="Upgrade"})
-            vim.keymap.set("n", "<leader><leader>A", crates.upgrade_all_crates, {desc="Upgrade all"})
+            localmap("v", "show_versions_popup", "Show versions")
+            localmap("f", "show_features_popup", "Show features")
+            localmap("d", "show_dependencies_popup", "Show dependencies")
 
-            vim.keymap.set("n", "<leader><leader>x", crates.expand_plain_crate_to_inline_table, {desc="Plain crate -> inline table"})
-            vim.keymap.set("n", "<leader><leader>X", crates.extract_crate_into_table, {desc="Crate -> table"})
+            localmap("u", "update_crate", "Update")
+            localmap("u", "update_crates", "Update")
+            localmap("a", "update_all_crates", "Update all")
+            localmap("U", "upgrade_crate", "Upgrade")
+            localmap("U", "upgrade_crates", "Upgrade")
+            localmap("A", "upgrade_all_crates", "Upgrade all")
 
-            vim.keymap.set("n", "<leader><leader>H", crates.open_homepage, {desc="Homepage"})
-            vim.keymap.set("n", "<leader><leader>R", crates.open_repository, {desc="Repo"})
-            vim.keymap.set("n", "<leader><leader>D", crates.open_documentation, {desc="Documentation"})
-            vim.keymap.set("n", "<leader><leader>C", crates.open_crates_io, {desc="crates.io"})
-            vim.keymap.set("n", "<leader><leader>L", crates.open_lib_rs, {desc="lib.rs"})
+            localmap("x", "expand_plain_crate_to_inline_table", "Plain crate -> inline table")
+            localmap("X", "extract_crate_into_table", "Crate -> table")
+
+            localmap("H", "open_homepage", "Homepage")
+            localmap("R", "open_repository", "Repo")
+            localmap("D", "open_documentation", "Documentation")
+            localmap("C", "open_crates_io", "crates.io")
+            localmap("L", "open_lib_rs", "lib.rs")
         end,
     },
 }

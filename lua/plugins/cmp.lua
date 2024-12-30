@@ -1,14 +1,77 @@
 #!/usr/bin/env lua
+local cmp_enabled = false
+
 return {
     {
         -- hack solution. I want buffer completed words with either capitalization.
-        -- It wasn't easy to get cmp to not change capitalization for buffer 
-        -- completions, so I made this fork of the repo where regular words are 
+        -- It wasn't easy to get cmp to not change capitalization for buffer
+        -- completions, so I made this fork of the repo where regular words are
         -- indexed with either capitalization.
         "degnbol/cmp-buffer",
+        enabled = cmp_enabled,
         branch = "patch-1",
     },
-    {"hrsh7th/nvim-cmp",
+    {
+        'KadoBOT/cmp-plugins',
+        -- enabled = cmp_enabled, -- use compat layer with blink
+        lazy = true, -- loaded when cmp since it is a dependency
+        ft = 'lua',
+        opts = { files = { "nvim/lua/plugins/" } },
+    },
+    -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
+    {
+        'uga-rosa/cmp-dictionary',
+        -- enabled = cmp_enabled, -- blink compat
+        -- lazy = true, -- Doesn't work to lazy load.
+        config = function()
+            local cmpd = require "cmp_dictionary"
+            local rtp = vim.opt.runtimepath:get()[1]
+
+            cmpd.setup {
+                dic = {
+                    -- dicts generated with ./spell.sh
+                    ["*"] = {
+                        rtp .. "/spell/custom.dic",
+                        rtp .. "/spell/en.dic",
+                    },
+                    spelllang = {
+                        da = rtp .. "/spell/da.dic",
+                    }
+                },
+                first_case_insensitive = true,
+                async = true, -- from slight but noticeable startup delay to instant.
+            }
+
+            function CmpDictUpdate()
+                if vim.bo.iminsert > 0 then
+                    -- set dictionary completions with both English and Danish words.
+                    cmpd.update()
+                else
+                    -- We always want spelllang=en,da so we can underline bad
+                    -- spelling for both english and danish words,
+                    -- but danish completion should only be shown when
+                    -- We are writing in Danish, which is indicated by activating iminsert.
+                    -- So we save spelllang to temp var (value is probably "en,da")
+                    local spelllang = vim.bo.spelllang
+                    -- ... then set dictionary completions only in English
+                    vim.bo.spelllang = "en"
+                    cmpd.update()
+                    -- ... but set spelllang back to what it was (probably "en,da")
+                    vim.bo.spelllang = spelllang
+                end
+            end
+
+            vim.defer_fn(CmpDictUpdate, 500)
+            -- also trigger it when language is changed. See lua/keymap
+            vim.api.nvim_create_autocmd("User", {
+                pattern = "ToggleDansk",
+                callback = CmpDictUpdate
+            })
+        end
+    },
+    {
+        "hrsh7th/nvim-cmp",
+        enabled = cmp_enabled,
         -- event = "InsertEnter" NO, doesn't work, e.g. for query loading luasnip
         dependencies = {
             'onsails/lspkind.nvim', -- pretty pictograms
@@ -21,10 +84,10 @@ return {
             'hrsh7th/cmp-nvim-lua', -- neovim Lua API
             'hrsh7th/cmp-omni',
             -- 'L3MON4D3/cmp-luasnip-choice', -- show choice node choices
-            'tamago324/cmp-zsh', -- neovim zsh completion
-            'hrsh7th/cmp-calc', -- quick math in completion
-            'ray-x/cmp-treesitter', -- treesitter nodes
-            'jmbuhr/otter.nvim', -- TODO: use this for code injected in markdown
+            'tamago324/cmp-zsh',         -- neovim zsh completion
+            'hrsh7th/cmp-calc',          -- quick math in completion
+            'ray-x/cmp-treesitter',      -- treesitter nodes
+            'jmbuhr/otter.nvim',         -- TODO: use this for code injected in markdown
             'chrisgrieser/cmp-nerdfont', -- :<search string> to get icons
             'KadoBOT/cmp-plugins',
             'uga-rosa/cmp-dictionary',
@@ -32,19 +95,22 @@ return {
             'honza/vim-snippets',
             'rafamadriz/friendly-snippets',
         },
-        config=function()
+        config = function()
+            if not cmp_enabled then return end
+
             -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
             local cmp = require "cmp"
             -- https://github.com/onsails/lspkind.nvim
             local lspkind = require "lspkind"
 
             -- menu=show completion menu. menuone=also when only one option. noselect=don't select automatically.
-            vim.opt.completeopt = {"menu", "menuone", "noselect"}
+            vim.opt.completeopt = { "menu", "menuone", "noselect" }
 
             -- for tab completion
             local has_words_before = function()
                 local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-                return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+                return col ~= 0 and
+                    vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
             end
 
             -- add a version of cmp.mapping.close that always does the fallback.
@@ -67,11 +133,11 @@ return {
                 -- complete with c-space instead of ctrl+y or tab. Prefer ctrl-n and -p and ctrl-space.
                 ['<C-space>'] = cmp.mapping(function(fallback)
                     if cmp.visible() then
-                        cmp.confirm({select=true})
+                        cmp.confirm({ select = true })
                     else
                         cmp.complete()
                     end
-                end, {"i", "s"}),
+                end, { "i", "s" }),
                 ['<C-e>'] = cmp.mapping.abort(),
                 ['<C-c>'] = cmp.mapping.abort(),
                 ['<C-n>'] = cmp.mapping(function(fallback)
@@ -79,7 +145,7 @@ return {
                         fallback()
                     elseif cmp.visible() then
                         -- Hack to avoid luasnip autosnip trigger when browsing through popup menu.
-                        -- luasnip is the only autocmd set for the frequent InsertCharPre event, 
+                        -- luasnip is the only autocmd set for the frequent InsertCharPre event,
                         -- where a flag is set to indicate to a later TextChangedI, TextChangedP autocmd that text has been inserted.
                         -- See Luasnip_just_inserted in https://github.com/L3MON4D3/LuaSnip/blob/master/lua/luasnip/config.lua
                         -- InsertCharPre is called after the insertion by cmp.select_next_item.
@@ -87,7 +153,7 @@ return {
                         vim.opt.eventignore:append("InsertCharPre")
                         cmp.select_next_item() -- {behavior=cmp.SelectBehavior.Select}
                         -- Resetting has to be scheduled since there is some time between the above call and the trigger.
-                        vim.schedule(function ()
+                        vim.schedule(function()
                             vim.opt.eventignore:remove("InsertCharPre")
                         end)
                     elseif has_words_before() then
@@ -101,7 +167,7 @@ return {
                         -- see above
                         vim.opt.eventignore:append("InsertCharPre")
                         cmp.select_prev_item() -- {behavior=cmp.SelectBehavior.Select}
-                        vim.schedule(function ()
+                        vim.schedule(function()
                             vim.opt.eventignore:remove("InsertCharPre")
                         end)
                     else
@@ -137,32 +203,32 @@ return {
             cmp.setup {
                 -- preselect = cmp.PreselectMode.None,
                 snippet = {
-                    expand = function(args) require'luasnip'.lsp_expand(args.body) end,
+                    expand = function(args) require 'luasnip'.lsp_expand(args.body) end,
                 },
                 view = {
                     -- when menu is above, show best result at bottom instead of at top
                     -- https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
-                    entries = {name='custom', selection_order='near_cursor' },
+                    entries = { name = 'custom', selection_order = 'near_cursor' },
                 },
                 mapping = cmp.mapping.preset.insert(mappings),
                 sources = cmp.config.sources {
                     { name = 'nvim_lsp' },
-                    { name = 'path', option = {trailing_slash=true} },
+                    { name = 'path', option = { trailing_slash = true } },
                     { name = 'nvim_lsp_signature_help' },
-                    { name = 'luasnip', options = {show_autosnippets=true} },
+                    { name = 'luasnip', options = { show_autosnippets = true } },
                     -- { name = 'luasnip_choice' },
                     { name = 'calc' },
-                    { name = 'omni', group_index=2 },
-                    { name = 'buffer', group_index=2 },
+                    { name = 'omni', group_index = 2 },
+                    { name = 'buffer', group_index = 2 },
                 },
                 -- :h cmp-config.formatting.
                 formatting = {
                     -- https://github.com/onsails/lspkind.nvim
                     -- https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
                     format = lspkind.cmp_format {
-                        mode='symbol',
-                        maxwidth=50,
-                        ellipsis_char='…',
+                        mode = 'symbol',
+                        maxwidth = 50,
+                        ellipsis_char = '…',
                         menu = {
                             buffer        = "",
                             omni          = "", -- most likely set to syntax keyword completion
@@ -184,7 +250,7 @@ return {
                 sorting = {
                     comparators = {
                         -- default sorting functions except for down prioritize text kind
-                        function (entry1, entry2)
+                        function(entry1, entry2)
                             -- copy of compare.kind to simply push text entries to the bottom
                             -- https://github.com/hrsh7th/nvim-cmp/blob/8a3d2dd7641f75c1b6291311f56454adba79a196/lua/cmp/config/compare.lua#L50
                             local isText1 = entry1:get_kind() == types.lsp.CompletionItemKind.Text
@@ -210,15 +276,15 @@ return {
                 -- }
             }
 
-            cmp.setup.filetype({'markdown', 'tex', 'text', 'asciidoc'}, {
+            cmp.setup.filetype({ 'markdown', 'tex', 'text', 'asciidoc' }, {
                 sources = {
                     { name = 'nvim_lsp' },
-                    { name = 'path', option = {trailing_slash=true} },
+                    { name = 'path', option = { trailing_slash = true } },
                     { name = 'nvim_lsp_signature_help' },
-                    { name = 'luasnip', options = {show_autosnippets=true} },
+                    { name = 'luasnip', options = { show_autosnippets = true } },
                     { name = 'calc' },
-                    { name = 'buffer', group_index=2 },
-                    { name = 'dictionary', keyword_length=3, max_item_count=10, group_index=2 },
+                    { name = 'buffer', group_index = 2 },
+                    { name = 'dictionary', keyword_length = 3, max_item_count = 10, group_index = 2 },
                 }
             })
 
@@ -227,12 +293,12 @@ return {
                     { name = 'nvim_lua' },
                     { name = 'nvim_lsp' },
                     { name = 'plugins' },
-                    { name = 'path', option = {trailing_slash=true} },
+                    { name = 'path', option = { trailing_slash = true } },
                     { name = 'nvim_lsp_signature_help' },
-                    { name = 'luasnip', options = {show_autosnippets=true} },
+                    { name = 'luasnip', options = { show_autosnippets = true } },
                     { name = 'nerdfont', },
                     { name = 'calc' },
-                    { name = 'buffer', group_index=2 },
+                    { name = 'buffer', group_index = 2 },
                 }
             })
 
@@ -240,11 +306,11 @@ return {
                 sources = {
                     { name = 'zsh' },
                     { name = 'nvim_lsp' },
-                    { name = 'path', option = {trailing_slash=true} },
+                    { name = 'path', option = { trailing_slash = true } },
                     { name = 'nvim_lsp_signature_help' },
-                    { name = 'luasnip', options = {show_autosnippets=true} },
+                    { name = 'luasnip', options = { show_autosnippets = true } },
                     { name = 'calc' },
-                    { name = 'buffer', group_index=2 },
+                    { name = 'buffer', group_index = 2 },
                 }
             })
 
@@ -252,12 +318,12 @@ return {
                 sources = {
                     { name = 'plotlyjs' },
                     { name = 'nvim_lsp' },
-                    { name = 'path', option = {trailing_slash=true} },
+                    { name = 'path', option = { trailing_slash = true } },
                     { name = 'nvim_lsp_signature_help' },
-                    { name = 'luasnip', options = {show_autosnippets=true} },
+                    { name = 'luasnip', options = { show_autosnippets = true } },
                     -- { name = 'luasnip_choice' },
                     { name = 'calc' },
-                    { name = 'buffer', group_index=2 },
+                    { name = 'buffer', group_index = 2 },
                 }
             })
 
@@ -265,12 +331,12 @@ return {
                 sources = {
                     { name = 'pymol_settings' },
                     { name = 'nvim_lsp' },
-                    { name = 'path', option = {trailing_slash=true} },
+                    { name = 'path', option = { trailing_slash = true } },
                     { name = 'nvim_lsp_signature_help' },
-                    { name = 'luasnip', options = {show_autosnippets=true} },
+                    { name = 'luasnip', options = { show_autosnippets = true } },
                     -- { name = 'luasnip_choice' },
                     { name = 'calc' },
-                    { name = 'buffer', group_index=2 },
+                    { name = 'buffer', group_index = 2 },
                 }
             })
 
@@ -285,18 +351,17 @@ return {
 
             -- TODO: take inspo from https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
             -- and link completion menu colors to equivalent things
-        end},
-
-    -- alts: hrsh7th/vim-vsnip, SirVer/ultisnips, ...
-    {'L3MON4D3/LuaSnip', lazy=true, -- load as cmp dependency
-        dependencies="nvim-treesitter/nvim-treesitter", -- depend on treesitter for the ft_func
-        -- the make command is optional: https://github.com/L3MON4D3/LuaSnip
-        build="make install_jsregexp", },
-    {'saadparwaiz1/cmp_luasnip', lazy=true,
-        dependencies={'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp"}, config=function()
+        end
+    },
+    {
+        'saadparwaiz1/cmp_luasnip',
+        enabled = cmp_enabled,
+        lazy = true,
+        dependencies = { 'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp" },
+        config = function()
             local luasnip = require "luasnip"
             local cmp = require "cmp"
-            -- works better to put it here than directly with luasnip, since we need to 
+            -- works better to put it here than directly with luasnip, since we need to
             -- require ft_func and would then replace config anyways
             luasnip.config.set_config {
                 -- https://youtu.be/Dn800rlPIho?t=440
@@ -325,98 +390,34 @@ return {
             }
 
             -- like pressing > which looks like forward arrow
-            vim.keymap.set({ "i", "s", "n" }, "<C-.>", function ()
+            vim.keymap.set({ "i", "s", "n" }, "<C-.>", function()
                 -- including expand means this will autocomplete the first visible snippet in completion menu
                 -- if luasnip.expand_or_jumpable() then luasnip.expand_or_jump() end
                 if luasnip.jumpable(1) then luasnip.jump(1) end
-            end, { silent=true })
+            end, { silent = true })
 
             -- like pressing < which looks like backwards arrow
-            vim.keymap.set({ "i", "s", "n" }, "<C-,>", function ()
+            vim.keymap.set({ "i", "s", "n" }, "<C-,>", function()
                 if luasnip.jumpable(-1) then luasnip.jump(-1) end
-            end, { silent=true })
+            end, { silent = true })
 
             -- like pressing ? for choices
-            vim.keymap.set({ "i", "s", "n" }, "<C-/>", function ()
+            vim.keymap.set({ "i", "s", "n" }, "<C-/>", function()
                 if luasnip.choice_active() then
                     luasnip.change_choice(1)
                 elseif cmp.visible() then
                     -- This will change an active popup menu listing to only show snippets
-                    cmp.complete {config={sources={{name="luasnip"}}}}
+                    cmp.complete { config = { sources = { { name = "luasnip" } } } }
                     -- Confirm first selection. Could also use the above by itself for filtering only.
-                    cmp.confirm({select=true})
+                    cmp.confirm({ select = true })
                 end
             end)
             -- with shift to go backwards
-            vim.keymap.set({ "i", "s", "n" }, "<C-?>", function ()
+            vim.keymap.set({ "i", "s", "n" }, "<C-?>", function()
                 if luasnip.choice_active() then
                     luasnip.change_choice(-1)
                 end
             end)
-
-        end },
-    -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
-    {'uga-rosa/cmp-dictionary',
-        -- lazy = true, -- Doesn't work to lazy load.
-        config=function()
-            local cmpd = require "cmp_dictionary"
-            local rtp = vim.opt.runtimepath:get()[1]
-
-            cmpd.setup {
-                dic = {
-                    -- dicts generated with ./spell.sh
-                    ["*"] = {
-                        rtp .. "/spell/custom.dic",
-                        rtp .. "/spell/en.dic",
-                    },
-                    spelllang = {
-                        da = rtp .. "/spell/da.dic",
-                    }
-                },
-                first_case_insensitive = true,
-                async = true, -- from slight but noticeable startup delay to instant.
-            }
-
-            function CmpDictUpdate()
-                if vim.bo.iminsert > 0 then
-                    -- set dictionary completions with both English and Danish words.
-                    cmpd.update()
-                else
-                    -- We always want spelllang=en,da so we can underline bad 
-                    -- spelling for both english and danish words,
-                    -- but danish completion should only be shown when 
-                    -- We are writing in Danish, which is indicated by activating iminsert.
-                    -- So we save spelllang to temp var (value is probably "en,da")
-                    local spelllang = vim.bo.spelllang
-                    -- ... then set dictionary completions only in English
-                    vim.bo.spelllang = "en"
-                    cmpd.update()
-                    -- ... but set spelllang back to what it was (probably "en,da")
-                    vim.bo.spelllang = spelllang
-                end
-            end
-            vim.defer_fn(CmpDictUpdate, 500)
-            -- also trigger it when language is changed. See lua/keymap
-            vim.api.nvim_create_autocmd("User", {
-                pattern = "ToggleDansk",
-                callback = CmpDictUpdate
-            })
-        end},
-    -- these default snippets can be replaced with my custom snippets when I have enough
-    {"honza/vim-snippets", lazy = true, -- load as cmp dependency
-        dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
-            require("luasnip.loaders.from_snipmate").lazy_load {exclude={"tex", "julia", "all", "_", "python"}}
-        end},
-    {"rafamadriz/friendly-snippets", lazy = true, -- load as cmp dependency
-        dependencies={'saadparwaiz1/cmp_luasnip'}, config=function ()
-            require("luasnip.loaders.from_vscode").lazy_load {exclude={"tex", "julia", "license", "global", "all", "python"}}
-        end},
-
-    {
-        'KadoBOT/cmp-plugins',
-        lazy = true, -- loaded when cmp since it is a dependency
-        ft = 'lua',
-        opts = {files = { "nvim/lua/plugins/" }},
+        end
     },
-
 }

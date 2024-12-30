@@ -43,8 +43,6 @@ vim.keymap.set('i', '<S-CR>', " +<CR>", {
 }
 )
 
-require"completion/asciidoc".setup()
-
 -- if :hardbreaks-option: is on we shouldn't auto break lines for obvious 
 -- reasons, which also means we most likely want to wrap lines.
 local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
@@ -56,3 +54,6 @@ for _, line in ipairs(lines) do
     end
 end
 
+-- Using blink.cmp instead.
+-- TODO: write the blink_ equivalent file if LSP hasn't caught up.
+-- require"completion.asciidoc.cmp_asciidoc".setup()

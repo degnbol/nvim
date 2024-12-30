@@ -22,19 +22,19 @@ for kData, vData in pairs(tree) do
     end
 end
 
-M.text = function (node)
-    return ts.get_node_text(node,0)
+M.text = function(node)
+    return ts.get_node_text(node, 0)
 end
-M.iscall = function (node)
+M.iscall = function(node)
     return node:type() == "call_expression"
 end
-M.isattr = function (node)
+M.isattr = function(node)
     local text = M.text(node)
     local attrNames = {a=true, attr=true, ["…"]=true}
     return M.iscall(node) and attrNames[text:match("^[^(]+")]
 end
-M.namedArg2item = function (node)
-    item = M.text(node):match("([%w_]+)=")
+M.namedArg2item = function(node)
+    local item = M.text(node):match("([%w_]+)=")
     if item == nil then return nil end
     -- Support arbitrary xaxis2_domain etc by ignoring the 2 when looking up completion items
     item = item:gsub("axis%d+", "axis")
@@ -45,11 +45,11 @@ M.func2toplevel = function (node)
     local funcname = M.text(node):match("^[%w_]+")
     return func2toplevel[funcname] or funcname
 end
-M.istoplevel = function (node)
+M.istoplevel = function(node)
     return M.iscall(node) and tree[M.func2toplevel(node)] ~= nil
 end
 
-M.get_func_parents = function ()
+M.get_func_parents = function()
     local parent = ts.get_node():parent()
     if parent == nil then return {} end
     if M.istoplevel(parent) then

@@ -10,7 +10,7 @@ M.setup = function()
     if not has_cmp then return end
 
     -- the rest is modified from :help cmp-develop
-    
+
     local source = {}
 
     ---Return whether this source is available in the current context or not (optional).
@@ -156,7 +156,7 @@ M.setup = function()
     for _, item in ipairs(shorthands) do
         item["kind"] = types.lsp.CompletionItemKind.Property
     end
-    
+
     ---Invoke completion (required).
     ---@param params cmp.SourceCompletionApiParams
     ---@param callback fun(response: lsp.CompletionResponse|nil)

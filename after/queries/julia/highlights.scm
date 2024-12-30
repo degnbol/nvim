@@ -1,6 +1,6 @@
 ;extends
 
-"in" @repeat
+; "in" @repeat
 
 ; support @chain macro recognizing @function.call as well.
 (macrocall_expression
