@@ -48,7 +48,9 @@ return {
         dependencies = { "nvim-tree/nvim-web-devicons" },
         init = function ()
             -- use <leader>e for explore followed by E since e is for mini.files
-            vim.keymap.set("n", "<leader>eE", function () require"oil".open() end, { desc = "Oil" })
+            -- vim.keymap.set("n", "<leader>eE", function () require"oil".open() end, { desc = "Oil" })
+            -- similar to the go up one level keymap within oil
+            vim.keymap.set("n", "<leader>-", function () require"oil".open() end, { desc = "Oil" })
         end,
         opts = {
             -- no prompt on rename, including folder change.

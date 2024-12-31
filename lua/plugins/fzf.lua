@@ -38,7 +38,9 @@ return {
 
             -- Buffers and Files
 
-            nmap("fp", MiniExtra.pickers.explorer, "PWD explorer")
+            -- starts in folder of current buffer (like Oil)
+            nmap("fp", function () MiniExtra.pickers.explorer{cwd=vim.fn.expand("%:h")} end, "Path explorer")
+            -- differs by starting in CWD, which may be different from dir for current buffer
             map("fP", "files", "PWD files")
             map("fD", "files", "~/dotfiles/", {cwd="~/dotfiles/"})
             map("fN", "files", "~/nvim/", {cwd="~/nvim/"})

@@ -144,7 +144,7 @@ return {
                     { mode = 'n', keys = '<leader>w', desc = "Workspace" },
                     { mode = 'n', keys = '<leader>q', desc = "Quickfix" },
                     { mode = 'n', keys = '<leader>Q', desc = "Locationlist" },
-                    { mode = 'n', keys = '<leader>x', desc = "Completion" },
+                    { mode = 'n', keys = '<leader>x', desc = "Completion|Snippet" },
                     { mode = 'n', keys = ']s', desc = "Spell" },
                     { mode = 'n', keys = '[s', desc = "Spell" },
                     -- vim unimpaired

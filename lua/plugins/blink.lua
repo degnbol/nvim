@@ -21,9 +21,14 @@ local source_icon = {
     treesitter    = " ",
     zsh           = "󰞷 ",
     plugins       = " ",
+    pymol_settings= " ",
+    plotly        = " ",
+    asciidoc      = " ",
 }
 
 local zsh_sources = { "zsh", "lsp", "path", "luasnip", "snippets", "buffer" }
+
+local only_snippets = false
 
 return {
     {
@@ -41,18 +46,19 @@ return {
         'saghen/blink.cmp',
 
         dependencies = {
+           {"L3MON4D3/LuaSnip", version = 'v2.*' },
             -- sources
             "folke/lazydev.nvim",
-            'hrsh7th/cmp-nvim-lua', -- neovim Lua API
-            'hrsh7th/cmp-omni', -- useful for vimscript syntax hl if `vim.opt_local.omnifunc = "syntaxcomplete#Complete"`
-            -- 'L3MON4D3/cmp-luasnip-choice', -- show choice node choices
-            'tamago324/cmp-zsh',         -- neovim zsh completion
-            -- 'hrsh7th/cmp-calc',          -- quick math in completion
-            'ray-x/cmp-treesitter',      -- treesitter nodes
-            -- 'jmbuhr/otter.nvim',         -- TODO: use this for code injected in markdown
-            -- 'chrisgrieser/cmp-nerdfont', -- :<search string> to get icons
-            'KadoBOT/cmp-plugins',
-            -- 'uga-rosa/cmp-dictionary',
+            "hrsh7th/cmp-nvim-lua", -- neovim Lua API
+            "hrsh7th/cmp-omni", -- useful for vimscript syntax hl if `vim.opt_local.omnifunc = "syntaxcomplete#Complete"`
+            -- "L3MON4D3/cmp-luasnip-choice", -- show choice node choices
+            "tamago324/cmp-zsh",         -- neovim zsh completion
+            -- "hrsh7th/cmp-calc",          -- quick math in completion
+            "ray-x/cmp-treesitter",      -- treesitter nodes
+            -- "jmbuhr/otter.nvim",         -- TODO: use this for code injected in markdown
+            -- "chrisgrieser/cmp-nerdfont", -- :<search string> to get icons
+            "KadoBOT/cmp-plugins",
+            -- "uga-rosa/cmp-dictionary",
         },
 
         -- use a release tag to download pre-built binaries
@@ -80,8 +86,17 @@ return {
                     luasnip.change_choice(1)
                 else
                     local cmp = require 'blink.cmp'
-                    -- This will also change an active popup menu listing to only show snippets
-                    cmp.show({ providers = { 'luasnip' } })
+                    -- This will also change an active popup menu listing to only show snippets.
+                    -- Include LSP since LSP includes some snippets, then filter with transform_items to only get those.
+                    only_snippets = true
+                    vim.api.nvim_create_autocmd('User', {
+                        pattern = 'BlinkCmpHide',
+                        callback = function(event)
+                            only_snippets = false
+                        end,
+                        once = true,
+                    })
+                    cmp.show({ providers = { 'luasnip', 'lsp' }})
                 end
             end)
             -- with shift to go backwards
@@ -131,18 +146,27 @@ return {
             sources = {
                 default = { "lsp", "omni", "path", "luasnip", "snippets", "buffer" },
                 per_filetype = {
-                    lua = { "lazydev", "nvim_lua", "lsp", "path", "luasnip", "snippets", "buffer" },
+                    lua = { "luasnip", "lazydev", "nvim_lua", "lsp", "path", "snippets", "buffer" },
                     sh = zsh_sources,
                     zsh = zsh_sources,
                     ["sh.zsh"] = zsh_sources,
                     python = { "pymol_settings", "lsp", "omni", "path", "luasnip", "snippets", "buffer" },
                     julia = { "plotly", "lsp", "omni", "path", "luasnip", "snippets", "buffer" },
+                    asciidoc = {"asciidoc"},
                 },
                 providers = {
                     lsp = {
                         -- Buffer is fallback of LSP by default.
                         -- Change this so we don't have to wait for zero LSP results before getting buffer.
                         fallbacks = {},
+                        transform_items = function(_, items)
+                            if only_snippets then
+                                return vim.tbl_filter(function(item)
+                                    return item.kind == require('blink.cmp.types').CompletionItemKind.Snippet
+                                end, items)
+                            end
+                            return items
+                        end
                     },
                     lazydev = {
                         name = "LazyDev",
@@ -171,6 +195,10 @@ return {
                         name = "plotly",
                         module = "completion.plotlyjs.blink_plotlyjs",
                         enabled = function () return vim.g.loaded_plotly end
+                    },
+                    asciidoc = {
+                        name = "asciidoc",
+                        module = "completion.asciidoc.blink_asciidoc",
                     },
                     -- too slow, only use with manual activation, see keymap above.
                     spell = {
@@ -244,7 +272,7 @@ return {
                         columns = {
                             { "label", "label_description" },
                             { "kind_icon", gap=1, "source_icon",
-                                "source_name"
+                                -- "source_name"
                             }
                         },
                         -- padding = {0,1},

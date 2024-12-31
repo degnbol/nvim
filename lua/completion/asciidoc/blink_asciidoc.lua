@@ -1,46 +1,22 @@
+#!/usr/bin/env lua
+local async = require "blink.cmp.lib.async"
+local Kind = vim.lsp.protocol.CompletionItemKind
+
 local M = {}
 
-local registered = false
+-- Initialize a new ctags instance
+function M.new(user_config)
+    local self = setmetatable({}, { __index = M })
+    self.is_cached = false
+    self.cached_items = {}
+    self:_load_async()
+    return self
+end
 
-M.setup = function()
-    if registered then return end
-    registered = true
+function M:_load()
 
-    local has_cmp, cmp = pcall(require, 'cmp')
-    if not has_cmp then return end
-
-    -- the rest is modified from :help cmp-develop
-
-    local source = {}
-
-    ---Return whether this source is available in the current context or not (optional).
-    ---@return boolean
-    function source:is_available()
-        return true
-    end
-
-    ---Return the keyword pattern for triggering completion (optional).
-    ---If this is ommited, nvim-cmp will use a default keyword pattern. See |cmp-config.completion.keyword_pattern|.
-    ---@return string
-    function source:get_keyword_pattern()
-        -- add - to pattern so we allow dashes within attribute names
-        return [[\%(\k\|\-\)\+]]
-    end
-
-    ---Return trigger characters for triggering completion (optional).
-    function source:get_trigger_characters()
-        -- NOTE default is ., we tried : ! and % which we consider trigger chars, but are not a part of the completed attribute or option word.
-        -- However there were issues with snippets not being listed until regular completions were depleted, e.g. typing 
-        -- :ema would show :experimental and :emai would finally update the listing and give you :email. 
-        -- A half fix was to have keyword_length=2 for asciidoc and 1 for luasnip. However setting it to 2 means %header will become annoying.
-        -- The correct solution was to remove : and ! from trigger chars as to not give regular completion items that "advantage".
-        return { '%' }
-    end
-
-    -- See other recognized fields at nvim-cmp/lua/cmp/types/lsp.lua
-    -- https://github.com/hrsh7th/nvim-cmp/blob/5dce1b778b85c717f6614e3f4da45e9f19f54435/lua/cmp/types/lsp.lua
-    -- E.g. "detail" which is code from the filetype, in this case, asciidoc and "documentation" which is following lines of plaintext.
-    local attributes = {
+    -- Other fields e.g. "detail" which is code from the filetype, in this case, asciidoc and "documentation" which is following lines of plaintext.
+    self.cached_items.attributes = {
         {label="embedded",               insertText="embedded:",               documentation="Only set if content is being converted to an embedded document (i.e., body of document only)."},
         {label="safe-mode-unsafe",       insertText="safe-mode-unsafe:",       documentation="Set if the safe mode is UNSAFE. Read-only."},
         {label="safe-mode-safe",         insertText="safe-mode-safe:",         documentation="Set if the safe mode is SAFE. Read-only."},
@@ -104,7 +80,7 @@ M.setup = function()
         {label="pdf-themesdir",          insertText="pdf-themesdir: ",         documentation='The directory path where the theme file is located. When using JRuby, the directory path may begin with uri:classloader: to reference a location on the classpath.'},
         {label="pdf-fontsdir",           insertText="pdf-fontsdir: ",          documentation='The directory path or paths where the fonts used by your theme, if any, are located. When using JRuby, each path may begin with uri:classloader: to reference a location on the classpath.'},
     }
-    local options = {
+    self.cached_items.options = {
         {label="discrete",                                                     documentation='A discrete heading is declared and styled in a manner similar to that of a section title, but it’s not part of the section hierarchy, it cannot have any child blocks, and it’s not included in the table of contents.'},
         {label="options",                insertText="options=",                documentation='Comma-separated list of options in double quotes, e.g. "unbreakable" to disallow table span across page break.'},
         {label="source",                                                       documentation='Set block style as source code (verbatim).'},
@@ -134,7 +110,7 @@ M.setup = function()
         {label="big",                                                          documentation='Big text size.'},
         {label="separator",              insertText="separator=",              documentation='Set a custom separator character for a table. Default=| for top-level tables and ! for nested. Also changed by setting format option, e.g. comma for CSV.'},
     }
-    local shorthands = {
+    self.cached_items.shorthands = {
         {label="header",                                                       documentation='Set first row of table as a header row. Implicitly set when first row is written on one line. Shorthand syntax for options="header".'},
         {label="footer",                                                       documentation='Set last row of table as a footer row.'},
         {label="collapsible",                                                  documentation='Make example collapsible (in html).'},
@@ -144,69 +120,57 @@ M.setup = function()
         {label="rotate",                                                       documentation='Display table in landscape orientation by rotating it 90 degrees counterclockwise.'},
     }
 
-    -- main purpose of this is to separate these completion items from regular text items, 
-    -- so regular text suggestions comes after due to my custom sorting in cmp.lua
-    local types = require('cmp.types')
-    for _, item in ipairs(attributes) do
-        item["kind"] = types.lsp.CompletionItemKind.Property
+    for _, item in ipairs(self.cached_items.attributes) do
+        item.kind = Kind.Property
     end
-    for _, item in ipairs(options) do
-        item["kind"] = types.lsp.CompletionItemKind.Variable
+    for _, item in ipairs(self.cached_items.options) do
+        item.kind = Kind.Variable
     end
-    for _, item in ipairs(shorthands) do
-        item["kind"] = types.lsp.CompletionItemKind.Property
+    for _, item in ipairs(self.cached_items.shorthands) do
+        item.label = '%' .. item.label
+        item.kind = Kind.Property
     end
 
-    ---Invoke completion (required).
-    ---@param params cmp.SourceCompletionApiParams
-    ---@param callback fun(response: lsp.CompletionResponse|nil)
-    function source:complete(params, callback)
-        local line = params.context.cursor_before_line
-        local prefix = line:sub(1, params.offset-1)
-        if prefix == ":" or prefix == ":!" then
-            callback {items=attributes, isIncomplete=true}
-        elseif vim.startswith(line, "[") then
-            if vim.endswith(prefix, "%") then
-                if not prefix:match("[0-9]%%$") then
-                    callback {items=shorthands, isIncomplete=false}
-                end
-            else
-                callback {items=options, isIncomplete=true}
-            end
-        else
-            -- isIncomplete allows adding other completion items, such as snippets.
-            callback {isIncomplete=true}
+    for _, items in pairs(self.cached_items) do
+        for _, item in ipairs(items) do
+            item.source = "asciidoc"
         end
     end
 
-    ---Resolve completion item (optional). This is called right before the completion is about to be displayed.
-    ---Useful for setting the text shown in the documentation window (`completion_item.documentation`).
-    ---@param completion_item lsp.CompletionItem
-    ---@param callback fun(completion_item: lsp.CompletionItem|nil)
-    function source:resolve(completion_item, callback)
-        callback(completion_item)
+    self.is_cached = true
+end
+
+function M:_lazy_load()
+    if self.is_cached then return end
+    self:_load()
+end
+
+function M:_load_async()
+    async.task.new(function(resolve, reject)
+        resolve(self:_load())
+    end)
+end
+
+-- Get completions based on the current word prefix and cached items
+function M:get_completions(context, callback)
+    -- self:_lazy_load()
+    if not self.is_cached then
+        callback({ is_incomplete_forward = true, is_incomplete_backward = true, items = {} })
+        return function() end
     end
 
-    ---Executed after the item was selected.
-    ---@param completion_item lsp.CompletionItem
-    ---@param callback fun(completion_item: lsp.CompletionItem|nil)
-    function source:execute(completion_item, callback)
-        callback(completion_item)
+    local line = context.line
+    -- if vim.startswith(line, ":") or vim.startswith(line, ":!") then
+    if vim.startswith(line, ":") then
+        callback { is_incomplete_forward = true, is_incomplete_backward = true, items=self.cached_items.attributes}
+    elseif vim.startswith(line, "[") then
+        callback { is_incomplete_forward = true, is_incomplete_backward = true, items=self.cached_items.options}
+        callback { is_incomplete_forward = true, is_incomplete_backward = true, items=self.cached_items.shorthands}
+    else
+        callback {is_incomplete_forward = true, is_incomplete_backward = true, items={}}
     end
 
-    ---Register your source to nvim-cmp.
-    require('cmp').register_source('asciidoc', source)
-
-    cmp.setup.filetype('asciidoc', {
-        sources = cmp.config.sources({
-            { name = 'luasnip', options = {show_autosnippets=true} },
-            { name = 'asciidoc' },
-            { name = 'path', option = {trailing_slash=true} },
-            -- { name = 'calc' },
-            { name = 'buffer', keyword_length=2, group_index=2 },
-            { name = 'dictionary', keyword_length=3, max_item_count=10, group_index=2 },
-        }),
-    })
+	return function() end
 end
 
 return M
