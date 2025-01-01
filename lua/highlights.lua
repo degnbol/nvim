@@ -33,14 +33,9 @@ local function afterColorscheme()
     end
     hi.set("SpellBad", {undercurl=true, special=spellBad})
 
-    -- replace whatever search was doing completely but only modify IncSearch's 
-    -- reverse setting so it remains a different color from Search, probably 
-    -- green.
-    hi.rev("Search")
-    hi.mod("IncSearch", {reverse=true})
-    -- cursor looks to much like the current search word under cursor
-    hi.set("CurSearch", {fg="gray", bg=hi.get("IncSearch")["fg"], standout=true, bold=true})
-    -- hl.mod("CurSearch", {standout=true})
+    hi.set("IncSearch", {standout=true, bold=true})
+    hi.set("Search", {fg="gray", bg=hi.get("IncSearch")["fg"], standout=true})
+    hi.link("CurSearch", "Search")
 
     -- Default is comment fg and similar strong bg for the whole line. It grabs too much attention.
     -- NonText is bold gray. It feels like a good balance of attention grabbing.

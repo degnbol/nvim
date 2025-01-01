@@ -152,7 +152,8 @@ return {
                     ["sh.zsh"] = zsh_sources,
                     python = { "pymol_settings", "lsp", "omni", "path", "luasnip", "snippets", "buffer" },
                     julia = { "plotly", "lsp", "omni", "path", "luasnip", "snippets", "buffer" },
-                    asciidoc = {"asciidoc"},
+                    -- lacks LSP, hence the custom asciidoc provider
+                    asciidoc = {"asciidoc", "lsp", "omni", "luasnip", "snippets", "buffer"},
                 },
                 providers = {
                     lsp = {

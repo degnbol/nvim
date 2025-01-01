@@ -108,6 +108,9 @@ vim.opt.spellfile = rtp .. "/spell/custom.utf8.add"
 -- set a default commentstring
 vim.opt.commentstring = "#%s"
 
+-- blinking cursor would be nice but only after jumps
+-- vim.opt.guicursor:append("n-v-sm:blinkon150")
+
 -- only show error for virtual_text since it is often incorrect and is distracting.
 vim.diagnostic.config {
     virtual_text = {severity = vim.diagnostic.severity.ERROR}

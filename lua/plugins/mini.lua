@@ -85,7 +85,7 @@ return {
 
             local clue = require'mini.clue'
 
-            clue.setup({
+            clue.setup {
                 triggers = {
                     { mode = 'n', keys = '<Leader>' },
                     { mode = 'x', keys = '<Leader>' },
@@ -196,7 +196,7 @@ return {
                 window = {
                     width = "auto",
                 },
-            })
+            }
 
             vim.schedule(function ()
                 require "utils/keymap"
