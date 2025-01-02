@@ -91,7 +91,7 @@ s({trig="([^\\])lim", descr="limit", regTrig=true},
 -- or having separate keys for expand and jump
 {re(1), t"\\lim_{", i(1, "n"), t"→", i(2, "∞"), t"}"}, optm),
 
-s({trig="\\?sum", descr="Sum symbol and expression", trigEngine="pattern", condition=conds.line_end},
+s({trig="\\?sum", descr="Sum symbol and expression", trigEngine="pattern", condition=conds.line_end, snippetType="snippet"},
 {t"∑_{", i(1, "n=1"), t"}^{", i(2,"∞"), t"}"}, optm),
 s({trig="\\?sum", descr="Sum symbol", trigEngine="pattern"},
 {t"∑"}, optm),

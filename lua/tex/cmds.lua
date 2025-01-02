@@ -116,7 +116,7 @@ local function surround_visual(name)
     if not vim.tbl_isempty(cmd2) and not cmd_contained(cmd2, r1, c1, r2, c2) then
         r2, c2 = cmd2["pos_end"]['lnum'], cmd2["pos_end"]['cnum']
     end
-    
+
     -- find cmds already present.
     -- We expand the "search" by 1 so that we consume (merge with) adjacent cmds as well.
     -- the max on c1 is needed. It would be easy enough to search wrapping lines as well, e.g. if c1==1 then r1-=1, c1=EOL end
@@ -166,21 +166,21 @@ end
 
 -- set keymaps
 
-vim.keymap.set("i", "<C-b>", function ()
+vim.keymap.set("i", "<C-S-b>", function ()
     if in_math() then
         insert_or_del_cmd(mathbf)
     else
         insert_or_del_cmd(textbf)
     end
 end)
-vim.keymap.set("i", "<C-i>", function ()
+vim.keymap.set("i", "<C-S-i>", function ()
     if in_math() then
         insert_or_del_cmd(mathit)
     else
         insert_or_del_cmd(textit)
     end
 end)
-vim.keymap.set("i", "<C-t>", function ()
+vim.keymap.set("i", "<C-S-t>", function ()
     if in_math() then
         insert_or_del_cmd(mathtt)
     else
@@ -194,21 +194,21 @@ vim.keymap.set("i", "<C-S-u>", function ()
         insert_or_del_cmd(textul)
     end
 end)
-vim.keymap.set("x", "<C-b>", function () 
+vim.keymap.set("x", "<C-S-b>", function ()
     if in_math() then
         surround_visual(mathbf)
     else
         surround_visual(textbf)
     end
 end)
-vim.keymap.set("x", "<C-i>", function ()
+vim.keymap.set("x", "<C-S-i>", function ()
     if in_math() then
         surround_visual(mathit)
     else
         surround_visual(textit)
     end
 end)
-vim.keymap.set("x", "<C-t>", function ()
+vim.keymap.set("x", "<C-S-t>", function ()
     if in_math() then
         surround_visual(mathtt)
     else
