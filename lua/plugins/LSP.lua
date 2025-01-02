@@ -24,7 +24,8 @@ return {
 
             -- LSP and completion status, overall conf etc.
             vim.keymap.set('n', '<leader>li', "<Cmd>LspInfo<CR>", { desc="Info" })
-            vim.keymap.set('n', '<leader>l<BS>', "<Cmd>LspStop<CR>", { desc="Stop" })
+            -- can't use backspace since it is hardcoded by mini.clue for up one level
+            vim.keymap.set('n', '<leader>l<Del>', "<Cmd>LspStop<CR>", { desc="Stop" })
             vim.keymap.set('n', '<leader>l1', "<Cmd>LspStart<CR>", { desc="Start" })
             vim.keymap.set('n', '<leader>l!', "<Cmd>LspRestart<CR>", { desc="Restart" })
             vim.keymap.set('n', '<leader>lL', "<Cmd>LspLog<CR>", { desc="Log" })
@@ -33,7 +34,8 @@ return {
 
             -- See `:help vim.diagnostic.*` for documentation on any of the below functions
             vim.keymap.set('n', '<leader>dd', vim.diagnostic.open_float, { desc = "Line diagnostic" })
-            vim.keymap.set('n', '<leader>d<BS>', function() vim.diagnostic.enable(false) end, { desc = "Disable diagnostics" })
+            -- can't use backspace since it is hardcoded by mini.clue for up one level
+            vim.keymap.set('n', '<leader>d<Del>', function() vim.diagnostic.enable(false) end, { desc = "Disable diagnostics" })
             vim.keymap.set('n', '<leader>d1', vim.diagnostic.enable, { desc = "Enable diagnostics" })
             vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Diagnostic" })
             vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Diagnostic" })
