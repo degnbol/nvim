@@ -46,7 +46,7 @@ end
 return {
 --
 
-s({trig="\\newcommand", dscr="New command", show_condition=conds.line_end},
+s({trig="\\newcommand", dscr="New command", show_condition=lsu.line_end},
 {t"\\newcommand{\\", i(1), t"}{", i(2), t"}"}),
 
 
@@ -151,7 +151,7 @@ s({
     dscr="itemize dashed",
     snippetType="autosnippet",
     priority=100,
-    condition=conds.line_begin*conds.line_end
+    condition=conds.line_begin*lsu.line_end
 },
 fmta([[\begin{itemize}[label={--}]
 	\item <>
@@ -181,14 +181,14 @@ s({trig="- ", dscr="item", snippetType="autosnippet"},
 -- s({trig="([^%w])mm", dscr="inline math", wordTrig=false, regTrig=true, snippetType="autosnippet"},
 -- {re(1), t"$", d(1, get_visual), t"$" }),
 
-s({trig="dm", snippetType="autosnippet", condition=conds.line_begin*conds.line_end},
+s({trig="dm", snippetType="autosnippet", condition=conds.line_begin*lsu.line_end},
 fmta([[\[
 	<>
 \]
 
 ]], i(1))),
 
-s({trig="align", dscr="align", snippetType="autosnippet", condition=conds.line_begin*conds.line_end},
+s({trig="align", dscr="align", snippetType="autosnippet", condition=conds.line_begin*lsu.line_end},
 fmta([[\begin{align*}
 	<>
 \end{align*}
@@ -198,10 +198,10 @@ fmta([[\begin{align*}
 -- s({trig="(%a)-", dscr="p-value, n-dimensional, ...", regTrig=true, snippetType="autosnippet"},
 -- {t"$", re(1), t"$-"}),
 
-s({trig="img", dscr="includegraphics", condition=conds.line_begin*conds.line_end, snippetType="autosnippet"},
+s({trig="img", dscr="includegraphics", condition=conds.line_begin*lsu.line_end, snippetType="autosnippet"},
 {t"\\includegraphics[width=\\textwidth]{./figures", i(1), t"}"}),
 
-s({trig="fig", dscr="fig", condition=conds.line_begin*conds.line_end, snippetType="autosnippet"},
+s({trig="fig", dscr="fig", condition=conds.line_begin*lsu.line_end, snippetType="autosnippet"},
 fmta([[\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.95\textwidth]{./figures<>}
@@ -240,7 +240,7 @@ fmta([[\begin{figure}[ht]
 
 ]], {i(1), i(2), i(3, "TITLE"), i(4)})),
 
-s({trig="wrapfig", dscr="Text wrapping around figure.", condition=conds.line_begin*conds.line_end, snippetType='autosnippet'},
+s({trig="wrapfig", dscr="Text wrapping around figure.", condition=conds.line_begin*lsu.line_end, snippetType='autosnippet'},
 fmta([[\begin{wrapfigure}<>{<>}{0.5\textwidth}
 	\centering
 	\includegraphics[width=\linewidth]{./figures<>}
@@ -254,7 +254,7 @@ fmta([[\begin{wrapfigure}<>{<>}{0.5\textwidth}
 ]], {c(1, {t"", t"[NUM LINES]"}), c(2, {t"r", t("R",virt("Uppercase=float"))}), i(3, "FILENAME"), i(4)})),
 
 
-s({trig="tab", dscr="Table", condition=conds.line_begin*conds.line_end, snippetType="autosnippet"},
+s({trig="tab", dscr="Table", condition=conds.line_begin*lsu.line_end, snippetType="autosnippet"},
 -- @{} suppresses space between columns. @{.} would use "." as column separator.
 fmta([[\begin{table}[ht]
     \caption{
@@ -289,12 +289,12 @@ fmta("\\multicolumn{<>}{<>}{<>}", {i(1, "3"), i(2, "c"), i(3, "TEXT")})),
 
 s({trig="dark", dscr="Dark mode."},
 {t{"% temp dark mode", [[\usepackage{xcolor}\pagecolor{black}\color{white}]]}},
-{show_condition=conds.line_end}),
+{show_condition=lsu.line_end}),
 
 s({trig="gif", dscr="Animation that works in e.g. pdfpc. Convert gif to mov online."},
 fmta([[\href{run:./figures/<>.mov?autostart&loop}{\includegraphics[width=\textwidth]{./figures/<>.png}}]],
 {i(1, "FILENAME"), rep(1)}),
-{show_condition=conds.line_end}),
+{show_condition=lsu.line_end}),
 
 s(
     {trig="(%d)tw", dscr="textwidth", trigEngine="pattern", snippetType="autosnippet"},
@@ -353,7 +353,11 @@ s({trig="(\\[Aa]c)(p?{%w+})@", trigEngine="pattern", snippetType="autosnippet"},
 s({trig="(\\[Aa]c)l(p?{%w+})@", trigEngine="pattern", snippetType="autosnippet"}, { re(1), t"s", re(2) }),
 s({trig="(\\[Aa]c)s(p?{%w+})@", trigEngine="pattern", snippetType="autosnippet"}, { re(1), re(2) }),
 
-s({trig="pdftex", dscr="Include figure with text in separate tex file.", show_condition=conds.line_end},
+s({
+    trig="pdftex",
+    dscr="Include figure with text in separate tex file.",
+    -- show_condition=lsu.line_end,
+},
 fmta([[\pdftex[<>]{<>}{<>}
 ]], {
     i(1, "\\textwidth"),

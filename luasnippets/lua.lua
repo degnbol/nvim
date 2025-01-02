@@ -1,5 +1,5 @@
 local ls = require "luasnip"
-local util = require "utils/luasnip"
+local lsu = require "utils/luasnip"
 local s = ls.s
 local t = ls.t
 local i = ls.i
@@ -37,7 +37,7 @@ s({
     trig='%[%[%[%]%]',
     dscr="Third bracket in trig pattern is typed last.",
     snippetType='autosnippet',
-    trigEngine=function (trigger) return util.match_ahead(2) end,
+    trigEngine=function (trigger) return lsu.match_ahead(2) end,
     priority = 1000,
 },
 -- NOTE: there is no final bracket in replacement since one is left over from end of trigger.
@@ -63,7 +63,7 @@ s({trig="strip", dscr="Strip whitespace"},
 -- TODO: condition these on relevant path in the same way you did it for completions for configuring lazy.
 -- Also add all the allowed args from https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md
 
-s({trig="inspect", dscr="Print inspect", show_condition=conds.line_end},
+s({trig="inspect", dscr="Print inspect", show_condition=lsu.line_end},
 {t"print(vim.inspect(", i(1), t"))"}),
 
 s({trig="util", dscr="req utils", condition=conds.line_begin},
@@ -93,7 +93,7 @@ s({trig="condition", dscr="Set condition for autosnippet."},
 {t'condition=', i(1, 'conds.line_begin')}),
 
 s({trig="show_condition", dscr="Set show_condition for non-auto snippet."},
-{t'show_condition=', i(1, 'conds.line_end')}),
+{t'show_condition=', i(1, 'lsu.line_end')}),
 
 s({trig="fmta", dscr="Convenience function for formatting snippets, especially multi line snippets."},
 fmta([=[-- NOTE: no surrounding curly brackets
@@ -143,7 +143,7 @@ fmta([[vim.keymap.set({'n', 'x'}, '<>', "<<Cmd>><><<CR>>", { desc="<>" })]],
 s({trig="rtp", dscr="Get neovim config root", condition=conds.line_begin, snippetType='autosnippet'},
 {t"local rtp = vim.opt.runtimepath:get()[1]"}),
 
-s({trig="setlocal", dscr="Set local option.", condition=conds.line_begin*conds.line_end},
+s({trig="setlocal", dscr="Set local option.", condition=conds.line_begin*lsu.line_end},
 {t"vim.opt_local."}),
 
 s({trig="count", dscr="Count prefix for functions."},
@@ -270,7 +270,7 @@ fmta([[vim.defer_fn(function ()
 end, <>)
 ]], {i(1), i(2, "500")})),
 
-s({trig="mode", dscr="Get mode (normal or visual etc)", show_condition=conds.line_end},
+s({trig="mode", dscr="Get mode (normal or visual etc)", show_condition=lsu.line_end},
 {t"local mode = vim.api.nvim_get_mode().mode"}),
 
 s({trig="dynamic", dscr="Dynamic node"},

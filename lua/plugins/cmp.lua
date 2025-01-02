@@ -1,5 +1,36 @@
 #!/usr/bin/env lua
-local cmp_enabled = false
+local using_blink = true
+
+local cmp_deps
+if using_blink then
+    cmp_deps = {
+        'L3MON4D3/LuaSnip',
+        'saadparwaiz1/cmp_luasnip',
+    }
+else
+    cmp_deps = {
+        'onsails/lspkind.nvim', -- pretty pictograms
+        -- putting completion sources as dependencies so they only load when cmp is loaded.
+        'L3MON4D3/LuaSnip',
+        'hrsh7th/cmp-nvim-lsp',
+        'degnbol/cmp-buffer',
+        'hrsh7th/cmp-path',
+        'hrsh7th/cmp-nvim-lsp-signature-help',
+        'hrsh7th/cmp-nvim-lua', -- neovim Lua API
+        'hrsh7th/cmp-omni',
+        -- 'L3MON4D3/cmp-luasnip-choice', -- show choice node choices
+        'tamago324/cmp-zsh',         -- neovim zsh completion
+        'hrsh7th/cmp-calc',          -- quick math in completion
+        'ray-x/cmp-treesitter',      -- treesitter nodes
+        'jmbuhr/otter.nvim',         -- TODO: use this for code injected in markdown
+        'chrisgrieser/cmp-nerdfont', -- :<search string> to get icons
+        'KadoBOT/cmp-plugins',
+        'uga-rosa/cmp-dictionary',
+        'saadparwaiz1/cmp_luasnip',
+        'honza/vim-snippets',
+        'rafamadriz/friendly-snippets',
+    }
+end
 
 return {
     {
@@ -8,20 +39,22 @@ return {
         -- completions, so I made this fork of the repo where regular words are
         -- indexed with either capitalization.
         "degnbol/cmp-buffer",
-        enabled = cmp_enabled,
+        lazy = true, -- loaded as dependency
+        enabled = not using_blink,
         branch = "patch-1",
     },
     {
         'KadoBOT/cmp-plugins',
         -- enabled = cmp_enabled, -- use compat layer with blink
-        lazy = true, -- loaded when cmp since it is a dependency
+        lazy = true, -- loaded as dependency
         ft = 'lua',
         opts = { files = { "nvim/lua/plugins/" } },
     },
     -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
     {
         'uga-rosa/cmp-dictionary',
-        -- enabled = cmp_enabled, -- blink compat
+        lazy = true, -- loaded as dependency
+        enabled = not using_blink,
         -- lazy = true, -- Doesn't work to lazy load.
         config = function()
             local cmpd = require "cmp_dictionary"
@@ -71,37 +104,52 @@ return {
     },
     {
         "hrsh7th/nvim-cmp",
-        enabled = cmp_enabled,
+        -- don't disable here so can have separate config for blink.lua
+        -- enabled = not using_blink,
         -- event = "InsertEnter" NO, doesn't work, e.g. for query loading luasnip
-        dependencies = {
-            'onsails/lspkind.nvim', -- pretty pictograms
-            -- putting completion sources as dependencies so they only load when cmp is loaded.
-            'L3MON4D3/LuaSnip',
-            'hrsh7th/cmp-nvim-lsp',
-            'degnbol/cmp-buffer',
-            'hrsh7th/cmp-path',
-            'hrsh7th/cmp-nvim-lsp-signature-help',
-            'hrsh7th/cmp-nvim-lua', -- neovim Lua API
-            'hrsh7th/cmp-omni',
-            -- 'L3MON4D3/cmp-luasnip-choice', -- show choice node choices
-            'tamago324/cmp-zsh',         -- neovim zsh completion
-            'hrsh7th/cmp-calc',          -- quick math in completion
-            'ray-x/cmp-treesitter',      -- treesitter nodes
-            'jmbuhr/otter.nvim',         -- TODO: use this for code injected in markdown
-            'chrisgrieser/cmp-nerdfont', -- :<search string> to get icons
-            'KadoBOT/cmp-plugins',
-            'uga-rosa/cmp-dictionary',
-            'saadparwaiz1/cmp_luasnip',
-            'honza/vim-snippets',
-            'rafamadriz/friendly-snippets',
-        },
+            dependencies = {
+                'onsails/lspkind.nvim', -- pretty pictograms
+                -- putting completion sources as dependencies so they only load when cmp is loaded.
+                'L3MON4D3/LuaSnip',
+                'hrsh7th/cmp-nvim-lsp',
+                'degnbol/cmp-buffer',
+                'hrsh7th/cmp-path',
+                'hrsh7th/cmp-nvim-lsp-signature-help',
+                'hrsh7th/cmp-nvim-lua', -- neovim Lua API
+                'hrsh7th/cmp-omni',
+                -- 'L3MON4D3/cmp-luasnip-choice', -- show choice node choices
+                'tamago324/cmp-zsh',         -- neovim zsh completion
+                'hrsh7th/cmp-calc',          -- quick math in completion
+                'ray-x/cmp-treesitter',      -- treesitter nodes
+                'jmbuhr/otter.nvim',         -- TODO: use this for code injected in markdown
+                'chrisgrieser/cmp-nerdfont', -- :<search string> to get icons
+                'KadoBOT/cmp-plugins',
+                'uga-rosa/cmp-dictionary',
+                'saadparwaiz1/cmp_luasnip',
+                'honza/vim-snippets',
+                'rafamadriz/friendly-snippets',
+            },
+        -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
         config = function()
-            if not cmp_enabled then return end
-
-            -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
             local cmp = require "cmp"
-            -- https://github.com/onsails/lspkind.nvim
-            local lspkind = require "lspkind"
+
+            if using_blink then
+                cmp.setup {
+                    -- will still complete autosnippets
+                    enabled = false,
+                    -- preselect = cmp.PreselectMode.None,
+                    snippet = {
+                        expand = function(args) require 'luasnip'.lsp_expand(args.body) end,
+                    },
+                    mapping = nil,
+                    sources = cmp.config.sources {
+                        { name = 'luasnip', options = { show_autosnippets = true } },
+                    },
+                    formatting = nil,
+                    sorting = nil,
+                }
+                return
+            end
 
             -- menu=show completion menu. menuone=also when only one option. noselect=don't select automatically.
             vim.opt.completeopt = { "menu", "menuone", "noselect" }
@@ -118,7 +166,7 @@ return {
             -- NOTE: changing this was highly weird. I had different result in a test file by opening and closing it without making changes to config.
             cmp.mapping.closeFallback = function()
                 return function(fallback)
-                    require('cmp').close()
+                    require'cmp'.close()
                     fallback()
                 end
             end
@@ -198,7 +246,7 @@ return {
                 end, { "i", "s" }),
             }
 
-            local types = require('cmp.types')
+            local types = require 'cmp.types'
 
             cmp.setup {
                 -- preselect = cmp.PreselectMode.None,
@@ -225,7 +273,8 @@ return {
                 formatting = {
                     -- https://github.com/onsails/lspkind.nvim
                     -- https://github.com/hrsh7th/nvim-cmp/wiki/Menu-Appearance
-                    format = lspkind.cmp_format {
+                    -- https://github.com/onsails/lspkind.nvim
+                    format = require "lspkind".cmp_format {
                         mode = 'symbol',
                         maxwidth = 50,
                         ellipsis_char = '…',
@@ -355,7 +404,7 @@ return {
     },
     {
         'saadparwaiz1/cmp_luasnip',
-        enabled = cmp_enabled,
+        -- enabled = not using_blink, -- still needed
         lazy = true,
         dependencies = { 'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp" },
         config = function()
@@ -388,6 +437,9 @@ return {
                 -- "luasnippets" folder no longer auto-included. It also changes from tex->latex.
                 -- ft_func = require("luasnip.extras.filetype_functions").from_cursor_pos
             }
+
+            -- the rest only if using pure cmp
+            if using_blink then return end
 
             -- like pressing > which looks like forward arrow
             vim.keymap.set({ "i", "s", "n" }, "<C-.>", function()

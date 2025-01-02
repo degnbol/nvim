@@ -171,6 +171,14 @@ return {
                             return items
                         end
                     },
+                    luasnip = {
+                        name = 'Luasnip',
+                        module = 'blink.cmp.sources.luasnip',
+                        opts = {
+                            use_show_condition = true,
+                            show_autosnippets = true,
+                        }
+                    },
                     lazydev = {
                         name = "LazyDev",
                         module = "lazydev.integrations.blink",

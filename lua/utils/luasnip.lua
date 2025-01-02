@@ -2,6 +2,7 @@
 local M = {}
 
 local ls = require "luasnip"
+local extras = require "luasnip.extras"
 -- otherwise we get errors in other scripts that says s is defined as a bool
 local s = ls.snippet
 local sn = ls.snippet_node
@@ -95,6 +96,13 @@ end
 ---@return dynamicnode
 function M.upper_jump(jump_index, node_reference)
     return d(jump_index, upper_jump, {node_reference})
+end
+
+-- luasnip line_end condition doesn't seem to currently work with blink.cmp
+if pcall(require, 'blink.cmp') then
+    M.line_end = function () return true end
+else
+    M.line_end = extras.conds.line_end
 end
 
 return M
