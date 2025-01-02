@@ -267,6 +267,13 @@ return {
             },
             -- don't autoshow completion in cmdline
             completion = {
+                accept = {
+                    auto_brackets = {
+                        override_brackets_for_filetypes = {
+                            tex = {"{", "}"},
+                        },
+                    },
+                },
                 menu = {
                     auto_show = function(ctx) return ctx.mode ~= 'cmdline' end,
                     -- icon at end instead of before word
