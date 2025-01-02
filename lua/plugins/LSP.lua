@@ -242,6 +242,7 @@ return {
             -- }
 
             -- https://github.com/Myriad-Dreamin/tinymist/blob/main/editors/neovim/Configuration.md
+            -- for typst
             lsp.tinymist.setup {
                 on_attach = function (client, bufnr)
                     -- Don't override default on_attach
@@ -250,9 +251,9 @@ return {
                     local function pinMain(fname)
                         return vim.lsp.buf.execute_command({ command = 'tinymist.pinMain', arguments = { fname } })
                     end
-                    vim.keymap.set('n', '<leader><leader>p', function ()
+                    vim.keymap.set('n', '<LocalLeader>p', function ()
                         return pinMain(vim.api.nvim_buf_get_name(0))
-                    end, { desc="Pin buffer as main" })
+                    end, { buffer=true, desc="Pin buffer as main" })
                     -- search upwards for a main.typ
                     local mainfile = vim.fs.find("main.typ", {type="file", upward=true})[1]
                     if mainfile ~= nil then

@@ -34,8 +34,8 @@ return {
         "lervag/vimtex",
         init=function()
             -- instead of <localleader>l
-            -- We want <localleader>l for LSP and double leader for filetype specific mappings.
-            g.vimtex_mappings_prefix = "<localleader><localleader>"
+            -- We want <leader>l for LSP and double leader (i.e. localleader) for filetype specific mappings.
+            g.vimtex_mappings_prefix = "<localleader>"
 
             -- g.vimtex_view_method = 'sioyek' -- not working
             g.vimtex_view_method = 'skim'
@@ -109,7 +109,7 @@ return {
             }
 
             -- if in a subfile, by default we compile only that.
-            -- <leader><leader>m to toggle compiling main instead.
+            -- <localleader>m to toggle compiling main instead.
             g.vimtex_subfile_start_local = true -- doesn't seem to work.
             -- Also toggling is inconsistent so just use it and look at the message.
 

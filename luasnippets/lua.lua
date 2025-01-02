@@ -108,7 +108,7 @@ s({trig="req", dscr="require", condition=conds.line_begin, snippetType='autosnip
     f(function (import_name)
         local parts = vim.split(import_name[1][1], '.', true)
         return "local " .. (parts[#parts] or "") .. " = " end, {1})
-}), t'require "', i(1), t'"'}),
+}), t'require"', i(1), t'"'}),
 
 s({trig="nmap"},
 fmta([[vim.keymap.set('n', '<>', "<<Cmd>><><<CR>>", { desc="<>" })]],

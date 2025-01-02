@@ -1,6 +1,5 @@
 local hi = require "utils/highlights"
 local util = require "utils/init"
-require"utils/keymap" -- set_keymap_desc
 
 return {
     {
@@ -14,6 +13,7 @@ return {
             -- use alt instead of ctrl since ctrl arrows moves mac os windows.
             -- Other keybindings (e.g. [] and y) cannot be set by multicursor since they are set elsewhere, hence startup warnings.
             -- Ignore for now since we can live without them.
+            local set_keymap_desc = function(...) pcall(require"mini.clue".set_keymap_desc, ...) end
             set_keymap_desc('n', "<C-Down>",  "Multi cursor down")
             set_keymap_desc('n', "<C-Up>",  "Multi cursor up")
         end,

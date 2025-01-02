@@ -18,9 +18,9 @@ vim.opt.list = false
 -- require"completion.plotlyjs.cmp_plotlyjs".setup()
 
 -- manually mark that plotlyjs is being used
-vim.keymap.set('n', '<leader><leader>+', function ()
+vim.keymap.set('n', '<localleader>+', function ()
     vim.g.loaded_plotly = true
-end, { desc="Manually load plotlyjs completion" })
+end, { buffer=true, desc="Manually load plotlyjs completion" })
 -- ... or check if plotlyjs is loaded by scanning first 20 lines
 for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 20, false)) do
     if line:lower():match("plotly") then

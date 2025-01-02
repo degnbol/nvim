@@ -123,7 +123,7 @@ return {
 
                 clues = {
                     -- use e.g. postkeys='<C-w>' to make a submode. 
-                    { mode = 'n', keys = '<leader><leader>', desc = "Filetype specific" },
+                    { mode = 'n', keys = '<LocalLeader>', desc = "Filetype specific" },
                     { mode = 'n', keys = '<leader>:', desc = "Ex cmd related" },
                     { mode = 'n', keys = '<leader>]', desc = "Tag" },
                     { mode = 'n', keys = '<leader>a', desc = "Argument" },
@@ -199,7 +199,7 @@ return {
             }
 
             vim.schedule(function ()
-                require "utils/keymap"
+                local set_keymap_desc = function(...) pcall(require"mini.clue".set_keymap_desc, ...) end
                 set_keymap_desc('n', 'gc', "Comment")
                 set_keymap_desc('n', 'gcc', "Line")
                 set_keymap_desc('n', 'g/', "Last search")

@@ -1,5 +1,4 @@
 local util = require "utils/init"
-require "utils/keymap" -- set_keymap_desc
 
 return {
     -- core behaviour
@@ -13,6 +12,7 @@ return {
     {
         "tpope/vim-unimpaired",
         config = function ()
+            local set_keymap_desc = function(...) pcall(require"mini.clue".set_keymap_desc, ...) end
             set_keymap_desc('n', 'yo', "Option toggle")
             -- duplicate mappings
             set_keymap_desc('n', '=s', "Setting toggle | Substitute+reindent")

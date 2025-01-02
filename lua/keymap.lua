@@ -396,15 +396,15 @@ vim.api.nvim_create_autocmd("Filetype", {
         end
         local this = "kitty"
         local other = ftapp[vim.bo.filetype]
-        vim.keymap.set('n', '<leader><leader>1',
+        vim.keymap.set('n', '<LocalLeader>1',
             rectangle {maximize=this},
-            { desc="Whole screen layout" })
-        vim.keymap.set('n', '<leader><leader>2',
+            { buffer=true, desc="Whole screen layout" })
+        vim.keymap.set('n', '<LocalLeader>2',
             rectangle {["right-half"]=other, ["left-half"]=this},
-            { desc="Half screen layout" })
-        vim.keymap.set('n', '<leader><leader>3',
+            { buffer=true, desc="Half screen layout" })
+        vim.keymap.set('n', '<LocalLeader>3',
             rectangle {["last-third"]=other, ["first-two-thirds"]=this},
-            { desc="Two-thirds screen layout" })
+            { buffer=true, desc="Two-thirds screen layout" })
 
     end
 })

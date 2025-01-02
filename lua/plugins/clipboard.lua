@@ -129,18 +129,20 @@ return {
         vim.keymap.set("n", "<leader>pw", ":set paste<CR>p:set nopaste<CR>`[gw`]", { desc="Format default" })
     end},
     -- paste with multiple empty lines around contents reduced to single empty lines.
-    {"AndrewRadev/whitespaste.vim",
-    init = function ()
-        -- normally gp is p where cursor is moved at end. Since we do that by default, we can use it for whitepaste.
-        -- the plugin uses ,p and ,P by default but that slows down using , for ,; moving between f/t searching.
-        vim.api.nvim_set_var("whitespaste_before_mapping", 'gP')
-        vim.api.nvim_set_var("whitespaste_after_mapping",  'gp')
+    {
+        "AndrewRadev/whitespaste.vim",
+        init = function ()
+            -- normally gp is p where cursor is moved at end. Since we do that by default, we can use it for whitepaste.
+            -- the plugin uses ,p and ,P by default but that slows down using , for ,; moving between f/t searching.
+            vim.api.nvim_set_var("whitespaste_before_mapping", 'gP')
+            vim.api.nvim_set_var("whitespaste_after_mapping",  'gp')
 
-        vim.schedule(function ()
-            require "utils/keymap"
-            set_keymap_desc('n', 'gP', "Put before + trim empty")
-            set_keymap_desc('n', 'gp', "Put after + trim empty")
-        end)
-    end,},
+            vim.schedule(function ()
+                local set_keymap_desc = function(...) pcall(require"mini.clue".set_keymap_desc, ...) end
+                set_keymap_desc('n', 'gP', "Put before + trim empty")
+                set_keymap_desc('n', 'gp', "Put after + trim empty")
+            end)
+        end,
+    },
 }
 

@@ -333,7 +333,7 @@ vim.api.nvim_create_autocmd(defaults.checkevents, {
 })
 
 -- also set a manual call in case we don't want to save
-vim.keymap.set('n', '<leader><leader>a', updateWidths, { desc="Align columns" })
+vim.keymap.set('n', '<localleader>a', updateWidths, { desc="Align columns" })
 
 -- unhide and rehide when saving as to always save the full text to file
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -605,7 +605,7 @@ if false then
     })
 end
 
-vim.keymap.set('n', '<leader><leader>h', function ()
+vim.keymap.set('n', '<LocalLeader>h', function ()
     if vim.v.count == 0 then
         -- toggle
         if winid_float == nil then
@@ -621,13 +621,13 @@ vim.keymap.set('n', '<leader><leader>h', function ()
             vim.api.nvim_win_set_config(winid_float, {height=vim.v.count})
         end
     end
-end, { desc="Toggle header or set its size with count" })
-vim.keymap.set('v', '<leader><leader>h', function ()
+end, { buffer=true, desc="Toggle header or set its size with count" })
+vim.keymap.set('v', '<LocalLeader>h', function ()
     local r1, _, r2, _ = util.get_visual_range()
     -- close then reopen if already open
     if winid_float ~= nil then close_header() end
     open_header(r1, r2 - r1 + 1)
-end, { desc="Set header to the selected range of lines" })
+end, { buffer=true, desc="Set header to the selected range of lines" })
 
 
 -- FIXME: bug with header row where comment rows before it are excluded.

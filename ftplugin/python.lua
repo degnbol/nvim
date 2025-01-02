@@ -36,7 +36,7 @@ local function load_pymol()
     end
 end
 -- manually load
-vim.keymap.set('n', '<leader><leader>+', load_pymol, { desc="Manually load pymol snippets+completion+syntax" })
+vim.keymap.set('n', '<localleader>+', load_pymol, { buffer=true, desc="Manually load pymol snippets+completion+syntax" })
 -- check if pymol is loaded by scanning first 10 lines
 for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 10, false)) do
     -- might be using e.g. `from pymol_util import *`

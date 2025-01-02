@@ -5,7 +5,8 @@ local api = vim.api
 local rtp = vim.opt.runtimepath:get()[1]
 
 g.mapleader = ' '
-g.maplocalleader = ' '
+-- could also use default \ for single key more conveniently allowing for sub categories
+g.maplocalleader = '  '
 
 opt.expandtab = true
 opt.tabstop = 4 -- how many spaces does a tab correspond to?
