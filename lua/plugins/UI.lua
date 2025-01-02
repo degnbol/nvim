@@ -56,6 +56,13 @@ return {
             -- no prompt on rename, including folder change.
             -- The prompt is a nice list of the performed changes.
             -- skip_confirm_for_simple_edits = true,
+            keymaps = {
+                -- I regularly /-search for filename and don't need to hl that inside the buffer after opening
+                ["<CR>"] = function ()
+                    vim.cmd "nohl"
+                    require"oil".select()
+                end
+            }
         },
     },
     {

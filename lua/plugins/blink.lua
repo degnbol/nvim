@@ -155,6 +155,8 @@ return {
                     -- lacks LSP, hence the custom asciidoc provider
                     asciidoc = {"asciidoc", "lsp", "omni", "luasnip", "snippets", "buffer"},
                 },
+                -- don't lower snippet scores since we use so many custom ones
+                transform_items = function(_, items) return items end,
                 providers = {
                     lsp = {
                         -- Buffer is fallback of LSP by default.
