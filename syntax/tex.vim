@@ -12,3 +12,4 @@ syntax match texRefArg /tab:[A-Za-z0-9_-]\+/
 syntax match texRefArg /eq:[A-Za-z0-9_-]\+/
 
 hi def link texItemLabelDelim Delimiter
+

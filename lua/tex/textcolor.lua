@@ -1,5 +1,7 @@
 #!/usr/bin/env lua
 
+local M
+
 local ns = vim.api.nvim_create_namespace("textcolor")
 vim.api.nvim_set_hl_ns(ns)
 
@@ -32,16 +34,18 @@ local function textcolorRange(buf, linestart, lineend)
     end
 end
 
-vim.api.nvim_buf_attach(0, false, {
-    on_lines=function (_, buf, changedtick, linenum0, linenum1, linenumLast, preCount, del_codepoints, del_codeunits)
-        vim.api.nvim_buf_clear_namespace(buf, ns, linenum0, math.max(linenum1, linenumLast))
-        textcolorRange(buf, linenum0, math.max(linenum1, linenumLast)+1)
-    end,
-    on_reload=function (_, buf)
-        textcolorRange(buf, 0, -1)
-    end
-})
+function M.color_textcolor()
+    vim.api.nvim_buf_attach(0, false, {
+        on_lines=function (_, buf, changedtick, linenum0, linenum1, linenumLast, preCount, del_codepoints, del_codeunits)
+            vim.api.nvim_buf_clear_namespace(buf, ns, linenum0, math.max(linenum1, linenumLast))
+            textcolorRange(buf, linenum0, math.max(linenum1, linenumLast)+1)
+        end,
+        on_reload=function (_, buf)
+            textcolorRange(buf, 0, -1)
+        end
+    })
+    -- color newly opened file
+    textcolorRange(0, 0, -1)
+end
 
--- color newly opened file
-textcolorRange(0, 0, -1)
-
+return M

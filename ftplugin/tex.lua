@@ -1,8 +1,9 @@
 #!/usr/bin/env lua
+-- NOTE: only currently attached to the first tex file opened (since require runs things once).
 require "tex.overleaf"
 local tbl = require "tex.tables"
-require "tex.cmds"
-require "tex.textcolor"
+require"tex.cmds".map_keys()
+require"tex.textcolor".color_textcolor()
 local hi = require "utils/highlights"
 local util = require "utils/init" -- string.contains and schedule_notify
 local latexmk = require "tex.latexmk"
@@ -50,6 +51,7 @@ mapbuf('<LocalLeader><left>', "<Plug>TableGoLeft", "Goto left cell")
 mapbuf('<LocalLeader><right>', "<Plug>TableGoRight", "Goto right cell")
 mapbuf('<LocalLeader><up>', "<Plug>TableGoUp", "Goto up cell")
 mapbuf('<LocalLeader><down>', "<Plug>TableGoDown", "Goto down cell")
+-- can't use backspace since it is hardcoded for up one level in mini.clue
 mapbuf('<LocalLeader><del>', "<Plug>(vimtex-clean)", "Clean (rm aux)")
 mapbuf('<LocalLeader><S-del>', "<Plug>(vimtex-clean-all)", "Clean all (rm aux+out)")
 set_keymap_desc('n', '<LocalLeader>e', "Errors")

@@ -5,30 +5,51 @@ local vtu = require "utils/vimtex"
 local before = util.before
 local get_visual_range = util.get_visual_range
 local in_math = vtu.in_math
-local cmd = vim.cmd
 
 -- bold, italics, and similar.
 -- TODO: color text, where color text should probs be <C-something>r for red, and so on.
 -- <c-c> is already for cancel and <c-u> for delete to start of line. These are uncommon so maybe just uppercase U and C?
 
-local textbf = "textbf"
-local textit = "textit"
-local texttt = "texttt"
-local textul = "underline"
-local textcl = "textcolor"
--- unlike mathbf that only bolds latin, symbf with unicode-math works with greek.
-local mathbf = "symbf"
--- math text is italic by default, so we toggle roman instead.
--- Unlike mathrm that only un-italizes latin, symrm with unicode-math works with greek.
--- There's also \text but it does a bit more than just un-italize. It 
--- also makes text a bit less strong, so it should maybe be an explicit 
--- choice.
-local mathit = "symrm"
-local mathtt = "texttt"
-local mathul = "underline"
--- There may be a need to redefine the textcolor cmd in math, see
--- https://tex.stackexchange.com/questions/21598/how-to-color-math-symbols
-local mathcl = "textcolor"
+local M = {}
+
+local cmd_mappings = {
+    bold = {
+        imap = "<C-S-b>",
+        text = "textbf",
+        -- unlike mathbf that only bolds latin, symbf with unicode-math works with greek.
+        math = "symbf"
+    },
+    italic = {
+        imap = "<C-S-i>",
+        text = "textit",
+        -- useful to reduce spacing slightly in multi letter variable names
+        math = "mathit"
+    },
+    emphasis = {
+        imap = "<C-S-e>",
+        text = "emph",
+    },
+    upright = {
+        imap = "<C-S-u>",
+        text = "normalfont",
+        -- Unlike mathrm that only un-italizes latin, symrm with unicode-math works with greek.
+        math = "symrm"
+    },
+    teletype = {
+        imap = "<C-S-t>",
+        text = "texttt",
+    },
+    underline = {
+        imap = "<C-S-->",
+        text = "underline",
+    },
+    color = {
+        imap = "<C-S-c>",
+        text = "textcolor",
+        -- There may be a need to redefine the textcolor cmd in math, see
+        -- https://tex.stackexchange.com/questions/21598/how-to-color-math-symbols
+    }
+}
 
 -- adjust a c(olumn) to before a cmd if it is inside it.
 -- Implication is we don't split a cmd.
@@ -46,7 +67,7 @@ end
 -- max number of lines to look before cursor for an un-closed cmd
 local CONTEXT = 20
 
-local insert_or_del_cmd = function(name)
+local _insert_or_del_cmd = function(name)
     local cmd = vtu.inside_cmd(name)
     if cmd ~= nil then
         return vim.fn['vimtex#cmd#delete'](cmd[1], cmd[2])
@@ -102,7 +123,7 @@ end
 
 -- surround a selection with a cmd that is joined if overlapping, e.g. textbf 
 -- where it isn't meaningful to bold text twice.
-local function surround_visual(name)
+local function _surround_visual(name)
     local r1, c1, r2, c2 = get_visual_range()
     -- (1,1)-indexed.
     c1,c2=c1+1,c2+1
@@ -123,7 +144,7 @@ local function surround_visual(name)
     local cmds = vtu.inside_cmd_range(name, r1, math.max(1,c1-1), r2, c2+1)
     -- if any go beyond the selection we expand the selection to merge them
     for _, cmd in ipairs(cmds) do
-        _r1, _c1, _r2, _c2 = unpack(cmd)
+        local _r1, _c1, _r2, _c2 = unpack(cmd)
         if before(_r1, _c1, r1, c1) then
             r1, c1 = _r1, _c1
         end
@@ -136,8 +157,8 @@ local function surround_visual(name)
     -- -1 for 0-index, end-exclusive so not on r2
     local lines = vim.api.nvim_buf_get_lines(0, r1-1, r2, true)
     local shift, r_last = 0, r1 -- keep track of the shift in the next indexes
-    for iCmd, cmd in ipairs(cmds) do
-        _r1, _c1, _r2, _c2 = unpack(cmd)
+    for _, cmd in ipairs(cmds) do
+        local _r1, _c1, _r2, _c2 = unpack(cmd)
         if _r1 ~= r_last then shift = 0 else -- reset on new line
             _c1=_c1-shift
         end
@@ -166,60 +187,29 @@ end
 
 -- set keymaps
 
-vim.keymap.set("i", "<C-S-b>", function ()
+local function _get_cmd_name(cmd_grp)
     if in_math() then
-        insert_or_del_cmd(mathbf)
+        return cmd_grp.math or cmd_grp.text
     else
-        insert_or_del_cmd(textbf)
+        return cmd_grp.text
     end
-end)
-vim.keymap.set("i", "<C-S-i>", function ()
-    if in_math() then
-        insert_or_del_cmd(mathit)
-    else
-        insert_or_del_cmd(textit)
-    end
-end)
-vim.keymap.set("i", "<C-S-t>", function ()
-    if in_math() then
-        insert_or_del_cmd(mathtt)
-    else
-        insert_or_del_cmd(texttt)
-    end
-end)
-vim.keymap.set("i", "<C-S-u>", function ()
-    if in_math() then
-        insert_or_del_cmd(mathul)
-    else
-        insert_or_del_cmd(textul)
-    end
-end)
-vim.keymap.set("x", "<C-S-b>", function ()
-    if in_math() then
-        surround_visual(mathbf)
-    else
-        surround_visual(textbf)
-    end
-end)
-vim.keymap.set("x", "<C-S-i>", function ()
-    if in_math() then
-        surround_visual(mathit)
-    else
-        surround_visual(textit)
-    end
-end)
-vim.keymap.set("x", "<C-S-t>", function ()
-    if in_math() then
-        surround_visual(mathtt)
-    else
-        surround_visual(texttt)
-    end
-end)
-vim.keymap.set("x", "<C-S-u>", function ()
-    if in_math() then
-        surround_visual(mathul)
-    else
-        surround_visual(textul)
-    end
-end)
+end
 
+function M.map_keys()
+    for desc, cmd_grp in pairs(cmd_mappings) do
+        local cmd_name = _get_cmd_name(cmd_grp)
+        if cmd_grp.imap ~= nil then
+            vim.keymap.set("i", cmd_grp.imap, function ()
+                _insert_or_del_cmd(cmd_name)
+            end, {buffer=true, desc=desc})
+        end
+        local xmap = cmd_grp.xmap or cmd_grp.imap
+        if xmap ~= nil then
+            vim.keymap.set("x", xmap, function ()
+                _surround_visual(cmd_name)
+            end, {buffer=true, desc=desc})
+        end
+    end
+end
+
+return M
