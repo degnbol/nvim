@@ -9,9 +9,12 @@
 \renewcommand*{\fps@figure}{ht!}
 \makeatother
 
-% set textwidth as default includegraphics width.
+% Set defaults for \includegraphics:
+% width=\textwidth if no optional args are set (instead of default scale=1).
+% keepaspectratio by default so image isn't skewed by setting height.
+% Use keepaspectratio=false to change.
 \let\RAWincludegraphics\includegraphics
-\renewcommand{\includegraphics}[2][]{\RAWincludegraphics[width=\textwidth,#1]{#2}}
+\renewcommand{\includegraphics}[2][width=\textwidth]{\RAWincludegraphics[keepaspectratio,#1]{#2}}
 
 % import pdf with a pdf_tex file with command \pdftex[\textwidth]{folder/}{filename.pdf}
 % imported files created from svg that you can make with affinity designer, 
