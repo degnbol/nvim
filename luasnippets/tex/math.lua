@@ -37,13 +37,6 @@ end, {1}),
 {
 -- autosnippet
 
-s({trig="case", dscr="cases"},
-fmta([[
-\begin{cases}
-	<>
-\end{cases}
-]], {i(1)}), optm),
-
 s({trig="(%a)(%d)", dscr="auto subscript", regTrig=true},
 {re(1), t("_"), re(2)}, optm),
 s({trig="(%a)_(%d%d)", dscr="auto subscript 2", regTrig=true},

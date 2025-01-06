@@ -272,6 +272,20 @@ return {
                         override_brackets_for_filetypes = {
                             tex = {"{", "}"},
                         },
+                        -- Synchronously use the kind of the item to determine if brackets should be added
+                        kind_resolution = {
+                            enabled = true,
+                            blocked_filetypes = {
+                                'tex', -- incorrectly inserting brackets after e.g. label completion \cref{fig:...|}
+                            },
+                        },
+                        -- Asynchronously use semantic token to determine if brackets should be added
+                        semantic_token_resolution = {
+                            enabled = true,
+                            -- blocked_filetypes = { },
+                            -- How long to wait for semantic tokens to return before assuming no brackets should be added
+                            timeout_ms = 400,
+                        },
                     },
                 },
                 menu = {
