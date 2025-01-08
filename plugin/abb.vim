@@ -60,6 +60,7 @@ Abolish noone no one
 " for that kind of typo 
 Abolish ie i.e.
 Abolish unqiue unique
+Abolish simplicies simplices
 
 " language specific, see lua/keymap
 " TODO: make this a bit more convenient, for autocorrecting language specific 

@@ -340,7 +340,7 @@ return {
                 "r",
                 "rust",
                 "sql",
-                "tex",
+                -- "tex",
                 "zsh",
                 "sh",
                 "json",
@@ -349,7 +349,13 @@ return {
             -- to be extra explicit I specify a comma separated list of case 
             -- insensitive enabled languages
             vim.g.gutentags_ctags_extra_args = {
-                "--languages=asciidoc,julia,java,lua",
+                "--languages=asciidoc,julia,java,lua,tex",
+            }
+            vim.g.gutentags_ctags_extra_args = {
+                -- tried, almost worked. Was slow when worked and only inside buffer.
+                -- [[--langdef=tex]],
+                -- [[--langmap=tex:.tex]],
+                -- [[--regex-tex=/^\\newglossaryentry\{([A-Za-z0-9 ]+)/\1/g,glossary/i]],
             }
         end,
     },
