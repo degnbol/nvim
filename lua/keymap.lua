@@ -185,9 +185,9 @@ map('i', "<C-S-]>", '{}<left>')
 -- hack map of shift+space
 local bracketJumpCode =  "\x1F"
 local paired = { '""', "''", "``", "()", '[]', "{}", "<>", "$$" }
-local paireddouble = { '[[]]' }
+local paireddouble = { '[[]]', "\\{\\}" } -- lua and tex
 local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>', '$' }
-local doubles = { "[[", "]]" }
+local doubles = { "[[", "]]", "\\{", "\\}", } -- lua and tex
 local triples = { '"""', "'''", "```" }
 local function bracketJump(line, c)
     if vim.tbl_contains(triples, line:sub(c-2,c)) then
