@@ -164,7 +164,7 @@ return {
                     julia = { "plotly", "lsp", "omni", "path", "snippets", "buffer" },
                     -- lacks LSP, hence the custom asciidoc provider
                     asciidoc = {"asciidoc", "lsp", "omni", "snippets", "buffer", "dictionary" },
-                    tex = { "lsp", "omni", "path", "snippets", "buffer", "dictionary", "emoji", },
+                    tex = { "lsp", "omni", "path", "snippets", "buffer", "dictionary", },
                 },
                 -- don't lower snippet scores since we use so many custom ones
                 transform_items = function(_, items) return items end,
