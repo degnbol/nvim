@@ -75,6 +75,10 @@ return {
         -- build = 'nix run .#build-plugin',
 
         init = function ()
+            -- We are managing snippets with luasnip instead of default currently, since we already wrote many snippets with luasnip and it allows for more complexity.
+            -- However, we have also written some quick ones in VS code style that we should have available.
+            require("luasnip.loaders.from_vscode").lazy_load({ paths = "~/.config/nvim/snippets" })
+
             -- Also jump between snippets with same mappings in normal mode.
             vim.keymap.set('n', '<C-,>', function ()
                 require"blink.cmp".snippet_backward()
@@ -178,6 +182,10 @@ return {
                             return items
                         end
                     },
+                    snippets = {
+                        -- from default -3
+                        score_offset = 0,
+                    },
                     lazydev = {
                         name = "LazyDev",
                         module = "lazydev.integrations.blink",
@@ -222,6 +230,9 @@ return {
                     dictionary = {
                         module = 'blink-cmp-dictionary',
                         name = 'Dict',
+                        score_offset = -100,
+                        max_items = 10,
+                        min_keyword_length = 3,
                         --- @module 'blink-cmp-dictionary'
                         --- @type blink-cmp-dictionary.Options
                         opts = {
@@ -298,8 +309,8 @@ return {
                     },
                 },
             },
-            -- don't autoshow completion in cmdline
             completion = {
+                list = { selection = { preselect = false, auto_insert = true },},
                 accept = {
                     auto_brackets = {
                         override_brackets_for_filetypes = {
@@ -322,8 +333,8 @@ return {
                     },
                 },
                 menu = {
+                    -- don't autoshow completion in cmdline
                     auto_show = function(ctx) return ctx.mode ~= 'cmdline' end,
-                    -- icon at end instead of before word
                     draw = {
                         components = {
                             source_icon = {
@@ -334,6 +345,7 @@ return {
                                 highlight = 'BlinkCmpSource',
                             },
                         },
+                        -- icon at end instead of before word
                         columns = {
                             { "label", "label_description" },
                             { "kind_icon", gap=1, "source_icon",
@@ -346,8 +358,6 @@ return {
                         treesitter = { 'lsp' },
                     }
                 },
-                -- Insert completion item on selection, don't select by default
-                list = { selection = { preselect = true, auto_insert = true },},
                 -- Ghost text clashes with auto_insert
                 -- ghost_text = { enabled = true },
                 keyword = {
