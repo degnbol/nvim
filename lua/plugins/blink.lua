@@ -26,7 +26,7 @@ local source_icon = {
     asciidoc      = " ",
 }
 
-local zsh_sources = { "zsh", "lsp", "path", "luasnip", "snippets", "buffer" }
+local zsh_sources = { "zsh", "lsp", "path", "snippets", "buffer" }
 
 local only_snippets = false
 
@@ -41,6 +41,11 @@ return {
     {
         "folke/lazydev.nvim",
         ft = "lua",
+    },
+    {
+        "Kaiser-Yang/blink-cmp-dictionary",
+        lazy = true,
+        build = "brew install wordnet",
     },
     {
         'saghen/blink.cmp',
@@ -58,7 +63,8 @@ return {
             -- "jmbuhr/otter.nvim",         -- TODO: use this for code injected in markdown
             -- "chrisgrieser/cmp-nerdfont", -- :<search string> to get icons
             "KadoBOT/cmp-plugins",
-            -- "uga-rosa/cmp-dictionary",
+            "Kaiser-Yang/blink-cmp-dictionary",
+            "moyiz/blink-emoji.nvim",
         },
 
         -- use a release tag to download pre-built binaries
@@ -96,7 +102,7 @@ return {
                         end,
                         once = true,
                     })
-                    cmp.show({ providers = { 'luasnip', 'lsp' }})
+                    cmp.show({ providers = { 'snippets', 'lsp', }})
                 end
             end)
             -- with shift to go backwards
@@ -111,7 +117,7 @@ return {
             vim.keymap.set({ "i", "s", "n" }, "<C-s>", function()
                 local cmp = require 'blink.cmp'
                 -- This will also change an active popup menu listing to only show snippets
-                cmp.show({ providers = { 'spell' } })
+                cmp.show({ providers = { 'dictionary' } })
             end)
 
             -- underline active parameter in signature help rather than colour it in some pale unhelpful colour
@@ -144,16 +150,17 @@ return {
             -- Default list of enabled providers defined so that you can extend it
             -- elsewhere in your config, without redefining it, due to `opts_extend`
             sources = {
-                default = { "lsp", "omni", "path", "luasnip", "snippets", "buffer" },
+                default = { "lsp", "omni", "path", "snippets", "buffer" },
                 per_filetype = {
-                    lua = { "luasnip", "lazydev", "nvim_lua", "lsp", "path", "snippets", "buffer" },
+                    lua = { "snippets", "lazydev", "nvim_lua", "lsp", "path", "buffer", "emoji", },
                     sh = zsh_sources,
                     zsh = zsh_sources,
                     ["sh.zsh"] = zsh_sources,
-                    python = { "pymol_settings", "lsp", "omni", "path", "luasnip", "snippets", "buffer" },
-                    julia = { "plotly", "lsp", "omni", "path", "luasnip", "snippets", "buffer" },
+                    python = { "pymol_settings", "lsp", "omni", "path", "snippets", "buffer" },
+                    julia = { "plotly", "lsp", "omni", "path", "snippets", "buffer" },
                     -- lacks LSP, hence the custom asciidoc provider
-                    asciidoc = {"asciidoc", "lsp", "omni", "luasnip", "snippets", "buffer"},
+                    asciidoc = {"asciidoc", "lsp", "omni", "snippets", "buffer", "dictionary" },
+                    tex = { "lsp", "omni", "path", "snippets", "buffer", "dictionary", "emoji", },
                 },
                 -- don't lower snippet scores since we use so many custom ones
                 transform_items = function(_, items) return items end,
@@ -170,14 +177,6 @@ return {
                             end
                             return items
                         end
-                    },
-                    luasnip = {
-                        name = 'Luasnip',
-                        module = 'blink.cmp.sources.luasnip',
-                        opts = {
-                            use_show_condition = true,
-                            show_autosnippets = true,
-                        }
                     },
                     lazydev = {
                         name = "LazyDev",
@@ -211,7 +210,7 @@ return {
                         name = "asciidoc",
                         module = "completion.asciidoc.blink_asciidoc",
                     },
-                    -- too slow, only use with manual activation, see keymap above.
+                    -- too slow, use the dictionary plugin instead, it's amazing.
                     spell = {
                         name = "spell",
                         module = "completion.spell",
@@ -219,6 +218,34 @@ return {
                         max_items = 10,
                         min_keyword_length = 2,
                         -- timeout_ms = 500,
+                    },
+                    dictionary = {
+                        module = 'blink-cmp-dictionary',
+                        name = 'Dict',
+                        --- @module 'blink-cmp-dictionary'
+                        --- @type blink-cmp-dictionary.Options
+                        opts = {
+                            get_command = {
+                                'rg', -- make sure this command is available in your system
+                                '--color=never',
+                                '--no-line-number',
+                                '--no-messages',
+                                '--no-filename',
+                                '--ignore-case',
+                                '--',
+                                '${prefix}', -- this will be replaced by the result of 'get_prefix' function
+                                vim.fn.expand("~/.config/nvim/spell/en.dic"),
+                                vim.fn.expand("~/.config/nvim/spell/custom.utf8.add"),
+                            },
+                            documentation = {
+                                enable = true, -- enable documentation to show the definition of the word
+                                get_command = {
+                                    'wn', -- make sure this command is available in your system
+                                    '${word}', -- this will be replaced by the word to search
+                                    '-over'
+                                }
+                            }
+                        }
                     },
                     buffer = {
                         -- keep case of first char
@@ -262,6 +289,12 @@ return {
                     treesitter = {
                         name = "treesitter",
                         module = 'blink.compat.source',
+                    },
+                    emoji = {
+                        module = "blink-emoji",
+                        name = "Emoji",
+                        score_offset = 15, -- Tune by preference
+                        opts = { insert = true }, -- Insert emoji (default) or complete its name
                     },
                 },
             },
@@ -314,9 +347,19 @@ return {
                     }
                 },
                 -- Insert completion item on selection, don't select by default
-                list = { selection = 'auto_insert' },
+                list = { selection = { preselect = true, auto_insert = true },},
                 -- Ghost text clashes with auto_insert
                 -- ghost_text = { enabled = true },
+                keyword = {
+                    -- 'prefix' will fuzzy match on the text before the cursor
+                    -- 'full' will fuzzy match on the text before *and* after the cursor
+                    -- example: 'foo_|_bar' will match 'foo_' for 'prefix' and 'foo__bar' for 'full'
+                    -- range = 'prefix',
+                    -- Regex used to get the text when fuzzy matching
+                    -- regex = '[-_]\\|\\k',
+                    -- After matching with regex, any characters matching this regex at the prefix will be excluded
+                    -- exclude_from_prefix_regex = '[\\-]',
+                },
                 documentation = {
                     auto_show = true,
                     auto_show_delay_ms = 0,
@@ -361,14 +404,7 @@ return {
                 },
             },
             snippets = {
-                expand = function(snippet) require'luasnip'.lsp_expand(snippet) end,
-                active = function(filter)
-                    if filter and filter.direction then
-                        return require'luasnip'.jumpable(filter.direction)
-                    end
-                    return require'luasnip'.in_snippet()
-                end,
-                jump = function(direction) require'luasnip'.jump(direction) end,
+                preset = "luasnip",
       },
         },
         opts_extend = { "sources.default" }
