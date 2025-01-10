@@ -183,8 +183,9 @@ return {
                         end
                     },
                     snippets = {
-                        -- from default -3
-                        score_offset = 0,
+                        -- from default -3. Make sure path is stil higher.
+                        -- When a path is relevant to complete, it usually should.
+                        score_offset = -2,
                     },
                     lazydev = {
                         name = "LazyDev",
