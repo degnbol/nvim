@@ -56,6 +56,8 @@ return {
                 -- It's ok to have glossaries package in preamble without using it (e.g. yet).
                 -- \\ in literal tested to work
                 [[No \\printglossary or \\printglossaries found]],
+                [[Warning: Command \\underbar  has changed.]],
+                [[Warning: Command \\overline  has changed.]],
             }
             g.vimtex_log_ignore = ignore
             g.vimtex_quickfix_ignore_filters = ignore

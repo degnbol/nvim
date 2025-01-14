@@ -8,12 +8,13 @@
 
 local source_icon = {
     buffer        = " ",
-    omni          = " ", -- most likely set to syntax keyword completion
-    nvim_lsp      = " ", -- minimal
-    luasnip       = " ", -- "", -- <> is also shown as the type, so it is redudant.
+    omni          = " ",
+    lsp           = " ",
+    luasnip       = " ",
     nvim_lua      = " ",
+    nerdfonts     = "󰊪 ",
     latex_symbols = " ",
-    nerdfont      = "󰊪 ",
+    vimtex        = " ",
     calc          = " ",
     path          = "/ ",
     dictionary    = " ",
@@ -24,6 +25,7 @@ local source_icon = {
     pymol_settings= " ",
     plotly        = " ",
     asciidoc      = " ",
+    emoji         = "😃",
 }
 
 local zsh_sources = { "zsh", "lsp", "path", "snippets", "buffer" }
@@ -64,7 +66,9 @@ return {
             -- "chrisgrieser/cmp-nerdfont", -- :<search string> to get icons
             "KadoBOT/cmp-plugins",
             "Kaiser-Yang/blink-cmp-dictionary",
-            "moyiz/blink-emoji.nvim",
+            -- "moyiz/blink-emoji.nvim",
+            -- "micangl/cmp-vimtex",
+            "davidmh/cmp-nerdfonts",
         },
 
         -- use a release tag to download pre-built binaries
@@ -156,7 +160,7 @@ return {
             sources = {
                 default = { "lsp", "omni", "path", "snippets", "buffer" },
                 per_filetype = {
-                    lua = { "snippets", "lazydev", "nvim_lua", "lsp", "path", "buffer", "emoji", },
+                    lua = { "snippets", "lazydev", "nvim_lua", "lsp", "path", "buffer", "nerdfonts", },
                     sh = zsh_sources,
                     zsh = zsh_sources,
                     ["sh.zsh"] = zsh_sources,
@@ -182,10 +186,13 @@ return {
                             return items
                         end
                     },
+                    path = {
+                        -- When a path is relevant to complete, it usually should.
+                        score_offset = 4,
+                    },
                     snippets = {
                         -- from default -3. Make sure path is stil higher.
-                        -- When a path is relevant to complete, it usually should.
-                        score_offset = -2,
+                        score_offset = -1,
                     },
                     lazydev = {
                         name = "LazyDev",
@@ -203,6 +210,10 @@ return {
                     },
                     zsh = {
                         name = "zsh",
+                        module = 'blink.compat.source',
+                    },
+                    nerdfonts = {
+                        name = "nerdfonts",
                         module = 'blink.compat.source',
                     },
                     pymol_settings = {
@@ -302,12 +313,17 @@ return {
                         name = "treesitter",
                         module = 'blink.compat.source',
                     },
-                    emoji = {
-                        module = "blink-emoji",
-                        name = "Emoji",
-                        score_offset = 15, -- Tune by preference
-                        opts = { insert = true }, -- Insert emoji (default) or complete its name
+                    -- not currently working
+                    vimtex = {
+                        name = "vimtex",
+                        module = 'blink.compat.source',
                     },
+                    -- emoji = {
+                    --     module = "blink-emoji",
+                    --     name = "Emoji",
+                    --     score_offset = 15, -- Tune by preference
+                    --     opts = { insert = true }, -- Insert emoji (default) or complete its name
+                    -- },
                 },
             },
             completion = {
