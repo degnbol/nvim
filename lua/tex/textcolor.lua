@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 
-local M
+local M = {}
 
 local ns = vim.api.nvim_create_namespace("textcolor")
 vim.api.nvim_set_hl_ns(ns)
