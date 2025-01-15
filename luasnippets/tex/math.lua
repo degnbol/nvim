@@ -124,8 +124,8 @@ t"\\R", optm),
 s({trig="ZZ", descr="real", wordTrig=false},
 t"\\Z", optm),
 
-s({trig="tt", descr="text", wordTrig=false},
-{t"\\text{",i(1),t"}"}, optm),
+s({trig=" tt", descr="text", wordTrig=false},
+{t" \\text{",i(1),t"}"}, optm),
 
 s({trig="\\?SI", descr="SI", regTrig=true},
 {t"\\SI{",i(1),t"}{", i(2), t"}"}, optm),

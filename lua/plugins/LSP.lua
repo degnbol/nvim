@@ -9,9 +9,6 @@ return {
     },
     {
         "neovim/nvim-lspconfig",
-        dependencies = {
-            'saghen/blink.cmp',
-        },
         config = function()
             -- default config copied from https://github.com/neovim/nvim-lspconfig
             -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
@@ -81,10 +78,15 @@ return {
                 vim.keymap.set({'n', 'v'}, '<leader>lf', vim.lsp.buf.format, { buffer = bufnr, desc = "Format" })
             end
 
-            -- local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-            local capabilities = require('blink.cmp').get_lsp_capabilities({
-                textDocument = { completion = { completionItem = { snippetSupport = true } } },
-            })
+            local capabilities
+            local using_blink, blink = pcall(require, "blink.cmp")
+            if using_blink then
+                capabilities = blink.get_lsp_capabilities({
+                    textDocument = { completion = { completionItem = { snippetSupport = true } } },
+                })
+            else
+                capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+            end
 
             -- added for https://github.com/kevinhwang91/nvim-ufo see ufo-conf etc
             capabilities.textDocument.foldingRange = {

@@ -2,7 +2,7 @@
 local M = {}
 
 local ls = require "luasnip"
-local extras = require "luasnip.extras"
+local conds = require("luasnip.extras.expand_conditions")
 -- otherwise we get errors in other scripts that says s is defined as a bool
 local s = ls.snippet
 local sn = ls.snippet_node
@@ -102,7 +102,7 @@ end
 if pcall(require, 'blink.cmp') then
     M.line_end = function () return true end
 else
-    M.line_end = extras.conds.line_end
+    M.line_end = conds.line_end
 end
 
 return M

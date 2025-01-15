@@ -1,5 +1,6 @@
 #!/usr/bin/env lua
-local using_blink = true
+-- works if blink is removed with lazy clean
+local using_blink, _ = pcall(require, "blink.cmp")
 
 local cmp_deps
 if using_blink then
@@ -9,14 +10,19 @@ if using_blink then
     }
 else
     cmp_deps = {
+        -- 'hrsh7th/cmp-nvim-lsp',
+        { "iguanacucumber/mag-nvim-lsp", name = "cmp-nvim-lsp", opts = {} },
+        -- 'hrsh7th/cmp-nvim-lua', -- neovim Lua API
+        { "iguanacucumber/mag-nvim-lua", name = "cmp-nvim-lua" },
+        -- 'degnbol/cmp-buffer',
+        { "iguanacucumber/mag-buffer", name = "cmp-buffer" },
+        { "iguanacucumber/mag-cmdline", name = "cmp-cmdline" },
         'onsails/lspkind.nvim', -- pretty pictograms
         -- putting completion sources as dependencies so they only load when cmp is loaded.
         'L3MON4D3/LuaSnip',
-        'hrsh7th/cmp-nvim-lsp',
-        'degnbol/cmp-buffer',
-        'hrsh7th/cmp-path',
+        -- 'hrsh7th/cmp-path',
+        "https://codeberg.org/FelipeLema/cmp-async-path",
         'hrsh7th/cmp-nvim-lsp-signature-help',
-        'hrsh7th/cmp-nvim-lua', -- neovim Lua API
         'hrsh7th/cmp-omni',
         -- 'L3MON4D3/cmp-luasnip-choice', -- show choice node choices
         'tamago324/cmp-zsh',         -- neovim zsh completion
@@ -40,7 +46,8 @@ return {
         -- indexed with either capitalization.
         "degnbol/cmp-buffer",
         lazy = true, -- loaded as dependency
-        enabled = not using_blink,
+        enabled = false,
+        -- enabled = not using_blink,
         branch = "patch-1",
     },
     {
@@ -103,32 +110,13 @@ return {
         end
     },
     {
-        "hrsh7th/nvim-cmp",
+        -- "hrsh7th/nvim-cmp",
+        "iguanacucumber/magazine.nvim",
+        name = "nvim-cmp", -- Otherwise highlighting gets messed up
         -- don't disable here so can have separate config for blink.lua
         -- enabled = not using_blink,
         -- event = "InsertEnter" NO, doesn't work, e.g. for query loading luasnip
-            dependencies = {
-                'onsails/lspkind.nvim', -- pretty pictograms
-                -- putting completion sources as dependencies so they only load when cmp is loaded.
-                'L3MON4D3/LuaSnip',
-                'hrsh7th/cmp-nvim-lsp',
-                'degnbol/cmp-buffer',
-                'hrsh7th/cmp-path',
-                'hrsh7th/cmp-nvim-lsp-signature-help',
-                'hrsh7th/cmp-nvim-lua', -- neovim Lua API
-                'hrsh7th/cmp-omni',
-                -- 'L3MON4D3/cmp-luasnip-choice', -- show choice node choices
-                'tamago324/cmp-zsh',         -- neovim zsh completion
-                'hrsh7th/cmp-calc',          -- quick math in completion
-                'ray-x/cmp-treesitter',      -- treesitter nodes
-                'jmbuhr/otter.nvim',         -- TODO: use this for code injected in markdown
-                'chrisgrieser/cmp-nerdfont', -- :<search string> to get icons
-                'KadoBOT/cmp-plugins',
-                'uga-rosa/cmp-dictionary',
-                'saadparwaiz1/cmp_luasnip',
-                'honza/vim-snippets',
-                'rafamadriz/friendly-snippets',
-            },
+        dependencies = cmp_deps,
         -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
         config = function()
             local cmp = require "cmp"
@@ -406,7 +394,10 @@ return {
         'saadparwaiz1/cmp_luasnip',
         -- enabled = not using_blink, -- still needed
         lazy = true,
-        dependencies = { 'L3MON4D3/LuaSnip', "hrsh7th/nvim-cmp" },
+        dependencies = {
+            'L3MON4D3/LuaSnip',
+            -- "hrsh7th/nvim-cmp", -- magazine instead
+        },
         config = function()
             local luasnip = require "luasnip"
             local cmp = require "cmp"

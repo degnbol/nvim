@@ -6,6 +6,11 @@
 -- https://github.com/netmute/ctags-lsp.nvim
 -- https://github.com/kristijanhusak/vim-dadbod-completion
 
+-- TODO:
+-- Show nth item.
+-- Select nth item with e.g. 3<C-space>.
+-- https://cmp.saghen.dev/recipes#select-nth-item-from-the-list
+
 local source_icon = {
     buffer        = " ",
     omni          = " ",
@@ -51,7 +56,7 @@ return {
     },
     {
         'saghen/blink.cmp',
-
+        enabled = false,
         dependencies = {
            {"L3MON4D3/LuaSnip", version = 'v2.*' },
             -- sources
