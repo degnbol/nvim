@@ -37,6 +37,7 @@ Abolish tho though
 Abolish altho although
 Abolish eventho even though
 Abolish inspite in spite
+Abolish defacto de facto
 Abolish thru through
 Abolish passthru passthrough
 Abolish probs probably
