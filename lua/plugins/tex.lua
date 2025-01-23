@@ -11,27 +11,11 @@ return {
             g.tex_conceal='abdmg'
         end,
     },
-    -- AirLatex is a plugin for editing overleaf locally where you can even see the cursors of other users.
-    -- Currently doesn't work for me so I use my git auto update approach instead for now.
-    -- is detected as a robot by overleaf and looking up the cookie string isn't convenient and doesn't seem to work either.
-    {
-        "da-h/AirLatex.vim",
-        -- cmd = "AirLatex", -- breaks it
-        enabled = false,
-        build = {
-            "pip install 'keyring[completion]' tornado requests pynvim",
-            -- if password is not already set then you can use
-            -- keyring set airlatex_www.overleaf.com cdmadsen@student.unimelb.edu.au
-            ":UpdateRemotePlugins",
-        },
-        init = function ()
-            vim.g.AirLatexAllowInsecure = 0
-            -- vim.g.AirLatexUsername = "cdmadsen@student.unimelb.edu.au"
-            vim.g.AirLatexUsername = "cookies"
-        end,
-    },
     {
         "lervag/vimtex",
+        -- :checkhealth suggests pstree for inverse search.
+        -- 2>/dev/null in case we don't have brew
+        build = "brew install pstree 2> /dev/null",
         init=function()
             -- instead of <localleader>l
             -- We want <leader>l for LSP and double leader (i.e. localleader) for filetype specific mappings.
