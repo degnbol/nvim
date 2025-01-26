@@ -14,19 +14,19 @@ local M = {}
 
 local cmd_mappings = {
     bold = {
-        imap = "<C-S-b>",
+        imap = "<D-b>",
         text = "textbf",
         -- unlike mathbf that only bolds latin, symbf with unicode-math works with greek.
         math = "symbf"
     },
     italic = {
-        imap = "<C-S-i>",
+        imap = "<D-i>",
         text = "textit",
         -- useful to reduce spacing slightly in multi letter variable names
         math = "mathit"
     },
     emphasis = {
-        imap = "<C-S-e>",
+        imap = "<D-e>",
         text = "emph",
     },
     upright = {
