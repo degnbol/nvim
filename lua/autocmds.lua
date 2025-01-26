@@ -15,8 +15,8 @@ local defaultlines = {
         ";extends",
     },
     R = {
-        "suppressPackageStartupMessages(library(data.table))",
-        "suppressPackageStartupMessages(library(ggplot2))",
+        [[if (!require("pacman")) install.packages("pacman")]],
+        [[pacman::p_load(data.table, ggplot2, cowplot, ggh4x, svglite)]],
     },
     py = {
         "import numpy as np",
