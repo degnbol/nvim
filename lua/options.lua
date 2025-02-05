@@ -128,6 +128,10 @@ end
 vim.opt.foldtext = "v:lua.FoldText()"
 vim.opt.fillchars = 'fold: '
 
+-- Enable second pass hunk visual that aligns lines for a git diff better giving nicer overview of changes.
+-- https://old.reddit.com/r/neovim/comments/1ihpvaf/the_linematch_diffopt_makes_builtin_diff_so_sweat/
+vim.opt.diffopt:append("linematch:60")
+
 -- disable coding ligatures for some filetypes that aren't code, e.g. we don't want == ligature when it is used for heading levels.
 local kitty = require "utils/kitty"
 kitty.ligatures_pattern(false, {"*.typ", "*.adoc"})
