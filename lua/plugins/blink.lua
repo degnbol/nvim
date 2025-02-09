@@ -56,7 +56,7 @@ return {
     },
     {
         'saghen/blink.cmp',
-        enabled = false,
+        enabled = true,
         dependencies = {
            {"L3MON4D3/LuaSnip", version = 'v2.*' },
             -- sources
@@ -173,7 +173,14 @@ return {
                     julia = { "plotly", "lsp", "omni", "path", "snippets", "buffer" },
                     -- lacks LSP, hence the custom asciidoc provider
                     asciidoc = {"asciidoc", "lsp", "omni", "snippets", "buffer", "dictionary" },
-                    tex = { "lsp", "omni", "path", "snippets", "buffer", "dictionary", },
+                    tex = {
+                        "lsp",
+                        "omni",
+                        "path",
+                        "snippets",
+                        "buffer",
+                        "dictionary",
+                    },
                 },
                 -- don't lower snippet scores since we use so many custom ones
                 transform_items = function(_, items) return items end,
@@ -253,25 +260,9 @@ return {
                         --- @module 'blink-cmp-dictionary'
                         --- @type blink-cmp-dictionary.Options
                         opts = {
-                            get_command = {
-                                'rg', -- make sure this command is available in your system
-                                '--color=never',
-                                '--no-line-number',
-                                '--no-messages',
-                                '--no-filename',
-                                '--ignore-case',
-                                '--',
-                                '${prefix}', -- this will be replaced by the result of 'get_prefix' function
+                            dictionary_files = {
                                 vim.fn.expand("~/.config/nvim/spell/en.dic"),
                                 vim.fn.expand("~/.config/nvim/spell/custom.utf8.add"),
-                            },
-                            documentation = {
-                                enable = true, -- enable documentation to show the definition of the word
-                                get_command = {
-                                    'wn', -- make sure this command is available in your system
-                                    '${word}', -- this will be replaced by the word to search
-                                    '-over'
-                                }
                             }
                         }
                     },
