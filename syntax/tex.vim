@@ -10,6 +10,8 @@ syntax match texRefArg /sec:[A-Za-z0-9_-]\+/
 syntax match texRefArg /fig:[A-Za-z0-9_-]\+/
 syntax match texRefArg /tab:[A-Za-z0-9_-]\+/
 syntax match texRefArg /eq:[A-Za-z0-9_-]\+/
+" for footnotes
+syntax match texRefArg /note:[A-Za-z0-9_-]\+/
 
 hi def link texItemLabelDelim Delimiter
 
