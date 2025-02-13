@@ -62,6 +62,7 @@ Abolish noone no one
 Abolish ie i.e.
 Abolish unqiue unique
 Abolish simplicies simplices
+Abolish pertruding protruding
 
 " language specific, see lua/keymap
 " TODO: make this a bit more convenient, for autocorrecting language specific 

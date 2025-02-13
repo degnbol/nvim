@@ -45,3 +45,13 @@ syntax region citeOpt matchgroup=texDelim start='\[' end='\]' contained nextgrou
 syntax region citeArg matchgroup=texDelim start='{' end='}' contained
 hi def link citeCustom texCmd " not using texCmdRef to make it clear it is custom cmd that adds more text.
 hi def link citeArg texRefConcealedArg
+
+" hl args of \import as filepaths
+syntax match cmdImport /\\import\ze{/ containedin=texCmd nextgroup=argImport1
+syntax region argImport1 matchgroup=texDelim start='{' end='}' contained nextgroup=argImport2
+syntax region argImport2 matchgroup=texDelim start='{' end='}' contained
+hi def link cmdImport texCmd
+hi def link argImport1 texFileArg
+hi def link argImport2 texFileArg
+
+
