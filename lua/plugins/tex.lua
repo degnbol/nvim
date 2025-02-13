@@ -42,6 +42,7 @@ return {
                 [[No \\printglossary or \\printglossaries found]],
                 [[Warning: Command \\underbar  has changed.]],
                 [[Warning: Command \\overline  has changed.]],
+                [[Warning: Empty bibliography]],
             }
             g.vimtex_log_ignore = ignore
             g.vimtex_quickfix_ignore_filters = ignore
