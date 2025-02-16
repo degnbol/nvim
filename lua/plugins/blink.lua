@@ -62,7 +62,6 @@ return {
             -- sources
             "folke/lazydev.nvim",
             "hrsh7th/cmp-nvim-lua", -- neovim Lua API
-            "hrsh7th/cmp-omni", -- useful for vimscript syntax hl if `vim.opt_local.omnifunc = "syntaxcomplete#Complete"`
             -- "L3MON4D3/cmp-luasnip-choice", -- show choice node choices
             "tamago324/cmp-zsh",         -- neovim zsh completion
             -- "hrsh7th/cmp-calc",          -- quick math in completion
@@ -214,10 +213,6 @@ return {
                     },
                     nvim_lua = {
                         name = "nvim_lua",
-                        module = 'blink.compat.source',
-                    },
-                    omni = {
-                        name = "omni",
                         module = 'blink.compat.source',
                     },
                     zsh = {
