@@ -212,6 +212,8 @@ local function afterColorscheme()
     -- imported.
     hi.set("DiagnosticUnderlineWarn", {underdotted=true})
     hi.set("DiagnosticUnderlineError", {undercurl=true})
+    -- instead of mildly red text, do red underline.
+    hi.set("Error", {undercurl=true, special="red"})
 
     -- Make a hl group we can link to that hides text
     hi.hide("Background")
