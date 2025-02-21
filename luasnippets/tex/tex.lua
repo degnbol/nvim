@@ -204,7 +204,7 @@ s({trig="\\includegraphics", dscr="includegraphics",
 {t"\\includegraphics[width=\\textwidth,height=\\textheight]{./figures", i(1), t"}"}),
 
 s({trig="fig", dscr="fig", condition=conds.line_begin*lsu.line_end, snippetType="autosnippet"},
-fmta([[\begin{figure}[htb!]
+fmta([[\begin{figure}[htb]
 	\centering
 	\includegraphics[width=\textwidth,height=\textheight]{./figures<>}
 	\caption{
@@ -217,7 +217,7 @@ fmta([[\begin{figure}[htb!]
 ]], {i(1, "FILENAME"), i(2, "TITLE"), i(3, "CAPTION"), i(3)})),
 
 s({trig="subfig", dscr="subfig", condition=conds.line_begin, snippetType="autosnippet"},
-fmta([[\begin{figure}[htb!]
+fmta([[\begin{figure}[htb]
 	\centering
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
