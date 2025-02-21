@@ -198,13 +198,15 @@ fmta([[\begin{align*}
 -- s({trig="(%a)-", dscr="p-value, n-dimensional, ...", regTrig=true, snippetType="autosnippet"},
 -- {t"$", re(1), t"$-"}),
 
-s({trig="img", dscr="includegraphics", condition=conds.line_begin*lsu.line_end, snippetType="autosnippet"},
-{t"\\includegraphics[width=\\textwidth]{./figures", i(1), t"}"}),
+s({trig="\\includegraphics", dscr="includegraphics",
+        -- condition=conds.line_begin*lsu.line_end
+    },
+{t"\\includegraphics[width=\\textwidth,height=\\textheight]{./figures", i(1), t"}"}),
 
 s({trig="fig", dscr="fig", condition=conds.line_begin*lsu.line_end, snippetType="autosnippet"},
-fmta([[\begin{figure}[ht]
+fmta([[\begin{figure}[htb!]
 	\centering
-	\includegraphics[width=0.95\textwidth]{./figures<>}
+	\includegraphics[width=\textwidth,height=\textheight]{./figures<>}
 	\caption{
 	    \textbf{<>.}
 	    <>.
@@ -215,19 +217,19 @@ fmta([[\begin{figure}[ht]
 ]], {i(1, "FILENAME"), i(2, "TITLE"), i(3, "CAPTION"), i(3)})),
 
 s({trig="subfig", dscr="subfig", condition=conds.line_begin, snippetType="autosnippet"},
-fmta([[\begin{figure}[ht]
+fmta([[\begin{figure}[htb!]
 	\centering
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\caption{}
-		\includegraphics[width=0.95\textwidth]{./figures<>}
+		\includegraphics[width=\textwidth,height=\textheight]{./figures<>}
 		\label{fig:}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[t]{0.49\textwidth}
 		\centering
 		\caption{}
-		\includegraphics[width=0.95\textwidth]{./figures<>}
+		\includegraphics[width=\textwidth,height=\textheight]{./figures<>}
 		\label{fig:}
 	\end{subfigure}
 	\caption{
@@ -346,7 +348,7 @@ fmta(
 )),
 
 -- use @ to convert to acronym/glossary, either before or after identifier
-s({trig="@(%w+)(%W)", trigEngine="pattern", snippetType="autosnippet"}, { f(acro, {}), re(2)}),
+s({trig=" @(%w+)(%W)", trigEngine="pattern", snippetType="autosnippet"}, { t" ", f(acro, {}), re(2)}),
 s({trig="(%w+)@", trigEngine="pattern", snippetType="autosnippet"}, { f(acro, {})}),
 -- use @ as postifx multiple times to toggle acronym version between long, short, and default.
 s({trig="(\\[Aa]c)(p?{%w+})@", trigEngine="pattern", snippetType="autosnippet"}, { re(1), t"l", re(2) }),
@@ -363,6 +365,19 @@ fmta([[\pdftex[<>]{<>}{<>}
     i(1, "\\textwidth"),
     i(2, "figures/"),
     i(3, "filename.pdf"),
+})),
+
+-- https://latex-programming.fandom.com/wiki/Minipage_(LaTeX_environment)
+s({trig="minipage", dscr="Minipage"},
+fmta([[\begin{minipage}<><><>{<>}
+    <>
+\end{minipage}
+]], {
+    c(1, {t"", t"[c]", t"[t]", t"[b]"}),
+    i(2, t"[\\textheight]"),
+    c(3, {t"", t"[t]", t"[c]", t"[b]", t("[s]", virt("[s]tretch"))}),
+    i(4, t"\\textwidth"),
+    i(5),
 })),
 
 }
