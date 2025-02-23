@@ -134,7 +134,7 @@ return {
             lsp = {
                 -- if there is a single LSP result only, as is common for goto def, 
                 -- use it directly.
-                jump_to_single_result = true,
+                jump1 = true,
                 code_actions = {
                     async_or_timeout  = 5000,
                     -- Requires git-delta for prettier code action preview
