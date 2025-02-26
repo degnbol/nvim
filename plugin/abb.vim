@@ -64,6 +64,14 @@ Abolish unqiue unique
 Abolish simplicies simplices
 Abolish pertruding protruding
 Abolish effecient efficient
+Abolish persuit pursuit
+Abolish oc{,c}uring occurring
+Abolish feasab{ility,le} feasib{ility,le}
+Abolish preceed{,ed,ing} preced{,ed,ing}
+Abolish embarass{,ing,ingly} embarrass{,ing,ingly}
+Abolish corespond{,s,ing} correspond{,s,ing}
+Abolish discernable discernible
+Abolish wildtype wild type
 
 " language specific, see lua/keymap
 " TODO: make this a bit more convenient, for autocorrecting language specific 

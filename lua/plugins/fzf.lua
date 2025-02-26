@@ -1,4 +1,17 @@
 return {
+    {
+        "folke/snacks.nvim",
+        enabled = false,
+        ---@type snacks.Config
+        opts = {
+            picker = {
+            },
+            explorer = {}
+        },
+        keys = {
+            -- TODO
+        },
+    },
     -- We prefer fzf-lua over telescope for the following reasons:
     -- - There are claims that it is faster.
     -- - Telescope is not as actively developed/maintained.
