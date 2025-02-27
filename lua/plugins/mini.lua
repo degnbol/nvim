@@ -1,4 +1,6 @@
 #!/usr/bin/env lua
+local hi = require "utils/highlights"
+
 return {
     {
         'echasnovski/mini.nvim',
@@ -207,7 +209,24 @@ return {
                 set_keymap_desc('n', '<<', "Unindent line")
             end)
 
-            require('mini.notify').setup()
+            -- UI notifications of e.g. LSP background work
+            -- https://github.com/echasnovski/mini.notify
+            require('mini.notify').setup{
+                window = {
+                    -- reduce max width a bit
+                    max_width_share = 0.3,
+                }
+            }
+            local grp = vim.api.nvim_create_augroup("MiniNotify", {clear=true})
+            vim.api.nvim_create_autocmd("colorscheme", {
+                pattern = "*",
+                group = grp,
+                callback = function ()
+                    -- hi.link("MiniNotifyTitle", "Title") -- default is FloatTitle
+                    hi.link("MiniNotifyNormal", "Comment") -- dim
+                    hi.link("MiniNotifyBorder", "Comment") -- dim
+                end
+            })
 
             local MiniFiles = require 'mini.files'
             local minifiles_toggle = function(...)

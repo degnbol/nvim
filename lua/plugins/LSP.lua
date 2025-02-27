@@ -51,7 +51,7 @@ return {
                     end, mode)
                 end
                 -- See `:help vim.lsp.*` for documentation on any of the below functions
-                -- TODO: have a simpler go to references with treesitter as fallback if LSP is not attached.
+                -- TODO: have treesitter fallback for things like go to references for when LSP is not attached.
                 -- `vim.lsp.buf.references`
                 mapfzf("Goto references", "gr", "references")
                 -- `vim.lsp.buf.definition`
@@ -211,8 +211,9 @@ return {
                         -- In some projects I use \citea{...} as \citeauthor{...}~\cite{...} and \citePDBlit etc.
                         citationCommands = {"citea", "citePDB", "citePDBlit"},
                         -- \subref from the subpcation package.
+                        -- \footref from the footmisc package to refer to footnote a second (or more) time.
                         -- In some projects I use \see[...]{...} as (see~\cref{...}...)
-                        labelReferenceCommands = {"subref", "see", "seename", "seefull"},
+                        labelReferenceCommands = {"footref", "subref", "see", "seename", "seefull"},
                     },
                 }}
             }
@@ -298,7 +299,7 @@ return {
     {
         "williamboman/mason.nvim",
         build = ":MasonUpdate",
-        lazy = true,                                                   -- load as mason-lspconfig dep
+        lazy = true, -- load as mason-lspconfig dep
         config = true,
     },
     {

@@ -75,5 +75,5 @@ return {
             hide_target_hack = false,      -- true     boolean
             legacy_computing_symbols_support = true,
         },
-    }
+    },
 }
