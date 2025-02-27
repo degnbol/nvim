@@ -220,6 +220,10 @@ local function afterColorscheme()
 
     -- remove title link, which makes it bold
     hi.link("FidgetTitle", "Normal")
+
+    -- default was comment but it's stuff that can be more important, not less
+    hi.link("helpCommand", "@string.special")
+    hi.link("helpExample", "@string.documentation")
 end
 
 -- local defaultDark = 'fluoromachine'

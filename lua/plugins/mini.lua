@@ -215,7 +215,13 @@ return {
                 window = {
                     -- reduce max width a bit
                     max_width_share = 0.3,
-                }
+                },
+                lsp_progress = {
+                    -- A bit too distracting sometimes
+                    enable = false,
+                    -- Duration (in ms) of how long last message should be shown
+                    -- duration_last = 1000,
+                },
             }
             local grp = vim.api.nvim_create_augroup("MiniNotify", {clear=true})
             vim.api.nvim_create_autocmd("colorscheme", {
