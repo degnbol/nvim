@@ -176,5 +176,7 @@ return {
         }
     },
     "mityu/vim-applescript",
+    -- consistent completion error in sql without this.
+    "vim-scripts/dbext.vim",
 }
 
