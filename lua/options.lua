@@ -114,7 +114,7 @@ vim.opt.commentstring = "#%s"
 
 -- only show error for virtual_text since it is often incorrect and is distracting.
 vim.diagnostic.config {
-    virtual_text = {severity = vim.diagnostic.severity.ERROR}
+    -- virtual_text = {severity = vim.diagnostic.severity.ERROR}
 }
 
 -- custom foldtext function that shows <first line> … <lines hidden> … <last line>

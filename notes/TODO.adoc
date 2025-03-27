@@ -2,6 +2,9 @@ Try out snacks.picker in place of fzf lua.
 Why? fzf lua was supposed to be fast but doesn't always seem that fast, plus things like oldfiles/recent doesn't give me the buffer I literally just closed, then what is the point.
 https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
 
+Consider adding plugin that allows for undoing for a line selection.
+https://github.com/SunnyTamang/select-undo.nvim
+
 Maybe make a simple snippet for gcc on blank line -> whatever commentchar for the filetype
 
 Map insert mode cmd+v (<D-v> doesn't seem to work) to align after pasting linewise.
@@ -235,3 +238,6 @@ copy paste table content and reformat to/from tsv.
 
 useful stuff from:
 https://github.com/folke/snacks.nvim
+
+https://old.reddit.com/r/neovim/comments/1j9fy2w/diffviewnvim_is_so_underrated/
+

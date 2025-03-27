@@ -293,6 +293,32 @@ return {
                 group = nvim_metals_group,
             })
 
+            -- grammar. Not yet supporting latex but supports typst.
+            -- lsp.harper_ls.setup {
+            --     settings = {
+            --         ["harper-ls"] = {
+            --             userDictPath = vim.opt.runtimepath:get()[1] .. "/spell/custom.utf8.add",
+            --         }
+            --     },
+            --     filetypes = {
+            --         "tex", "typst"
+            --     }
+            -- }
+
+            lsp.ltex.setup {
+                settings = {
+                    ltex = {
+                        language = "en-AU",
+                        disabledRules = {["en-AU"] = {
+                            "COMMA_PARENTHESIS_WHITESPACE",
+                            "MORFOLOGIK_RULE_EN_AU", -- misspellings
+                        }},
+                        dictionary = {
+                            ["en-AU"] = {":" .. vim.opt.runtimepath:get()[1] .. "/spell/custom.utf8.add"},
+                        }
+                    }
+                }
+            }
         end
     },
     -- add :LspInstall <language> and :Mason for conveniently installing LSP language specific servers
