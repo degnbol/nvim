@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
-ln -s $XDG_CONFIG_HOME/nvim/install/nvim ~/nvim
+if [ -z "$XDG_CONFIG_HOME" ]; then
+    export XDG_CONFIG_HOME=~/dotfiles/config
+fi
+ln -s $XDG_CONFIG_HOME/nvim ~/nvim
 cd $XDG_CONFIG_HOME/nvim/install
 
 ./neovim.sh || ./neovim_alt.sh

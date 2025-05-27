@@ -135,7 +135,7 @@ local function afterColorscheme()
     hi.link("@markup.strong", "Bold")
 
     -- delim. Currently using the default for parentheses.
-    hi.link("Delimiter", "RainbowDelimiterViolet")
+    hi.link("Delimiter", "TSRainbowViolet") -- or RainbowDelimitersViolet
     hi.link("@punctuation.bracket", "Delimiter")
     hi.link("@punctuation.delimiter", "Delimiter")
     -- Was overwriting the rainbow ext marks:
