@@ -48,6 +48,7 @@ return {
                     disable = {
                         "vim", -- not perfect
                         "latex", -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$
+                        "sh", "bash", "zsh", -- broken
                     },
                     additional_vim_regex_highlighting = {
                         "vimdoc", -- treesitter version doesn't contain useful colors from :h group-name
@@ -134,6 +135,7 @@ return {
     -- refactor
     {
         "nvim-treesitter/nvim-treesitter-refactor",
+        enabled=false,
         dependencies='nvim-treesitter/nvim-treesitter',
         config=function()
             require"nvim-treesitter.configs".setup {
@@ -165,6 +167,7 @@ return {
     -- selecting, moving functions etc.
     {
         "nvim-treesitter/nvim-treesitter-textobjects",
+        enabled=false,
         dependencies='nvim-treesitter/nvim-treesitter',
         config=function()
             require"nvim-treesitter.configs".setup {
@@ -269,6 +272,7 @@ return {
     {
         "RRethy/nvim-treesitter-textsubjects",
         dependencies='nvim-treesitter/nvim-treesitter',
+        enabled=false,
         config=function()
             -- while in visual mode these keybindings will change what is selected
             require('nvim-treesitter.configs').setup {
@@ -336,6 +340,7 @@ return {
     },
     {
         "https://gitlab.com/HiPhish/rainbow-delimiters.nvim",
+        enabled=false,
         dependencies='nvim-treesitter/nvim-treesitter',
         config = function ()
             local rainbow_delimiters = require 'rainbow-delimiters'

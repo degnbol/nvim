@@ -363,7 +363,8 @@ return {
                         -- padding = {0,1},
                         padding = 0,
                         -- Use treesitter to highlight the label text for the given list of sources
-                        treesitter = { 'lsp' },
+                        -- Broken in sh for some reason
+                        -- treesitter = { 'lsp' },
                     }
                 },
                 -- Ghost text clashes with auto_insert

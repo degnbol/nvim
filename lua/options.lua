@@ -109,6 +109,8 @@ vim.opt.spellfile = rtp .. "/spell/custom.utf8.add"
 -- set a default commentstring
 vim.opt.commentstring = "#%s"
 
+-- vim.opt.messagesopt='wait:200,history:500'
+
 -- blinking cursor would be nice but only after jumps
 -- vim.opt.guicursor:append("n-v-sm:blinkon150")
 

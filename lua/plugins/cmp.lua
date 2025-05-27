@@ -48,7 +48,7 @@ return {
         lazy = true, -- loaded as dependency
         enabled = false,
         -- enabled = not using_blink,
-        branch = "patch-1",
+        -- branch = "patch-1",
     },
     {
         'KadoBOT/cmp-plugins',
@@ -110,9 +110,8 @@ return {
         end
     },
     {
-        -- "hrsh7th/nvim-cmp",
-        "iguanacucumber/magazine.nvim",
-        name = "nvim-cmp", -- Otherwise highlighting gets messed up
+        "hrsh7th/nvim-cmp",
+        -- "iguanacucumber/magazine.nvim", name = "nvim-cmp", -- Otherwise highlighting gets messed up
         -- don't disable here so can have separate config for blink.lua
         -- enabled = not using_blink,
         -- event = "InsertEnter" NO, doesn't work, e.g. for query loading luasnip
