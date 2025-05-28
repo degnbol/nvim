@@ -32,7 +32,6 @@ end
 -- somehow.
 -- ~/.local/bin is location of jedi-language-server
 vim.env.PATH = vim.env.HOME .. '/.local/bin/:/opt/homebrew/Caskroom/miniforge/base/bin:/opt/homebrew/bin:' .. vim.env.PATH
-vim.env.CONDA_PREFIX = vim.env.HOME .. '/miniconda3'
 
 -- add lsp/completion for pymol.
 -- In .py script, write `from pymol import cmd`
