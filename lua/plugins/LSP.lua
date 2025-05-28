@@ -305,16 +305,16 @@ return {
             --     }
             -- }
 
-            lsp.ltex.setup {
+            lsp.ltex_plus.setup {
                 settings = {
-                    ltex = {
-                        language = "en-AU",
-                        disabledRules = {["en-AU"] = {
+                    ltex_plus = {
+                        language = "en-GB",
+                        disabledRules = {["en-GB"] = {
                             "COMMA_PARENTHESIS_WHITESPACE",
-                            "MORFOLOGIK_RULE_EN_AU", -- misspellings
+                            "MORFOLOGIK_RULE_EN_GB", -- misspellings
                         }},
                         dictionary = {
-                            ["en-AU"] = {":" .. vim.opt.runtimepath:get()[1] .. "/spell/custom.utf8.add"},
+                            ["en-GB"] = {":" .. vim.opt.runtimepath:get()[1] .. "/spell/custom.utf8.add"},
                         }
                     }
                 }
