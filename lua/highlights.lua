@@ -91,8 +91,7 @@ local function afterColorscheme()
     -- hl.mod("@conditional.ternary", {italic=false})
     hi.mod("Identifier", {italic=false})
     hi.mod("Number", {italic=false})
-    -- vim in lua is @lsp.typemod.variable.global.lua linked to Constant.
-    -- If you find other constants that you don't want to make italic then mod the semantic @lsp global instead.
+    -- If you find constants that you don't want to make italic then mod the semantic @lsp global instead.
     hi.set("Constant", {italic=true})
     hi.mod("Exception", {italic=true})
     hi.mod("@include", {italic=true})
@@ -231,6 +230,10 @@ local function afterColorscheme()
     -- default was comment but it's stuff that can be more important, not less
     hi.link("helpCommand", "@string.special")
     hi.link("helpExample", "@string.documentation")
+
+    -- vim in lua is @lsp.typemod.variable.global.lua linked to Constant. We link to italic module instead to get italic and faded colour.
+    hi.link("@lsp.typemod.variable.global", "@module.builtin")
+    hi.link("@lsp.typemod.variable.global.lua", "@module.builtin")
 end
 
 -- local defaultDark = 'fluoromachine'
