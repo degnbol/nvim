@@ -4,7 +4,7 @@ local hi = require "utils/highlights"
 local function afterColorscheme()
     -- GitSigns
     local linenr = hi.get("LineNr")['fg']
-    local delete = hi.get("DiffDelete")["bg"]
+    local delete = hi.get("DiffDelete")['bg']
     local stageddelete = hi.get("GitSignsDelete")['fg']
     -- for the sake of consistency with Changedelete
     -- special decides the color for the underline
@@ -43,9 +43,10 @@ local function afterColorscheme()
     hi.link("Folded", "NonText")
 
     ---- bufferline
-    -- bold instead of italic+bold selected
-    hi.set("BufferLineBufferSelected", {bold=true, italic=false})
-    hi.set("BufferLineNumbersSelected", {bold=true, italic=false})
+    -- bold instead of italic+bold selected.
+    -- Grey instead of white from using the fg from unselected tab colour ("visible")
+    hi.set("BufferLineBufferSelected", {bold=true, italic=false,  bg=hi.get("BufferLineBufferSelected")['bg'],  fg=hi.getfg("BufferLineBufferVisible")})
+    hi.set("BufferLineNumbersSelected", {bold=false, italic=false, bg=hi.get("BufferLineNumbersSelected")['bg'], fg=hi.getfg("BufferLineBufferVisible")})
 
     ---- Completion. Some links to IncSearch which is too distracting
     hi.set("CmpItemAbbrMatch", {bold=true})
@@ -58,6 +59,12 @@ local function afterColorscheme()
     hi.set("@text.underline", {underline=true})
     hi.link("@markup.underline", "@text.underline")
     hi.set("@text.strong", {bold=true})
+
+    -- temp, fix using lush plugin
+    hi.fg("function.call", "#73a3b7") -- link to function fg colour
+    hi.fg("@module", "#5e5050") -- dimmed down version of @import / Include / PreProc. Use darkening with lush in dark mode and lighten in light mode.
+    hi.fg("@constructor", hi.getfg("TSRainbowBlue"))
+    hi.link("@constructor.lua", "@constructor")
 
     -- never italic comments but italize builtin stuff
     -- :h group-name
@@ -97,7 +104,7 @@ local function afterColorscheme()
     hi.set("@keyword.operator", {italic=true, bold=true, fg=hi.get("Keyword")['fg']})
     hi.mod("@parameter", {italic=false})
     hi.mod("@function", {italic=false, bold=true})
-    hi.mod("@function.call", {bold=false})
+    hi.fg("@function.call", hi.getfg("Function"))
     hi.link("@function.method", "function.call")
     hi.link("@function.method.call", "function.call")
     hi.link("@function.macro", "@function.call")
