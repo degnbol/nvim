@@ -104,7 +104,7 @@ return {
             })
 
             -- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
-            -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
+            -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
 
             lsp.bashls.setup { filetypes = { "sh", "bash", "zsh" } }
 
@@ -112,12 +112,12 @@ return {
             -- lsp.pylsp.setup { }
             -- lsp.jedi_language_server.setup {}
             -- https://old.reddit.com/r/neovim/comments/1bh0kba/psa_new_python_lsp_that_supports_inlay_hints_and/
-            -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#basedpyright
+            -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#basedpyright
             lsp.basedpyright.setup {
                 settings = {
                     python = {
                         -- Has :PyrightSetPythonPath to set it on the fly
-                        -- pythonPath = "~/bin/mambaforge/bin/python",
+                        pythonPath = vim.env.CONDA_PREFIX .. '/bin/python'
                     },
                     basedpyright = {
                         analysis = {
@@ -202,7 +202,7 @@ return {
             lsp.matlab_ls.setup {}
             lsp.marksman.setup { filetypes = { "markdown" } }
             -- Don't autoshow completion in cmdline
-            -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#texlab
+            -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#texlab
             lsp.texlab.setup {
                 -- https://github.com/latex-lsp/texlab/wiki/Configuration
                 settings = { texlab = {
@@ -334,12 +334,12 @@ return {
         -- cmd = {"Mason", "MasonUpdate", "MasonInstall", "MasonLog", "MasonUninstall", "MasonUninstallAll"},
         dependencies = { "neovim/nvim-lspconfig", "williamboman/mason.nvim" },
         -- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
-        -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
+        -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
         -- also see lsp.lua
         opts = {
             ensure_installed = {
                 "bashls",
-                -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#omnisharp
+                -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#omnisharp
                 -- "csharp_ls", -- instead see install/csharp.sh. There's also omnisharp on other LSPs on Mason.
                 -- python:
                 -- "jedi_language_server",
