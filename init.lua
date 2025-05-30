@@ -26,4 +26,5 @@ require "keymap"
 require "blockim"
 require "autocmds"
 require "kitty"
+require "lsp"
 

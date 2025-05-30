@@ -12,25 +12,25 @@
 -- https://cmp.saghen.dev/recipes#select-nth-item-from-the-list
 
 local source_icon = {
-    buffer        = " ",
-    omni          = " ",
-    lsp           = " ",
-    luasnip       = " ",
-    nvim_lua      = " ",
-    nerdfonts     = "󰊪 ",
-    latex_symbols = " ",
-    vimtex        = " ",
-    calc          = " ",
-    path          = "/ ",
-    dictionary    = " ",
-    spell         = " ",
-    treesitter    = " ",
-    zsh           = "󰞷 ",
-    plugins       = " ",
-    pymol_settings= " ",
-    plotly        = " ",
-    asciidoc      = " ",
-    emoji         = "😃",
+    buffer         = " ",
+    omni           = " ",
+    lsp            = " ",
+    luasnip        = " ",
+    nvim_lua       = " ",
+    nerdfonts      = "󰊪 ",
+    latex_symbols  = " ",
+    vimtex         = " ",
+    calc           = " ",
+    path           = "/ ",
+    dictionary     = " ",
+    spell          = " ",
+    treesitter     = " ",
+    zsh            = "󰞷 ",
+    plugins        = " ",
+    pymol_settings = " ",
+    plotly         = " ",
+    asciidoc       = " ",
+    emoji          = "😃",
 }
 
 local zsh_sources = { "zsh", "lsp", "path", "snippets", "buffer" }
@@ -40,10 +40,11 @@ local only_snippets = false
 return {
     {
         'saghen/blink.compat',
+        build = 'cargo build --release', -- for delimiters
         -- use the latest release, via version = '*', if you also use the latest release for blink.cmp
         version = '*',
         lazy = true,
-        opts = {impersonate_nvim_cmp = true,},
+        opts = { impersonate_nvim_cmp = true, },
     },
     {
         "folke/lazydev.nvim",
@@ -58,14 +59,14 @@ return {
         'saghen/blink.cmp',
         enabled = true,
         dependencies = {
-           {"L3MON4D3/LuaSnip", version = 'v2.*' },
+            { "L3MON4D3/LuaSnip", version = 'v2.*' },
             -- sources
             "folke/lazydev.nvim",
             "hrsh7th/cmp-nvim-lua", -- neovim Lua API
             -- "L3MON4D3/cmp-luasnip-choice", -- show choice node choices
-            "tamago324/cmp-zsh",         -- neovim zsh completion
+            "tamago324/cmp-zsh",    -- neovim zsh completion
             -- "hrsh7th/cmp-calc",          -- quick math in completion
-            "ray-x/cmp-treesitter",      -- treesitter nodes
+            "ray-x/cmp-treesitter", -- treesitter nodes
             -- "jmbuhr/otter.nvim",         -- TODO: use this for code injected in markdown
             -- "chrisgrieser/cmp-nerdfont", -- :<search string> to get icons
             "KadoBOT/cmp-plugins",
@@ -82,24 +83,24 @@ return {
         -- If you use nix, you can build from source using latest nightly rust with:
         -- build = 'nix run .#build-plugin',
 
-        init = function ()
+        init = function()
             -- We are managing snippets with luasnip instead of default currently, since we already wrote many snippets with luasnip and it allows for more complexity.
             -- However, we have also written some quick ones in VS code style that we should have available.
             require("luasnip.loaders.from_vscode").lazy_load({ paths = "~/.config/nvim/snippets" })
 
             -- Also jump between snippets with same mappings in normal mode.
-            vim.keymap.set('n', '<C-,>', function ()
-                require"blink.cmp".snippet_backward()
-            end, { desc="snippet_backward" })
-            vim.keymap.set('n', '<C-.>', function ()
-                require"blink.cmp".snippet_forward()
-            end, { desc="snippet_forward" })
+            vim.keymap.set('n', '<C-,>', function()
+                require "blink.cmp".snippet_backward()
+            end, { desc = "snippet_backward" })
+            vim.keymap.set('n', '<C-.>', function()
+                require "blink.cmp".snippet_forward()
+            end, { desc = "snippet_forward" })
 
             -- Complete only snippets, or if snippet is already active cycle choice node.
             -- Also works when completion menu is visible.
             -- Like pressing ? for choices.
             vim.keymap.set({ "i", "s", "n" }, "<C-/>", function()
-                local luasnip = require"luasnip"
+                local luasnip = require "luasnip"
                 if luasnip.choice_active() then
                     luasnip.change_choice(1)
                 else
@@ -114,12 +115,12 @@ return {
                         end,
                         once = true,
                     })
-                    cmp.show({ providers = { 'snippets', 'lsp', }})
+                    cmp.show({ providers = { 'snippets', 'lsp', } })
                 end
             end)
             -- with shift to go backwards
             vim.keymap.set({ "i", "s", "n" }, "<C-S-/>", function()
-                local luasnip = require"luasnip"
+                local luasnip = require "luasnip"
                 if luasnip.choice_active() then
                     luasnip.change_choice(-1)
                 end
@@ -133,7 +134,7 @@ return {
             end)
 
             -- underline active parameter in signature help rather than colour it in some pale unhelpful colour
-            vim.api.nvim_set_hl(0, "BlinkCmpSignatureHelpActiveParameter", {link="Underlined"})
+            vim.api.nvim_set_hl(0, "BlinkCmpSignatureHelpActiveParameter", { link = "Underlined" })
         end,
 
         ---@module 'blink.cmp'
@@ -171,7 +172,7 @@ return {
                     python = { "pymol_settings", "lsp", "omni", "path", "snippets", "buffer" },
                     julia = { "plotly", "lsp", "omni", "path", "snippets", "buffer" },
                     -- lacks LSP, hence the custom asciidoc provider
-                    asciidoc = {"asciidoc", "lsp", "omni", "snippets", "buffer", "dictionary" },
+                    asciidoc = { "asciidoc", "lsp", "omni", "snippets", "buffer", "dictionary" },
                     tex = {
                         "lsp",
                         "omni",
@@ -226,12 +227,12 @@ return {
                     pymol_settings = {
                         name = "pymol_settings",
                         module = "completion.pymol.blink_pymol_settings",
-                        enabled = function () return vim.g.loaded_pymol end
+                        enabled = function() return vim.g.loaded_pymol end
                     },
                     plotly = {
                         name = "plotly",
                         module = "completion.plotlyjs.blink_plotlyjs",
-                        enabled = function () return vim.g.loaded_plotly end
+                        enabled = function() return vim.g.loaded_plotly end
                     },
                     asciidoc = {
                         name = "asciidoc",
@@ -263,7 +264,7 @@ return {
                     },
                     buffer = {
                         -- keep case of first char
-                        transform_items = function (a, items)
+                        transform_items = function(a, items)
                             local keyword = a.get_keyword()
                             local correct, case
                             if keyword:match('^%l') then
@@ -281,7 +282,7 @@ return {
                             for _, item in ipairs(items) do
                                 local raw = item.insertText
                                 if raw:match(correct) then
-                                    local text = case(raw:sub(1,1)) .. raw:sub(2)
+                                    local text = case(raw:sub(1, 1)) .. raw:sub(2)
                                     item.insertText = text
                                     item.label = text
                                 end
@@ -318,11 +319,11 @@ return {
                 },
             },
             completion = {
-                list = { selection = { preselect = false, auto_insert = true },},
+                list = { selection = { preselect = false, auto_insert = true }, },
                 accept = {
                     auto_brackets = {
                         override_brackets_for_filetypes = {
-                            tex = {"{", "}"},
+                            tex = { "{", "}" },
                         },
                         -- Synchronously use the kind of the item to determine if brackets should be added
                         kind_resolution = {
@@ -356,7 +357,10 @@ return {
                         -- icon at end instead of before word
                         columns = {
                             { "label", "label_description" },
-                            { "kind_icon", gap=1, "source_icon",
+                            {
+                                "kind_icon",
+                                gap = 1,
+                                "source_icon",
                                 -- "source_name"
                             }
                         },
@@ -424,7 +428,7 @@ return {
             },
             snippets = {
                 preset = "luasnip",
-      },
+            },
         },
         opts_extend = { "sources.default" }
     },
