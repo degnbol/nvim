@@ -1,0 +1,1 @@
+from .interproscan_xml import InterproscanXmlParser as InterproscanXmlParser

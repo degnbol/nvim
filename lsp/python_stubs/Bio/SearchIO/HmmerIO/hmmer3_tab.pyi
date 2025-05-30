@@ -1,0 +1,19 @@
+from Bio.SearchIO._index import SearchIndexer
+from _typeshed import Incomplete
+
+__all__ = ['Hmmer3TabParser', 'Hmmer3TabIndexer', 'Hmmer3TabWriter']
+
+class Hmmer3TabParser:
+    handle: Incomplete
+    line: Incomplete
+    def __init__(self, handle) -> None: ...
+    def __iter__(self): ...
+
+class Hmmer3TabIndexer(SearchIndexer):
+    def __iter__(self): ...
+    def get_raw(self, offset): ...
+
+class Hmmer3TabWriter:
+    handle: Incomplete
+    def __init__(self, handle) -> None: ...
+    def write_file(self, qresults): ...

@@ -1,0 +1,9 @@
+from Bio import MissingPythonDependencyError as MissingPythonDependencyError
+from Bio.File import as_handle as as_handle
+from Bio.phenotype import phen_micro as phen_micro
+from _typeshed import Incomplete
+from collections.abc import Generator
+
+def write(plates, handle, format): ...
+def parse(handle, format) -> Generator[Incomplete, Incomplete]: ...
+def read(handle, format): ...

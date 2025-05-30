@@ -1,0 +1,29 @@
+from _typeshed import Incomplete
+from xml.sax import handler
+from xml.sax.expatreader import ExpatParser
+
+class Record(list):
+    n_match: Incomplete
+    n_seq: Incomplete
+    capped: Incomplete
+    warning: Incomplete
+    def __init__(self) -> None: ...
+
+def scan(seq: str = '', mirror: str = 'https://prosite.expasy.org', output: str = 'xml', **keywords): ...
+def read(handle): ...
+
+class Parser(ExpatParser):
+    firsttime: bool
+    def __init__(self) -> None: ...
+    def feed(self, data, isFinal: int = 0): ...
+
+class ContentHandler(handler.ContentHandler):
+    integers: Incomplete
+    strings: Incomplete
+    element: Incomplete
+    def __init__(self) -> None: ...
+    content: str
+    record: Incomplete
+    def startElement(self, name, attrs) -> None: ...
+    def endElement(self, name) -> None: ...
+    def characters(self, content) -> None: ...

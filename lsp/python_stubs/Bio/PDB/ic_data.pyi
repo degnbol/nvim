@@ -1,0 +1,14 @@
+from _typeshed import Incomplete
+
+ic_data_backbone: Incomplete
+ic_data_sidechains: Incomplete
+ic_data_sidechain_extras: Incomplete
+primary_angles: Incomplete
+covalent_radii: Incomplete
+residue_atom_bond_state: Incomplete
+atomic_weight: Incomplete
+electronegativity: Incomplete
+hedra_defaults: Incomplete
+dihedra_primary_defaults: Incomplete
+dihedra_secondary_defaults: Incomplete
+dihedra_secondary_xoxt_defaults: Incomplete

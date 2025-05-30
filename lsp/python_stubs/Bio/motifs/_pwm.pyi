@@ -1,0 +1,3 @@
+from typing import Any
+
+def calculate(sequence, pwm, scores) -> Any: ...

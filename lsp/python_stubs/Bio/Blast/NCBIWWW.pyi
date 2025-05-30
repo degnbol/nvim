@@ -1,0 +1,10 @@
+from Bio import BiopythonWarning as BiopythonWarning
+from Bio._utils import function_with_previous as function_with_previous
+from _typeshed import Incomplete
+
+email: Incomplete
+tool: str
+NCBI_BLAST_URL: str
+
+@function_with_previous
+def qblast(program, database, sequence, url_base=..., auto_format: Incomplete | None = None, composition_based_statistics: Incomplete | None = None, db_genetic_code: Incomplete | None = None, endpoints: Incomplete | None = None, entrez_query: str = '(none)', expect: float = 10.0, filter: Incomplete | None = None, gapcosts: Incomplete | None = None, genetic_code: Incomplete | None = None, hitlist_size: int = 50, i_thresh: Incomplete | None = None, layout: Incomplete | None = None, lcase_mask: Incomplete | None = None, matrix_name: Incomplete | None = None, nucl_penalty: Incomplete | None = None, nucl_reward: Incomplete | None = None, other_advanced: Incomplete | None = None, perc_ident: Incomplete | None = None, phi_pattern: Incomplete | None = None, query_file: Incomplete | None = None, query_believe_defline: Incomplete | None = None, query_from: Incomplete | None = None, query_to: Incomplete | None = None, searchsp_eff: Incomplete | None = None, service: Incomplete | None = None, threshold: Incomplete | None = None, ungapped_alignment: Incomplete | None = None, word_size: Incomplete | None = None, short_query: Incomplete | None = None, alignments: int = 500, alignment_view: Incomplete | None = None, descriptions: int = 500, entrez_links_new_window: Incomplete | None = None, expect_low: Incomplete | None = None, expect_high: Incomplete | None = None, format_entrez_query: Incomplete | None = None, format_object: Incomplete | None = None, format_type: str = 'XML', ncbi_gi: Incomplete | None = None, results_file: Incomplete | None = None, show_overview: Incomplete | None = None, megablast: Incomplete | None = None, template_type: Incomplete | None = None, template_length: Incomplete | None = None, username: str = 'blast', password: Incomplete | None = None): ...

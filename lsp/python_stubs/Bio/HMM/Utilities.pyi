@@ -1,0 +1,3 @@
+from Bio import BiopythonDeprecationWarning as BiopythonDeprecationWarning
+
+def pretty_print_prediction(emissions, real_state, predicted_state, emission_title: str = 'Emissions', real_title: str = 'Real State', predicted_title: str = 'Predicted State', line_width: int = 75) -> None: ...
