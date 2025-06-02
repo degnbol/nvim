@@ -1,11 +1,12 @@
 #!/usr/bin/env zsh
 cd $0:h
 # isolated env (can also just run the stubgen calls from relevant env
-conda create -n python_stubs mypy gemmi biopython
+conda create -n python_stubs mypy gemmi biopython freesasa
 conda activate python_stubs
 
 # C modules
-stubgen --inspect-mode --package gemmi --out .
+./stubgen.sh gemmi
+./stubgen.sh freesasa
 # Bio.PDB.* missing
 stubgen --package Bio --out .
 
