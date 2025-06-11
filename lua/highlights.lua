@@ -244,6 +244,7 @@ local defaultDark = 'terafox'
 local defaultLight = 'dawnfox'
 
 local grp = vim.api.nvim_create_augroup("afterColorscheme", {clear=true})
+
 vim.api.nvim_create_autocmd("Colorscheme", {
     pattern = "*", group = grp,
     callback = afterColorscheme,
