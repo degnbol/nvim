@@ -106,7 +106,7 @@ return {
                 -- "pyright",
                 -- "pylsp",
                 "basedpyright",
-                "julials",
+                -- "julials", -- Manual
                 -- "ltex", -- grammar check for latex, markdown, etc
                 "texlab",
                 -- "r_language_server",
