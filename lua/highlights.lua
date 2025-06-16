@@ -258,6 +258,19 @@ local function afterColorscheme()
     hi.link("ConflictMarkerSeparator", "Normal") -- Remove red undercurl
     hi.set("ConflictMarkerEnd", { bg = "#36324e" })
     hi.link("ConflictMarkerTheirs", "ConflictMarkerEnd")
+
+    -- TSV columns
+    hi.set("csvCol1", { bg = "#1a2e32" })
+    hi.clear("csvCol2")
+    hi.link("csvCol3", "csvCol1")
+    hi.clear("csvCol4")
+    hi.link("csvCol5", "csvCol1")
+    hi.clear("csvCol6")
+    hi.link("csvCol7", "csvCol1")
+    hi.clear("csvCol8")
+    hi.link("csvCol9", "csvCol1")
+    hi.clear("csvCol10")
+    hi.link("csvCol11", "csvCol1")
 end
 
 -- local defaultDark = 'fluoromachine'
