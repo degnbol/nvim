@@ -1,9 +1,9 @@
 [submodule "kittyREPL.nvim"]
 	path = kittyREPL.nvim
-	url = https://github.com/degnbol/kittyREPL.nvim
+	url = git@github.com:degnbol/kittyREPL.git
 [submodule "nvim-revJ.lua"]
 	path = nvim-revJ.lua
-	url = https://github.com/degnbol/nvim-revJ.lua
+	url = git@github.com:degnbol/nvim-revJ.lua.git
 [submodule "lsp/pymol-open-source"]
 	path = lsp/pymol-open-source
 	url = https://github.com/schrodinger/pymol-open-source
