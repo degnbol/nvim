@@ -1,10 +1,6 @@
 " have gf (goto file) work when writing the common $ROOT/PATH pattern.
 setlocal includeexpr=substitute(v:fname,'\\$ROOT/','','')
 
-setlocal indentkeys-=)
-setlocal indentkeys-=]
-setlocal indentkeys-=}
-
 " quick macros for toggling between inline and not inline functions.
 " Maybe write full lua functions so we can also support begin/end notation.
 " Explanation:
