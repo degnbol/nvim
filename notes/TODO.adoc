@@ -1,3 +1,7 @@
+Highlight final \ in python at EOL
+
+Change to or add british English dict.
+
 Try out snacks.picker in place of fzf lua.
 Why? fzf lua was supposed to be fast but doesn't always seem that fast, plus things like oldfiles/recent doesn't give me the buffer I literally just closed, then what is the point.
 https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
@@ -240,4 +244,7 @@ useful stuff from:
 https://github.com/folke/snacks.nvim
 
 https://old.reddit.com/r/neovim/comments/1j9fy2w/diffviewnvim_is_so_underrated/
+
+If you start using ghostty or if you want a more "correct" approach to dark/light switching in the future then consider
+https://github.com/afonsofrancof/OSC11.nvim/
 

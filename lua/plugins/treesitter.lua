@@ -43,6 +43,7 @@ return {
                     "scala",
                     "sql",
                     "graphql", --ext .gql, e.g. schema for graph databases
+                    "qf",      -- see below. Run :TSInstall qf
                 },
                 highlight = {
                     enable = true,
@@ -122,12 +123,19 @@ return {
 
             -- Add custom parsers.
             -- Typst parser and queries not up-to-date on https://github.com/nvim-treesitter/nvim-treesitter
-            local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
-            parser_config.typst = {
+            local parser_configs = require "nvim-treesitter.parsers".get_parser_configs()
+            parser_configs.typst = {
                 install_info = {
                     url = "https://github.com/uben0/tree-sitter-typst",
                     files = { "src/parser.c", "src/scanner.c" },
                 }
+            }
+            parser_configs.qf = {
+                install_info = {
+                    url = "https://github.com/OXY2DEV/tree-sitter-qf",
+                    files = { "src/parser.c" },
+                    branch = "main",
+                },
             }
         end
     },

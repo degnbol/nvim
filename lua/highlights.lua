@@ -271,6 +271,11 @@ local function afterColorscheme()
     hi.link("csvCol9", "csvCol1")
     hi.clear("csvCol10")
     hi.link("csvCol11", "csvCol1")
+
+    -- Normally linked to title, which is fair enough but I have double
+    -- underline for titles, which makes the dashboard (nvim opened without any
+    -- file etc) look weird.
+    hi.link("DashboardHeader", "Bold")
 end
 
 -- local defaultDark = 'fluoromachine'

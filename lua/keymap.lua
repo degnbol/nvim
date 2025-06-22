@@ -287,8 +287,13 @@ map('x', '<leader>rn', [["ry:%s/<C-r>r/]], { desc = "Search/replace" })
 -- gi  = go to last insert location and enter insert mode. Works even with the change to the line.
 map('i', '<C-S-A>', "<Esc><sagww0gi", { remap = true, desc = "Enable autoformat and apply it." })
 
-map('n', "<leader>qo", "<Cmd>copen<CR>", { desc = "Open" })
-map('n', "<leader>qq", "<Cmd>cclose<CR>", { desc = "Close" }) -- q for quit and is fast
+-- map('n', "<leader>qo", "<Cmd>copen<CR>", { desc = "Open" })
+-- map('n', "<leader>qq", "<Cmd>cclose<CR>", { desc = "Close" }) -- q for quit and is fast
+-- Trying out "quicker.nvim" alt to stock quickfix
+map('n', "<leader>qo", function() require("quicker").open() end, { desc = "Open quicker", })
+map('n', "<leader>qq", function() require("quicker").close() end, { desc = "Close quicker", })
+map('n', "<leader>Qo", function() require("quicker").open({ loclist = true }) end, { desc = "Open quicker loclist", })
+map('n', "<leader>Qq", function() require("quicker").close({ loclist = true }) end, { desc = "Close quicker loclist", })
 map('n', "<leader>q1", "<Cmd>cc 1<CR>", { desc = "Entry 1" })
 map('n', "<leader>q2", "<Cmd>cc 2<CR>", { desc = "Entry 2" })
 map('n', "<leader>q3", "<Cmd>cc 3<CR>", { desc = "Entry 3" })
