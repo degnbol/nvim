@@ -5,93 +5,62 @@ return {
     -- language coloring and ensuring of installation
     {
         'nvim-treesitter/nvim-treesitter',
+        branch = "main", -- master is frozen for backwards compatability
         build = ':TSUpdate',
         config = function()
-            require "nvim-treesitter.configs".setup {
-                ensure_installed = {
-                    "awk",
-                    "bash",
-                    "c_sharp",
-                    "lua",
-                    "json",
-                    "python",
-                    "julia",
-                    "matlab",
-                    "latex",
-                    -- "java",
-                    -- "kotlin",
-                    "vimdoc",
-                    "r",
-                    "markdown",        -- for block code
-                    "markdown_inline", -- for inline code
-                    "toml",
-                    "vim",
-                    "regex",
-                    "make",
-                    -- "norg",
-                    "cmake",
-                    "cpp",
-                    "bibtex",
-                    "gitcommit",
-                    "gitignore",
-                    "gitattributes",
-                    "diff",  -- for diff output https://github.com/the-mikedavis/tree-sitter-diff
-                    "query", -- what treesitter queries (*.scm) are written in
-                    "awk",
-                    "rust",
-                    "javascript",
-                    "scala",
-                    "sql",
-                    "graphql", --ext .gql, e.g. schema for graph databases
-                    "qf",      -- see below. Run :TSInstall qf
-                },
-                highlight = {
-                    enable = true,
-                    disable = {
-                        "vim",               -- not perfect
-                        "latex",             -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$
-                        "sh", "bash", "zsh", -- broken
-                    },
-                    additional_vim_regex_highlighting = {
-                        "vimdoc",   -- treesitter version doesn't contain useful colors from :h group-name
-                        "bash",     -- spending too much time writing treesitter query. Also covers zsh.
-                        "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
-                        -- Semicolon isn't currently highlighted in all cases by TS so we want to incl vim regex hl for jl.
-                        -- However, jl can get slowed down a lot in certain files from the syntax hl. The solution:
-                        -- We enable it, but avoid any default syntax hl and only set custom syntax hl in syntax/julia.vim.
-                        "julia",
-                        "sql",  -- custom postgres highlight in syntax/sql.vim
-                        "wgsl", -- custom in syntax/wgsl.vim
-                    },
-                },
-                indent = {
-                    -- note vimscript indentexpr
-                    -- https://github.com/JuliaEditorSupport/julia-vim/blob/master/indent/julia.vim
-                    -- is terrible for julia, so definitely use
-                    -- treesitter indent, if for no other lang.
-                    enable = true,
-                },
-                incremental_selection = {
-                    enable = true,
-                    keymaps = {
-                        init_selection = "<leader><up>",
-                        node_incremental = "<leader><up>",
-                        node_decremental = "<leader><down>",
-                        scope_incremental = "<leader><left>",
-                    },
-                },
-                -- opt-in to using treesitter for https://github.com/andymass/vim-matchup
-                matchup = {
-                    enable = true,
-                    disable = {}, -- optional, list of language that will be disabled
-                }
-            }
-
-            vim.wo.foldlevel = 99 -- so we don't fold from the start
-            -- Fallback if treesitter folding doesn't work:
-            -- vim.wo.foldmethod = 'indent'
-            vim.wo.foldmethod = 'expr'
-            vim.wo.foldexpr = 'nvim_treesitter#foldexpr()'
+            -- require "nvim-treesitter.configs".setup {
+            --     ensure_installed = {
+            --         "awk",
+            --         "bash",
+            --         "c_sharp",
+            --         "lua",
+            --         "json",
+            --         "python",
+            --         "julia",
+            --         "matlab",
+            --         "latex",
+            --         -- "java",
+            --         -- "kotlin",
+            --         "vimdoc",
+            --         "r",
+            --         "markdown",        -- for block code
+            --         "markdown_inline", -- for inline code
+            --         "toml",
+            --         "vim",
+            --         "regex",
+            --         "make",
+            --         -- "norg",
+            --         "cmake",
+            --         "cpp",
+            --         "bibtex",
+            --         "gitcommit",
+            --         "gitignore",
+            --         "gitattributes",
+            --         "diff",  -- for diff output https://github.com/the-mikedavis/tree-sitter-diff
+            --         "query", -- what treesitter queries (*.scm) are written in
+            --         "awk",
+            --         "rust",
+            --         "javascript",
+            --         "scala",
+            --         "sql",
+            --         "graphql", --ext .gql, e.g. schema for graph databases
+            --         "qf",      -- see below. Run :TSInstall qf
+            --     },
+            --     incremental_selection = {
+            --         enable = true,
+            --         keymaps = {
+            --             init_selection = "<leader><up>",
+            --             node_incremental = "<leader><up>",
+            --             node_decremental = "<leader><down>",
+            --             scope_incremental = "<leader><left>",
+            --         },
+            --     },
+            --     -- opt-in to using treesitter for https://github.com/andymass/vim-matchup
+            --     matchup = {
+            --         enable = true,
+            --         disable = {}, -- optional, list of language that will be disabled
+            --     }
+            -- }
 
             -- use bash treesitter for zsh since zsh is very basic
             -- it doesn't work well enough so just disable TS for zsh.
@@ -103,40 +72,28 @@ return {
             -- then make bash/injections.scm that takes command awk raw_string and captures the raw_string with @awk
             -- maybe mlr but would probs have to write it or something
 
-            vim.keymap.set('n', '<leader>th', "<Cmd>TSBufToggle highlight<CR>", { desc = "Toggle local highlight" })
-            vim.keymap.set('n', '<leader>tH', "<Cmd>TSToggle highlight<CR>", { desc = "Toggle global highlight" })
-            vim.keymap.set('n', '<leader>ti', "<Cmd>Inspect<CR>", { desc = "Inspect" })
-            vim.keymap.set('n', '<leader>tt', "<Cmd>InspectTree<CR>", { desc = "Inspect tree" })
-            vim.keymap.set('n', '<leader>tI', "<Cmd>Capture TSInstallInfo<CR>", { desc = "Install info" })
-            vim.keymap.set('n', '<leader>tn', function()
-                local node = vim.treesitter.get_node()
-                local text = vim.treesitter.get_node_text(node, 0)
-                local type = node:type()
-                print(text, "type=", type)
-            end, { desc = "node" })
-            vim.keymap.set('n', '<leader>tN', function()
-                local node = vim.treesitter.get_node():parent()
-                local text = vim.treesitter.get_node_text(node, 0)
-                local type = node:type()
-                print(text, "type=", type)
-            end, { desc = "parent" })
-
             -- Add custom parsers.
             -- Typst parser and queries not up-to-date on https://github.com/nvim-treesitter/nvim-treesitter
-            local parser_configs = require "nvim-treesitter.parsers".get_parser_configs()
-            parser_configs.typst = {
-                install_info = {
-                    url = "https://github.com/uben0/tree-sitter-typst",
-                    files = { "src/parser.c", "src/scanner.c" },
-                }
-            }
-            parser_configs.qf = {
-                install_info = {
-                    url = "https://github.com/OXY2DEV/tree-sitter-qf",
-                    files = { "src/parser.c" },
-                    branch = "main",
-                },
-            }
+            vim.api.nvim_create_autocmd('User', {
+                pattern = 'TSUpdate',
+                group = vim.api.nvim_create_augroup("treesitter", { clear = false }),
+                callback = function()
+                    local parsers = require('nvim-treesitter.parsers')
+                    parsers.typst = {
+                        install_info = {
+                            url = "https://github.com/uben0/tree-sitter-typst",
+                            files = { "src/parser.c", "src/scanner.c" },
+                        }
+                    }
+                    parsers.qf = {
+                        install_info = {
+                            url = "https://github.com/OXY2DEV/tree-sitter-qf",
+                            files = { "src/parser.c" },
+                            branch = "main",
+                        },
+                    }
+                end
+            })
         end
     },
     -- The queries aren't up to date from TS above so we also need the repo here so we overwrite queries/typst/.

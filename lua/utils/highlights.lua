@@ -38,7 +38,7 @@ function M.clear(name)
 end
 
 function M.hide(name)
-    vim.api.nvim_set_hl(0, name, {fg=M.get("Normal")["bg"]})
+    vim.api.nvim_set_hl(0, name, {fg="bg"})
 end
 
 return M

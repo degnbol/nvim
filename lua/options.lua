@@ -28,6 +28,12 @@ opt.showbreak = " "
 opt.copyindent = true
 -- indent after words in cinwords (^for,^while,...) and stuff with {}. Should def not be active for normal text docs.
 opt.smartindent = false -- has to be set to false explicitly even though it is default probs because some plugin changes it.
+-- note vimscript indentexpr
+-- https://github.com/JuliaEditorSupport/julia-vim/blob/master/indent/julia.vim
+-- is terrible for julia, so definitely use
+-- treesitter indent, if for no other lang.
+vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+
 -- Has to be set for bufferline to work by hiding an open buffer when switching to another
 opt.hidden = true
 opt.ignorecase = true  -- search ignoring case. use \c \C anywhere in search pattern to force case-sensitivity.
@@ -111,6 +117,12 @@ vim.opt.dictionary = rtp .. "/spell/en.dic"
 vim.opt.spellfile = rtp .. "/spell/custom.utf8.add"
 -- set a default commentstring
 vim.opt.commentstring = "#%s"
+
+vim.wo.foldlevel = 99 -- so we don't fold from the start
+-- Fallback if treesitter folding doesn't work:
+-- vim.wo.foldmethod = 'indent'
+vim.wo.foldmethod = 'expr'
+vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 
 -- vim.opt.messagesopt='wait:200,history:500'
 

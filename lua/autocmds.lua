@@ -3,13 +3,13 @@
 -- Either lines, or function producing lines
 local defaultlines = {
     -- as a function instead of separate patterns as otherwise they would all get triggered.
-    sh = function (filepath)
+    sh = function(filepath)
         if filepath:match("%.activate.sh$") then
-            return {"conda activate ENVIRONMENT 2> /dev/null"}
+            return { "conda activate ENVIRONMENT 2> /dev/null" }
         elseif filepath:match("%.deactivate.sh$") then
-            return {"[ \"$CONDA_DEFAULT_ENV\" = base ] || conda deactivate"}
+            return { "[ \"$CONDA_DEFAULT_ENV\" = base ] || conda deactivate" }
         end
-        return {"cd $0:h"}
+        return { "cd $0:h" }
     end,
     scm = {
         ";extends",
@@ -24,7 +24,7 @@ local defaultlines = {
     jl = {
         "using DataFrames, CSV",
     },
-    lua = function (filepath)
+    lua = function(filepath)
         -- if writing luasnippets
         if filepath:match("/luasnippets/") then
             return {
@@ -71,14 +71,14 @@ local defaultlines = {
         end
         return {}
     end,
-    vim = function (filepath)
+    vim = function(filepath)
         if filepath:match("ftdetect/") then
-            return {[[au BufNewFile,BufRead *.EXT set filetype=FILETYPE]]}
+            return { [[au BufNewFile,BufRead *.EXT set filetype=FILETYPE]] }
         end
         return {}
     end,
     -- complgen in config/complgen/*.usage
-    usage = function ()
+    usage = function()
         -- assume filename is command name
         local cmdname = vim.fn.expand('%:r')
         return {
@@ -96,17 +96,17 @@ local defaultlines = {
     end,
 }
 
-local grp = vim.api.nvim_create_augroup("defaultfile", {clear=true})
+local grp = vim.api.nvim_create_augroup("defaultfile", { clear = true })
 
 for ext, lines in pairs(defaultlines) do
     local callback
     if type(lines) == "function" then
-        callback = function ()
+        callback = function()
             local filepath = vim.api.nvim_buf_get_name(0)
             vim.api.nvim_put(lines(filepath), "l", false, true)
         end
     else
-        callback = function ()
+        callback = function()
             vim.api.nvim_put(lines, "l", false, true)
         end
     end
@@ -118,15 +118,43 @@ for ext, lines in pairs(defaultlines) do
 end
 
 
-local grp = vim.api.nvim_create_augroup("cmp-syntax", {clear=true})
 vim.api.nvim_create_autocmd("Filetype", {
     pattern = "*",
-    group = grp,
-    callback = function ()
-
+    group = vim.api.nvim_create_augroup("cmp-syntax", { clear = true }),
+    callback = function()
         if vim.opt_local.omnifunc:get() == "" then
             vim.opt_local.omnifunc = "syntaxcomplete#Complete"
         end
     end
 })
 
+-- start treesitter for each new filetype
+vim.api.nvim_create_autocmd("Filetype", {
+    pattern = "*",
+    group = vim.api.nvim_create_augroup("treesitter", { clear = false }),
+    callback = function(args)
+        local disabled = {
+            "vim",               -- not perfect
+            "latex",             -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$
+            "sh", "bash", "zsh", -- broken
+        }
+        local additional_vim_regex_highlighting = {
+            "vimdoc",   -- treesitter version doesn't contain useful colors from :h group-name
+            "bash",     -- spending too much time writing treesitter query. Also covers zsh.
+            "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
+            -- Semicolon isn't currently highlighted in all cases by TS so we want to incl vim regex hl for jl.
+            -- However, jl can get slowed down a lot in certain files from the syntax hl. The solution:
+            -- We enable it, but avoid any default syntax hl and only set custom syntax hl in syntax/julia.vim.
+            "julia",
+            "sql",  -- custom postgres highlight in syntax/sql.vim
+            "wgsl", -- custom in syntax/wgsl.vim
+        }
+        if disabled[vim.bo.filetype] == nil then
+            -- Ignore errors for buffers where treesitter parser is not installed.
+            pcall(vim.treesitter.start, args.buf)
+            if additional_vim_regex_highlighting[vim.bo.filetype] then
+                vim.bo[args.buf].syntax = 'on'
+            end
+        end
+    end
+})
