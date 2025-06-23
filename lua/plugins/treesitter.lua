@@ -8,6 +8,7 @@ return {
         branch = "main", -- master is frozen for backwards compatability
         build = ':TSUpdate',
         config = function()
+            -- TODO: replicate these master branch settings with what is equivalent for the main branch version.
             -- require "nvim-treesitter.configs".setup {
             --     ensure_installed = {
             --         "awk",
