@@ -148,9 +148,9 @@ local function afterColorscheme()
     hi.mod("@markup.link.url", { italic = false })                                 -- underscore is enough distinction
     hi.mod("@markup.link.url", { italic = false })                                 -- underscore is enough distinction
     hi.mod("@string.special.url", { italic = false })                              -- underscore is enough distinction
-    -- By default links to Keyword which we highlights with both italic and background glow in current theme.
-    -- Making documentation text stand out more than normal comments is fine, but not that much, and def not italic, since doc is there to be read as long text.
-    hi.fg("@string.documentation", hi.get("Keyword")['fg'])
+    -- I like having @string.documentation different colour from regular string to make it clear it has a different special role and is recognised as such.
+    -- By default it was linked to keyword which is implying builtin, e.g. italic.
+    hi.link("@string.documentation", "Special")
     -- no color
     hi.link("@markup.italic", "Italic")
     hi.link("@markup.strong", "Bold")
@@ -276,6 +276,7 @@ local function afterColorscheme()
     -- underline for titles, which makes the dashboard (nvim opened without any
     -- file etc) look weird.
     hi.link("DashboardHeader", "Bold")
+    hi.link("@lsp.type.decorator", "PreProc")
 end
 
 -- local defaultDark = 'fluoromachine'
