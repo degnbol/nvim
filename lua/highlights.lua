@@ -115,7 +115,7 @@ local function afterColorscheme()
     hi.mod("@keyword.function", { italic = true })
     hi.mod("@keyword.return", { italic = true })
     -- all same as  keyword except bold since operators are bold.
-    hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.get("Keyword")['fg'] })
+    hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.getfg("Keyword") })
     hi.mod("@parameter", { italic = false })
     hi.mod("@function", { italic = false, bold = true })
     hi.fg("@function.call", hi.getfg("Function"))
@@ -128,13 +128,13 @@ local function afterColorscheme()
     hi.link("@boolean", "Boolean")
     hi.mod("Boolean", { italic = true, bold = false })
     -- italic is enough distinction, and fits with the pattern. No need for a different colour.
-    hi.set("@variable.builtin", { italic = true, fg = hi.get("@variable")['fg'] })
+    hi.set("@variable.builtin", { italic = true, })
     hi.mod("@variable.parameter.builtin", { italic = true })
-    hi.set("@function.builtin", { italic = true, fg = hi.get("@function.call")['fg'] })
-    hi.set("@attribute.builtin", { italic = true, fg = hi.get("@attribute")['fg'] })
-    hi.mod("@constant.builtin", { italic = true, fg = hi.get("@constant")['fg'] })
-    hi.set("@type.builtin", { italic = true, fg = hi.get("@type")['fg'] })
-    hi.mod("@module.builtin", { italic = true, fg = hi.get("@module")['fg'] })
+    hi.set("@function.builtin", { italic = true, fg = hi.getfg("@function.call") })
+    hi.set("@attribute.builtin", { italic = true, fg = hi.getfg("@attribute") })
+    hi.mod("@constant.builtin", { italic = true, fg = hi.getfg("@constant") })
+    hi.set("@type.builtin", { italic = true, fg = hi.getfg("@type") })
+    hi.mod("@module.builtin", { italic = true, fg = hi.getfg("@module") })
     -- underline tags since they are kinda like links
     hi.mod("Tag", { underline = true })
     hi.mod("@tag", { underline = true })
@@ -143,11 +143,11 @@ local function afterColorscheme()
     hi.mod("@tag.delimiter", { underline = true })
     hi.mod("@lsp.type.ref", { underline = true })
     hi.mod("@lsp.type.link", { underline = true })
-    hi.set("@markup.raw", { underline = false, fg = hi.get("@markup.raw")['fg'] }) -- trying to just remove italic
-    hi.set("@markup.link", { underline = true, fg = hi.get("@markup.link.label")['fg'] })
-    hi.mod("@markup.link.url", { italic = false })                                 -- underscore is enough distinction
-    hi.mod("@markup.link.url", { italic = false })                                 -- underscore is enough distinction
-    hi.mod("@string.special.url", { italic = false })                              -- underscore is enough distinction
+    hi.set("@markup.raw", { underline = false, fg = hi.getfg("@markup.raw") }) -- trying to just remove italic
+    hi.set("@markup.link", { underline = true, fg = hi.getfg("@markup.link.label") })
+    hi.mod("@markup.link.url", { italic = false })                             -- underscore is enough distinction
+    hi.mod("@markup.link.url", { italic = false })                             -- underscore is enough distinction
+    hi.mod("@string.special.url", { italic = false })                          -- underscore is enough distinction
     -- I like having @string.documentation different colour from regular string to make it clear it has a different special role and is recognised as such.
     -- By default it was linked to keyword which is implying builtin, e.g. italic.
     hi.link("@string.documentation", "Special")
@@ -204,15 +204,18 @@ local function afterColorscheme()
 
     -- fixes typst highlighting operator in == heading
     hi.link("@text.title", "Title")
-    hi.set("Title", { bold = true, underdouble = true, fg = hi.get("Normal")['fg'] })
+    hi.set("Title", { bold = true, underdouble = true, fg = hi.getfg("Normal") })
 
     -- variable is the default capture for most things in code so we want it to
     -- be neutral. I set it to copy normal instead of using clear since if I clear it will
     -- be overrideen by other colors, but I want it to appear. Example in julia:
     -- "$variable" will color variable as string with clear and as normal with this approach.
-    -- local variable = hi.get("@variable")["fg"]
-    local variable = hi.get("@parameter")["fg"]
-    hi.fg("@variable", hi.get("Normal")["fg"])
+    -- However, there are situations where the opposite is true, e.g. in
+    -- fortran some types will also be captured as variables, and we would ideally
+    -- keep the type colouring.
+    -- local variable = hi.getfg("@variable")
+    local variable = hi.getfg("@parameter")
+    hi.fg("@variable", hi.getfg("Normal"))
     -- Except for some languages where variable shouldn't be neutral:
     for _, showVar in ipairs { "typst", "markdown", "asciidoc", "latex" } do
         hi.fg("@variable." .. showVar, variable)
