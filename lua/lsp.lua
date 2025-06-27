@@ -22,6 +22,8 @@ nmap("<leader>xS", "<Cmd>CmpStatus<CR>", "Cmp status")
 
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 nmap('<leader>dd', vim.diagnostic.open_float, "Line diagnostic")
+nmap('<leader>dv', function() vim.diagnostic.config { virtual_lines = true } end, "Enable virtual line diagnostics")
+nmap('<leader>dV', function() vim.diagnostic.config { virtual_lines = false } end, "Enable virtual line diagnostics")
 -- can't use backspace since it is hardcoded by mini.clue for up one level
 nmap('<leader>d0', function() vim.diagnostic.enable(false) end, "Disable diagnostics")
 nmap('<leader>d1', vim.diagnostic.enable, "Enable diagnostics")
