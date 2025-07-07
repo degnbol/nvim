@@ -25,13 +25,14 @@ hi def link zshCommands @function.builtin
 " make it clear
 hi def link zshVariable @parameter
 hi def link zshDeref @parameter
+hi def link zshSubst zshDeref
 hi def link zshSubstQuoted Special
-hi def link zshSubstDelim Special
+hi def link zshSubstDelim Delimiter
 hi def link zshOperator Operator
 hi def link zshParentheses Delimiter
 
 " works for bash but not for zsh for some reason
-syn match Operator /\$/ contained containedin=zshDeref
+syn match Operator /\$/ contained containedin=zshDeref,zshShortDeref,zshSubstQuoted,zshSubstDelim,zshSubst
 
 " They are never actually numbers right? Just strings that may be interpreted 
 " as numbers by other programs.
@@ -61,3 +62,17 @@ hi def link zshOldSubst None
 " First word within `...` is probably a cmd name like above.
 syn match Function /`\@<=[A-Za-z_-]\+/ contained containedin=zshOldSubst
 
+syn region zshArraySubscript matchgroup=Delimiter start=/\[/ end=/\]/
+syn match Delimiter /:/ contained containedin=zshSubst
+" E.g. numbers in ${@:1:$#-1}, however also number in ${0}
+syn match Number /-\?\d\+/ contained containedin=zshArraySubscript,zshSubst
+" Script arguments
+syn match PreProc /[@#]/ contained containedin=zshSubst
+" Unpacking operator e.g. "=" in "{=@}"
+syn match Operator /\(${\)\@<==/ contained containedin=zshSubst
+
+" Highlight = in variable assignments.
+" It is checked to be preceded by a valid variable name using \@<=.
+" \h == head of word, i.e. [A-Za-z_], and \w == word, i.e. the same plus 
+" digits.
+syn match Operator /\(\h\+\w*\)\@<==/
