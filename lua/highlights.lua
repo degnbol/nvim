@@ -80,6 +80,12 @@ local function afterColorscheme()
     hi.fg("@module", "#5e5050")       -- dimmed down version of @import / Include / PreProc. Use darkening with lush in dark mode and lighten in light mode.
     hi.fg("@constructor", hi.getfg("TSRainbowBlue"))
     hi.link("@constructor.lua", "@constructor")
+    -- vim doesn't seem to be combining underline and color from two separate
+    -- groups? Maybe that's only for TS which we don't have working for shell.
+    -- We do this hack solution of a new hl group which has the underline and the colour.
+    hi.set("@function.path", { underline = true, fg = hi.getfg("Function") })
+    -- Same hack:
+    hi.set("@path.zshShortDeref", { underline = true, fg = hi.getfg("zshShortDeref") })
 
     -- never italic comments but italize builtin stuff
     -- :h group-name
@@ -181,6 +187,8 @@ local function afterColorscheme()
     hi.link("@lsp.type.function", "@function.call")
     hi.link("@lsp.type.method", "@function.call")
     hi.link("@lsp.type.string", "@string")
+    -- E.g. in importing macro in rust. By default no colour.
+    hi.link("@lsp.type.procMacro", "@function.macro")
     hi.link("@function.typst", "@function.call")
 
     --- Colon before function call is captured by @constant making it italic.
@@ -280,6 +288,16 @@ local function afterColorscheme()
     -- file etc) look weird.
     hi.link("DashboardHeader", "Bold")
     hi.link("@lsp.type.decorator", "PreProc")
+
+    -- Only relevant to json without treesitter
+    -- hi.link("jsonKeyword", "@variable")
+    -- hi.link("jsonQuote", "String")
+    -- -- Why are commas called noise?
+    -- hi.link("jsonNoise", "Delimiter")
+    -- Dim things that would be concealed if conceallevel>0
+    hi.link("@conceal", "comment")
+    -- The quotation marks are technically indicating strings
+    hi.link("@conceal.json", "String")
 end
 
 -- local defaultDark = 'fluoromachine'
