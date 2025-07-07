@@ -16,10 +16,6 @@ syn match @parameter ':[rth]' containedin=zshSubst,zshString
 
 hi link zshString String
 
-" slightly more subtle color for things in `` that aren't recognized as 
-" function calls, flag arguments, etc.
-hi link zshOldSubst String
-
 " in vim core there are keywords such as "clone" that will be recognized in 
 " all contexts and highlighted as a keyword, which we color differently from 
 " other function calls and italize. Color them according to functions instead.
@@ -32,6 +28,7 @@ hi def link zshDeref @parameter
 hi def link zshSubstQuoted Special
 hi def link zshSubstDelim Special
 hi def link zshOperator Operator
+hi def link zshParentheses Delimiter
 
 " works for bash but not for zsh for some reason
 syn match Operator /\$/ contained containedin=zshDeref
@@ -47,4 +44,20 @@ syn match ZshPathOp /:/ containedin=zshString,zshSubstQuoted contains=@parameter
 hi def link ZshPathOp Operator
 syn match zshPathOpArg '[rth]' contained
 hi def link ZshPathOpArg Function
+
+" First word within $(...) is probably a cmd name. Only first word.
+" This was hard to figure out. With contained and containedin we start looking 
+" for matches at the first position within $(...), i.e. checking at ? in 
+" $(?...). Using ^ doesn't work since the begining inside the brackets is 
+" never start-of-line. \zs doesn't work since it only works by starting 
+" highlighting late within a match. \@<= works since it looks backwards after 
+" we start matching at a position. It requires a match, the opposite is 
+" accomplished with \@<!
+" The required text is then $( made into a single "atom": \( ... \)
+syn match Function /\(\$(\)\@<=[A-Za-z_-]\+/ contained containedin=zshSubstQuoted
+
+" Remove colouring everything within `...` with a single simple colour.
+hi def link zshOldSubst None
+" First word within `...` is probably a cmd name like above.
+syn match Function /`\@<=[A-Za-z_-]\+/ contained containedin=zshOldSubst
 
