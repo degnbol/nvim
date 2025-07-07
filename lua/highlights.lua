@@ -38,6 +38,11 @@ local function afterColorscheme()
     hi.set("Search", { fg = "gray", bg = hi.get("IncSearch")["fg"], standout = true })
     hi.link("CurSearch", "Search")
 
+    -- MoreMsg is shown for text in multiline messages, e.g. :Inspect.
+    -- By default it is a bold blue color like a function def which is confusing.
+    -- NonText link makes more sense but could also be linked to Normal.
+    hi.link("MoreMsg", "NonText")
+
     -- Default is comment fg and similar strong bg for the whole line. It grabs too much attention.
     -- NonText is bold gray. It feels like a good balance of attention grabbing.
     -- Treesitter hl with NonText "… 35 …" could be too little attention and get overlooked.

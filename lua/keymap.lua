@@ -376,7 +376,7 @@ map('c', '<D-v>', '<C-r>+', { desc = "Paste, place cursor after" })
 -- treesitter mappings.
 map('n', '<leader>th', "<Cmd>TSBufToggle highlight<CR>", { desc = "Toggle local highlight" })
 map('n', '<leader>tH', "<Cmd>TSToggle highlight<CR>", { desc = "Toggle global highlight" })
-map('n', '<leader>ti', "<Cmd>Inspect<CR>", { desc = "Inspect" })
+map('n', '<leader>ti', vim.show_pos, { desc = "Inspect" }) -- Same as :Inspect
 map('n', '<leader>tt', "<Cmd>InspectTree<CR>", { desc = "Inspect tree" })
 map('n', '<leader>tI', "<Cmd>Capture TSInstallInfo<CR>", { desc = "Install info" })
 map('n', '<leader>tn', function()

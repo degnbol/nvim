@@ -19,3 +19,4 @@ syn match Function /^\s*\zs[A-Za-z_-]\+/
 " combine with the Function color.
 syn match @function.path '^\s*\zs[A-Za-z._-]*/[A-Za-z._-]\+'
 
+
