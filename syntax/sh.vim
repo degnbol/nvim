@@ -19,6 +19,9 @@ syn match Function /^\s*\zs[A-Za-z_-]\+/ containedin=shIf,shCommandSub
 syn match Function /\(^\h\+\w*=\w\+\)\@<= [A-Za-z_-]\+/ containedin=shIf,shCommandSub
 " ... or after pipe
 syn match Function /|\@<= *[A-Za-z_-]\+/ containedin=shIf,shCommandSub
+" ... or after `exec`
+syn match Function /\(exec\)\@<= *[A-Za-z_-]\+/
+
 " When executing using a path, highlight the executable/script and not the full path as Function.
 " I wanted to have a single syn match call, but the underline doesn't seem to 
 " combine with the Function color, hence new hi group FunctionPath.
