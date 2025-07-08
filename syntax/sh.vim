@@ -28,7 +28,9 @@ syn match Function /^\s*\zs[A-Za-z_-]\+/
 " AND to cover cases such as $0:h/path/to/file we also have to look backwards 
 " allowing for $0:h, hence \S* added at the end of the atom.
 " AND to support e.g. $(git root)/path/to/file which has a space I added the 
-" \($(.*)\)\?
+" \($(.*)\)\?.
+" There's also backticks e.g. `git root` but it's legacy and we prefer $(...) 
+" so maybe let's not complicate this regex further.
 syn match FunctionPath '\(^\s*\S*\($(.*)\)\?\)\@<=[/A-Za-z0-9._-]*/\zs[A-Za-z._-]\+\ze[ \n]' contained containedin=@path
 
 
