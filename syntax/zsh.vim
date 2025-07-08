@@ -29,7 +29,6 @@ hi def link zshSubstDelim Delimiter
 hi def link zshOperator Operator
 hi def link zshParentheses Delimiter
 
-" works for bash but not for zsh for some reason
 syn match Delimiter /\$/ contained containedin=zshDeref,zshShortDeref,zshSubstQuoted,zshSubstDelim,zshSubst nextgroup=zshPathOp
 
 " They are never actually numbers right? Just strings that may be interpreted 
@@ -45,17 +44,6 @@ syn match zshPathOp /\w*:[rth]/hs=e-1 contained containedin=zshDeref,zshShortDer
 hi def link zshPathOp Delimiter
 syn match zshPathOpArg '[rth]' contained nextgroup=zshPathOp
 hi def link zshPathOpArg @function.builtin
-
-" First word within $(...) is probably a cmd name. Only first word.
-" This was hard to figure out. With contained and containedin we start looking 
-" for matches at the first position within $(...), i.e. checking at ? in 
-" $(?...). Using ^ doesn't work since the begining inside the brackets is 
-" never start-of-line. \zs doesn't work since it only works by starting 
-" highlighting late within a match. \@<= works since it looks backwards after 
-" we start matching at a position. It requires a match, the opposite is 
-" accomplished with \@<!
-" The required text is then $( made into a single "atom": \( ... \)
-syn match Function /\(\$(\)\@<=[A-Za-z_-]\+/ contained containedin=zshSubstQuoted
 
 " Remove colouring everything within `...` with a single simple colour.
 hi def link zshOldSubst None
