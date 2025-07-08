@@ -36,12 +36,12 @@ syn match Delimiter /\$/ contained containedin=zshDeref,zshShortDeref,zshSubstQu
 " as numbers by other programs.
 hi def link zshNumber None
 
-syn match @path.zshShortDeref /$0/ containedin=zshShortDeref,zshPathOp
+syn match zshShortDerefPath /$0/ containedin=zshShortDeref nextgroup=zshPathOp
 " hi defined in lua/highlights.lua
 
 " The hs=e-1 after the pattern means highlight starts at end of match minus 1.
 " I tried first with \zs but it didn't work for some reason.
-syn match zshPathOp /\h*\w*:[rth]/hs=e-1 contained containedin=zshDeref,zshSubstQuoted,zshString contains=zshPathOpArg
+syn match zshPathOp /\w*:[rth]/hs=e-1 contained containedin=zshDeref,zshShortDeref,zshShortDerefPath,zshSubstQuoted,zshString contains=zshPathOpArg
 hi def link zshPathOp Delimiter
 syn match zshPathOpArg '[rth]' contained nextgroup=zshPathOp
 hi def link zshPathOpArg @function.builtin

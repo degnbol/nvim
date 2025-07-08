@@ -288,7 +288,7 @@ local function afterColorscheme()
     -- We do this hack solution of a new hl group which has the underline and the colour.
     hi.set("FunctionPath", { underline = true, fg = hi.getfg("Function") })
     -- Same hack:
-    hi.set("@path.zshShortDeref", { underline = true, fg = hi.getfg("zshShortDeref") })
+    hi.set("zshShortDerefPath", { underline = true, fg = hi.getfg("zshShortDeref") })
     hi.set("Wildcard", hi.get("@operator"))
     hi.mod("Wildcard", { underline = true })
 
