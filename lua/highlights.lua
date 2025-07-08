@@ -260,6 +260,7 @@ local function afterColorscheme()
     -- vim in lua is @lsp.typemod.variable.global.lua linked to Constant. We link to italic module instead to get italic and faded colour.
     hi.link("@lsp.typemod.variable.global", "@module.builtin")
     hi.link("@lsp.typemod.variable.global.lua", "@module.builtin")
+    hi.link("@lsp.type.selfParameter", "@module.builtin") -- The word self in a class.
 
     -- By default links to Error and gets red undercurl.
     hi.set("ConflictMarkerBegin", { bg = "#0f3625" })
