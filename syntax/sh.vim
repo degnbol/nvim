@@ -25,6 +25,8 @@ syn match Function /^\s*\zs[A-Za-z_-]\+/
 " function so we check for ^\s* before match, however we need to use
 " \@<= to look backwards at start of checking, since we are conditioned on 
 " @path which doesn't match region from start of line.
-syn match FunctionPath '\(^\s*\)\@<=[/A-Za-z0-9._-]*/\zs[A-Za-z._-]\+\ze[ \n]' contained containedin=@path
+" AND to cover cases such as $0:h/path/to/file we also have to look backwards 
+" allowing for $0:h, hence \S* added at the end of the atom.
+syn match FunctionPath '\(^\s*\S*\)\@<=[/A-Za-z0-9._-]*/\zs[A-Za-z._-]\+\ze[ \n]' contained containedin=@path
 
 
