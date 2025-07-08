@@ -12,8 +12,6 @@ runtime syntax/sh.vim
 " hi link zshPrecommand @function.call
 " hi def link zshAfterPrecommand @function.call
 
-syn match @parameter ':[rth]' containedin=zshSubst,zshString
-
 hi link zshString String
 
 " in vim core there are keywords such as "clone" that will be recognized in 
@@ -32,19 +30,21 @@ hi def link zshOperator Operator
 hi def link zshParentheses Delimiter
 
 " works for bash but not for zsh for some reason
-syn match Operator /\$/ contained containedin=zshDeref,zshShortDeref,zshSubstQuoted,zshSubstDelim,zshSubst
+syn match Delimiter /\$/ contained containedin=zshDeref,zshShortDeref,zshSubstQuoted,zshSubstDelim,zshSubst nextgroup=zshPathOp
 
 " They are never actually numbers right? Just strings that may be interpreted 
 " as numbers by other programs.
 hi def link zshNumber None
 
-syn match @path.zshShortDeref /$0/ containedin=zshShortDeref,ZshPathOp
+syn match @path.zshShortDeref /$0/ containedin=zshShortDeref,zshPathOp
 " hi defined in lua/highlights.lua
 
-syn match ZshPathOp /:/ containedin=zshSubstQuoted contains=@parameter nextgroup=zshPathOpArg
-hi def link ZshPathOp Delimiter
-syn match zshPathOpArg '[rth]' contained
-hi def link ZshPathOpArg @parameter
+" The hs=e-1 after the pattern means highlight starts at end of match minus 1.
+" I tried first with \zs but it didn't work for some reason.
+syn match zshPathOp /\h*\w*:[rth]/hs=e-1 contained containedin=zshDeref,zshSubstQuoted,zshString contains=zshPathOpArg
+hi def link zshPathOp Delimiter
+syn match zshPathOpArg '[rth]' contained nextgroup=zshPathOp
+hi def link zshPathOpArg @function.builtin
 
 " First word within $(...) is probably a cmd name. Only first word.
 " This was hard to figure out. With contained and containedin we start looking 
@@ -63,6 +63,7 @@ hi def link zshOldSubst None
 syn match Function /`\@<=[A-Za-z_-]\+/ contained containedin=zshOldSubst
 
 syn region zshArraySubscript matchgroup=Delimiter start=/\[/ end=/\]/
+" E.g. in ${@:1:$#-1}
 syn match Delimiter /:/ contained containedin=zshSubst
 " E.g. numbers in ${@:1:$#-1}, however also number in ${0}
 syn match Number /-\?\d\+/ contained containedin=zshArraySubscript,zshSubst
@@ -76,3 +77,5 @@ syn match Operator /\(${\)\@<==/ contained containedin=zshSubst
 " \h == head of word, i.e. [A-Za-z_], and \w == word, i.e. the same plus 
 " digits.
 syn match Operator /\(\h\+\w*\)\@<==/
+
+

@@ -85,12 +85,6 @@ local function afterColorscheme()
     hi.fg("@module", "#5e5050")       -- dimmed down version of @import / Include / PreProc. Use darkening with lush in dark mode and lighten in light mode.
     hi.fg("@constructor", hi.getfg("TSRainbowBlue"))
     hi.link("@constructor.lua", "@constructor")
-    -- vim doesn't seem to be combining underline and color from two separate
-    -- groups? Maybe that's only for TS which we don't have working for shell.
-    -- We do this hack solution of a new hl group which has the underline and the colour.
-    hi.set("@function.path", { underline = true, fg = hi.getfg("Function") })
-    -- Same hack:
-    hi.set("@path.zshShortDeref", { underline = true, fg = hi.getfg("zshShortDeref") })
 
     -- never italic comments but italize builtin stuff
     -- :h group-name
@@ -287,6 +281,16 @@ local function afterColorscheme()
     hi.link("csvCol9", "csvCol1")
     hi.clear("csvCol10")
     hi.link("csvCol11", "csvCol1")
+
+    -- shell
+    -- vim doesn't seem to be combining underline and color from two separate
+    -- groups? Maybe that's only for TS which we don't have working for shell.
+    -- We do this hack solution of a new hl group which has the underline and the colour.
+    hi.set("FunctionPath", { underline = true, fg = hi.getfg("Function") })
+    -- Same hack:
+    hi.set("@path.zshShortDeref", { underline = true, fg = hi.getfg("zshShortDeref") })
+    hi.set("Wildcard", hi.get("@operator"))
+    hi.mod("Wildcard", { underline = true })
 
     -- Normally linked to title, which is fair enough but I have double
     -- underline for titles, which makes the dashboard (nvim opened without any

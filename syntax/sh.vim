@@ -1,22 +1,30 @@
 syn keyword Keyword in
 syn keyword @function.builtin mkdir sed tr gzip gunzip rm cd cat mv
 
-syn match Operator /\$/
-syn match Operator /*/
+syn match Delimiter /\$/
+syn match Wildcard /*/
+" Hi defined in lua/highlights.lua
 
 " flags with either - or + prefix
 syn match @flag / \zs-[A-Za-z_-]\+/
 syn match @flag / \zs+[A-Za-z_+]\+/
 hi def link @flag Function
 
-" paths
-syn match @path '[A-Za-z0-9.*_-]*[/.][/A-Za-z0-9.*_-]*' containedin=@function.path contains=Operator
+" paths.
+syn match @path '[A-Za-z0-9.*_-]*[/.][/A-Za-z0-9.*_-]*' contains=FunctionPath,Wildcard
 hi def link @path @text.underline
 
 " First word on a line.
 syn match Function /^\s*\zs[A-Za-z_-]\+/
+" When executing using a path, highlight the executable/script and not the full path as Function.
 " I wanted to have a single syn match call, but the underline doesn't seem to 
-" combine with the Function color.
-syn match @function.path '^\s*\zs[A-Za-z._-]*/[A-Za-z._-]\+'
+" combine with the Function color, hence new hi group FunctionPath.
+" Regex: \ze[ \n] means there should be a space after the word or end-of-line, 
+" and \ze to not highlight those.
+" We need to have the path as first word on a line to assume it's a called 
+" function so we check for ^\s* before match, however we need to use
+" \@<= to look backwards at start of checking, since we are conditioned on 
+" @path which doesn't match region from start of line.
+syn match FunctionPath '\(^\s*\)\@<=[/A-Za-z0-9._-]*/\zs[A-Za-z._-]\+\ze[ \n]' contained containedin=@path
 
 
