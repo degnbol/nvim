@@ -27,6 +27,8 @@ syn match Function /^\s*\zs[A-Za-z_-]\+/
 " @path which doesn't match region from start of line.
 " AND to cover cases such as $0:h/path/to/file we also have to look backwards 
 " allowing for $0:h, hence \S* added at the end of the atom.
-syn match FunctionPath '\(^\s*\S*\)\@<=[/A-Za-z0-9._-]*/\zs[A-Za-z._-]\+\ze[ \n]' contained containedin=@path
+" AND to support e.g. $(git root)/path/to/file which has a space I added the 
+" \($(.*)\)\?
+syn match FunctionPath '\(^\s*\S*\($(.*)\)\?\)\@<=[/A-Za-z0-9._-]*/\zs[A-Za-z._-]\+\ze[ \n]' contained containedin=@path
 
 
