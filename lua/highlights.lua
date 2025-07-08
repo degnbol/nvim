@@ -144,8 +144,9 @@ local function afterColorscheme()
     hi.mod("Tag", { underline = true })
     hi.mod("@tag", { underline = true })
     hi.mod("@tag.builtin", { underline = true, italic = true })
-    hi.mod("@tag.attribute", { underline = true })
-    hi.mod("@tag.delimiter", { underline = true })
+    hi.mod("@tag.attribute", { underline = false, italic = false })
+    hi.link("@tag.delimiter", "@comment")
+    hi.link("@tag.html", "@keyword") -- used for all the basic structure
     hi.mod("@lsp.type.ref", { underline = true })
     hi.mod("@lsp.type.link", { underline = true })
     hi.set("@markup.raw", { underline = false, fg = hi.getfg("@markup.raw") }) -- trying to just remove italic
