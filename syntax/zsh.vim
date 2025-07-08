@@ -41,10 +41,10 @@ hi def link zshNumber None
 syn match @path.zshShortDeref /$0/ containedin=zshShortDeref,ZshPathOp
 " hi defined in lua/highlights.lua
 
-syn match ZshPathOp /:/ containedin=zshString,zshSubstQuoted contains=@parameter nextgroup=zshPathOpArg
-hi def link ZshPathOp Operator
+syn match ZshPathOp /:/ containedin=zshSubstQuoted contains=@parameter nextgroup=zshPathOpArg
+hi def link ZshPathOp Delimiter
 syn match zshPathOpArg '[rth]' contained
-hi def link ZshPathOpArg Function
+hi def link ZshPathOpArg @parameter
 
 " First word within $(...) is probably a cmd name. Only first word.
 " This was hard to figure out. With contained and containedin we start looking 
