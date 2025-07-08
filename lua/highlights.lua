@@ -113,6 +113,8 @@ local function afterColorscheme()
     hi.mod("Number", { italic = false })
     -- If you find constants that you don't want to make italic then mod the semantic @lsp global instead.
     hi.set("Constant", { italic = true })
+    -- Nothing is constant in python and it's just based on if chars are uppercase.
+    hi.set("@constant.python", {})
     hi.mod("Exception", { italic = true })
     hi.mod("@include", { italic = true })
     hi.link("@keyword", "Keyword")
@@ -261,6 +263,7 @@ local function afterColorscheme()
     hi.link("@lsp.typemod.variable.global", "@module.builtin")
     hi.link("@lsp.typemod.variable.global.lua", "@module.builtin")
     hi.link("@lsp.type.selfParameter", "@module.builtin") -- The word self in a class.
+    hi.link("@lsp.type.variable", "@variable")
 
     -- By default links to Error and gets red undercurl.
     hi.set("ConflictMarkerBegin", { bg = "#0f3625" })
