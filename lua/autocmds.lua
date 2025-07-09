@@ -17,6 +17,7 @@ local defaultlines = {
         return { shebang .. "zsh", "cd $0:h" }
     end,
     zsh = { shebang .. "zsh", "cd $0:h" },
+    bash = { shebang .. "bash", "cd $(dirname $0)" },
     scm = {
         ";extends",
     },
