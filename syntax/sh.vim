@@ -1,3 +1,9 @@
+" neovim treats bash more or less as sh, but has a variable vim.b.is_bash or 
+" in vimscript b:is_bash which is 1 if the shell is bash.
+if exists("b:is_bash") && b:is_bash
+    runtime syntax/bash.vim
+endif
+
 syn keyword Keyword in
 syn keyword @function.builtin mkdir sed tr gzip gunzip rm cd cat mv
 
@@ -50,13 +56,3 @@ syn match FunctionPath '\(^\s*\S*\($(.*)\)\?\)\@<=[/A-Za-z0-9._-]*/\zs[A-Za-z._-
 " The required text is then $( made into a single "atom": \( ... \)
 syn match Function /\(\$(\)\@<=[A-Za-z_-]\+/ contained containedin=zshSubstQuoted,shCommandSub
 
-" sh specific
-
-hi def link shVarAssign Operator
-hi def link shTestOpr Operator
-hi def link shQuote String
-hi def link shOption @flag
-hi def link shCommandSub None
-hi def link shDerefSimple @parameter
-
-syn match Delimiter /\$/ contained containedin=shDeref,shDerefSimple
