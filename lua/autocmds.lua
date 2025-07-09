@@ -12,6 +12,8 @@ local defaultlines = {
         elseif filepath:match("%.deactivate.sh$") then
             return { "[ \"$CONDA_DEFAULT_ENV\" = base ] || conda deactivate" }
         end
+        -- Get zsh syntax
+        vim.api.nvim_set_option_value("filetype", "zsh", { buf = 0 })
         return { shebang .. "zsh", "cd $0:h" }
     end,
     zsh = { shebang .. "zsh", "cd $0:h" },
@@ -105,16 +107,34 @@ local defaultlines = {
 
 local grp = vim.api.nvim_create_augroup("defaultfile", { clear = true })
 
+---Automatically do chmod u+x for a new file if it gets written.
+local function chmodx()
+    vim.api.nvim_create_autocmd("BufWritePost", {
+        buffer = 0,
+        once = true,
+        group = grp,
+        callback = function()
+            vim.system({ "chmod", "u+x", vim.api.nvim_buf_get_name(0) }):wait()
+        end
+    })
+end
+
+-- Auto chmod u+x some filetypes
+local chmodx_exts = { "sh", "zsh", "py", "r", "jl" }
+
 for ext, lines in pairs(defaultlines) do
     local callback
     if type(lines) == "function" then
         callback = function()
             local filepath = vim.api.nvim_buf_get_name(0)
             vim.api.nvim_put(lines(filepath), "l", false, true)
+            if vim.tbl_contains(chmodx_exts, ext:lower()) then chmodx() end
         end
     else
         callback = function()
             vim.api.nvim_put(lines, "l", false, true)
+            chmodx()
+            if vim.tbl_contains(chmodx_exts, ext:lower()) then chmodx() end
         end
     end
     vim.api.nvim_create_autocmd("BufNewFile", {
