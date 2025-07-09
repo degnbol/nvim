@@ -263,7 +263,9 @@ local function afterColorscheme()
     hi.link("@lsp.typemod.variable.global", "@module.builtin")
     hi.link("@lsp.typemod.variable.global.lua", "@module.builtin")
     hi.link("@lsp.type.selfParameter", "@module.builtin") -- The word self in a class.
-    hi.link("@lsp.type.variable", "@variable")
+    -- wrongfully overrides delimiter ':' in lua, e.g.:
+    -- vim.opt_local.formatoptions:remove('o')
+    hi.clear("@lsp.type.variable")
 
     -- By default links to Error and gets red undercurl.
     hi.set("ConflictMarkerBegin", { bg = "#0f3625" })

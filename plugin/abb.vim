@@ -1,3 +1,4 @@
+iabbrev fucntion function
 " extra capitalization
 Abolish TH{ere,en,e,is} Th{}
 " lazy apostrophe

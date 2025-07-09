@@ -1,6 +1,9 @@
 #!/usr/bin/env lua
+
+local shebang = "#!/usr/bin/env "
+
 -- default contents in new files of specific types.
--- Either lines, or function producing lines
+-- Either lines, or function producing lines.
 local defaultlines = {
     -- as a function instead of separate patterns as otherwise they would all get triggered.
     sh = function(filepath)
@@ -9,19 +12,23 @@ local defaultlines = {
         elseif filepath:match("%.deactivate.sh$") then
             return { "[ \"$CONDA_DEFAULT_ENV\" = base ] || conda deactivate" }
         end
-        return { "cd $0:h" }
+        return { shebang .. "zsh", "cd $0:h" }
     end,
+    zsh = { shebang .. "zsh", "cd $0:h" },
     scm = {
         ";extends",
     },
     R = {
+        shebang .. "Rscript",
         [[if (!require("pacman")) install.packages("pacman")]],
         [[pacman::p_load(data.table, ggplot2, cowplot, ggh4x, svglite)]],
     },
     py = {
+        shebang .. "python3",
         "import numpy as np",
     },
     jl = {
+        shebang .. "julia",
         "using DataFrames, CSV",
     },
     lua = function(filepath)
