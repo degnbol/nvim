@@ -265,7 +265,10 @@ local function afterColorscheme()
     hi.link("@lsp.type.selfParameter", "@module.builtin") -- The word self in a class.
     -- wrongfully overrides delimiter ':' in lua, e.g.:
     -- vim.opt_local.formatoptions:remove('o')
-    hi.clear("@lsp.type.variable")
+    hi.clear("@lsp.type.variable.lua")
+    -- In python some variables are highlighted as types because they start with an uppercase letter.
+    -- It seems we can just clear that highlight since there is also the @lsp.type.class.python which highlights the types.
+    hi.clear("@type.python")
 
     -- By default links to Error and gets red undercurl.
     hi.set("ConflictMarkerBegin", { bg = "#0f3625" })
