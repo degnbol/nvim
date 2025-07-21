@@ -36,10 +36,12 @@ vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 
 -- Has to be set for bufferline to work by hiding an open buffer when switching to another
 opt.hidden = true
-opt.ignorecase = true  -- search ignoring case. use \c \C anywhere in search pattern to force case-sensitivity.
-opt.smartcase = true   -- only match case-insensitively is query is all lowercase
-opt.scrolloff = 4      -- number of lines of context to always keep above and below the cursorline
-opt.sidescrolloff = 12 -- number of blocks to keep to sides of cursor
+opt.ignorecase = true -- search ignoring case. use \c \C anywhere in search pattern to force case-sensitivity.
+opt.smartcase = true  -- only match case-insensitively is query is all lowercase
+opt.scrolloff = 4     -- number of lines of context to always keep above and below the cursorline
+-- Use default 0 since otherwise sideways scrolling will be stopped in annoying ways.
+-- E.g. there is one long line and cursor is on another short line. We then can't scroll along the long line without moving cursor to it first.
+-- opt.sidescrolloff = 12 -- number of blocks to keep to sides of cursor
 opt.splitbelow = true
 opt.splitright = true
 opt.wildmode = 'longest:full,full' -- settings for how to show completion on command line
