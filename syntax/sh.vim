@@ -12,8 +12,8 @@ syn match Wildcard /*/
 " Hi defined in lua/highlights.lua
 
 " flags with either - or + prefix
-syn match @flag / \zs-[A-Za-z_-]\+/
-syn match @flag / \zs+[A-Za-z_+]\+/
+syn match @flag / \zs-[A-Za-z_0-9-]\+/
+syn match @flag / \zs+[A-Za-z_0-9+]\+/
 hi def link @flag Function
 
 " paths.
