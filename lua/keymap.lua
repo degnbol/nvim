@@ -432,3 +432,15 @@ vim.api.nvim_create_autocmd("Filetype", {
             { buffer = true, desc = "Two-thirds screen layout" })
     end
 })
+
+-- Like doing new | r!<CMD> except the scratch buffer is wiped when hidden.
+map('n', "<leader>:!", function()
+    vim.ui.input({}, function(cmd)
+        if cmd and cmd ~= "" then
+            vim.cmd("noswapfile new")
+            vim.bo.buftype = "nofile"
+            vim.bo.bufhidden = "wipe"
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.fn.systemlist(cmd))
+        end
+    end)
+end, { desc = "new|r!<CMD> with bh=wipe" })
