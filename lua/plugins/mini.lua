@@ -1,5 +1,6 @@
-#!/usr/bin/env lua
+
 local hi = require "utils/highlights"
+local map = vim.keymap.set
 
 return {
     {
@@ -7,29 +8,21 @@ return {
         version = false,
         -- higher than default 50 to allow mini parts loaded in other files.
         priority = 100,
-        config = function ()
-
+        config = function()
             require('mini.bracketed').setup {
                 -- ]i to go to more indented region.
-                indent = { suffix = 'i', options = { change_type="more" } },
+                indent = { suffix = 'i', options = { change_type = "more" } },
                 -- compliment with using [[, ]], [], ][ to jump to less indented region and to next region
             }
 
-            -- mini_indentscope = require('mini.indentscope')
-            -- mini_indentscope.setup {
-            --     draw = { animation = mini_indentscope.gen_animation.none() },
-            --     symbol = "▏",
-            -- }
-
-
-            require'mini.surround'.setup {
+            require 'mini.surround'.setup {
                 mappings = {
-                    add = 'ys', -- Add surrounding in Normal. Not Visual modes, see below.
-                    delete = 'ds', -- Delete surrounding
-                    find = '', -- Find surrounding (to the right)
-                    find_left = '', -- Find surrounding (to the left)
-                    highlight = '', -- Highlight surrounding
-                    replace = 'cs', -- Replace surrounding
+                    add = 'ys',          -- Add surrounding in Normal. Not Visual modes, see below.
+                    delete = 'ds',       -- Delete surrounding
+                    find = '',           -- Find surrounding (to the right)
+                    find_left = '',      -- Find surrounding (to the left)
+                    highlight = '',      -- Highlight surrounding
+                    replace = 'cs',      -- Replace surrounding
                     update_n_lines = '', -- Update `n_lines`
                 },
                 custom_surroundings = {
@@ -59,33 +52,33 @@ return {
 
             -- Remap adding surrounding to Visual mode selection
             vim.keymap.del('x', 'ys') -- del to avoid y(ank) waiting
-            vim.keymap.set('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { noremap = true, desc="Surround" })
+            map('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { noremap = true, desc = "Surround" })
             -- Make special mapping for "add surrounding for line"
-            vim.keymap.set('n', 'yss', 'ys_', { remap = true, desc="Surround line" })
+            map('n', 'yss', 'ys_', { remap = true, desc = "Surround line" })
 
             -- highlight hex colors and todos, notes etc
             -- consider this or https://github.com/folke/paint.nvim if you want to highlight custom things.
-            local hipatterns = require'mini.hipatterns'
+            local hipatterns = require 'mini.hipatterns'
             hipatterns.setup {
                 highlighters = {
                     -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
-                    fixme = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
-                    hack  = { pattern = '%f[%w]()HACK()%f[%W]',  group = 'MiniHipatternsHack'  },
-                    todo  = { pattern = '%f[%w]()TODO()%f[%W]',  group = 'MiniHipatternsTodo'  },
-                    note  = { pattern = '%f[%w]()NOTE()%f[%W]',  group = 'MiniHipatternsNote'  },
+                    fixme     = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+                    hack      = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
+                    todo      = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
+                    note      = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
 
                     -- Highlight hex color strings (`#rrggbb`) using that color
                     hex_color = hipatterns.gen_highlighter.hex_color(),
                     -- Highlight hex color in latex \definecolor{...}{HTML}{...}
-                    tex = { pattern = [[\definecolor{[%w_-]+}{HTML}{()%w+()}]], group=function (_, match)
+                    tex       = { pattern = [[\definecolor{[%w_-]+}{HTML}{()%w+()}]], group = function(_, match)
                         if #match ~= 6 then return nil end
-                        return hipatterns.compute_hex_color_group("#"..match, 'bg')
+                        return hipatterns.compute_hex_color_group("#" .. match, 'bg')
                     end },
                 }
             }
 
 
-            local clue = require'mini.clue'
+            local clue = require 'mini.clue'
 
             clue.setup {
                 triggers = {
@@ -124,62 +117,62 @@ return {
                 },
 
                 clues = {
-                    -- use e.g. postkeys='<C-w>' to make a submode. 
+                    -- use e.g. postkeys='<C-w>' to make a submode.
                     { mode = 'n', keys = '<LocalLeader>', desc = "Filetype specific" },
-                    { mode = 'n', keys = '<leader>:', desc = "Ex cmd related" },
-                    { mode = 'n', keys = '<leader>]', desc = "Tag" },
-                    { mode = 'n', keys = '<leader>a', desc = "Argument" },
-                    { mode = 'n', keys = '<leader>b', desc = "Buffer|Tab" },
-                    { mode = 'n', keys = '<leader>c', desc = "Compilation" },
-                    { mode = 'n', keys = '<leader>d', desc = "Diagnostics" },
-                    { mode = 'n', keys = '<leader>e', desc = "Explore/manipulate directories" },
-                    { mode = 'n', keys = '<leader>f', desc = "Find|File" },
-                    { mode = 'n', keys = '<leader>g', desc = "Git" },
-                    { mode = 'n', keys = '<leader>l', desc = "LSP" },
-                    { mode = 'n', keys = '<leader>m', desc = "Multicursor" },
+                    { mode = 'n', keys = '<leader>:',     desc = "Ex cmd related" },
+                    { mode = 'n', keys = '<leader>]',     desc = "Tag" },
+                    { mode = 'n', keys = '<leader>a',     desc = "Argument" },
+                    { mode = 'n', keys = '<leader>b',     desc = "Buffer|Tab" },
+                    { mode = 'n', keys = '<leader>c',     desc = "Compilation" },
+                    { mode = 'n', keys = '<leader>d',     desc = "Diagnostics" },
+                    { mode = 'n', keys = '<leader>e',     desc = "Explore/manipulate directories" },
+                    { mode = 'n', keys = '<leader>f',     desc = "Find|File" },
+                    { mode = 'n', keys = '<leader>g',     desc = "Git" },
+                    { mode = 'n', keys = '<leader>l',     desc = "LSP" },
+                    { mode = 'n', keys = '<leader>m',     desc = "Multicursor" },
                     -- UnconditionalPaste
-                    { mode = 'n', keys = '<leader>p', desc = "Paste after" },
-                    { mode = 'n', keys = '<leader>P', desc = "Paste before" },
+                    { mode = 'n', keys = '<leader>p',     desc = "Paste after" },
+                    { mode = 'n', keys = '<leader>P',     desc = "Paste before" },
 
-                    { mode = 'n', keys = '<leader>r', desc = "REPL|Re" },
-                    { mode = 'n', keys = '<leader>t', desc = "Tree-sitter" },
-                    { mode = 'n', keys = '<leader>w', desc = "Workspace" },
-                    { mode = 'n', keys = '<leader>q', desc = "Quickfix" },
-                    { mode = 'n', keys = '<leader>Q', desc = "Locationlist" },
-                    { mode = 'n', keys = '<leader>x', desc = "Completion|Snippet" },
-                    { mode = 'n', keys = ']s', desc = "Spell" },
-                    { mode = 'n', keys = '[s', desc = "Spell" },
+                    { mode = 'n', keys = '<leader>r',     desc = "REPL|Re" },
+                    { mode = 'n', keys = '<leader>t',     desc = "Tree-sitter" },
+                    { mode = 'n', keys = '<leader>w',     desc = "Workspace" },
+                    { mode = 'n', keys = '<leader>q',     desc = "Quickfix" },
+                    { mode = 'n', keys = '<leader>Q',     desc = "Locationlist" },
+                    { mode = 'n', keys = '<leader>x',     desc = "Completion|Snippet" },
+                    { mode = 'n', keys = ']s',            desc = "Spell" },
+                    { mode = 'n', keys = '[s',            desc = "Spell" },
                     -- vim unimpaired
-                    { mode = 'n', keys = 'yob', desc = "background" },
-                    { mode = 'n', keys = 'yoh', desc = "hlsearch" },
-                    { mode = 'n', keys = 'yoi', desc = "ignorecase" },
-                    { mode = 'n', keys = 'yol', desc = "list" },
-                    { mode = 'n', keys = 'yon', desc = "number" },
-                    { mode = 'n', keys = 'yor', desc = "relativenumber" },
-                    { mode = 'n', keys = 'yos', desc = "spell" },
-                    { mode = 'n', keys = 'yow', desc = "wrap" },
-                    { mode = 'n', keys = 'yo-', desc = "cursorline" },
-                    { mode = 'n', keys = 'yo_', desc = "cursorline" },
-                    { mode = 'n', keys = 'yox', desc = "cursorcolumn" },
-                    { mode = 'n', keys = '=sh', desc = "hlsearch" },
-                    { mode = 'n', keys = '=si', desc = "ignorecase" },
-                    { mode = 'n', keys = '=sl', desc = "list" },
-                    { mode = 'n', keys = '=sn', desc = "number" },
-                    { mode = 'n', keys = '=sr', desc = "relativenumber" },
-                    -- replaced by Substitute+reindent. 
+                    { mode = 'n', keys = 'yob',           desc = "background" },
+                    { mode = 'n', keys = 'yoh',           desc = "hlsearch" },
+                    { mode = 'n', keys = 'yoi',           desc = "ignorecase" },
+                    { mode = 'n', keys = 'yol',           desc = "list" },
+                    { mode = 'n', keys = 'yon',           desc = "number" },
+                    { mode = 'n', keys = 'yor',           desc = "relativenumber" },
+                    { mode = 'n', keys = 'yos',           desc = "spell" },
+                    { mode = 'n', keys = 'yow',           desc = "wrap" },
+                    { mode = 'n', keys = 'yo-',           desc = "cursorline" },
+                    { mode = 'n', keys = 'yo_',           desc = "cursorline" },
+                    { mode = 'n', keys = 'yox',           desc = "cursorcolumn" },
+                    { mode = 'n', keys = '=sh',           desc = "hlsearch" },
+                    { mode = 'n', keys = '=si',           desc = "ignorecase" },
+                    { mode = 'n', keys = '=sl',           desc = "list" },
+                    { mode = 'n', keys = '=sn',           desc = "number" },
+                    { mode = 'n', keys = '=sr',           desc = "relativenumber" },
+                    -- replaced by Substitute+reindent.
                     -- Other motion could also be candidates for being replaced.
                     -- { mode = 'n', keys = '=ss', desc = "spell" },
-                    { mode = 'n', keys = '=sw', desc = "wrap" },
-                    { mode = 'n', keys = '<sl', desc = "list" },
-                    { mode = 'n', keys = '>sl', desc = "nolist" },
-                    { mode = 'n', keys = '<sn', desc = "number" },
-                    { mode = 'n', keys = '>sn', desc = "nonumber" },
-                    { mode = 'n', keys = '<sr', desc = "relativenumber" },
-                    { mode = 'n', keys = '>sr', desc = "norelativenumber" },
-                    { mode = 'n', keys = '<ss', desc = "spell" },
-                    { mode = 'n', keys = '>ss', desc = "nospell" },
-                    { mode = 'n', keys = '<sw', desc = "wrap" },
-                    { mode = 'n', keys = '>sw', desc = "nowrap" },
+                    { mode = 'n', keys = '=sw',           desc = "wrap" },
+                    { mode = 'n', keys = '<sl',           desc = "list" },
+                    { mode = 'n', keys = '>sl',           desc = "nolist" },
+                    { mode = 'n', keys = '<sn',           desc = "number" },
+                    { mode = 'n', keys = '>sn',           desc = "nonumber" },
+                    { mode = 'n', keys = '<sr',           desc = "relativenumber" },
+                    { mode = 'n', keys = '>sr',           desc = "norelativenumber" },
+                    { mode = 'n', keys = '<ss',           desc = "spell" },
+                    { mode = 'n', keys = '>ss',           desc = "nospell" },
+                    { mode = 'n', keys = '<sw',           desc = "wrap" },
+                    { mode = 'n', keys = '>sw',           desc = "nowrap" },
 
                     -- Enhance this by adding descriptions for <Leader> mapping groups
                     clue.gen_clues.builtin_completion(),
@@ -200,8 +193,8 @@ return {
                 },
             }
 
-            vim.schedule(function ()
-                local set_keymap_desc = function(...) pcall(require"mini.clue".set_keymap_desc, ...) end
+            vim.schedule(function()
+                local set_keymap_desc = function(...) pcall(require "mini.clue".set_keymap_desc, ...) end
                 set_keymap_desc('n', 'gc', "Comment")
                 set_keymap_desc('n', 'gcc', "Line")
                 set_keymap_desc('n', 'g/', "Last search")
@@ -211,7 +204,7 @@ return {
 
             -- UI notifications of e.g. LSP background work
             -- https://github.com/echasnovski/mini.notify
-            require('mini.notify').setup{
+            require('mini.notify').setup {
                 window = {
                     -- reduce max width a bit
                     max_width_share = 0.3,
@@ -223,11 +216,10 @@ return {
                     -- duration_last = 1000,
                 },
             }
-            local grp = vim.api.nvim_create_augroup("MiniNotify", {clear=true})
             vim.api.nvim_create_autocmd("colorscheme", {
                 pattern = "*",
-                group = grp,
-                callback = function ()
+                group = vim.api.nvim_create_augroup("MiniNotify", { clear = true }),
+                callback = function()
                     -- hi.link("MiniNotifyTitle", "Title") -- default is FloatTitle
                     hi.link("MiniNotifyNormal", "Comment") -- dim
                     hi.link("MiniNotifyBorder", "Comment") -- dim
@@ -238,7 +230,7 @@ return {
             local minifiles_toggle = function(...)
                 if not MiniFiles.close() then MiniFiles.open(...) end
             end
-            vim.keymap.set('n', '<leader>ee', minifiles_toggle, { desc="Toggle mini.files" })
+            map('n', '<leader>ee', minifiles_toggle, { desc = "Toggle mini.files" })
             -- :h MiniFiles-examples
             local show_dotfiles = false
             local filter_show = function(fs_entry) return true end
@@ -269,19 +261,18 @@ return {
                 callback = function(args)
                     local buf_id = args.data.buf_id
                     -- overide - so an oil buffer isn't opened within the mini files buffer
-                    vim.keymap.set('n', '-', 'h', { buffer = buf_id, remap=true })
-                    vim.keymap.set('n', '<leader>bd', MiniFiles.close, { buffer = buf_id, })
+                    map('n', '-', 'h', { buffer = buf_id, remap = true })
+                    map('n', '<leader>bd', MiniFiles.close, { buffer = buf_id, })
                     -- There is no option for force closing without prompt
-                    vim.keymap.set('n', '<leader>bD', MiniFiles.close, { buffer = buf_id, })
+                    map('n', '<leader>bD', MiniFiles.close, { buffer = buf_id, })
                     -- use l to open file without closing explorer
-                    vim.keymap.set('n', '<Enter>', function () MiniFiles.go_in({close_on_file=true}) end, {
-                        buffer = buf_id, desc="Open file and close explorer",
+                    map('n', '<Enter>', function() MiniFiles.go_in({ close_on_file = true }) end, {
+                        buffer = buf_id, desc = "Open file and close explorer",
                     })
-                    vim.keymap.set('n', 'g.', toggle_dotfiles, { buffer = buf_id })
+                    map('n', 'g.', toggle_dotfiles, { buffer = buf_id })
                     -- NOTE: couldn't get a function working to toggle preview.
                 end,
             })
-
         end
     },
 }

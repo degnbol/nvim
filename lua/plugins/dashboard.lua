@@ -19,17 +19,6 @@ return {
     opts = {
         change_to_vcs_root = true,
         config = {
-            packages = { enable = false }, -- show how many plugins neovim loaded
-            disable_move = true,
-            shortcut = {
-                { desc = ' Recent', group = '@property', action = 'Telescope oldfiles', key = 'r' },
-                { desc = '󰱼 File', group = '@property', action = 'Telescope find_files', key = 'f' },
-                { desc = '󱎸 Word', group = '@property', action = 'Telescope live_grep', key = 'w' },
-                { desc = ' Marks', group = '@property', action = 'Telescope marks', key = 'm' },
-                { desc = ' New', group = '@property', action = 'enew', key = 'n' },
-                { desc = ' Lazy', group = '@property', action = 'Lazy', key = 'L' },
-                { desc = '󰢛 Mason', group = '@property', action = 'Mason', key = 'M' },
-            },
             header = {
                 '⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣠⣤⣤⣴⣦⣤⣤⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ',
                 '⠀⠀⠀⠀⠀⠀⢀⣤⣾⣿⣿⣿⣿⠿⠿⠿⠿⣿⣿⣿⣿⣶⣤⡀⠀⠀⠀⠀⠀⠀ ',
@@ -48,6 +37,18 @@ return {
                 '⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠛⠛⠛⠛⠛⠛⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ',
             },
             footer = {},
+            packages = { enable = true }, -- show how many plugins neovim loaded
+            disable_move = true,
+            shortcut = {
+                { desc = ' Recent', group = '@property', action = 'FzfLua oldfiles', key = 'r' },
+                { desc = '󰱼 File', group = '@property', action = 'FzfLua files', key = 'f' },
+                { desc = '󱎸 Word', group = '@property', action = 'FzfLua live_grep', key = 'w' },
+                { desc = ' Marks', group = '@property', action = 'FzfLua marks', key = 'm' },
+                { desc = ' New', group = '@property', action = 'enew', key = 'n' },
+                { desc = ' Lazy', group = '@property', action = 'Lazy', key = 'L' },
+                { desc = '󰢛 Mason', group = '@property', action = 'Mason', key = 'M' },
+            },
+            project = { action = 'FzfLua files cwd=' },
         }
     }
 }

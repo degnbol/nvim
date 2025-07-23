@@ -7,6 +7,8 @@ cd $XDG_CONFIG_HOME/nvim/install
 
 ./neovim.sh || ./neovim_alt.sh
 
+./spell.sh
+
 # https://tree-sitter.github.io/tree-sitter/creating-parsers#installation
 cargo install tree-sitter-cli
 

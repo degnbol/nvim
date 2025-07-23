@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 opt = vim.opt_local
 -- markdown doesn't really have comments. 
 -- The default is html comments <!-- ... -->.

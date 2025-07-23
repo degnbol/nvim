@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 
 vim.keymap.set("n", "<leader>cs", function()
     -- Load colorschemes. Using lazy keys didn't work

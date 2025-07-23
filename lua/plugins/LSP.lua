@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 
 return {
     -- scala (not yet in Mason)

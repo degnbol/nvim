@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 -- TODO: only complete in tikz env
 return {
 s({trig="node", dscr="tikz node"},

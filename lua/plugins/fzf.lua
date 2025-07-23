@@ -24,6 +24,7 @@ return {
     {
         "ibhagwan/fzf-lua",
         lazy = true,
+        cmd = "FzfLua",
         -- optional for icon support
         dependencies = { "nvim-tree/nvim-web-devicons" },
         init = function()

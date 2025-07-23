@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 -- NOTE: only currently attached to the first tex file opened (since require runs things once).
 require "tex.overleaf"
 local tbl = require "tex.tables"

@@ -1,4 +1,3 @@
-#!/usr/bin/env lua
 local M = {}
 
 ---Convenience for plain matching.
@@ -13,7 +12,7 @@ end
 function M.readtext(path)
     local file = io.open(path, "rb") -- r read mode and b binary mode
     if not file then return nil end
-    local content = file:read "*a" -- *a or *all reads the whole file
+    local content = file:read "*a"   -- *a or *all reads the whole file
     file:close()
     return content
 end
@@ -38,7 +37,7 @@ end
 ---@return function
 function M.fncount(fn, ...)
     local args = ...
-    return function ()
+    return function()
         for _ = 1, M.count() do
             fn(args)
         end
@@ -59,8 +58,9 @@ end
 function M.last_changeyank_range()
     local r1, c1 = unpack(vim.api.nvim_buf_get_mark(0, "["))
     local r2, c2 = unpack(vim.api.nvim_buf_get_mark(0, "]"))
-    return r1-1, c1, r2-1, c2
+    return r1 - 1, c1, r2 - 1, c2
 end
+
 ---@return integer r1 0-index
 ---@return integer c1 0-index
 ---@return integer r2 0-index
@@ -68,7 +68,7 @@ end
 function M.last_visual_range()
     local r1, c1 = unpack(vim.api.nvim_buf_get_mark(0, "<"))
     local r2, c2 = unpack(vim.api.nvim_buf_get_mark(0, ">"))
-    return r1-1, c1, r2-1, c2
+    return r1 - 1, c1, r2 - 1, c2
 end
 
 -- Return (1,0)-indexed start and end position of visual selection:
@@ -82,15 +82,15 @@ function M.get_visual_range()
     -- don't allow selection beyond line
     c2 = math.min(c2, #vim.fn.getline(r2))
     -- handle edge-case where final char is unicode or other multibyte char
-    local char = vim.api.nvim_buf_get_text(0, r2-1, c2, r2-1, c2+1, {})[1]
+    local char = vim.api.nvim_buf_get_text(0, r2 - 1, c2, r2 - 1, c2 + 1, {})[1]
     -- if multibyte then char is only half the symbol and won't match a broad pattern like:
-    if not char:match('[%w%p%s]') then c2=c2+1 end
+    if not char:match('[%w%p%s]') then c2 = c2 + 1 end
     return r1, c1, r2, c2
 end
 
 --- vim.cmd.normal 'gv' doesn't seem to work. This function tries to do a simple gv.
---- Limitations: It can currently only place cursor at the correct end if 
---- cursor hasn't been moved since visual mode was ended. Otherwise it defaults 
+--- Limitations: It can currently only place cursor at the correct end if
+--- cursor hasn't been moved since visual mode was ended. Otherwise it defaults
 --- to placing cursor and end of selection.
 function M.gv()
     local r1, c1 = unpack(vim.api.nvim_buf_get_mark(0, '<'))
@@ -102,9 +102,9 @@ function M.gv()
         r2 = r
         c2 = c
     end
-    vim.api.nvim_win_set_cursor(0, {r1, c1})
+    vim.api.nvim_win_set_cursor(0, { r1, c1 })
     vim.cmd.normal 'v'
-    vim.api.nvim_win_set_cursor(0, {r2, c2})
+    vim.api.nvim_win_set_cursor(0, { r2, c2 })
 end
 
 -- return whether r1, c1 is before r2, c2
@@ -116,13 +116,13 @@ end
 ---@return integer c 0-indexed
 function M.get_cursor()
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    return r-1, c
+    return r - 1, c
 end
 
 ---@param r integer 0-indexed
 ---@param c integer 0-indexed
 function M.set_cursor(r, c)
-    vim.api.nvim_win_set_cursor(0, {r+1, c})
+    vim.api.nvim_win_set_cursor(0, { r + 1, c })
 end
 
 ---Get all lines of the current buffer.
@@ -148,7 +148,7 @@ end
 
 ---@param r integer 0-indexed
 function M.get_line(r)
-    return vim.api.nvim_buf_get_lines(0, r, r+1, true)[1]
+    return vim.api.nvim_buf_get_lines(0, r, r + 1, true)[1]
 end
 
 ---@param r  integer 0-indexed
@@ -166,12 +166,12 @@ end
 ---@return integer c1 start of byte or multibyte char returned
 function M.get_char(r, c)
     if c == 0 then return "", 0 end
-    local char = vim.api.nvim_buf_get_text(0, r, c-1, r, c, {})[1]
+    local char = vim.api.nvim_buf_get_text(0, r, c - 1, r, c, {})[1]
     -- if multibyte then char is only half the symbol and won't match a broad pattern like:
     if char:match('[%w%p%s]') then
-        return char, c-1
+        return char, c - 1
     else
-        return vim.api.nvim_buf_get_text(0, r, c-2, r, c, {})[1], c-2
+        return vim.api.nvim_buf_get_text(0, r, c - 2, r, c, {})[1], c - 2
     end
 end
 
@@ -186,7 +186,14 @@ end
 ---Write char right after cursor.
 ---@param char string
 function M.put_char(char)
-    vim.api.nvim_put({char}, "c", false, true)
+    vim.api.nvim_put({ char }, "c", false, true)
+end
+
+---Shortcut for the most typical call to get nvim internal represenations of
+---keycodes given a string, e.g. "<C-V>".
+---@param str string
+function M.nvim_code(str)
+    return vim.api.nvim_replace_termcodes(str, true, false, true)
 end
 
 ---Press keys
@@ -199,8 +206,7 @@ function M.press(keys, opts)
     else
         mode = 'm'
     end
-    local code = vim.api.nvim_replace_termcodes(keys, true, false, true)
-    vim.api.nvim_feedkeys(code, mode, false)
+    vim.api.nvim_feedkeys(M.nvim_code(keys), mode, false)
 end
 
 ---Get current mode.
@@ -222,6 +228,13 @@ function M.set_mode(mode)
     end
 end
 
+M.ctrl_v = M.nvim_code("<C-v>")
+---Check if current mode is visual blockwise.
+---@return boolean
+function M.is_visual_blockwise()
+    return M.get_mode() == M.ctrl_v
+end
+
 ---Notify of stderr or stdout from a vim.system call obj.
 ---Intended for stderr. Uses stdout if stderr is empty, which may be the case if program doesn't utilise stderr at all.
 ---@param obj any
@@ -230,8 +243,8 @@ function M.schedule_notify(obj)
     if text == "" then
         text = obj.stdout:gsub("\n$", "")
     end
-    vim.schedule(function () -- notify when we are ready
-        vim.notify(text) -- vim.notify instead of print to see multiple lines
+    vim.schedule(function() -- notify when we are ready
+        vim.notify(text)    -- vim.notify instead of print to see multiple lines
     end)
 end
 

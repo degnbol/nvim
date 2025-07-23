@@ -1,4 +1,3 @@
-#!/usr/bin/env lua
 local util = require "utils/init"
 local map = vim.keymap.set
 
@@ -483,7 +482,6 @@ nmap("<leader>:!", function()
 end, "new|r!<CMD> with bh=wipe")
 
 
-
 -- LSP and completion status, overall conf etc.
 nmap("<leader>li", "<Cmd>LspInfo<CR>", "Info")
 -- can't use backspace since it is hardcoded by mini.clue for up one level
@@ -504,3 +502,34 @@ nmap('<leader>d1', vim.diagnostic.enable, "Enable diagnostics")
 nmap('[d', function() vim.diagnostic.jump { count = -1, float = true } end, "Diagnostic")
 nmap(']d', function() vim.diagnostic.jump { count = 1, float = true } end, "Diagnostic")
 nmap('<leader>dl', vim.diagnostic.setloclist, "Loclist diagnostics")
+
+-- Disabled since other things might need to override ESC.
+-- nmap('<Esc>', ":noh<CR><Esc>", "Disable search highlights", { silent = true, remap = false })
+
+
+map('v', '<C-q>', function()
+    if not util.is_visual_blockwise() then return end
+    local rVis1, cVis1, rVis2, cVis2 = util.get_visual_range()
+    local rCur1, cCur1 = unpack(vim.api.nvim_win_get_cursor(0))
+    vim.keymap.set('n', '<Esc>', function()
+        vim.keymap.del('n', '<Esc>')
+        vim.cmd.stopinsert()
+        vim.cmd.norm "q"
+        -- if nothing was recorded then just exit, otherwise we get an undojoin related error.
+        if not vim.fn.getreg("b") then return end
+        local rCur2, cCur2 = unpack(vim.api.nvim_win_get_cursor(0))
+        for i = rVis1, rVis2 do
+            if i ~= rCur1 then
+                vim.api.nvim_win_set_cursor(0, { i, cCur1 })
+                -- group the macro eval to the one before,
+                -- and all the way back to the initial macro recording, so we
+                -- can undo the whole multi line edit with one u.
+                vim.cmd "undojoin"
+                vim.cmd.norm "@b"
+            end
+        end
+        vim.cmd.stopinsert()
+        vim.api.nvim_win_set_cursor(0, { rCur2, cCur2 })
+    end, { desc = "Run block mode macro on each selected line at the column of the cursor." })
+    vim.cmd.norm "qb"
+end, { desc = "Block mode improved. Apply macro along block selection." })

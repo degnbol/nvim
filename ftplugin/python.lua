@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 local util = require "utils/init"
 
 -- remove o, we want to continue comments while editing them only (r).

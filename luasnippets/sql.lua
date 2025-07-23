@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 return {
     s({trig="read", dscr="Read table"},
     fmta([[

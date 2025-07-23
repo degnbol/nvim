@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 local hl = require "utils/highlights"
 
 return {
@@ -202,6 +202,42 @@ return {
     "vim-scripts/dbext.vim",
     {
         "gert7/srt.nvim",
-        ft = "srt",
+        branch = "main",
+        config = function()
+            require "srtnvim".setup {}
+        end,
+    },
+    {
+        "pxwg/math-conceal.nvim",
+        -- Project was renamed to reflect expanding to also cover typst.
+        -- Code in lua/ etc for project still has old name but this might get fixed quickly.
+        name = "latex-conceal",
+        event = "VeryLazy",
+        build = "make lua51",
+        --- @type LaTeXConcealOptions
+        opts = {
+            enabled = true,
+            conceal = {
+                "greek",
+                "script",
+                "math",
+                "font",
+                "delim",
+                "phy",
+            },
+            ft = { "tex", "latex", "markdown", "typst" },
+        },
+    },
+    -- edit jupyter notebook. NOTE: requires `pip install jupytext`
+    {
+        "goerz/jupytext.vim",
+        config = function()
+            -- conversion settings
+            vim.g.jupytext_fmt = "py:percent"
+            -- highlight blocks.
+            -- Doesn't work since treesitter trumps. Need to add a custom query.
+            vim.cmd 'syn match Block /^# %%/'
+            vim.api.nvim_set_hl(0, "Block", { link = "LineNr" })
+        end,
     },
 }

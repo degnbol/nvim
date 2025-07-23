@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 -- mini.align is lua version of junegunn/vim-easy-align with config
 -- require'mini.align'.setup {}
 return {

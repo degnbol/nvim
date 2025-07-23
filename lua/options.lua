@@ -86,8 +86,8 @@ opt.timeoutlen = 750
 -- go between lines with left/right arrow keys only in insert mode
 opt.whichwrap = '[,]'
 
--- hide the statusline that shows current file being edited
-opt.laststatus = 0
+-- Hide the statusline when there's only one file open.
+opt.laststatus = 1
 -- hide the location in file by default
 opt.ruler = false
 -- hide ~ tilde at end of buffer.

@@ -1,11 +1,12 @@
-#!/usr/bin/env lua
+
 
 return {
     -- treesitter
     -- language coloring and ensuring of installation
     {
         'nvim-treesitter/nvim-treesitter',
-        branch = "main", -- master is frozen for backwards compatability
+        enabled = true,
+        branch = "master", -- master is frozen for backwards compatability, main will become default in future.
         build = ':TSUpdate',
         config = function()
             -- TODO: replicate these master branch settings with what is equivalent for the main branch version.
@@ -134,94 +135,90 @@ return {
     -- selecting, moving functions etc.
     {
         "nvim-treesitter/nvim-treesitter-textobjects",
-        enabled = false,
+        enabled = true,
         dependencies = 'nvim-treesitter/nvim-treesitter',
         config = function()
-            require "nvim-treesitter.configs".setup {
-                -- for https://github.com/nvim-treesitter/nvim-treesitter-textobjects
-                textobjects = {
-                    select = {
-                        enable = true,
-                        -- Automatically jump forward to textobj, similar to targets.vim
-                        lookahead = true,
+            require 'nvim-treesitter.configs'.setup {
+                select = {
+                    enable = true,
+                    -- Automatically jump forward to textobj, similar to targets.vim
+                    lookahead = true,
 
-                        keymaps = {
-                            -- You can use the capture groups defined in textobjects.scm
-                            ["af"] = "@function.outer",
-                            ["if"] = "@function.inner",
-                            ["ac"] = "@comment.outer",
-                            -- doesn't seem to be supported much. We use a kana derived textobj plugin for ic.
-                            ["ic"] = "@comment.inner",
-                            -- iC and aC are used for multiline comment elsewhere
-                            ["a?"] = "@conditional.outer",
-                            ["i?"] = "@conditional.inner",
-                            ["ao"] = "@loop.outer",
-                            ["io"] = "@loop.inner",
-                            ["aa"] = "@parameter.outer",
-                            ["ia"] = "@parameter.inner",
-                            ["ik"] = "@assignment.lhs",
-                            ["ik"] = "@assignment.lhs",
-                            ["iv"] = "@assignment.rhs",
-                            ["ab"] = "@block.outer",
-                            ["ib"] = "@block.inner",
-                            -- TODO: textobj for whatever the current enclosing container is, similar to nmap <leader><Up>
-                        }
+                    keymaps = {
+                        -- You can use the capture groups defined in textobjects.scm
+                        ["af"] = "@function.outer",
+                        ["if"] = "@function.inner",
+                        ["ac"] = "@comment.outer",
+                        -- doesn't seem to be supported much. We use a kana derived textobj plugin for ic.
+                        ["ic"] = "@comment.inner",
+                        -- iC and aC are used for multiline comment elsewhere
+                        ["a?"] = "@conditional.outer",
+                        ["i?"] = "@conditional.inner",
+                        ["ao"] = "@loop.outer",
+                        ["io"] = "@loop.inner",
+                        ["aa"] = "@parameter.outer",
+                        ["ia"] = "@parameter.inner",
+                        ["ik"] = "@assignment.lhs",
+                        ["iv"] = "@assignment.rhs",
+                        ["ab"] = "@block.outer",
+                        ["ib"] = "@block.inner",
+                        -- TODO: textobj for whatever the current enclosing container is, similar to nmap <leader><Up>
+                    }
+                },
+                swap = {
+                    enable = true,
+                    swap_next = {
+                        ["<leader>a]"]       = { query = "@parameter.inner", desc = "Swap next arg" },
+                        ["<leader>a<Right>"] = { query = "@parameter.inner", desc = "Swap next arg" },
+                        ["<leader>al"]       = { query = "@parameter.inner", desc = "Swap next arg" },
                     },
-                    swap = {
-                        enable = true,
-                        swap_next = {
-                            ["<leader>a]"]       = { query = "@parameter.inner", desc = "Swap next arg" },
-                            ["<leader>a<Right>"] = { query = "@parameter.inner", desc = "Swap next arg" },
-                            ["<leader>al"]       = { query = "@parameter.inner", desc = "Swap next arg" },
-                        },
-                        swap_previous = {
-                            ["<leader>a["]      = { query = "@parameter.inner", desc = "Swap prev arg" },
-                            ["<leader>a<Left>"] = { query = "@parameter.inner", desc = "Swap prev arg" },
-                            ["<leader>ah"]      = { query = "@parameter.inner", desc = "Swap prev arg" },
-                        }
+                    swap_previous = {
+                        ["<leader>a["]      = { query = "@parameter.inner", desc = "Swap prev arg" },
+                        ["<leader>a<Left>"] = { query = "@parameter.inner", desc = "Swap prev arg" },
+                        ["<leader>ah"]      = { query = "@parameter.inner", desc = "Swap prev arg" },
+                    }
+                },
+                move = {
+                    enable = true,
+                    set_jumps = true, -- whether to set jumps in the jumplist
+                    goto_next_start = {
+                        -- We want to go to next arg at the same level,
+                        -- e.g. skip over args that are in a nested
+                        -- function. This means we use <C-a> for the
+                        -- textobj and define a more messy keybind further
+                        -- down.
+                        ["]<C-a>"] = "@parameter.inner",
+                        ["]f"] = "@function.outer",
+                        ["]o"] = "@loop.outer",
+                        ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
                     },
-                    move = {
-                        enable = true,
-                        set_jumps = true, -- whether to set jumps in the jumplist
-                        goto_next_start = {
-                            -- We want to go to next arg at the same level,
-                            -- e.g. skip over args that are in a nested
-                            -- function. This means we use <C-a> for the
-                            -- textobj and define a more messy keybind further
-                            -- down.
-                            ["]<C-a>"] = "@parameter.inner",
-                            ["]f"] = "@function.outer",
-                            ["]o"] = "@loop.outer",
-                            ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
-                        },
-                        goto_next_end = {
-                            ["]<C-S-a>"] = "@parameter.inner",
-                            ["]F"] = "@function.outer",
-                            ["]O"] = "@loop.outer",
-                        },
-                        goto_previous_start = {
-                            ["[<C-a>"] = "@parameter.inner",
-                            ["[f"] = "@function.outer",
-                            ["[o"] = "@loop.outer",
-                            ["[z"] = { query = "@fold", query_group = "folds", desc = "Prev fold" },
-                        },
-                        goto_previous_end = {
-                            ["[<C-S-a>"] = "@parameter.inner",
-                            ["[F"] = "@function.outer",
-                            ["[O"] = "@loop.outer",
-                        }
+                    goto_next_end = {
+                        ["]<C-S-a>"] = "@parameter.inner",
+                        ["]F"] = "@function.outer",
+                        ["]O"] = "@loop.outer",
                     },
-                    lsp_interop = {
-                        enable = true,
-                        border = 'none',
-                        peek_definition_code = {
-                            -- similar to hover help so we use similar keymap as hover.
-                            -- Hover currently uses gh for "go hover", similar to gd, gf, etc.
-                            -- gh and gH are used for starting select mode by default which we never use.
-                            ["gH"] = { query = "@function.outer", desc = "Peek function" },
-                            ["g<C-H>"] = { query = "@class.outer", desc = "Peek class" },
-                        }
+                    goto_previous_start = {
+                        ["[<C-a>"] = "@parameter.inner",
+                        ["[f"] = "@function.outer",
+                        ["[o"] = "@loop.outer",
+                        ["[z"] = { query = "@fold", query_group = "folds", desc = "Prev fold" },
                     },
+                    goto_previous_end = {
+                        ["[<C-S-a>"] = "@parameter.inner",
+                        ["[F"] = "@function.outer",
+                        ["[O"] = "@loop.outer",
+                    }
+                },
+                lsp_interop = {
+                    enable = true,
+                    border = 'none',
+                    peek_definition_code = {
+                        -- similar to hover help so we use similar keymap as hover.
+                        -- Hover currently uses gh for "go hover", similar to gd, gf, etc.
+                        -- gh and gH are used for starting select mode by default which we never use.
+                        ["gH"] = { query = "@function.outer", desc = "Peek function" },
+                        ["g<C-H>"] = { query = "@class.outer", desc = "Peek class" },
+                    }
                 },
             }
 

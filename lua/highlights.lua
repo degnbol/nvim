@@ -1,4 +1,3 @@
-#!/usr/bin/env lua
 local hi = require "utils/highlights"
 
 local function afterColorscheme()
@@ -321,6 +320,14 @@ local function afterColorscheme()
     -- underline active parameter in signature help rather than colour it in some pale unhelpful colour.
     -- blink.cmp should be defaulting to this hl with its BlinkCmpSignatureHelpActiveParameter.
     hi.link("LspSignatureActiveParameter", "Underlined")
+
+    local StatusLineNC = hi.get("StatusLineNC")
+    hi.set("StatusLine", {
+        -- underline = true,
+        bold = true,
+        fg = StatusLineNC["fg"],
+        bg = StatusLineNC["bg"],
+    })
 end
 
 -- local defaultDark = 'fluoromachine'

@@ -19,6 +19,8 @@ hi link zshString String
 " other function calls and italize. Color them according to functions instead.
 hi def link zshCommands @function.builtin
 
+hi def link zshPrecommand @function.builtin
+
 " let variable look the same when defined and expanded, the $ is enough to 
 " make it clear
 hi def link zshVariable @parameter
@@ -66,4 +68,12 @@ syn match Operator /\(${\)\@<==/ contained containedin=zshSubst
 " digits.
 syn match Operator /\(\h\+\w*\)\@<==/
 
+syn match Operator /!/
 
+" zshString is both "" and '', we need to distinguish to avoid highlighting 
+" e.g. ":" in literal.
+syn region zshLiteral start="'" end="'"
+hi def link zshLiteral zshString
+
+syn match Delimiter /\[\[/
+syn match Delimiter /\]\]/

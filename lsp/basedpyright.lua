@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 -- Alts are pyright, pylsp, jedi_language_server, etc.
 -- https://old.reddit.com/r/neovim/comments/1bh0kba/psa_new_python_lsp_that_supports_inlay_hints_and/
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#basedpyright

@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 local util = require "utils/init"
 
 -- NOTE Limitations:

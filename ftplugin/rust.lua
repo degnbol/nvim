@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 vim.keymap.set('n', '<leader>cc',     ":Crun\n",   { buffer=true, desc="Cargo run" })
 vim.keymap.set('n', '<LocalLeader>r', ":Crun\n",   { buffer=true, desc="Cargo run" })
 vim.keymap.set('n', '<LocalLeader>b', ":Cbuild\n", { buffer=true, desc="Cargo build" })

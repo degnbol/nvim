@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 
 -- quickfix specific keymaps.
 -- Don't change buffer in quickfix window, first go to other win.

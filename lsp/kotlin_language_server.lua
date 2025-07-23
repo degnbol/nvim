@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 return {
     -- assume project root is at git root.
     -- Some imports don't work if unset.

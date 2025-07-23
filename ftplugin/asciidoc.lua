@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 
 -- instead of to Constant, which is currently italic.
 vim.api.nvim_set_hl(0, "AsciidoctorCode", {link="@string", default=true})

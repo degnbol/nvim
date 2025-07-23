@@ -71,3 +71,7 @@ places or gr on something referenced multiple places), you can press c-v
 instead of enter to open the location in a new split instead of jumping away 
 from where you were.
 
+If you want cursor to move with indent/deindent, then use the insert mode mappings. If you 
+want to keep cursor where it is, then use normal mappings.
+Insert mode mappings: <C-d>, <C-t> and <C-f> (see :h i_CTRL-T etc.)
+

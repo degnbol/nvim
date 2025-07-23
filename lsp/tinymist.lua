@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 -- https://github.com/Myriad-Dreamin/tinymist/blob/main/editors/neovim/Configuration.md
 -- for typst
 return {

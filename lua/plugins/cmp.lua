@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 -- works if blink is removed with lazy clean
 local using_blink, _ = pcall(require, "blink.cmp")
 

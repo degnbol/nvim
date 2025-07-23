@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 local M = {}
 
 function M.set(name, val)
