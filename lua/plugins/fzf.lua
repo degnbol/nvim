@@ -16,7 +16,7 @@ return {
     -- - There are claims that it is faster.
     -- - Telescope is not as actively developed/maintained.
     -- - Telescope (at least by default) needs double ESC to exit.
-    --   This is to allow for normal mode editing of search but the idea of fzf 
+    --   This is to allow for normal mode editing of search but the idea of fzf
     --   searching is quick and messy search so we prefer single ESC exit.
     -- - The preview is worse (at least by default), i.e. the line highlight doesn't span the whole pane,
     --   and the relevant col is not indicated.
@@ -26,12 +26,11 @@ return {
         lazy = true,
         -- optional for icon support
         dependencies = { "nvim-tree/nvim-web-devicons" },
-        init = function ()
-
+        init = function()
             -- Simple picker with TAB (by default) for toggling preview, where fzf lua has preview by default.
-            require'mini.pick'.setup()
+            require 'mini.pick'.setup()
             -- contains the explorer picker that allows moving through folders.
-            local MiniExtra = require'mini.extra'
+            local MiniExtra = require 'mini.extra'
             MiniExtra.setup()
 
             local function nmap(keys, func, desc, leader)
@@ -41,7 +40,7 @@ return {
             local function map(keys, func, desc, args, leader)
                 -- use anon funcs so require only gets called when fzf is needed, i.e. lazy load.
                 nmap(keys, function()
-                    require'fzf-lua'[func](args or {})
+                    require 'fzf-lua'[func](args or {})
                 end, desc, leader)
             end
 
@@ -52,11 +51,11 @@ return {
             -- Buffers and Files
 
             -- starts in folder of current buffer (like Oil)
-            nmap("fp", function () MiniExtra.pickers.explorer{cwd=vim.fn.expand("%:h")} end, "Path explorer")
+            nmap("fp", function() MiniExtra.pickers.explorer { cwd = vim.fn.expand("%:h") } end, "Path explorer")
             -- differs by starting in CWD, which may be different from dir for current buffer
             map("fP", "files", "PWD files")
-            map("fD", "files", "~/dotfiles/", {cwd="~/dotfiles/"})
-            map("fN", "files", "~/nvim/", {cwd="~/nvim/"})
+            map("fD", "files", "~/dotfiles/", { cwd = "~/dotfiles/" })
+            map("fN", "files", "~/nvim/", { cwd = "~/nvim/" })
             map("fb", "buffers", "Open buffers")
             map("fo", "oldfiles", "Opened files history")
             -- map("ft", "tabs", "Tabs")
@@ -71,16 +70,16 @@ return {
             map("f-", "grep_project", "Grep project")
             map("fx", "tmux_buffers", "List tmux paste buffers")
 
-            map("ts", "treesitter", "Symbols", {prompt="Symbols❯ "})
+            map("ts", "treesitter", "Symbols", { prompt = "Symbols❯ " })
 
             -- Regex pattern search and file content grep refinement
 
-            map("fg", "grep", "Grep", {input_prompt="Grep❯ "})
+            map("fg", "grep", "Grep", { input_prompt = "Grep❯ " })
             -- we already have resume with <leader>ff so not so important:
             map("fG", "grep_last", "Grep last")
             map("fw", "grep_cword", "Grep cword")
             map("fW", "grep_cWORD", "Grep cWORD")
-            vim.keymap.set('v', '<leader>fg', function () require"fzf-lua".grep_visual{} end, { desc="Grep" })
+            vim.keymap.set('v', '<leader>fg', function() require "fzf-lua".grep_visual {} end, { desc = "Grep" })
             -- seems redundant:
             -- map("/?", "blines", "Current buffer lines")
             -- Won't map grep_quickfix and lgrep_quickfix
@@ -130,7 +129,7 @@ return {
 
             -- LSP in LSP.lua
 
-            -- Rare. access from buiitins instead:
+            -- Rare. access from builtins instead:
             -- profiles
             -- menus
         end,
@@ -145,22 +144,29 @@ return {
                 },
             },
             lsp = {
-                -- if there is a single LSP result only, as is common for goto def, 
+                -- if there is a single LSP result only, as is common for goto def,
                 -- use it directly.
                 jump1 = true,
                 code_actions = {
-                    async_or_timeout  = 5000,
+                    async_or_timeout = 5000,
                     -- Requires git-delta for prettier code action preview
                     previewer        = "codeaction_native",
                 },
+            },
+            files = {
+                -- Same as default but adding build/ for exclusion.
+                find_opts = [[-type f \! -path '*/.git/*' -and \! -path '*/build/*']],
+                rg_opts   = [[--color=never --hidden --files -g '!.git' -g '!build']],
+                fd_opts   = [[--color=never --hidden --type f --type l --exclude .git --exclude build]],
             },
         },
     },
     -- recommended compiled fuzzy finder for telescope. Cannot be opt=true when needed by tzachar/cmp-fuzzy-path
     {
-        "nvim-telescope/telescope-fzf-native.nvim", build='make',
+        "nvim-telescope/telescope-fzf-native.nvim",
+        build = 'make',
         lazy = true, -- load as (fake) dependency of telescope
-        config=function ()
+        config = function()
             -- load the native fzf as recommended
             -- require'telescope'.load_extension('fzf')
             -- pcall is protected call, i.e. doesn't make a big deal out of errors
@@ -171,11 +177,11 @@ return {
     {
         "nvim-telescope/telescope.nvim",
         cmd = "Telescope",
-        dependencies={
+        dependencies = {
             "nvim-lua/plenary.nvim",
             "nvim-telescope/telescope-fzf-native.nvim",
         },
-        opts={
+        opts = {
             defaults = {
                 layout_strategy = "vertical",
                 prompt_prefix = '',
@@ -192,23 +198,28 @@ return {
             extensions = {
                 dash = {
                     file_type_keywords = {
-                        python = {"python", "numpy", "scipy", "pandas"}
+                        python = { "python", "numpy", "scipy", "pandas" }
                     }
                 }
             }
         }
     },
-    {'sudormrfbin/cheatsheet.nvim', init = function ()
-        vim.keymap.set("n", "<leader>f?", "<Cmd>Cheatsheet<CR>", {desc="Cheatsheet"})
-    end, cmd="Cheatsheet", dependencies={'nvim-telescope/telescope.nvim'}},
+    {
+        'sudormrfbin/cheatsheet.nvim',
+        init = function()
+            vim.keymap.set("n", "<leader>f?", "<Cmd>Cheatsheet<CR>", { desc = "Cheatsheet" })
+        end,
+        cmd = "Cheatsheet",
+        dependencies = { 'nvim-telescope/telescope.nvim' }
+    },
     -- TODO we don't actually use this yet
     -- search stackoverflow quicker
-    {"lalitmee/browse.nvim", enabled = false, dependencies={"nvim-telescope/telescope.nvim"}},
+    { "lalitmee/browse.nvim", enabled = false, dependencies = { "nvim-telescope/telescope.nvim" } },
     {
         "nvim-telescope/telescope-bibtex.nvim",
-        dependencies={'nvim-telescope/telescope.nvim'},
-        ft="tex",
-        config=function()
+        dependencies = { 'nvim-telescope/telescope.nvim' },
+        ft = "tex",
+        config = function()
             -- https://github.com/nvim-telescope/telescope-bibtex.nvim
             local telescope = require "telescope"
             telescope.load_extension("bibtex")
@@ -219,7 +230,7 @@ return {
     },
     -- consider papis as well.
     -- bibliography references, mostly relevant for citations in .tex documents.
-    -- { "jghauser/papis.nvim", 
+    -- { "jghauser/papis.nvim",
     --     dependencies = { "kkharji/sqlite.lua", "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim", "nvim-treesitter/nvim-treesitter", "nvim-telescope/telescope.nvim", "hrsh7th/nvim-cmp" },
     --     rocks="lyaml", config = function() require("papis").setup() end,
     -- },

@@ -6,31 +6,6 @@ vim.fn.sign_define("LspDiagnosticsSignWarning", { text = "", numhl = "LspDiag
 vim.fn.sign_define("LspDiagnosticsSignInformation", { text = "", numhl = "LspDiagnosticsDefaultInformation" })
 vim.fn.sign_define("LspDiagnosticsSignHint", { text = "", numhl = "LspDiagnosticsDefaultHint" })
 
-local function nmap(lhs, rhs, desc)
-    vim.keymap.set('n', lhs, rhs, { desc = desc })
-end
-
--- LSP and completion status, overall conf etc.
-nmap("<leader>li", "<Cmd>LspInfo<CR>", "Info")
--- can't use backspace since it is hardcoded by mini.clue for up one level
-nmap("<leader>l0", "<Cmd>LspStop<CR>", "Stop")
-nmap("<leader>l1", "<Cmd>LspStart<CR>", "Start")
-nmap("<leader>l!", "<Cmd>LspRestart<CR>", "Restart")
-nmap("<leader>lL", "<Cmd>LspLog<CR>", "Log")
--- match other completion related entries under x
-nmap("<leader>xS", "<Cmd>CmpStatus<CR>", "Cmp status")
-
--- See `:help vim.diagnostic.*` for documentation on any of the below functions
-nmap('<leader>dd', vim.diagnostic.open_float, "Line diagnostic")
-nmap('<leader>dv', function() vim.diagnostic.config { virtual_lines = true } end, "Enable virtual line diagnostics")
-nmap('<leader>dV', function() vim.diagnostic.config { virtual_lines = false } end, "Enable virtual line diagnostics")
--- can't use backspace since it is hardcoded by mini.clue for up one level
-nmap('<leader>d0', function() vim.diagnostic.enable(false) end, "Disable diagnostics")
-nmap('<leader>d1', vim.diagnostic.enable, "Enable diagnostics")
-nmap('[d', function() vim.diagnostic.jump { count = -1, float = true } end, "Diagnostic")
-nmap(']d', function() vim.diagnostic.jump { count = 1, float = true } end, "Diagnostic")
-nmap('<leader>dl', vim.diagnostic.setloclist, "Loclist diagnostics")
-
 local grp = vim.api.nvim_create_augroup("my.lsp", {})
 
 vim.api.nvim_create_autocmd('LspAttach', {
