@@ -132,9 +132,6 @@ return {
                 -- This will also change an active popup menu listing to only show snippets
                 cmp.show({ providers = { 'dictionary' } })
             end)
-
-            -- underline active parameter in signature help rather than colour it in some pale unhelpful colour
-            vim.api.nvim_set_hl(0, "BlinkCmpSignatureHelpActiveParameter", { link = "Underlined" })
         end,
 
         ---@module 'blink.cmp'
@@ -263,6 +260,7 @@ return {
                         }
                     },
                     buffer = {
+                        score_offset = -10,
                         -- keep case of first char
                         transform_items = function(a, items)
                             local keyword = a.get_keyword()

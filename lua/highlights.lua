@@ -317,6 +317,10 @@ local function afterColorscheme()
     hi.link("@conceal", "comment")
     -- The quotation marks are technically indicating strings
     hi.link("@conceal.json", "String")
+
+    -- underline active parameter in signature help rather than colour it in some pale unhelpful colour.
+    -- blink.cmp should be defaulting to this hl with its BlinkCmpSignatureHelpActiveParameter.
+    hi.link("LspSignatureActiveParameter", "Underlined")
 end
 
 -- local defaultDark = 'fluoromachine'
