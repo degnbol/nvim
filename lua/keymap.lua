@@ -236,6 +236,9 @@ end, { expr = true, desc = "Move inside empty pair/triples or outside non-empty"
 -- }
 map('i', '<S-CR>', "<CR><Esc>O", { desc = "Indented newline" })
 
+-- Seem to activate signature help more smoothly than ()<S-space> which may reguire a trigger char such as ,
+map('i', '<C-b>', "()<left>", { desc = "()<left>" })
+
 -- small hack to remove excess whitespace possible since iw also captures
 -- whitespace under cursor.
 map("n", "di ", "ciw <Esc>", { desc = "Delete excess whitespace" })
