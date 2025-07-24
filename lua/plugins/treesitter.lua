@@ -255,7 +255,13 @@ return {
         end
     },
     -- show the "context" at the top line, i.e. function name when in a function
-    { "romgrk/nvim-treesitter-context", opts = { max_lines = 1 } },
+    {
+        "romgrk/nvim-treesitter-context",
+        opts = {
+            max_lines = 1,
+            min_window_height = 15, -- hide on small windows
+        }
+    },
     -- error for julia tree-sitter:
     -- % jumps between matching coding blocks, not just single chars.
     -- {

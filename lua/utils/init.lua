@@ -22,14 +22,6 @@ function M.strip(text)
     return text:match("^[\t%s]*(.-)[\t%s]*$")
 end
 
-function M.count()
-    if vim.v.count == 0 then
-        return 1
-    else
-        return vim.v.count
-    end
-end
-
 ---Repeat calls to a given function as many times as the vim count value (default once).
 ---Optionally pass arguments.
 ---@param fn function

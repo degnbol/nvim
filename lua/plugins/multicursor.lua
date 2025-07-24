@@ -126,8 +126,8 @@ return {
             map.v("<leader>mr", mc.matchCursors, "match new cursors within visual selections by regex")
 
             -- Rotate visual selection contents.
-            map.v("]m", function() mc.transposeCursors(util.count()) end, "Rotate contents forward")
-            map.v("[m", function() mc.transposeCursors(-util.count()) end, "Rotate contents backward")
+            map.v("]m", function() mc.transposeCursors(vim.v.count1) end, "Rotate contents forward")
+            map.v("[m", function() mc.transposeCursors(-vim.v.count1) end, "Rotate contents backward")
 
             vim.api.nvim_create_autocmd("ColorScheme", {
                 pattern = "*",
