@@ -134,33 +134,36 @@ return {
             -- profiles
             -- menus
         end,
-        opts = {
-            winopts = {
-                preview = {
-                    -- Reduce lag from default 20 ms.
-                    -- It is there for a purpose relating to fast scrolling.
-                    -- https://github.com/ibhagwan/fzf-lua
-                    -- Reducing it gives noticeable improvement in preview update speed.
-                    delay = 10,
+        config = function()
+            local fzflua = require "fzf-lua"
+            fzflua.setup {
+                winopts = {
+                    preview = {
+                        -- Reduce lag from default 20 ms.
+                        -- It is there for a purpose relating to fast scrolling.
+                        -- https://github.com/ibhagwan/fzf-lua
+                        -- Reducing it gives noticeable improvement in preview update speed.
+                        delay = 10,
+                    },
                 },
-            },
-            lsp = {
-                -- if there is a single LSP result only, as is common for goto def,
-                -- use it directly.
-                jump1 = true,
-                code_actions = {
-                    async_or_timeout = 5000,
-                    -- Requires git-delta for prettier code action preview
-                    previewer        = "codeaction_native",
+                lsp = {
+                    -- if there is a single LSP result only, as is common for goto def,
+                    -- use it directly.
+                    jump1 = true,
+                    code_actions = {
+                        async_or_timeout = 5000,
+                        -- Requires git-delta for prettier code action preview
+                        previewer        = "codeaction_native",
+                    },
                 },
-            },
-            files = {
-                -- Same as default but adding build/ for exclusion.
-                find_opts = [[-type f \! -path '*/.git/*' -and \! -path '*/build/*']],
-                rg_opts   = [[--color=never --hidden --files -g '!.git' -g '!build']],
-                fd_opts   = [[--color=never --hidden --type f --type l --exclude .git --exclude build]],
-            },
-        },
+                files = {
+                    -- Same as default but adding build/ for exclusion.
+                    find_opts = [[-type f \! -path '*/.git/*' -and \! -path '*/build/*']],
+                    rg_opts   = [[--color=never --hidden --files -g '!.git' -g '!build']],
+                    fd_opts   = [[--color=never --hidden --type f --type l --exclude .git --exclude build]],
+                },
+            }
+        end,
     },
     -- recommended compiled fuzzy finder for telescope. Cannot be opt=true when needed by tzachar/cmp-fuzzy-path
     {
