@@ -6,7 +6,7 @@ return {
     {
         'nvim-treesitter/nvim-treesitter',
         enabled = true,
-        branch = "master", -- master is frozen for backwards compatability, main will become default in future.
+        branch = "master", -- master is frozen for backwards compatibility, main will become default in future.
         build = ':TSUpdate',
         config = function()
             -- TODO: replicate these master branch settings with what is equivalent for the main branch version.
