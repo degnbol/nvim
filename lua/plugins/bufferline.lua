@@ -14,24 +14,20 @@ return {
         map.n("<leader>b<left>", "<Cmd>BufferLineMovePrev<CR>", "Move left")
         map.n("<leader>b<right>", "<Cmd>BufferLineMoveNext<CR>", "Move right")
 
-        vim.api.nvim_create_autocmd("Colorscheme", {
-            pattern = "*",
-            group = vim.api.nvim_create_augroup("afterColorscheme", { clear = false }),
-            callback = function()
-                -- bold instead of italic+bold selected.
-                -- Grey instead of white from using the fg from unselected tab colour ("visible")
-                hi.mod("BufferLineBufferSelected", {
-                    bold = true,
-                    italic = false,
-                    fg = hi.fg("BufferLineBufferVisible")
-                })
-                hi.mod("BufferLineNumbersSelected", {
-                    bold = false,
-                    italic = false,
-                    fg = hi.fg("BufferLineBufferVisible")
-                })
-            end
-        })
+        hi.afterColorscheme(function()
+            -- bold instead of italic+bold selected.
+            -- Grey instead of white from using the fg from unselected tab colour ("visible")
+            hi.mod("BufferLineBufferSelected", {
+                bold = true,
+                italic = false,
+                fg = hi.fg("BufferLineBufferVisible")
+            })
+            hi.mod("BufferLineNumbersSelected", {
+                bold = false,
+                italic = false,
+                fg = hi.fg("BufferLineBufferVisible")
+            })
+        end)
     end,
     opts = {
         options = {

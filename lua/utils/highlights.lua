@@ -53,4 +53,16 @@ function M.hide(name)
     vim.api.nvim_set_hl(0, name, { fg = "bg" })
 end
 
+---Intended for adding highlights relevant to specific filetype or plugin after
+---a colorscheme is set.
+---@param callback function
+---@return integer
+function M.afterColorscheme(callback)
+    return vim.api.nvim_create_autocmd("Colorscheme", {
+        pattern = "*",
+        group = vim.api.nvim_create_augroup("afterColorscheme", { clear = false }),
+        callback = callback
+    })
+end
+
 return M

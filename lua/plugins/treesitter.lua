@@ -268,16 +268,12 @@ return {
                 require("treesitter-context").go_to_context(vim.v.count1)
             end, { silent = true })
 
-            vim.api.nvim_create_autocmd("Colorscheme", {
-                pattern = "*",
-                group = vim.api.nvim_create_augroup("afterColorscheme", { clear = false }),
-                callback = function()
-                    hi.clear("TreesitterContext")
-                    local border = { underdashed = true, special = "gray" }
-                    hi.set("TreesitterContextBottom", border)
-                    hi.set("TreesitterContextLineNumberBottom", border)
-                end
-            })
+            hi.afterColorscheme(function()
+                hi.clear("TreesitterContext")
+                local border = { underdashed = true, special = "gray" }
+                hi.set("TreesitterContextBottom", border)
+                hi.set("TreesitterContextLineNumberBottom", border)
+            end)
         end,
     },
     -- error for julia tree-sitter:

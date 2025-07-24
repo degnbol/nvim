@@ -1,17 +1,25 @@
 local hi = require "utils/highlights"
 
+local function _basic_styling()
+    -- Assume we will be working in terminal that supports underline, bold, italic, etc.
+    hi.set("@text.underline", { underline = true })
+    hi.link("@markup.underline", "@text.underline")
+    hi.link("@text.strong", "Bold")
+    -- Remove color and use the relevant styles.
+    hi.link("@markup.italic", "Italic")
+    hi.link("@markup.strong", "Bold")
+    hi.mod("@lsp.mod.strong", { bold = true })
+    hi.mod("@lsp.mod.emph", { italic = true })
+end
 
----Function to apply after setting a colorscheme so that we can use any
----colorscheme without customising it, and have certain rules always apply.
-local function afterColorscheme()
-    -- GitSigns
+local function _GitSigns()
     local linenr = hi.fg("LineNr")
     local delete = hi.bg("DiffDelete")
     local stageddelete = hi.fg("GitSignsDelete")
-    -- for the sake of consistency with Changedelete
-    -- special decides the color for the underline
+    -- For the sake of consistency with Changedelete.
+    -- Special decides the color for the underline.
     hi.mod("GitSignsDelete", { underline = true, special = delete })
-    -- bar and underline better than tilde
+    -- Bar and underline better than tilde.
     hi.mod("GitSignsChangedelete", { underline = true, special = delete })
     hi.set("GitSignsAddNr", { fg = linenr, bg = hi.fg("DiffAdd") })
     hi.set("GitSignsStagedAddNr", { fg = linenr, bg = hi.fg("GitSignsStagedAdd") })
@@ -20,49 +28,88 @@ local function afterColorscheme()
     hi.set("GitSignsChangedeleteNr", { fg = linenr, bg = hi.fg("DiffChange"), underline = true, special = delete })
     hi.set("GitSignsStagedChangedeleteNr",
         { fg = linenr, bg = hi.fg("GitSignsChangedelete"), underline = true, special = stageddelete })
-    -- edge-case where first line(s) of file is deleted
+    -- Edge-case where first line(s) of file is deleted.
     hi.set("GitSignsTopDeleteNr", { fg = linenr, bg = delete })
     hi.set("GitSignsStagedTopDeleteNr", { fg = linenr, bg = stageddelete })
     hi.set("GitSignsDeleteNr", { fg = linenr, underline = true, special = delete })
     hi.set("GitSignsStagedDeleteNr", { fg = linenr, underline = true, special = stageddelete })
+end
 
+local function _diagnostics()
+    -- By default indicated by colors.
+    -- Underline etc. makes more sense when supported.
+    hi.set("DiagnosticUnderlineHint", { underdotted = true })
+    hi.set("DiagnosticUnderlineInfo", { underdotted = true })
+    -- subtle. underline and underdashed are stronger but the warn is often
+    -- wrong, e.g. missing reference to things LSP doesn't understand is
+    -- imported.
+    hi.set("DiagnosticUnderlineWarn", { underdotted = true })
+    hi.set("DiagnosticUnderlineError", { undercurl = true })
+    -- instead of mildly red text, do red underline.
+    hi.set("Error", { undercurl = true, special = hi.fg("ErrorMsg") })
+end
+
+local function _spellBad()
+    -- Some colorschemes sets the fg for spellBad. We make sure the colour
+    -- chosen is used, but always as undercurl.
     local spellBad = hi.get("spellBad")
-    -- the default already has red undercurl so we don't wanna mess with that but
-    -- other themes sets the fg instead
     spellBad = spellBad["special"] or spellBad["fg"]
     hi.set("SpellBad", { undercurl = true, special = spellBad })
+end
 
-    hi.set("IncSearch", { standout = true, bold = true })
-    hi.set("Search", { fg = "gray", bg = hi.fg("IncSearch"), standout = true })
-    hi.link("CurSearch", "Search")
+---Function to apply after setting a colorscheme so that we can use any
+---colorscheme without customising it, and have certain rules always apply.
+local function afterColorscheme()
+    -- Aim to make this function organised from things that should be default,
+    -- to the most opinionated at the bottom.
+    _basic_styling()
+    _diagnostics()
+    _spellBad()
 
+    hi.mod("NonText", { bold = true })
+    -- NonText shouldn't be exactly like comments
+    if hi.fg("Comment") == hi.fg("NonText") then
+        hi.mod("NonText", { fg = "gray" })
+    end
     -- MoreMsg is shown for text in multiline messages, e.g. :Inspect.
     -- By default it is a bold blue color like a function def which is confusing.
-    -- NonText link makes more sense but could also be linked to Normal.
+    -- NonText link makes more sense, it's not text that can be edited.
     hi.link("MoreMsg", "NonText")
-
     -- Default is comment fg and similar strong bg for the whole line. It grabs too much attention.
     -- NonText is bold gray. It feels like a good balance of attention grabbing.
     -- Treesitter hl with NonText "… 35 …" could be too little attention and get overlooked.
     hi.link("Folded", "NonText")
 
-    ---- Completion. Some links to IncSearch which is too distracting
+    _GitSigns()
+
+    -- Matching parenthesis is indicated by colour sometimes.
+    -- Reverse is common but takes a lot of focus.
+    -- Using underline is more subtle and allows the original colors to stay.
+    hi.set("MatchParen", { underline = true })
+    hi.set("IncSearch", { standout = true, bold = true })
+    hi.set("Search", { fg = "gray", bg = hi.fg("IncSearch"), standout = true })
+    hi.link("CurSearch", "Search")
+
+    -- TEMP, fix using lush plugin
+    -- link to function fg colour
+    hi.setfg("function.call", "#73a3b7")
+    -- dimmed down version of @import / Include / PreProc. Use darkening with lush in dark mode and lighten in light mode.
+    hi.setfg("@module", "#5e5050")
+
+    -- Definitions are bold, while the subsequent usage of these classes, types, functions etc are not.
+    -- There's also @lsp.mod.definition, which is used when defining e.g. arguments to a function.
+    hi.mod("@lsp.typemod.class.definition", { bold = true })
+    hi.mod("@lsp.typemod.method.definition", { bold = true })
+    hi.set("@lsp.typemod.function.declaration", { bold = true, fg = hi.fg("Function") })
+
+    ---- cmp completion.
+    -- Some colorschemes links to IncSearch which is too distracting
     hi.set("CmpItemAbbrMatch", { bold = true })
     hi.set("CmpItemAbbrMatchFuzzy", { bold = true })
 
-    -- there is enough things indicated by color, matched parenthesis etc. with underline is great
-    hi.set("MatchParen", { underline = true })
 
-    -- Should be default
-    hi.set("@text.underline", { underline = true })
-    hi.link("@markup.underline", "@text.underline")
-    hi.set("@text.strong", { bold = true })
-
-    -- temp, fix using lush plugin
-    hi.setfg("function.call", "#73a3b7") -- link to function fg colour
-    hi.setfg("@module", "#5e5050")       -- dimmed down version of @import / Include / PreProc. Use darkening with lush in dark mode and lighten in light mode.
-    hi.setfg("@constructor", hi.fg("TSRainbowBlue"))
-    hi.link("@constructor.lua", "@constructor")
+    -- Curly brackets in lua.
+    hi.setfg("@constructor.lua", hi.fg("Macro"))
 
     -- never italic comments but italize builtin stuff
     -- :h group-name
@@ -91,7 +138,7 @@ local function afterColorscheme()
     hi.mod("Identifier", { italic = false })
     hi.mod("Number", { italic = false })
     -- If you find constants that you don't want to make italic then mod the semantic @lsp global instead.
-    hi.set("Constant", { italic = true })
+    hi.set("Constant", { italic = false, bold = true })
     -- Nothing is constant in python and it's just based on if chars are uppercase.
     hi.set("@constant.python", {})
     hi.mod("Exception", { italic = true })
@@ -102,7 +149,9 @@ local function afterColorscheme()
     hi.mod("@keyword.return", { italic = true })
     -- all same as  keyword except bold since operators are bold.
     hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.fg("@operator") })
-    hi.mod("@parameter", { italic = false })
+    -- TEMP hardcoded colour.
+    hi.mod("@parameter", { italic = false, fg = "#ac9ba1" })
+    hi.link("@variable.parameter", "@parameter")
     hi.mod("@function", { italic = false, bold = true })
     hi.setfg("@function.call", hi.fg("Function"))
     hi.link("@function.method", "function.call")
@@ -117,9 +166,12 @@ local function afterColorscheme()
     hi.set("@variable.builtin", { italic = true, })
     hi.mod("@variable.parameter.builtin", { italic = true })
     hi.set("@function.builtin", { italic = true, fg = hi.fg("@function.call") })
+    hi.link("@attribute", "PreProc")
     hi.set("@attribute.builtin", { italic = true, fg = hi.fg("@attribute") })
     hi.mod("@constant.builtin", { italic = true, fg = hi.fg("@constant") })
     hi.set("@type.builtin", { italic = true, fg = hi.fg("@type") })
+    -- @lsp understands types better than TS. TS annotates def type(...) in class as @type.builtin.
+    hi.set("@type.builtin.python", { italic = false })
     hi.mod("@module.builtin", { italic = true, fg = hi.fg("@module") })
     -- underline tags since they are kinda like links
     hi.mod("Tag", { underline = true })
@@ -135,12 +187,10 @@ local function afterColorscheme()
     hi.mod("@markup.link.url", { italic = false })                          -- underscore is enough distinction
     hi.mod("@markup.link.url", { italic = false })                          -- underscore is enough distinction
     hi.mod("@string.special.url", { italic = false })                       -- underscore is enough distinction
+
     -- I like having @string.documentation different colour from regular string to make it clear it has a different special role and is recognised as such.
     -- By default it was linked to keyword which is implying builtin, e.g. italic.
     hi.link("@string.documentation", "Special")
-    -- no color
-    hi.link("@markup.italic", "Italic")
-    hi.link("@markup.strong", "Bold")
 
     -- delim.
     hi.setfg("Delimiter", hi.fg("Keyword"))
@@ -151,16 +201,7 @@ local function afterColorscheme()
     -- Not sure what "pol" is but it was lined to @variable which is neutral color globally but not for typst.
     hi.link("@lsp.type.pol.typst", "@variable.typst")
 
-    -- NonText shouldn't be exactly like comments
-    if hi.fg("Comment") == hi.fg("NonText") then
-        hi.mod("NonText", { fg = "gray" })
-    end
-    -- it seems pretty good if they're bold even if the color is similar.
-    hi.mod("NonText", { bold = true })
-
     -- semantic tokens
-    hi.mod("@lsp.mod.strong", { bold = true })
-    hi.mod("@lsp.mod.emph", { italic = true })
     hi.link("@lsp.type.operator", "@operator")
     hi.link("@lsp.type.keyword", "@keyword")
     -- E.g. `Self` in `def fn() -> Self` in python. Might have to remove if it also covers non-builtins.
@@ -168,6 +209,9 @@ local function afterColorscheme()
     -- instead of to @function since we only want function definitions to be
     -- bold and @type.function is often not, e.g. in this very file.
     hi.link("@lsp.type.function", "@function.call")
+    -- Python has it on e.g. `@dataclass(...)` before `class`, which is not Function coloured if called like `@dataclass`.
+    -- Currently choosing consistency by showing these decorators with PreProc colors.
+    hi.clear("@lsp.type.function.python")
     hi.link("@lsp.type.method", "@function.call")
     hi.link("@lsp.type.string", "@string")
     -- E.g. in importing macro in rust. By default no colour.
@@ -181,9 +225,10 @@ local function afterColorscheme()
     hi.link("@lsp.typemod.variable.global.lua", "Constant")
     hi.link("@lsp.typemod.variable.defaultLibrary.lua", "Constant")
     -- wrong highlight by treesitter
-    hi.set("@type.sql", {})
+    hi.clear("@type.sql")
     -- default links to constant which we make italic so no thanks.
     -- @string.special -> Special -> same fg as function call. This works well since @string.special is for e.g. `` cmd in julia.
+    -- @punctuation.special can also be used, it has a similar colour in terafox.
     hi.link("@string.special", "Special")
     -- symbols in julia are differentiated clearly enough by a preceding colon colored according to delimiters.
     -- We clear its default link here to Constant, since we don't want it italic.
@@ -218,20 +263,6 @@ local function afterColorscheme()
     hi.link("@variable.member", "@variable")
     hi.link("@property", "@variable")
 
-    -- extmarks
-    -- By default colors. Underline variants makes more sense.
-    hi.set("DiagnosticUnderlineHint", { underdotted = true })
-    hi.set("DiagnosticUnderlineInfo", { underdotted = true })
-    -- subtle. underline and underdashed are stronger but the warn is often
-    -- wrong, e.g. missing reference to things LSP doesn't understand is
-    -- imported.
-    hi.set("DiagnosticUnderlineWarn", { underdotted = true })
-    hi.set("DiagnosticUnderlineError", { undercurl = true })
-    -- instead of mildly red text, do red underline.
-    hi.set("Error", { undercurl = true, special = "red" })
-
-    -- Make a hl group we can link to that hides text
-    hi.hide("Background")
 
     -- remove title link, which makes it bold
     hi.link("FidgetTitle", "Normal")
@@ -259,19 +290,6 @@ local function afterColorscheme()
     hi.link("ConflictMarkerSeparator", "Normal") -- Remove red undercurl
     hi.set("ConflictMarkerEnd", { bg = "#36324e" })
     hi.link("ConflictMarkerTheirs", "ConflictMarkerEnd")
-
-    -- TSV columns
-    hi.set("csvCol1", { bg = "#1a2e32" })
-    hi.clear("csvCol2")
-    hi.link("csvCol3", "csvCol1")
-    hi.clear("csvCol4")
-    hi.link("csvCol5", "csvCol1")
-    hi.clear("csvCol6")
-    hi.link("csvCol7", "csvCol1")
-    hi.clear("csvCol8")
-    hi.link("csvCol9", "csvCol1")
-    hi.clear("csvCol10")
-    hi.link("csvCol11", "csvCol1")
 
     -- shell
     -- vim doesn't seem to be combining underline and color from two separate
@@ -310,11 +328,6 @@ local function afterColorscheme()
         fg = StatusLineNC["fg"],
         bg = StatusLineNC["bg"],
     })
-
-    -- Definitions are bold, while the subsequent usage of these classes, types, functions etc are not.
-    -- There's also @lsp.mod.definition, which is used when defining e.g. arguments to a function.
-    hi.mod("@lsp.typemod.class.definition", { bold = true })
-    hi.mod("@lsp.typemod.method.definition", { bold = true })
 end
 
 -- local defaultDark = 'fluoromachine'

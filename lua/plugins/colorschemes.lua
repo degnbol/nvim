@@ -1,5 +1,3 @@
-
-
 vim.keymap.set("n", "<leader>cs", function()
     -- Load colorschemes. Using lazy keys didn't work
     -- https://www.reddit.com/r/neovim/comments/12tcx0b/attempt_at_adding_color_schemes_to_list_of/
@@ -12,25 +10,6 @@ vim.keymap.set("n", "<leader>cs", function()
 end, { desc = "Colorscheme" })
 
 return {
-    {
-        "rktjmp/lush.nvim",
-        config = function()
-            local lush = require('lush')
-            local hsl = lush.hsl
-
-            -- local grp = vim.api.nvim_create_augroup("afterColorscheme", {clear=true})
-            -- vim.api.nvim_create_autocmd("Colorscheme", {
-            --     pattern = "*", group = grp,
-            --     callback = function ()
-            --         return lush(function ()
-            --             return {
-            --                 ["@punctuation.bracket"] = {"RainbowDelimitersViolet"},
-            --             }
-            --         end)
-            --     end,
-            -- })
-        end
-    },
     {
         "norcalli/nvim-base16.lua",
         -- TODO: find way to use each of the builtin ones from this with colorscheme cmd
