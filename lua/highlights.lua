@@ -77,9 +77,10 @@ local function afterColorscheme()
     -- the color with italic. Before making changes look at test files in
     -- testfiles/
     hi.mod("Comment", { italic = false })
-    hi.set("Operator", { bold = true, fg = hi.fg("Keyword") })
+    hi.set("Operator", { bold = true, fg = hi.fg("Function") })
     hi.mod("Include", { italic = true })
     hi.mod("Repeat", { italic = true })
+    -- Labels are meant to be read, they should definitely not be italic.
     hi.mod("Label", { italic = false, bold = true })
     hi.mod("Type", { italic = false })
     hi.mod("Conditional", { italic = true, bold = false })
@@ -100,7 +101,7 @@ local function afterColorscheme()
     hi.mod("@keyword.function", { italic = true })
     hi.mod("@keyword.return", { italic = true })
     -- all same as  keyword except bold since operators are bold.
-    hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.fg("Keyword") })
+    hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.fg("@operator") })
     hi.mod("@parameter", { italic = false })
     hi.mod("@function", { italic = false, bold = true })
     hi.setfg("@function.call", hi.fg("Function"))
@@ -141,8 +142,8 @@ local function afterColorscheme()
     hi.link("@markup.italic", "Italic")
     hi.link("@markup.strong", "Bold")
 
-    -- delim. Currently using the default for parentheses.
-    hi.link("Delimiter", "TSRainbowViolet") -- or RainbowDelimitersViolet
+    -- delim.
+    hi.setfg("Delimiter", hi.fg("Keyword"))
     hi.link("@punctuation.bracket", "Delimiter")
     hi.link("@punctuation.delimiter", "Delimiter")
     -- Was overwriting the rainbow ext marks:
@@ -162,6 +163,8 @@ local function afterColorscheme()
     hi.mod("@lsp.mod.emph", { italic = true })
     hi.link("@lsp.type.operator", "@operator")
     hi.link("@lsp.type.keyword", "@keyword")
+    -- E.g. `Self` in `def fn() -> Self` in python. Might have to remove if it also covers non-builtins.
+    hi.link("@lsp.type.typeparameter", "@type.builtin")
     -- instead of to @function since we only want function definitions to be
     -- bold and @type.function is often not, e.g. in this very file.
     hi.link("@lsp.type.function", "@function.call")
@@ -307,6 +310,11 @@ local function afterColorscheme()
         fg = StatusLineNC["fg"],
         bg = StatusLineNC["bg"],
     })
+
+    -- Definitions are bold, while the subsequent usage of these classes, types, functions etc are not.
+    -- There's also @lsp.mod.definition, which is used when defining e.g. arguments to a function.
+    hi.mod("@lsp.typemod.class.definition", { bold = true })
+    hi.mod("@lsp.typemod.method.definition", { bold = true })
 end
 
 -- local defaultDark = 'fluoromachine'
