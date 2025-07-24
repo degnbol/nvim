@@ -11,6 +11,15 @@ end, { desc = "Colorscheme" })
 
 return {
     {
+        "rktjmp/lush.nvim",
+        config = function()
+            local lush = require('lush')
+            local hsl = lush.hsl
+            -- TODO: decide if we want to use lush, or find another way to mix
+            -- colors, to get e.g. dimmed colour for module etc.
+        end
+    },
+    {
         "norcalli/nvim-base16.lua",
         -- TODO: find way to use each of the builtin ones from this with colorscheme cmd
         lazy = true,

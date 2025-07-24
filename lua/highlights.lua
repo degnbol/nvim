@@ -38,13 +38,13 @@ end
 local function _diagnostics()
     -- By default indicated by colors.
     -- Underline etc. makes more sense when supported.
-    hi.set("DiagnosticUnderlineHint", { underdotted = true })
-    hi.set("DiagnosticUnderlineInfo", { underdotted = true })
+    hi.set("DiagnosticUnderlineHint", { underdotted = true, special = hi.fg("DiagnosticHint") })
+    hi.set("DiagnosticUnderlineInfo", { underdotted = true, special = hi.fg("DiagnosticInfo") })
     -- subtle. underline and underdashed are stronger but the warn is often
     -- wrong, e.g. missing reference to things LSP doesn't understand is
     -- imported.
-    hi.set("DiagnosticUnderlineWarn", { underdotted = true })
-    hi.set("DiagnosticUnderlineError", { undercurl = true })
+    hi.set("DiagnosticUnderlineWarn", { underdotted = true, special = hi.fg("DiagnosticWarn") })
+    hi.set("DiagnosticUnderlineError", { undercurl = true, special = hi.fg("DiagnosticError") })
     -- instead of mildly red text, do red underline.
     hi.set("Error", { undercurl = true, special = hi.fg("ErrorMsg") })
 end
