@@ -1,5 +1,3 @@
-
-
 return {
     -- treesitter
     -- language coloring and ensuring of installation
@@ -257,7 +255,7 @@ return {
         end
     },
     -- show the "context" at the top line, i.e. function name when in a function
-    -- "romgrk/nvim-treesitter-context",
+    { "romgrk/nvim-treesitter-context", opts = { max_lines = 1 } },
     -- error for julia tree-sitter:
     -- % jumps between matching coding blocks, not just single chars.
     -- {
@@ -266,66 +264,27 @@ return {
     --     matchup = {enable = true}
     -- }
     -- end},
-    -- tree sitter based rainbow color parenthesis to easily see the matching
-    {
-        "mrjones2014/nvim-ts-rainbow",
-        enabled = false,
-        dependencies = 'nvim-treesitter/nvim-treesitter',
-        config = function()
-            require("nvim-treesitter.configs").setup {
-                -- for the p00f/nvim-ts-rainbow plugin
-                rainbow = {
-                    enable = true,         -- update broke this plugin
-                    -- disable = {"julia"},
-                    extended_mode = true,  -- Highlight also non-parentheses delimiters, boolean or table: lang -> boolean
-                    max_file_lines = 1000, -- Do not enable for files with more than 1000 lines, int
-                },
-            }
-        end
-    },
-    -- alt that might be better maintained.
-    -- I prefer the other for now, since it rainbows "\begin" and "\end" in latex, where this version also colors the following "{...}"
-    {
-        "HiPhish/nvim-ts-rainbow2",
-        enabled = false,
-        dependencies = 'nvim-treesitter/nvim-treesitter',
-        config = function()
-            require("nvim-treesitter.configs").setup {
-                rainbow = {
-                    enable = true,
-                    -- disable = {"julia"},
-                    -- Which query to use for finding delimiters
-                    query = { 'rainbow-parens', html = 'rainbow-tags', latex = 'rainbow-blocks', },
-                    -- Highlight the entire buffer all at once
-                    strategy = require('ts-rainbow').strategy.global,
-                },
-            }
-        end
-    },
     {
         "https://gitlab.com/HiPhish/rainbow-delimiters.nvim",
+        name = "rainbow_delimiters",
         enabled = false,
-        dependencies = 'nvim-treesitter/nvim-treesitter',
-        config = function()
-            local rainbow_delimiters = require 'rainbow-delimiters'
-            vim.g.rainbow_delimiters = {
-                strategy = {
-                    [''] = rainbow_delimiters.strategy['global'],
-                },
-                query = {
-                    [''] = 'rainbow-delimiters',
-                    latex = 'rainbow-blocks', -- doesn't work otherwise
-                },
-                highlight = {
-                    'RainbowDelimiterViolet',
-                    'RainbowDelimiterOrange',
-                    'RainbowDelimiterYellow',
-                    'RainbowDelimiterBlue',
-                    'RainbowDelimiterGreen',
-                    'RainbowDelimiterCyan',
-                    'RainbowDelimiterRed',
-                },
-            }
-        end
+        opts = {
+            strategy = {
+                [''] = 'rainbow-delimiters.strategy.global',
+            },
+            query = {
+                [''] = 'rainbow-delimiters',
+                latex = 'rainbow-blocks', -- doesn't work otherwise
+            },
+            highlight = {
+                'RainbowDelimiterViolet',
+                'RainbowDelimiterOrange',
+                'RainbowDelimiterYellow',
+                'RainbowDelimiterBlue',
+                'RainbowDelimiterGreen',
+                'RainbowDelimiterCyan',
+                'RainbowDelimiterRed',
+            },
+        }
     }
 }
