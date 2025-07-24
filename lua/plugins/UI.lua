@@ -1,4 +1,3 @@
-
 return {
     -- popular plugin to take advantage of some exposed UI hooks
     {
@@ -45,29 +44,6 @@ return {
     },
     -- File explorer as a buffer with manipulation abilities.
     -- Differes from mini.files by only having a single view taking up the whole screen and has different default keymaps and preview behaviour.
-    {
-        "stevearc/quicker.nvim",
-        keys = { "<leader>qq", "<leader>qo" },
-        lazy = true,
-        opts = {
-            keys = {
-                {
-                    ">",
-                    function()
-                        require("quicker").expand({ before = 2, after = 2, add_to_existing = true })
-                    end,
-                    desc = "Expand quickfix context",
-                },
-                {
-                    "<",
-                    function()
-                        require("quicker").collapse()
-                    end,
-                    desc = "Collapse quickfix context",
-                },
-            },
-        },
-    },
     {
         "stevearc/oil.nvim",
         lazy = true,

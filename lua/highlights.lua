@@ -107,6 +107,7 @@ local function afterColorscheme()
     hi.set("CmpItemAbbrMatch", { bold = true })
     hi.set("CmpItemAbbrMatchFuzzy", { bold = true })
 
+    hi.link("Directory", "String")
 
     -- Curly brackets in lua.
     hi.setfg("@constructor.lua", hi.fg("Macro"))
