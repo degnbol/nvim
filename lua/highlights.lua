@@ -164,7 +164,7 @@ local function afterColorscheme()
     hi.link("@lsp.type.operator", "@operator")
     hi.link("@lsp.type.keyword", "@keyword")
     -- E.g. `Self` in `def fn() -> Self` in python. Might have to remove if it also covers non-builtins.
-    hi.link("@lsp.type.typeparameter", "@type.builtin")
+    -- hi.link("@lsp.type.typeparameter", "@type.builtin")
     -- instead of to @function since we only want function definitions to be
     -- bold and @type.function is often not, e.g. in this very file.
     hi.link("@lsp.type.function", "@function.call")
