@@ -134,11 +134,11 @@ return {
                 group = vim.api.nvim_create_augroup("colorscheme", { clear = true }),
                 callback = function()
                     -- A dim version of the cursor
-                    hi.set("MultiCursorCursor", { fg = hi.getfg("Cursor"), bg = "gray" })
+                    hi.set("MultiCursorCursor", { fg = hi.fg("Cursor"), bg = "gray" })
                     hi.link("MultiCursorVisual", "Visual")
                     hi.link("MultiCursorSign", "SignColumn")
                     -- disable aka locked cursor. Changed default link to visual (which feels misleading) to an even dimmer cursor.
-                    hi.set("MultiCursorDisabledCursor", { fg = hi.getfg("Cursor"), bg = hi.getfg("NonText") })
+                    hi.set("MultiCursorDisabledCursor", { fg = hi.fg("Cursor"), bg = hi.fg("NonText") })
                     hi.link("MultiCursorDisabledVisual", "Visual")
                     hi.link("MultiCursorDisabledSign", "SignColumn")
                 end

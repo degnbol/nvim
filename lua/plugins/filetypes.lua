@@ -1,5 +1,4 @@
-
-local hl = require "utils/highlights"
+local hi = require "utils/highlights"
 
 return {
     -- add keybindings to toggle comments with motions etc.
@@ -67,33 +66,33 @@ return {
                 buffer = 0,
                 group = grp,
                 callback = function()
-                    hl.set("asciidoctorBold", { bold = true })
-                    hl.set("asciidoctorItalic", { italic = true })
-                    hl.set("asciidoctorBoldItalic", { bold = true, italic = true })
-                    hl.set("asciidoctorBoldComment", { bold = true, fg = hl.get("Comment")['fg'] })
-                    hl.set("asciidoctorItalicComment", { italic = true, fg = hl.get("Comment")['fg'] })
-                    hl.set("asciidoctorBoldItalicComment", { bold = true, italic = true, fg = hl.get("Comment")['fg'] })
-                    hl.link("asciidoctorTitleDelimiter", "Comment")
-                    hl.link("asciidocPassthrough", "Constant") -- same as asciidoctorCode
-                    hl.rev("asciidocHighlight")
-                    hl.set("asciidocUnderline", { underline = true })
-                    hl.set("asciidocBoldUnderline", { underline = true, bold = true })
-                    hl.set("asciidocItalicUnderline", { underline = true, italic = true })
-                    hl.set("asciidocStrikethrough", { strikethrough = true })
-                    hl.set("asciidocBoldStrikethrough", { strikethrough = true, bold = true })
-                    hl.set("asciidocItalicStrikethrough", { strikethrough = true, italic = true })
+                    hi.set("asciidoctorBold", { bold = true })
+                    hi.set("asciidoctorItalic", { italic = true })
+                    hi.set("asciidoctorBoldItalic", { bold = true, italic = true })
+                    hi.set("asciidoctorBoldComment", { bold = true, fg = hi.get("Comment")['fg'] })
+                    hi.set("asciidoctorItalicComment", { italic = true, fg = hi.get("Comment")['fg'] })
+                    hi.set("asciidoctorBoldItalicComment", { bold = true, italic = true, fg = hi.get("Comment")['fg'] })
+                    hi.link("asciidoctorTitleDelimiter", "Comment")
+                    hi.link("asciidocPassthrough", "Constant") -- same as asciidoctorCode
+                    hi.rev("asciidocHighlight")
+                    hi.set("asciidocUnderline", { underline = true })
+                    hi.set("asciidocBoldUnderline", { underline = true, bold = true })
+                    hi.set("asciidocItalicUnderline", { underline = true, italic = true })
+                    hi.set("asciidocStrikethrough", { strikethrough = true })
+                    hi.set("asciidocBoldStrikethrough", { strikethrough = true, bold = true })
+                    hi.set("asciidocItalicStrikethrough", { strikethrough = true, italic = true })
                     for i = 1, 6 do
-                        hl.link("asciidoctorH" .. i .. "Delimiter", "Comment")
+                        hi.link("asciidoctorH" .. i .. "Delimiter", "Comment")
                     end
                     -- there are more hi groups that might be unset
                     -- ...
                     -- hide comment delim (hl group set in syntax file).
-                    hl.fg("commentDelimiter", hl.get("Normal")["bg"])
-                    hl.link("filenameCommentNoSpell", "Comment")
-                    hl.link("UrlCommentNoSpell", "Comment")
-                    hl.link("linebreak", "Comment")
-                    hl.set("Geo", { underline = true })
-                    hl.set("Chord", { underline = true })
+                    hi.setfg("commentDelimiter", hi.get("Normal")["bg"])
+                    hi.link("filenameCommentNoSpell", "Comment")
+                    hi.link("UrlCommentNoSpell", "Comment")
+                    hi.link("linebreak", "Comment")
+                    hi.set("Geo", { underline = true })
+                    hi.set("Chord", { underline = true })
                 end
             })
             -- use conversion to PDF as default for :make
@@ -105,10 +104,9 @@ return {
                 { buffer = true, desc = "Open compiled PDF" })
             -- start autocompiling on save
             vim.keymap.set('n', '<leader>cC', function()
-                local grp = vim.api.nvim_create_augroup("asciidocCompile", { clear = true })
                 vim.api.nvim_create_autocmd("BufWritePost", {
                     buffer = 0,
-                    group = grp,
+                    group = vim.api.nvim_create_augroup("asciidocCompile", { clear = true }),
                     command = "silent Asciidoctor2PDF"
                 })
             end, { buffer = true, desc = "Compile on save" })

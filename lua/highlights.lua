@@ -1,22 +1,25 @@
 local hi = require "utils/highlights"
 
+
+---Function to apply after setting a colorscheme so that we can use any
+---colorscheme without customising it, and have certain rules always apply.
 local function afterColorscheme()
     -- GitSigns
-    local linenr = hi.get("LineNr")['fg']
-    local delete = hi.get("DiffDelete")['bg']
-    local stageddelete = hi.get("GitSignsDelete")['fg']
+    local linenr = hi.fg("LineNr")
+    local delete = hi.bg("DiffDelete")
+    local stageddelete = hi.fg("GitSignsDelete")
     -- for the sake of consistency with Changedelete
     -- special decides the color for the underline
     hi.mod("GitSignsDelete", { underline = true, special = delete })
     -- bar and underline better than tilde
     hi.mod("GitSignsChangedelete", { underline = true, special = delete })
-    hi.set("GitSignsAddNr", { fg = linenr, bg = hi.get("DiffAdd")['fg'] })
-    hi.set("GitSignsStagedAddNr", { fg = linenr, bg = hi.get("GitSignsStagedAdd")['fg'] })
-    hi.set("GitSignsChangeNr", { fg = linenr, bg = hi.get("DiffChange")['fg'] })
-    hi.set("GitSignsStagedChangeNr", { fg = linenr, bg = hi.get("GitSignsChangeAdd")['fg'] })
-    hi.set("GitSignsChangedeleteNr", { fg = linenr, bg = hi.get("DiffChange")['fg'], underline = true, special = delete })
+    hi.set("GitSignsAddNr", { fg = linenr, bg = hi.fg("DiffAdd") })
+    hi.set("GitSignsStagedAddNr", { fg = linenr, bg = hi.fg("GitSignsStagedAdd") })
+    hi.set("GitSignsChangeNr", { fg = linenr, bg = hi.fg("DiffChange") })
+    hi.set("GitSignsStagedChangeNr", { fg = linenr, bg = hi.fg("GitSignsChangeAdd") })
+    hi.set("GitSignsChangedeleteNr", { fg = linenr, bg = hi.fg("DiffChange"), underline = true, special = delete })
     hi.set("GitSignsStagedChangedeleteNr",
-        { fg = linenr, bg = hi.get("GitSignsChangedelete")['fg'], underline = true, special = stageddelete })
+        { fg = linenr, bg = hi.fg("GitSignsChangedelete"), underline = true, special = stageddelete })
     -- edge-case where first line(s) of file is deleted
     hi.set("GitSignsTopDeleteNr", { fg = linenr, bg = delete })
     hi.set("GitSignsStagedTopDeleteNr", { fg = linenr, bg = stageddelete })
@@ -26,15 +29,11 @@ local function afterColorscheme()
     local spellBad = hi.get("spellBad")
     -- the default already has red undercurl so we don't wanna mess with that but
     -- other themes sets the fg instead
-    if spellBad["special"] then
-        spellBad = spellBad["special"]
-    else
-        spellBad = spellBad["fg"]
-    end
+    spellBad = spellBad["special"] or spellBad["fg"]
     hi.set("SpellBad", { undercurl = true, special = spellBad })
 
     hi.set("IncSearch", { standout = true, bold = true })
-    hi.set("Search", { fg = "gray", bg = hi.get("IncSearch")["fg"], standout = true })
+    hi.set("Search", { fg = "gray", bg = hi.fg("IncSearch"), standout = true })
     hi.link("CurSearch", "Search")
 
     -- MoreMsg is shown for text in multiline messages, e.g. :Inspect.
@@ -46,26 +45,6 @@ local function afterColorscheme()
     -- NonText is bold gray. It feels like a good balance of attention grabbing.
     -- Treesitter hl with NonText "… 35 …" could be too little attention and get overlooked.
     hi.link("Folded", "NonText")
-
-    ---- bufferline
-    -- bold instead of italic+bold selected.
-    -- Grey instead of white from using the fg from unselected tab colour ("visible")
-    hi.set("BufferLineBufferSelected",
-        {
-            bold = true,
-            italic = false,
-            bg = hi.get("BufferLineBufferSelected")['bg'],
-            fg = hi.getfg(
-                "BufferLineBufferVisible")
-        })
-    hi.set("BufferLineNumbersSelected",
-        {
-            bold = false,
-            italic = false,
-            bg = hi.get("BufferLineNumbersSelected")['bg'],
-            fg = hi.getfg(
-                "BufferLineBufferVisible")
-        })
 
     ---- Completion. Some links to IncSearch which is too distracting
     hi.set("CmpItemAbbrMatch", { bold = true })
@@ -80,9 +59,9 @@ local function afterColorscheme()
     hi.set("@text.strong", { bold = true })
 
     -- temp, fix using lush plugin
-    hi.fg("function.call", "#73a3b7") -- link to function fg colour
-    hi.fg("@module", "#5e5050")       -- dimmed down version of @import / Include / PreProc. Use darkening with lush in dark mode and lighten in light mode.
-    hi.fg("@constructor", hi.getfg("TSRainbowBlue"))
+    hi.setfg("function.call", "#73a3b7") -- link to function fg colour
+    hi.setfg("@module", "#5e5050")       -- dimmed down version of @import / Include / PreProc. Use darkening with lush in dark mode and lighten in light mode.
+    hi.setfg("@constructor", hi.fg("TSRainbowBlue"))
     hi.link("@constructor.lua", "@constructor")
 
     -- never italic comments but italize builtin stuff
@@ -98,10 +77,10 @@ local function afterColorscheme()
     -- the color with italic. Before making changes look at test files in
     -- testfiles/
     hi.mod("Comment", { italic = false })
-    hi.set("Operator", { bold = true, fg = hi.get("Keyword")['fg'] })
+    hi.set("Operator", { bold = true, fg = hi.fg("Keyword") })
     hi.mod("Include", { italic = true })
     hi.mod("Repeat", { italic = true })
-    hi.mod("Label", { italic = true })
+    hi.mod("Label", { italic = false, bold = true })
     hi.mod("Type", { italic = false })
     hi.mod("Conditional", { italic = true, bold = false })
     -- for e.g. julia there is the `a = bool ? b : c` notation. It's weird to
@@ -121,10 +100,10 @@ local function afterColorscheme()
     hi.mod("@keyword.function", { italic = true })
     hi.mod("@keyword.return", { italic = true })
     -- all same as  keyword except bold since operators are bold.
-    hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.getfg("Keyword") })
+    hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.fg("Keyword") })
     hi.mod("@parameter", { italic = false })
     hi.mod("@function", { italic = false, bold = true })
-    hi.fg("@function.call", hi.getfg("Function"))
+    hi.setfg("@function.call", hi.fg("Function"))
     hi.link("@function.method", "function.call")
     hi.link("@function.method.call", "function.call")
     hi.link("@function.macro", "@function.call")
@@ -136,11 +115,11 @@ local function afterColorscheme()
     -- italic is enough distinction, and fits with the pattern. No need for a different colour.
     hi.set("@variable.builtin", { italic = true, })
     hi.mod("@variable.parameter.builtin", { italic = true })
-    hi.set("@function.builtin", { italic = true, fg = hi.getfg("@function.call") })
-    hi.set("@attribute.builtin", { italic = true, fg = hi.getfg("@attribute") })
-    hi.mod("@constant.builtin", { italic = true, fg = hi.getfg("@constant") })
-    hi.set("@type.builtin", { italic = true, fg = hi.getfg("@type") })
-    hi.mod("@module.builtin", { italic = true, fg = hi.getfg("@module") })
+    hi.set("@function.builtin", { italic = true, fg = hi.fg("@function.call") })
+    hi.set("@attribute.builtin", { italic = true, fg = hi.fg("@attribute") })
+    hi.mod("@constant.builtin", { italic = true, fg = hi.fg("@constant") })
+    hi.set("@type.builtin", { italic = true, fg = hi.fg("@type") })
+    hi.mod("@module.builtin", { italic = true, fg = hi.fg("@module") })
     -- underline tags since they are kinda like links
     hi.mod("Tag", { underline = true })
     hi.mod("@tag", { underline = true })
@@ -150,11 +129,11 @@ local function afterColorscheme()
     hi.link("@tag.html", "@keyword") -- used for all the basic structure
     hi.mod("@lsp.type.ref", { underline = true })
     hi.mod("@lsp.type.link", { underline = true })
-    hi.set("@markup.raw", { underline = false, fg = hi.getfg("@markup.raw") }) -- trying to just remove italic
-    hi.set("@markup.link", { underline = true, fg = hi.getfg("@markup.link.label") })
-    hi.mod("@markup.link.url", { italic = false })                             -- underscore is enough distinction
-    hi.mod("@markup.link.url", { italic = false })                             -- underscore is enough distinction
-    hi.mod("@string.special.url", { italic = false })                          -- underscore is enough distinction
+    hi.set("@markup.raw", { underline = false, fg = hi.fg("@markup.raw") }) -- trying to just remove italic
+    hi.set("@markup.link", { underline = true, fg = hi.fg("@markup.link.label") })
+    hi.mod("@markup.link.url", { italic = false })                          -- underscore is enough distinction
+    hi.mod("@markup.link.url", { italic = false })                          -- underscore is enough distinction
+    hi.mod("@string.special.url", { italic = false })                       -- underscore is enough distinction
     -- I like having @string.documentation different colour from regular string to make it clear it has a different special role and is recognised as such.
     -- By default it was linked to keyword which is implying builtin, e.g. italic.
     hi.link("@string.documentation", "Special")
@@ -172,7 +151,7 @@ local function afterColorscheme()
     hi.link("@lsp.type.pol.typst", "@variable.typst")
 
     -- NonText shouldn't be exactly like comments
-    if hi.get("Comment")['fg'] == hi.get("NonText")['fg'] then
+    if hi.fg("Comment") == hi.fg("NonText") then
         hi.mod("NonText", { fg = "gray" })
     end
     -- it seems pretty good if they're bold even if the color is similar.
@@ -213,7 +192,7 @@ local function afterColorscheme()
 
     -- fixes typst highlighting operator in == heading
     hi.link("@text.title", "Title")
-    hi.set("Title", { bold = true, underdouble = true, fg = hi.getfg("Normal") })
+    hi.set("Title", { bold = true, underdouble = true, fg = hi.fg("Normal") })
 
     -- variable is the default capture for most things in code so we want it to
     -- be neutral. I set it to copy normal instead of using clear since if I clear it will
@@ -223,11 +202,11 @@ local function afterColorscheme()
     -- fortran some types will also be captured as variables, and we would ideally
     -- keep the type colouring.
     -- local variable = hi.getfg("@variable")
-    local variable = hi.getfg("@parameter")
-    hi.fg("@variable", hi.getfg("Normal"))
+    local variable = hi.fg("@parameter")
+    hi.setfg("@variable", hi.fg("Normal"))
     -- Except for some languages where variable shouldn't be neutral:
     for _, showVar in ipairs { "typst", "markdown", "asciidoc", "latex" } do
-        hi.fg("@variable." .. showVar, variable)
+        hi.setfg("@variable." .. showVar, variable)
     end
     -- wrong double annotation as variable for functions
     hi.clear("@variable.wgsl")
@@ -295,9 +274,9 @@ local function afterColorscheme()
     -- vim doesn't seem to be combining underline and color from two separate
     -- groups? Maybe that's only for TS which we don't have working for shell.
     -- We do this hack solution of a new hl group which has the underline and the colour.
-    hi.set("FunctionPath", { underline = true, fg = hi.getfg("Function") })
+    hi.set("FunctionPath", { underline = true, fg = hi.fg("Function") })
     -- Same hack:
-    hi.set("zshShortDerefPath", { underline = true, fg = hi.getfg("zshShortDeref") })
+    hi.set("zshShortDerefPath", { underline = true, fg = hi.fg("zshShortDeref") })
     hi.set("Wildcard", hi.get("@operator"))
     hi.mod("Wildcard", { underline = true })
 
@@ -337,7 +316,8 @@ local defaultDark = 'terafox'
 -- local defaultLight = 'kanagawa-lotus'
 local defaultLight = 'dawnfox'
 
-local grp = vim.api.nvim_create_augroup("afterColorscheme", { clear = true })
+-- Don't clear so we can add to the same group for plugin and filetype specific hls.
+local grp = vim.api.nvim_create_augroup("afterColorscheme", { clear = false })
 
 vim.api.nvim_create_autocmd("Colorscheme", {
     pattern = "*",
@@ -353,7 +333,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
             -- pretend we called colorscheme in order to trigger all autcmds
             -- that fire after setting a new colorscheme.
             -- vim.api.nvim_exec_autocmds("Colorscheme", {})
-            vim.cmd "hi clear"
+            -- vim.cmd "hi clear"
             if vim.o.background == "dark" then
                 vim.cmd('colorscheme ' .. defaultDark)
             else
