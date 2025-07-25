@@ -1,4 +1,4 @@
-
+local map = require "utils/keymap"
 
 return {
     -- let's search result box show number of matches when there's >99 matches
@@ -13,7 +13,7 @@ return {
         cmd = { "ScrollbarToggle", "ScrollbarShow" },
         dependencies = { "kevinhwang91/nvim-hlslens" },
         init = function()
-            vim.keymap.set("n", "yoS", "<Cmd>ScrollbarToggle<CR>", { desc = "Scrollbar" })
+            map.n("yoS", "<Cmd>ScrollbarToggle<CR>", "Scrollbar")
         end,
         opts = {
             show = false, -- enable with :ScrollbarToggle etc.
@@ -30,22 +30,16 @@ return {
         "kevinhwang91/nvim-hlslens",
         cmd = { "HlSearchLensEnable", "HlSearchLensToggle" },
         init = function()
-            function nmap(lhs, rhs, desc, opts)
-                opts = opts or {}
-                opts.desc = desc
-                vim.keymap.set('n', lhs, rhs, opts)
-            end
-
             -- integrate with haya14busa/vim-asterisk
-            nmap("yoH", function() require 'hlslens'.toggle() end, "HlSearchLens", { silent = true })
-            nmap('*', [[<Plug>(asterisk-z*) <Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
-            nmap('#', [[<Plug>(asterisk-z#) <Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
-            nmap('g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
-            nmap('g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
-            nmap('*', [[<Plug>(asterisk-z*) <Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
-            nmap('#', [[<Plug>(asterisk-z#) <Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
-            nmap('g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
-            nmap('g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
+            map.n("yoH", function() require 'hlslens'.toggle() end, "HlSearchLens", { silent = true })
+            map.n('*', [[<Plug>(asterisk-z*) <Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
+            map.n('#', [[<Plug>(asterisk-z#) <Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
+            map.n('g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
+            map.n('g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
+            map.n('*', [[<Plug>(asterisk-z*) <Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
+            map.n('#', [[<Plug>(asterisk-z#) <Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
+            map.n('g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
+            map.n('g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], "Search word under cursor")
         end,
         opts = {
             auto_enable = false,

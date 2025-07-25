@@ -1,4 +1,3 @@
-
 local hi = require "utils/highlights"
 local map = vim.keymap.set
 
@@ -143,6 +142,7 @@ return {
                     { mode = 'n', keys = ']s',            desc = "Spell" },
                     { mode = 'n', keys = '[s',            desc = "Spell" },
                     -- vim unimpaired
+                    { mode = 'n', keys = 'yo',            desc = "Option toggle" },
                     { mode = 'n', keys = 'yob',           desc = "background" },
                     { mode = 'n', keys = 'yoh',           desc = "hlsearch" },
                     { mode = 'n', keys = 'yoi',           desc = "ignorecase" },
@@ -154,6 +154,7 @@ return {
                     { mode = 'n', keys = 'yo-',           desc = "cursorline" },
                     { mode = 'n', keys = 'yo_',           desc = "cursorline" },
                     { mode = 'n', keys = 'yox',           desc = "cursorcolumn" },
+                    { mode = 'n', keys = '=s',            desc = "Setting toggle | Substitute+reindent" },
                     { mode = 'n', keys = '=sh',           desc = "hlsearch" },
                     { mode = 'n', keys = '=si',           desc = "ignorecase" },
                     { mode = 'n', keys = '=sl',           desc = "list" },
@@ -163,6 +164,8 @@ return {
                     -- Other motion could also be candidates for being replaced.
                     -- { mode = 'n', keys = '=ss', desc = "spell" },
                     { mode = 'n', keys = '=sw',           desc = "wrap" },
+                    { mode = 'n', keys = '<s',            desc = "Setting enable" },
+                    { mode = 'n', keys = '>s',            desc = "Setting disable" },
                     { mode = 'n', keys = '<sl',           desc = "list" },
                     { mode = 'n', keys = '>sl',           desc = "nolist" },
                     { mode = 'n', keys = '<sn',           desc = "number" },

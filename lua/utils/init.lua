@@ -190,7 +190,7 @@ end
 
 ---Press keys
 ---@param keys string e.g. "<C-^>"
----@param opts table remap: set to false to make sure key is pressed like in stock vim.
+---@param opts? table remap: set to false to make sure key is pressed like in stock vim.
 function M.press(keys, opts)
     local mode
     if opts and (opts.noremap or opts.remap == false) then

@@ -1,6 +1,11 @@
 local util = require "utils/init"
 local map = require "utils/keymap"
 
+require "keymap/options"
+require "keymap/danglish"
+require "keymap/surround"
+require "keymap/blockim"
+
 -- shift should have no effect on scroll
 local counts = { "", "2-", "3-", "4-" }
 local directions = { "Up", "Down", "Left", "Right" }
@@ -18,129 +23,6 @@ map({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 -- normal terminal mode <C-\><C-n> then change window to the left assuming that
 -- term is on the right
 map('t', "<Esc>", [[<C-\><C-n><C-w>h]])
-
--- Danglish support. For when Danglish keyboard is selected.
--- Generally you should instead stay in code keyboard and use iminsert=2
--- This can also be done with langmap but since these are
--- never used in normal mode then it doesn't hurt, and I tried and it didn't
--- seem to map to [ with remapping even though langremap was on so I don't know
-map({ 'n', 'x' }, "æ", ";", { remap = true })
-map({ 'n', 'x' }, "Æ", ":", { remap = true })
-map({ 'n', 'x' }, "ø", "'", { remap = true })
-map({ 'n', 'x' }, "Ø", '"', { remap = true })
-map({ 'n', 'x' }, "å", "[", { remap = true })
-map({ 'n', 'x' }, "Å", "{", { remap = true })
--- In Danglish I moved : and ; to the }] button
--- But this messes with things when I'm not in Danglish.
-
--- When language is set to danish we can get ;:'" with alt the same way as we
--- do in danglish keyboard input, however that is with the left alt which is
--- deeper in the OS and the mapping below is for when esc+key (^[) is detected which
--- is what is sent to the terminal, e.g. with kitty's setting 'macos_option_as_alt right'.
--- Note that they are also available with the ]} and \| keys.
-map.i("<A-;>", ";")
-map.i("<A-S-;>", ":")
-map.i("<A-'>", "'")
-map.i("<A-S-'>", '"')
--- when writing text with Danish we might try to write : but the key is mapped to Æ.
--- : is written at ends of word where we would never write capital Æ, so we can check if we are at end of word.
--- The only exception would be if the entire word is uppercase. Currently choosing to ignore that edge case.
-map.i("Æ", function()
-    local char = util.get_current_char()
-    local put = char:match('[A-Åa-å0-9.,!?]') and ':' or 'Æ'
-    util.put_char(put)
-end)
--- similarly we often would want " instead of Ø, e.g. if we write ØØ it's to make "" and
-map.i("Ø", function()
-    local r, c = util.get_cursor()
-    local char, c1 = util.get_char(r, c)
-    if char == 'Ø' then
-        vim.api.nvim_buf_set_text(0, r, c1, r, c, { '""' })
-        -- try to see if it's ok, otherwise change to only looking for uppercase.
-    elseif util.get_char(r, c + 1):match('[A-Åa-å]') then
-        util.put_char('"')
-    else
-        local put = char:match('[A-Åa-å.,!?]') and '"' or 'Ø'
-        util.put_char(put)
-    end
-end)
--- for å we might want [] or {}, but with <C-6> pressed they're mapped to å; and Å:,
--- however it's a remap from ] and } so we write that.
-map.i('å]', '[]')
-map.i('Å}', '{}')
-
-local function toggle_danglish(silent)
-    if not silent then
-        if vim.bo.iminsert == 0 then
-            print("Danglish")
-        else
-            print("Code")
-        end
-    end
-    if util.get_mode() == 'n' then
-        util.press("a<C-^><Esc>")
-    else
-        util.press("<C-^>")
-    end
-    -- other related things to get triggered when toggling language.
-    -- Has to be scheduled since it checks iminsert which isn't updated immediately.
-    vim.schedule(function()
-        vim.api.nvim_exec_autocmds("User", { pattern = "ToggleDansk" })
-    end)
-end
-
-local function toggle_danish_imaps(silent)
-    local is_mapped = vim.g.danish_imaps
-    if not is_mapped then
-        vim.g.danish_imaps = true
-        imap('ae', 'æ', "ae -> æ")
-        imap('oe', 'ø', "oe -> ø")
-        imap('aa', 'å', "aa -> å")
-        imap('Ae', 'Æ', "Ae -> Æ")
-        imap('Oe', 'Ø', "Oe -> Ø")
-        imap('Aa', 'Å', "Aa -> Å")
-        imap('AE', 'Æ', "AE -> Æ")
-        imap('OE', 'Ø', "OE -> Ø")
-        imap('AA', 'Å', "AA -> Å")
-        if not silent then print("ae -> æ, osv.   aktiveret") end
-    else
-        vim.g.danish_imaps = false
-        vim.keymap.del('i', 'ae')
-        vim.keymap.del('i', 'oe')
-        vim.keymap.del('i', 'aa')
-        vim.keymap.del('i', 'Ae')
-        vim.keymap.del('i', 'Oe')
-        vim.keymap.del('i', 'Aa')
-        vim.keymap.del('i', 'AE')
-        vim.keymap.del('i', 'OE')
-        vim.keymap.del('i', 'AA')
-        if not silent then print("ae -> æ, osv. DEaktiveret") end
-    end
-end
-
-map.i('<C-6>', toggle_danglish, "Toggle dansk")
--- Ins key was a bit useless just doing what i does so let's make it a language switch insertion:
-map.n('<Ins>', 'i<C-6>', "Insert + Toggle dansk", { remap = true })
--- switch to/from Danish æøå and to insert mode, which is convenient.
--- remap in order to utilise the remapped <C-6> which updates the cmp dictionary
-map.n("yod", "i<C-6>", "Danish (<C-^>)", { remap = true })
-
-map.i("<C-S-6>", toggle_danish_imaps, "Toggle Danish imaps")
-map.n("<leader>D", function()
-    toggle_danish_imaps(true)
-    toggle_danglish(true)
-    if vim.g.danish_imaps then
-        print("Danglish + ae -> æ, osv.   aktiveret")
-    else
-        print("Code     + ae -> æ, osv. DEaktiveret")
-    end
-end, "Toggle Danish imaps + Danglish")
-
--- And in case danglish keyboard is active:
-map.i("<A-æ>", ";")
-map.i("<A-S-æ>", ":")
-map.i("<A-ø>", "'")
-map.i("<A-S-ø>", '"')
 
 -- Remap for dealing with word wrap
 map.i('<down>', [[v:count == 0 ? '<C-\><C-O>gj' : '<down>']], "gj", { expr = true, silent = true })
@@ -161,72 +43,6 @@ vim.api.nvim_create_user_command("Wq", "wq", {})
 vim.api.nvim_create_user_command("Lw", "w", {})
 -- abbrev instead of command since command has to start with uppercase
 vim.cmd [[cnoreabbrev qq q]]
-
-map.i("<C-'>", "''<left>")
-map.i("<C-S-'>", '""<left>')
-map.i("<C-9>", '()<left>')
-map.i("<C-S-9>", '()<left>')
-map.i("<C-0>", '()<left>')
-map.i("<C-S-0>", '()<left>')
--- imap("<C-[>", '[]<left>') -- not possible since it's literally ESC
-map.i("<C-]>", '[]<left>')
-map.i("<C-S-[>", '{}<left>')
-map.i("<C-S-]>", '{}<left>')
-
--- hack map of shift+space
-local bracketJumpCode = "\x1F"
-local paired = { '""', "''", "``", "()", '[]', "{}", "<>", "$$" }
-local paireddouble = { '[[]]', "\\{\\}" }     -- lua and tex
-local singles = { "'", '"', '`', '(', ')', '[', ']', '{', '}', '<', '>', '$' }
-local doubles = { "[[", "]]", "\\{", "\\}", } -- lua and tex
-local triples = { '"""', "'''", "```" }
-local function bracketJump(line, c)
-    if vim.tbl_contains(triples, line:sub(c - 2, c)) then
-        return "<left><left><left>"
-    elseif vim.tbl_contains(triples, line:sub(c + 1, c + 3)) then
-        return "<right><right><right>"
-    elseif vim.tbl_contains(paireddouble, line:sub(c - 3, c)) then
-        return "<left><left>"
-    elseif vim.tbl_contains(paireddouble, line:sub(c + 1, c + 4)) then
-        return "<right><right>"
-        -- left priority over right for pairs so we go back first for e.g. Matrix{}|[]
-    elseif vim.tbl_contains(paired, line:sub(c - 1, c)) then
-        return "<left>"
-    elseif vim.tbl_contains(paired, line:sub(c + 1, c + 2)) then
-        return "<right>"
-    elseif vim.tbl_contains(doubles, line:sub(c + 1, c + 2)) then
-        return "<right><right>"
-    elseif vim.tbl_contains(doubles, line:sub(c - 1, c)) then
-        return "<left><left>"
-        -- right priority over left for singles, since they are usually half of a
-        -- filled out pair and we want to prioritize progressing in that case.
-    elseif vim.tbl_contains(singles, line:sub(c + 1, c + 1)) then
-        return "<right>"
-    elseif vim.tbl_contains(singles, line:sub(c, c)) then
-        return "<left>"
-    else -- maybe accidentally still held shift
-        return " "
-    end
-end
-map({ 'i', 'n' }, bracketJumpCode, function()
-    local line = vim.api.nvim_get_current_line()
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    return bracketJump(line, c)
-end, { expr = true, desc = "Move inside empty pair/triples or outside non-empty" })
-map.c(bracketJumpCode, function()
-    local line = vim.fn.getcmdline()
-    local c = vim.fn.getcmdpos()
-    return bracketJump(line, c - 1)
-end, "Move inside empty pair/triples or outside non-empty", { expr = true })
-
--- useful with cursor | in {|} to get
--- {
---     |
--- }
-map.i('<S-CR>', "<CR><Esc>O", "Indented newline")
-
--- Seem to activate signature help more smoothly than ()<S-space> which may reguire a trigger char such as ,
-map.i('<C-b>', "()<left>", "()<left>")
 
 -- small hack to remove excess whitespace possible since iw also captures
 -- whitespace under cursor.
@@ -273,14 +89,17 @@ map.n('<leader>rn', [[:%s/<C-r><C-w>/]], "Search/replace cword")
 -- use a selection that isn't a perfect cword, or just to use the simple search/replace when LSP is attached etc.
 map.x('<leader>rn', [["ry:%s/<C-r>r/]], "Search/replace")
 
+-- Disabled since other things might need to override ESC.
+-- map.n('<Esc>', ":noh<CR><Esc>", "Disable search highlights", { silent = true, remap = false })
+
 -- <sa = my keybind for enable setting autoformat
 -- gww = autoformat line
 -- 0   = goto column 0, so we scroll all the way back to the right
 -- gi  = go to last insert location and enter insert mode. Works even with the change to the line.
 map.i('<C-S-A>', "<Esc><sagww0gi", "Enable autoformat and apply it", { remap = true })
 
--- nmap("<leader>qo", "<Cmd>copen<CR>", "Open")
--- nmap("<leader>qq", "<Cmd>cclose<CR>",  "Close") -- q for quit and is fast
+-- map.n("<leader>qo", "<Cmd>copen<CR>", "Open")
+-- map.n("<leader>qq", "<Cmd>cclose<CR>",  "Close") -- q for quit and is fast
 -- Trying out "quicker.nvim" alt to stock quickfix
 map.n("<leader>qo", function() require("quicker").open() end, "Open quicker")
 map.n("<leader>qq", function() require("quicker").close() end, "Close quicker")
@@ -327,8 +146,8 @@ map.n("<C-`>", "viwo<Esc>~gvo<Esc>", "Capitalise last word")
 -- Getting mapped by multicursor instead
 map.x("<S-down>", "<down>")
 map.x("<S-up>", "<up>")
--- nmap("<S-down>", "v<down>")
--- nmap("<S-up>", "v<up>")
+-- map.n("<S-down>", "v<down>")
+-- map.n("<S-up>", "v<up>")
 -- shift+up and down jumping way to far for anything that would make sense in insert mode.
 -- Changed to start/end of line but could do other things too.
 map.i("<S-up>", "<C-o>^")
@@ -375,20 +194,19 @@ map.n('<leader>tn', function()
     local node = vim.treesitter.get_node()
     local text = vim.treesitter.get_node_text(node, 0)
     local type = node:type()
-    print(text, "type=", type)
+    print(text, "type =", type)
 end, "node")
 map.n('<leader>tN', function()
     local node = vim.treesitter.get_node():parent()
     local text = vim.treesitter.get_node_text(node, 0)
     local type = node:type()
-    print(text, "type=", type)
+    print(text, "type =", type)
 end, "parent")
 
 -- window layout.
-local grp = vim.api.nvim_create_augroup("WindowLayout", { clear = true })
 vim.api.nvim_create_autocmd("Filetype", {
     pattern = "*",
-    group = grp,
+    group = vim.api.nvim_create_augroup("WindowLayout", { clear = true }),
     callback = function()
         local ftapp = {
             tex = "skim",
@@ -413,15 +231,12 @@ vim.api.nvim_create_autocmd("Filetype", {
         end
         local this = "kitty"
         local other = ftapp[vim.bo.filetype]
-        nmap('<LocalLeader>1', rectangle { maximize = this },
-            "Whole screen layout",
-            { buffer = true })
-        nmap('<LocalLeader>2', rectangle { ["right-half"] = other, ["left-half"] = this },
-            "Half screen layout",
-            { buffer = true })
-        nmap('<LocalLeader>3', rectangle { ["last-third"] = other, ["first-two-thirds"] = this },
-            "Two-thirds screen layout",
-            { buffer = true })
+        map.n('<LocalLeader>1', rectangle { maximize = this },
+            "Whole screen layout", { buffer = true })
+        map.n('<LocalLeader>2', rectangle { ["right-half"] = other, ["left-half"] = this },
+            "Half screen layout", { buffer = true })
+        map.n('<LocalLeader>3', rectangle { ["last-third"] = other, ["first-two-thirds"] = this },
+            "Two-thirds screen layout", { buffer = true })
     end
 })
 
@@ -455,36 +270,7 @@ map.n('<leader>dV', function() vim.diagnostic.config { virtual_lines = false } e
 -- can't use backspace since it is hardcoded by mini.clue for up one level
 map.n('<leader>d0', function() vim.diagnostic.enable(false) end, "Disable diagnostics")
 map.n('<leader>d1', vim.diagnostic.enable, "Enable diagnostics")
-map.n('[d', function() vim.diagnostic.jump { count = -1, float = true } end, "Diagnostic")
-map.n(']d', function() vim.diagnostic.jump { count = 1, float = true } end, "Diagnostic")
+-- Simplify: remove "forward/backward".
+map.desc('n', '[d', "Diagnostic")
+map.desc('n', ']d', "Diagnostic")
 map.n('<leader>dl', vim.diagnostic.setloclist, "Loclist diagnostics")
-
--- Disabled since other things might need to override ESC.
--- nmap('<Esc>', ":noh<CR><Esc>", "Disable search highlights", { silent = true, remap = false })
-
-
-map.cv('<C-q>', function()
-    local rVis1, cVis1, rVis2, cVis2 = util.get_visual_range()
-    local rCur1, cCur1 = unpack(vim.api.nvim_win_get_cursor(0))
-    vim.keymap.set('n', '<Esc>', function()
-        vim.keymap.del('n', '<Esc>')
-        vim.cmd.stopinsert()
-        vim.cmd.norm "q"
-        -- if nothing was recorded then just exit, otherwise we get an undojoin related error.
-        if not vim.fn.getreg("b") then return end
-        local rCur2, cCur2 = unpack(vim.api.nvim_win_get_cursor(0))
-        for i = rVis1, rVis2 do
-            if i ~= rCur1 then
-                vim.api.nvim_win_set_cursor(0, { i, cCur1 })
-                -- group the macro eval to the one before,
-                -- and all the way back to the initial macro recording, so we
-                -- can undo the whole multi line edit with one u.
-                vim.cmd "undojoin"
-                vim.cmd.norm "@b"
-            end
-        end
-        vim.cmd.stopinsert()
-        vim.api.nvim_win_set_cursor(0, { rCur2, cCur2 })
-    end, { desc = "Run block mode macro on each selected line at the column of the cursor." })
-    vim.cmd.norm "qb"
-end, "Block mode improved. Apply macro along block selection.")
