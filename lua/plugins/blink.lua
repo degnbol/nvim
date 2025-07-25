@@ -37,6 +37,29 @@ local zsh_sources = { "zsh", "lsp", "path", "snippets", "buffer" }
 
 local only_snippets = false
 
+local keymap = {
+    preset = 'none',
+    ['<C-p>'] = { 'select_prev', 'fallback' },
+    ['<C-n>'] = { 'show', 'select_next', 'fallback' },
+    ['<C-e>'] = { 'hide' },
+    ['<C-y>'] = { 'select_and_accept' },
+    ['<C-space>'] = { 'show', 'select_and_accept', 'fallback' },
+    -- cancel = revert auto_insert and hide completion menu (but stay in insert mode)
+    ['<C-c>'] = { 'cancel', 'fallback' },
+    ['<C-b>'] = { 'show_documentation', 'scroll_documentation_up', 'fallback' },
+    ['<C-f>'] = { 'show_documentation', 'scroll_documentation_down', 'fallback' },
+    -- no fallbacks, since that is just inserting . and ,
+    ['<C-,>'] = { 'snippet_backward' },
+    ['<C-.>'] = { 'snippet_forward' },
+}
+-- Same keymaps as opts.keymap. Consistency. <C-space> does the same etc.
+local keymap_cmdline = vim.tbl_extend('force', keymap, {
+    -- Removing fallback seems to fix mappings doing nothing.
+    ['<C-p>'] = { 'select_prev', },
+    ['<C-n>'] = { 'show', 'select_next', },
+})
+
+
 return {
     {
         'saghen/blink.compat',
@@ -137,29 +160,8 @@ return {
         ---@module 'blink.cmp'
         ---@type blink.cmp.Config
         opts = {
-            -- 'default' for mappings similar to built-in completion
-            -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
-            -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
-            -- See the full "keymap" documentation for information on defining your own keymap.
-            keymap = {
-                preset = 'none',
-                ['<C-p>'] = { 'select_prev', 'fallback' },
-                ['<C-n>'] = { 'show', 'select_next', 'fallback' },
-                ['<C-e>'] = { 'hide' },
-                ['<C-y>'] = { 'select_and_accept' },
-                ['<C-space>'] = { 'show', 'select_and_accept', 'fallback' },
-                -- cancel = revert auto_insert and hide completion menu (but stay in insert mode)
-                ['<C-c>'] = { 'cancel', 'fallback' },
-                ['<C-b>'] = { 'show_documentation', 'scroll_documentation_up', 'fallback' },
-                ['<C-f>'] = { 'show_documentation', 'scroll_documentation_down', 'fallback' },
-                -- no fallbacks, since that is just inserting . and ,
-                ['<C-,>'] = { 'snippet_backward' },
-                ['<C-.>'] = { 'snippet_forward' },
-            },
-            cmdline = {
-                -- Same keymaps as opts.keymap. Consistency. <C-space> does the same etc.
-                keymap = { preset = "inherit" },
-            },
+            keymap = keymap,
+            cmdline = { keymap = keymap_cmdline, },
 
             -- Default list of enabled providers defined so that you can extend it
             -- elsewhere in your config, without redefining it, due to `opts_extend`

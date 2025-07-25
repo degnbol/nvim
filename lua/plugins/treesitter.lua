@@ -261,7 +261,8 @@ return {
         "romgrk/nvim-treesitter-context",
         opts = {
             max_lines = 1,
-            min_window_height = 15, -- hide on small windows
+            min_window_height = 15, -- Hide on small windows.
+            multiwindow = true,     -- Show context in inactive windows.
         },
         init = function()
             vim.keymap.set("n", "g<up>", function()
