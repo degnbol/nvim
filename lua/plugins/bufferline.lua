@@ -4,6 +4,7 @@ local map = require "utils/keymap"
 -- add a line at the top with all the files open in the buffer
 return {
     "akinsho/nvim-bufferline.lua",
+    enabled = false,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     init = function()
         for i = 1, 9 do
@@ -13,21 +14,6 @@ return {
         map.n("<leader>bb", function() require('bufferline').go_to(vim.v.count, true) end, "Buffer N")
         map.n("<leader>b<left>", "<Cmd>BufferLineMovePrev<CR>", "Move left")
         map.n("<leader>b<right>", "<Cmd>BufferLineMoveNext<CR>", "Move right")
-
-        hi.afterColorscheme(function()
-            -- bold instead of italic+bold selected.
-            -- Grey instead of white from using the fg from unselected tab colour ("visible")
-            hi.mod("BufferLineBufferSelected", {
-                bold = true,
-                italic = false,
-                fg = hi.fg("BufferLineBufferVisible")
-            })
-            hi.mod("BufferLineNumbersSelected", {
-                bold = false,
-                italic = false,
-                fg = hi.fg("BufferLineBufferVisible")
-            })
-        end)
     end,
     opts = {
         options = {
@@ -53,7 +39,15 @@ return {
                 if vim.bo[buf_number].filetype ~= "qf" then
                     return true
                 end
-            end
-        }
+            end,
+        },
+        highlights = {
+            buffer_selected = {
+                italic = false,
+            },
+            numbers_selected = {
+                italic = false,
+            }
+        },
     }
 }

@@ -156,6 +156,10 @@ return {
                 ['<C-,>'] = { 'snippet_backward' },
                 ['<C-.>'] = { 'snippet_forward' },
             },
+            cmdline = {
+                -- Same keymaps as opts.keymap. Consistency. <C-space> does the same etc.
+                keymap = { preset = "inherit" },
+            },
 
             -- Default list of enabled providers defined so that you can extend it
             -- elsewhere in your config, without redefining it, due to `opts_extend`
