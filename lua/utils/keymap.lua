@@ -90,8 +90,41 @@ end
 ---@param mode string
 ---@param lhs string
 ---@param desc string
-M.desc = function(mode, lhs, desc)
+function M.desc(mode, lhs, desc)
     pcall(require "mini.clue".set_keymap_desc, mode, lhs, desc)
+end
+
+---Return whether an item from with the dict format described by
+---:h setqflist-what
+---is referring to the line we are currently on with the cursor.
+---Useful for filtering lsp results, e.g. goto references and goto definition.
+---@param item table
+---@return boolean
+function M.qf_item_is_self(item)
+    return item.filename == vim.api.nvim_buf_get_name(0) and item.lnum == vim.api.nvim_win_get_cursor(0)[1]
+end
+
+---Get the ListOpts which can be given to e.g. vim.lsp.buf.references or other
+---lsp function.
+---Filters the results placed in qf using the given `fun`.
+---`fun` gets one argument `item`, see `:h setqflist-what`.
+---It returns a boolean, indicating if the given `item` should be kept.
+---@param fun function
+---@return vim.lsp.ListOpts
+function M.filter_lsp_items(fun)
+    return {
+        on_list = function(options)
+            local items = {}
+            for _, item in ipairs(options.items) do
+                if fun(item) then
+                    table.insert(items, item)
+                end
+            end
+            options.items = items
+            vim.fn.setqflist({}, ' ', options)
+            vim.cmd('botright copen')
+        end
+    }
 end
 
 return M

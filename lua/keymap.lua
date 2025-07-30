@@ -274,3 +274,15 @@ map.n('<leader>d1', vim.diagnostic.enable, "Enable diagnostics")
 map.desc('n', '[d', "Diagnostic")
 map.desc('n', ']d', "Diagnostic")
 map.n('<leader>dl', vim.diagnostic.setloclist, "Loclist diagnostics")
+
+local function _is_self_reference(item)
+    -- :h setqflist-what
+    return item.bufnr == vim.api.nvim_get_current_buf() and item.lnum == vim.api.nvim_win_get_cursor(0)[1]
+end
+
+-- Goto references excluding the line it's called from.
+map.n('grr', function()
+    vim.lsp.buf.references(nil, map.filter_lsp_items(function(item)
+        return not map.qf_item_is_self(item)
+    end))
+end, "Goto filtered references")

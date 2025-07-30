@@ -1,4 +1,4 @@
-local util = require "utils/init"
+local map = require "utils/keymap"
 
 -- remove o, we want to continue comments while editing them only (r).
 -- no t and having c+a means only comments are autoformatted.
@@ -35,11 +35,7 @@ local function load_pymol()
     end
 end
 -- manually load
-vim.keymap.set('n', '<localleader>+', load_pymol, {
-    buffer = true,
-    desc =
-    "Manually load pymol snippets+completion+syntax"
-})
+map.n('<localleader>+', load_pymol, "Manually load pymol snippets+completion+syntax", { buffer = true, })
 -- check if pymol is loaded by scanning first 10 lines
 for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 10, false)) do
     -- might be using e.g. `from pymol_util import *`
@@ -48,20 +44,17 @@ for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 10, false)) do
     end
 end
 
--- Filter the default goto references so we don't see the "build/" references.
-vim.keymap.set('n', 'grr', function()
-    vim.lsp.buf.references(nil, {
-        on_list = function(options)
-            local items = {}
-            for _, item in ipairs(options.items) do
-                -- :h setqflist-what
-                if not item.filename:match("build/") then
-                    table.insert(items, item)
-                end
-            end
-            options.items = items
-            vim.fn.setqflist({}, ' ', options)
-            vim.cmd('botright copen')
-        end
-    })
-end, { desc = "Goto references (excl build/)", buffer = true })
+-- Filter the default goto references so we don't see
+-- - "build/" references,
+-- - The line we are calling from,
+-- - Import statements.
+map.n('grr', function()
+    vim.lsp.buf.references(nil, map.filter_lsp_items(function(item)
+        return not (
+            map.qf_item_is_self(item) or
+            item.filename:match("build/") or
+            item.text:match("^import") or
+            item.text:match("^from .* import")
+        )
+    end))
+end, "Goto filtered references", { buffer = true })
