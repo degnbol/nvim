@@ -240,18 +240,4 @@ function M.schedule_notify(obj)
     end)
 end
 
--- open with the OS-specific shell command
-local opener
-if vim.fn.has("macunix") == 1 then
-    opener = "open"
-elseif vim.fn.has("linux") == 1 then
-    opener = "xdg-open"
-elseif vim.fn.has("win64") == 1 or vim.fn.has("win32") == 1 then
-    opener = "start"
-end
-function M.open(urlOrPath)
-    local openCommand = string.format("%s '%s' >/dev/null 2>&1", opener, urlOrPath)
-    os.execute(openCommand)
-end
-
 return M

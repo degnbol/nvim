@@ -275,14 +275,53 @@ map.desc('n', '[d', "Diagnostic")
 map.desc('n', ']d', "Diagnostic")
 map.n('<leader>dl', vim.diagnostic.setloclist, "Loclist diagnostics")
 
-local function _is_self_reference(item)
-    -- :h setqflist-what
-    return item.bufnr == vim.api.nvim_get_current_buf() and item.lnum == vim.api.nvim_win_get_cursor(0)[1]
-end
-
 -- Goto references excluding the line it's called from.
 map.n('grr', function()
     vim.lsp.buf.references(nil, map.filter_lsp_items(function(item)
         return not map.qf_item_is_self(item)
     end))
 end, "Goto filtered references")
+
+-- custom gx function that supports more website links.
+map.n("gx", function()
+    -- Go to github for plugins easily.
+    if vim.bo.filetype == "lua" then
+        -- First check if we are editing a file read by lazy.nvim
+        local rtp = vim.opt.runtimepath:get()[1]
+        local filepath = vim.api.nvim_buf_get_name(0)
+        if filepath:match(rtp .. '/lua/plugins/') then
+            -- get first string on the line, assumes we don't list multiple plugins on one line.
+            local line = vim.api.nvim_get_current_line()
+            local repo = line:match([["([%w%p]+/[%w%p]+)"]])
+            repo = repo or line:match([['([%w%p]+/[%w%p]+)']])
+            if repo then
+                if repo:match("http") then
+                    return vim.ui.open(repo)
+                else
+                    return vim.ui.open("https://github.com/" .. repo)
+                end
+            end
+        end
+    end
+
+    -- for latex packages...
+    if vim.bo.filetype == "tex" then
+        local line = vim.api.nvim_get_current_line()
+        local pac = line:match("\\usepackage.*{([%w_-]+)}")
+        if pac ~= nil then
+            local ctan = "https://ctan.org/pkg/" .. pac .. "?lang=en"
+            return vim.ui.open(ctan)
+        end
+    end
+
+    -- Using various-textobjs url finder, we will detect url further ahead,
+    -- e.g. useful when being lazy and the url is right there on the line.
+    -- visually select URL
+    require("various-textobjs").url()
+    -- plugin only switches to visual mode when textobj found
+    local foundURL = vim.fn.mode():find("v")
+    -- retrieve URL with the z-register as intermediary
+    vim.cmd.normal { '"zy', bang = true }
+    local url = vim.fn.getreg("z")
+    vim.ui.open(url)
+end, "Smart URL opener")

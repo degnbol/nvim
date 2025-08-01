@@ -86,6 +86,28 @@ function M.cv(lhs, rhs, desc, opts)
     end
 end
 
+---Operator pending mode and for visual.
+---@param lhs string
+---@param rhs string|function
+---@param desc? string
+---@param opts? table
+function M.ox(lhs, rhs, desc, opts)
+    opts = opts or {}
+    opts.desc = desc
+    vim.keymap.set({ 'o', 'x' }, lhs, rhs, opts)
+end
+
+---Normal, operator pending mode and for visual.
+---@param lhs string
+---@param rhs string|function
+---@param desc? string
+---@param opts? table
+function M.nox(lhs, rhs, desc, opts)
+    opts = opts or {}
+    opts.desc = desc
+    vim.keymap.set({ 'n', 'o', 'x' }, lhs, rhs, opts)
+end
+
 ---Add desc(ription) to an already defined keymap.
 ---@param mode string
 ---@param lhs string
