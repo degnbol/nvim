@@ -209,7 +209,6 @@ return {
         "pxwg/math-conceal.nvim",
         -- Project was renamed to reflect expanding to also cover typst.
         -- Code in lua/ etc for project still has old name but this might get fixed quickly.
-        name = "latex-conceal",
         event = "VeryLazy",
         build = "make lua51",
         --- @type LaTeXConcealOptions

@@ -1,4 +1,5 @@
 local hi = require "utils/highlights"
+local map = require "utils/keymap"
 
 return {
     -- treesitter
@@ -222,14 +223,25 @@ return {
                 },
             }
 
+            -- Repeat movement with ; and ,
+            local ts_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
+            -- vim way: ; goes to the direction you were moving.
+            map({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move)
+            map({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_opposite)
+            -- Also, make builtin f, F, t, T also repeatable with ; and ,
+            map({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f_expr, { expr = true })
+            map({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F_expr, { expr = true })
+            map({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t_expr, { expr = true })
+            map({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T_expr, { expr = true })
+
             -- TODO: if we are not yet inside an arg, it should behave like ]<C-a>
             -- It would also be nice to write this in a cleaner way using lua
             -- by taking inspo from the functions being called here maybe.
             -- Low priority since it does the main thing we want.
-            vim.keymap.set('n', ']a', "via]<C-a><Esc>", { remap = true, desc = "Next arg start" })
-            vim.keymap.set('n', ']A', "via]<C-a>ia<Esc>", { remap = true, desc = "Next arg end" })
-            vim.keymap.set('n', '[a', "viao[<C-S-a>iao<Esc>", { remap = true, desc = "Prev arg start" })
-            vim.keymap.set('n', '[A', "viao[<C-S-a><Esc>", { remap = true, desc = "Prev arg end" })
+            map('n', ']a', "via]<C-a><Esc>", { remap = true, desc = "Next arg start" })
+            map('n', ']A', "via]<C-a>ia<Esc>", { remap = true, desc = "Next arg end" })
+            map('n', '[a', "viao[<C-S-a>iao<Esc>", { remap = true, desc = "Prev arg start" })
+            map('n', '[A', "viao[<C-S-a><Esc>", { remap = true, desc = "Prev arg end" })
         end
     },
     -- in vis mode use . , ; i; to select based on treesitter
