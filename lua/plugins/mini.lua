@@ -1,5 +1,5 @@
 local hi = require "utils/highlights"
-local map = vim.keymap.set
+local map = require "utils/keymap"
 
 return {
     {
@@ -8,11 +8,16 @@ return {
         -- higher than default 50 to allow mini parts loaded in other files.
         priority = 100,
         config = function()
-            require('mini.bracketed').setup {
+            local MiniBracketed = require('mini.bracketed')
+            MiniBracketed.setup {
                 -- ]i to go to more indented region.
-                indent = { suffix = 'i', options = { change_type = "more" } },
+                indent = { suffix = 'i', options = { change_type = "diff" } },
                 -- compliment with using [[, ]], [], ][ to jump to less indented region and to next region
             }
+            map.n(']>', function() MiniBracketed.indent('forward', { change_type = "more" }) end, "More indented")
+            map.n('[>', function() MiniBracketed.indent('backward', { change_type = "more" }) end, "More indented")
+            map.n(']<', function() MiniBracketed.indent('forward', { change_type = "less" }) end, "Less indented")
+            map.n('[<', function() MiniBracketed.indent('backward', { change_type = "less" }) end, "Less indented")
 
             require 'mini.surround'.setup {
                 mappings = {
@@ -63,6 +68,7 @@ return {
                     -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
                     fixme     = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
                     hack      = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
+                    temp      = { pattern = '%f[%w]()TEMP()%f[%W]', group = 'MiniHipatternsHack' },
                     todo      = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
                     note      = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
 
@@ -197,12 +203,11 @@ return {
             }
 
             vim.schedule(function()
-                local set_keymap_desc = function(...) pcall(require "mini.clue".set_keymap_desc, ...) end
-                set_keymap_desc('n', 'gc', "Comment")
-                set_keymap_desc('n', 'gcc', "Line")
-                set_keymap_desc('n', 'g/', "Last search")
-                set_keymap_desc('n', '>>', "Indent line")
-                set_keymap_desc('n', '<<', "Unindent line")
+                map.desc('n', 'gc', "Comment")
+                map.desc('n', 'gcc', "Line")
+                map.desc('n', 'g/', "Last search")
+                map.desc('n', '>>', "Indent line")
+                map.desc('n', '<<', "Unindent line")
             end)
 
             -- UI notifications of e.g. LSP background work
