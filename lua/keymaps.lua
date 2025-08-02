@@ -1,10 +1,10 @@
 local util = require "utils/init"
 local map = require "utils/keymap"
 
-require "keymap/options"
-require "keymap/danglish"
-require "keymap/surround"
-require "keymap/blockim"
+require "keymaps/options"
+require "keymaps/danglish"
+require "keymaps/surround"
+require "keymaps/blockim"
 
 -- shift should have no effect on scroll
 local counts = { "", "2-", "3-", "4-" }

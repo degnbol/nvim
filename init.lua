@@ -23,7 +23,5 @@ require 'lazy'.setup('plugins', {
 })
 
 require "highlights"
-require "keymap"
+require "keymaps"
 require "autocmds"
-require "kitty"
-require "lsp"

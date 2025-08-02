@@ -1,4 +1,5 @@
 local grp = vim.api.nvim_create_augroup("KittySetVar", { clear = true })
+
 vim.api.nvim_create_autocmd({ "VimEnter", "VimResume" }, {
     group = grp,
     callback = function()

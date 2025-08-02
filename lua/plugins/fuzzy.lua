@@ -32,7 +32,8 @@ return {
     },
     {
         "folke/snacks.nvim",
-        priority = 1000,
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        -- priority = 1000,
         ---@type snacks.Config
         opts = {
             picker = { enabled = true, layout = { fullscreen = true } },
@@ -49,6 +50,8 @@ return {
             hi.def("SnacksPickerPreview", "Normal")
             -- Instead of to special.
             hi.def("SnacksPickerMatch", "IncSearch")
+            -- To dim the dir part of a filename. Default is link to NonText.
+            hi.def("SnacksPickerDir", "Directory")
         end,
     },
     -- We prefer fzf-lua over telescope for the following reasons:
