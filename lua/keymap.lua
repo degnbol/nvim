@@ -280,7 +280,11 @@ map.n('grr', function()
     vim.lsp.buf.references(nil, map.filter_lsp_items(function(item)
         return not map.qf_item_is_self(item)
     end))
-end, "Goto filtered references")
+end, "Filtered references")
+map.desc('n', 'gra', "Code actions")
+map.desc('n', 'gri', "Implementations")
+map.desc('n', 'grn', "Rename")
+map.desc('n', 'grt', "Type definitions")
 
 -- custom gx function that supports more website links.
 map.n("gx", function()

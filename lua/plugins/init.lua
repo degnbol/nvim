@@ -156,9 +156,12 @@ return {
         end,
     },
 
-    -- supposedly faster and less buggy version of neovim builtin
-    -- (:h matchparen) which highlights matching parenthesis etc.
-    "monkoose/matchparen.nvim",
+    -- monkoose/matchparen.nvim is supposedly faster and less buggy version of neovim default plugin matchparen,
+    -- which detects matching parenthesis etc., highlights them with `MatchParen` and allows jumping to them with %.
+    -- { "monkoose/matchparen.nvim", config = true, },
+    -- We use the popular vim-matchup, even though the author monkoose once said it is really slow.
+    -- I'm not seeing the slowness, and it has matching for quotation marks around strings.
+    "andymass/vim-matchup",
 
     -- dim code that isn't currently being edited with :Twilight.
     {

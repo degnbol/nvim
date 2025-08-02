@@ -155,3 +155,9 @@ vim.opt.diffopt:append("linematch:60")
 -- disable coding ligatures for some filetypes that aren't code, e.g. we don't want == ligature when it is used for heading levels.
 local kitty = require "utils/kitty"
 kitty.ligatures_pattern(false, { "*.typ", "*.adoc" })
+
+-- replace the default lsp diagnostic letters with prettier symbols
+vim.fn.sign_define("LspDiagnosticsSignError", { text = "", numhl = "LspDiagnosticsDefaultError" })
+vim.fn.sign_define("LspDiagnosticsSignWarning", { text = "", numhl = "LspDiagnosticsDefaultWarning" })
+vim.fn.sign_define("LspDiagnosticsSignInformation", { text = "", numhl = "LspDiagnosticsDefaultInformation" })
+vim.fn.sign_define("LspDiagnosticsSignHint", { text = "", numhl = "LspDiagnosticsDefaultHint" })

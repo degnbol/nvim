@@ -15,7 +15,6 @@ return {
             -- make sure is loaded for the init to work
             -- 'AckslD/nvim-trevJ.lua',
             'AndrewRadev/splitjoin.vim',
-            'andymass/vim-matchup',
         },
         -- opts = {
         --     -- set only for supported filetypes
@@ -40,7 +39,7 @@ return {
             -- it is also a possibility to define them for treesj
             local fts_split = {
                 splitjoin = { tex = true, },
-                trevj = { julia=true, lua=false, },
+                trevj = { julia = true, lua = false, },
             }
             local fts_join  = {
                 splitjoin = { tex = true, },
@@ -97,7 +96,7 @@ return {
     },
     {
         "AckslD/nvim-trevJ.lua",
-        enabled = false, -- not working for main branch treesitter
+        enabled = true, -- not working for main branch treesitter
         lazy = true,
         config = function()
             local make_default_opts = function()

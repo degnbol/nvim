@@ -1,24 +1,19 @@
+local map = require "utils/keymap"
 
+-- TODO: we have fzf and qf versions at gr* and <leader>l.
+-- Should we default to qf and have a quick qf specific keymap that moves to fzf?
 
--- replace the default lsp diagnostic letters with prettier symbols
-vim.fn.sign_define("LspDiagnosticsSignError", { text = "", numhl = "LspDiagnosticsDefaultError" })
-vim.fn.sign_define("LspDiagnosticsSignWarning", { text = "", numhl = "LspDiagnosticsDefaultWarning" })
-vim.fn.sign_define("LspDiagnosticsSignInformation", { text = "", numhl = "LspDiagnosticsDefaultInformation" })
-vim.fn.sign_define("LspDiagnosticsSignHint", { text = "", numhl = "LspDiagnosticsDefaultHint" })
-
-local grp = vim.api.nvim_create_augroup("my.lsp", {})
+local grp = vim.api.nvim_create_augroup("my.lsp", { clear = true })
 
 vim.api.nvim_create_autocmd('LspAttach', {
     group = grp,
     callback = function(args)
-        local function map(desc, keys, func, mode)
-            mode = mode or 'n'
-            vim.keymap.set(mode, keys, func, { buffer = args.buf, desc = desc })
-        end
-        local function mapfzf(desc, keys, funcname, mode)
-            map(desc, keys, function()
+        local opts = { buffer = args.buf }
+
+        local function map_fzf(lhs, funcname, desc)
+            map.n(lhs, function()
                 require "fzf-lua"["lsp_" .. funcname]()
-            end, mode)
+            end, desc, opts)
         end
 
         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
@@ -28,41 +23,39 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         if client:supports_method('textDocument/references') then
             -- `vim.lsp.buf.references`
-            mapfzf("Goto references", "gr", "references")
+            map_fzf("<leader>lr", "references", "References")
         end
 
         if client:supports_method('textDocument/definition') then
             -- `vim.lsp.buf.definition`
-            mapfzf("Goto definition", "gd", "definitions")
+            map_fzf("gd", "definitions", "Definition")
         end
 
         if client:supports_method('textDocument/declaration') then
             -- `vim.lsp.buf.declaration`
-            mapfzf("Goto declaration", "gD", "declaration")
+            map_fzf("gD", "declaration", "Declaration")
         end
 
         -- `vim.lsp.buf.type_definition`
-        mapfzf("Goto type definition", "g<C-d>", "typedefs")
+        map_fzf("g<C-d>", "typedefs", "Type definition")
 
         -- gi is for goto last insert and switch to insert mode, and gI is to insert at first column <count> times.
         -- We rarely use go to implementation though
-        mapfzf("Goto implementation", "g<C-i>", "implementations")
-        mapfzf("Goto defs+refs+impl+...", "g<C-S-d>", "finder")
+        map_fzf("g<C-i>", "implementations", "Implementation")
+        map_fzf("g<C-S-d>", "finder", "Defs+refs+impl+...")
 
         -- `vim.lsp.buf.code_action`
-        mapfzf("Code action", '<leader>la', "code_actions")
+        map_fzf('<leader>la', "code_actions", "Code action")
 
-        mapfzf("Symbols", '<leader>ls', "document_symbols")
-        mapfzf("Symbols", '<leader>ws', "workspace_symbols")
+        map_fzf('<leader>ls', "document_symbols", "Symbols")
+        map_fzf('<leader>ws', "workspace_symbols", "Symbols")
         -- a for all diagnostics, no filtering
-        mapfzf("Diagnostics", '<leader>da', "document_diagnostics")
-        mapfzf("Diagnostics", '<leader>wd', "workspace_diagnostics")
+        map_fzf('<leader>da', "document_diagnostics", "Diagnostics")
+        map_fzf('<leader>wd', "workspace_diagnostics", "Diagnostics")
 
-        map("Hover", 'K', vim.lsp.buf.hover)
-        map("Signature", 'gh', vim.lsp.buf.signature_help)
-        map("Rename", '<leader>rn', vim.lsp.buf.rename)
+        map.n('gh', vim.lsp.buf.signature_help, "Signature", opts)
         -- currently autoformatting on save (see below). Maybe TODO have a way to toggle this.
-        vim.keymap.set({ 'n', 'v' }, '<leader>lf', vim.lsp.buf.format, { buffer = args.buf, desc = "Format" })
+        map.nx('<leader>lf', vim.lsp.buf.format, "Format", opts)
 
         -- Builtin auto-completion disabled for now since blink.cmp claims to be faster.
         -- Enable auto-completion. Note: Use CTRL-Y to select an item. |complete_CTRL-Y|
@@ -73,7 +66,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         --     vim.lsp.completion.enable(true, client.id, args.buf, {autotrigger = true})
         -- end
 
-        -- Auto-format ("lint") on save.
+        -- Auto-format on save.
         -- Usually not needed if server supports "textDocument/willSaveWaitUntil".
         if not client:supports_method('textDocument/willSaveWaitUntil')
             and client:supports_method('textDocument/formatting') then
@@ -81,7 +74,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 group = grp,
                 buffer = args.buf,
                 callback = function()
-                    vim.lsp.buf.format({ bufnr = args.buf, id = client.id, timeout_ms = 1000 })
+                    -- Short timeout so it doesn't hang.
+                    -- If it needs more time then invoke formatting manually.
+                    -- pcall so it doesn't complain if it didn't finish in time.
+                    pcall(vim.lsp.buf.format, { bufnr = args.buf, id = client.id, timeout_ms = 400 })
                 end,
             })
         end

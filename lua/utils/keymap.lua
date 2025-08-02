@@ -42,7 +42,7 @@ function M.c(lhs, rhs, desc, opts)
     vim.keymap.set('c', lhs, rhs, opts)
 end
 
----Visual map excluding select mode.
+---Visual map including select mode.
 ---@param lhs string
 ---@param rhs string|function
 ---@param desc? string
@@ -53,7 +53,7 @@ function M.v(lhs, rhs, desc, opts)
     vim.keymap.set('v', lhs, rhs, opts)
 end
 
----Visual map including select mode.
+---Visual map excluding select mode.
 ---@param lhs string
 ---@param rhs string|function
 ---@param desc? string
@@ -62,6 +62,17 @@ function M.x(lhs, rhs, desc, opts)
     opts = opts or {}
     opts.desc = desc
     vim.keymap.set('x', lhs, rhs, opts)
+end
+
+---Normal and visual map excluding select mode.
+---@param lhs string
+---@param rhs string|function
+---@param desc? string
+---@param opts? table
+function M.nx(lhs, rhs, desc, opts)
+    opts = opts or {}
+    opts.desc = desc
+    vim.keymap.set({ 'n', 'x' }, lhs, rhs, opts)
 end
 
 ---Blockwise visual map, i.e. <C-v> mappings.
