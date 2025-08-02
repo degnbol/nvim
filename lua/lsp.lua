@@ -2,6 +2,12 @@ local map = require "utils/keymap"
 
 -- TODO: we have fzf and qf versions at gr* and <leader>l.
 -- Should we default to qf and have a quick qf specific keymap that moves to fzf?
+-- fzf is for quickly finding needle in haystack, and qf is to navigate between things.
+-- qf is better for references.
+-- fzf is better for finding word in repo, or finding file with certain name.
+-- Maybe just use most appropriate tool for the case then.
+-- And then have convenient keymap to switch between them.
+-- Check out fzf-lua alts.
 
 local grp = vim.api.nvim_create_augroup("my.lsp", { clear = true })
 

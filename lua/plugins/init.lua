@@ -47,7 +47,6 @@ return {
     -- Open a file on a line with `nvim FILEPATH:LINENUMBER`.
     -- Also supports specific column.
     "lewis6991/fileline.nvim",
-    "haya14busa/vim-asterisk", -- improvements to z* and visual *. See git for uses https://github.com/haya14busa/vim-asterisk
     -- easily define custom textobjects
     -- some config in ftplugin/tex.lua
     "kana/vim-textobj-user",
@@ -75,8 +74,8 @@ return {
     -- increment and decrement numbers, dates, color hex, even bool
     {
         "monaqa/dial.nvim",
-        lazy = true,
-        keys = { "<C-a>", "<C-x>", "g<C-a>", "g<C-x>" },
+        -- Lazy-loading seems to work immediately but stops working after something else loads.
+        -- keys = { "<C-a>", "<C-x>", "g<C-a>", "g<C-x>" },
         config = function()
             local augend = require("dial.augend")
             require("dial.config").augends:register_group {
