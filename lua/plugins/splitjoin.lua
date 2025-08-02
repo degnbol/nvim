@@ -1,3 +1,5 @@
+local map = require "utils/keymap"
+
 return {
     -- more languages supported but sometimes does nothing when trevj does the split
     -- there is also
@@ -10,30 +12,22 @@ return {
     -- to do this.
     {
         "Wansmer/treesj",
+        cmd = { "TSJToggle", "TSJJoin", "TSJSplit" },
+        keys = { "<leader>J", "<leader>j", "<leader>s" },
         dependencies = {
             'nvim-treesitter/nvim-treesitter',
             -- make sure is loaded for the init to work
             -- 'AckslD/nvim-trevJ.lua',
             'AndrewRadev/splitjoin.vim',
         },
-        -- opts = {
-        --     -- set only for supported filetypes
-        --     use_default_keymaps = false,
-        -- },
-        config = function()
-            local treesj = require "treesj"
-            -- local default_preset = require"treesj.langs.default_preset"
-            -- default_preset['both']['no_format_with'] = {}
-            -- require"treesj.langs".default_preset = default_preset
-            treesj.setup {
-                use_default_keymaps = false,
-                langs = { lua = { both = { no_format_with = nil } } },
-            }
-        end,
+        opts = {
+            use_default_keymaps = false,
+            langs = { lua = { both = { no_format_with = nil } } },
+        },
         init = function()
             -- but always map toggle since the other plugins doesn't implement it
             -- alt use "<Plug>JoinToggle" if you want to make binding somewhere else
-            vim.keymap.set("n", "<leader>J", "<Cmd>TSJToggle<CR>", { desc = "Toggle split/join" })
+            map.n("<leader>J", "<Cmd>TSJToggle<CR>", "Toggle split/join")
 
             -- use alt plugins for specific filetypes
             -- it is also a possibility to define them for treesj
@@ -45,50 +39,31 @@ return {
                 splitjoin = { tex = true, },
                 matchup = { julia = true, },
             }
-            local grp       = vim.api.nvim_create_augroup("splitjoin", { clear = true })
 
-            -- call nmap buffer thru vimscript since nowait isn't implemented in lua API
-            -- keep here for a momemt too see if there is any issues without
-            -- nowait, which would be better to avoid since we can then use the
-            -- lua mapping with desc field.
-            function nowait(lhs, rhs)
-                vim.cmd('nnoremap <buffer><nowait> ' .. lhs .. ' ' .. rhs)
-            end
-
-            function nowaitre(lhs, rhs)
-                vim.cmd('nmap <buffer><nowait> ' .. lhs .. ' ' .. rhs)
-            end
-
-            -- alt use "<Plug>Split" if you wish to choose in another file
-            local key_join = "<leader>j"
+            -- Alt use "<Plug>Split" if you wish to choose in another file
+            local key_join  = "<leader>j"
             local key_split = "<leader>s"
+            local opts      = { buffer = true }
 
             vim.api.nvim_create_autocmd("Filetype", {
                 pattern = "*",
-                group = grp,
+                group = vim.api.nvim_create_augroup("splitjoin", { clear = true }),
                 callback = function()
                     if fts_split['splitjoin'][vim.bo.filetype] then
-                        vim.keymap.set("n", key_split, "<Cmd>SplitjoinSplit<CR>",
-                            { buffer = true, desc = "Split (splitjoin)" })
+                        map.n(key_split, "<Cmd>SplitjoinSplit<CR>", "Split (splitjoin)", opts)
                     elseif fts_split['trevj'][vim.bo.filetype] then
-                        vim.keymap.set("n", key_split, function()
-                            return require "trevj".format_at_cursor()
-                        end, { buffer = true, desc = "Split (trevj)" })
+                        map.n(key_split, function() return require "trevj".format_at_cursor() end, "Split (trevj)", opts)
                     else
-                        vim.keymap.set("n", key_split, "<Cmd>TSJSplit<CR>", { buffer = true, desc = "Split (TSJ)" })
+                        map.n(key_split, "<Cmd>TSJSplit<CR>", "Split (TSJ)", opts)
                     end
 
                     if fts_join['splitjoin'][vim.bo.filetype] then
-                        vim.keymap.set("n", key_join, "<Cmd>SplitjoinJoin<CR>", {
-                            buffer = true,
-                            desc =
-                            "Join (splitjoin)"
-                        })
+                        map.n(key_join, "<Cmd>SplitjoinJoin<CR>", "Join (splitjoin)", opts)
                     elseif fts_join['matchup'][vim.bo.filetype] then
                         -- Uses a% from https://github.com/andymass/vim-matchup which first jumps to container
-                        vim.keymap.set("n", key_join, "va%J", { buffer = true, desc = "Join (matchup)" })
+                        map.n(key_join, "va%J", "Join (matchup)", opts)
                     else
-                        vim.keymap.set("n", key_join, "<Cmd>TSJJoin<CR>", { buffer = true, desc = "Join (TSJ)" })
+                        map.n(key_join, "<Cmd>TSJJoin<CR>", "Join (TSJ)", opts)
                     end
                 end
             })

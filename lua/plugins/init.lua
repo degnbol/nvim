@@ -43,7 +43,6 @@ return {
             map.n("gA", "ga", "Char info")
         end
     },
-    -- "farmergreg/vim-lastplace", -- open file in last edited location
     -- Open a file on a line with `nvim FILEPATH:LINENUMBER`.
     -- Also supports specific column.
     "lewis6991/fileline.nvim",

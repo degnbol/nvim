@@ -196,8 +196,11 @@ return {
         }
     },
     "mityu/vim-applescript",
-    -- consistent completion error in sql without this.
-    "vim-scripts/dbext.vim",
+    -- Consistent completion error in sql without this.
+    {
+        "vim-scripts/dbext.vim",
+        ft = "sql",
+    },
     {
         "gert7/srt.nvim",
         branch = "main",
