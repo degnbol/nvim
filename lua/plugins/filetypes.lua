@@ -12,11 +12,14 @@ return {
             }
         end
     },
-    -- has the useful gcO and gcA extra mappings, but the basic mappings aren't working as I like from terrortylor
-    { "numToStr/Comment.nvim",         opts = { mappings = { basic = false, } } },
     -- julia support, colors and unicode substitution. CANNOT use ft=julia
     {
         "JuliaEditorSupport/julia-vim",
+        -- Let's see if we actually need this. It's not well maintained and is
+        -- really agressively enforcing things like indentexpr that doesn't
+        -- work at all. We have colours from treesitter and can write our own otherwise.
+        -- We get unicode from lsp, e.g. \notin<C-space>
+        enabled = false,
         config = function()
             -- this was necessary, random lhs rhs messages was appearing
             vim.g.latex_to_unicode_tab = "off"
@@ -40,7 +43,7 @@ return {
     -- "tpope/vim-sleuth", -- sleuth that let's you autodetect if file is using 2 or 4 spaces. Mistakenly set noexpandtab
     -- {"preservim/vim-markdown", dependencies={"godlygeek/tabular"}}, -- conceal markdown expressions like _emphasis_ and folding. Overkill, see {after/,}syntax/markdown.vim
     -- :MarkdownPreview live in browser
-    { "iamcco/markdown-preview.nvim", build = ':call mkdp#util#install()', ft = 'markdown' },
+    { "iamcco/markdown-preview.nvim",  build = ':call mkdp#util#install()', ft = 'markdown' },
     -- for asciidoctor filetype use ".adoc"
     -- adoc argues to be a better replacement for markdown in general
     -- https://docs.asciidoctor.org/asciidoc/latest/asciidoc-vs-markdown/
@@ -113,7 +116,7 @@ return {
         end,
     },
     -- https://quarto.org/
-    { "quarto-dev/quarto-nvim",       ft = "quarto" },
+    { "quarto-dev/quarto-nvim",  ft = "quarto" },
     -- flashing for code blocks
     {
         "lukas-reineke/headlines.nvim",

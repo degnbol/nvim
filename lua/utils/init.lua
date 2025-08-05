@@ -117,6 +117,13 @@ function M.set_cursor(r, c)
     vim.api.nvim_win_set_cursor(0, { r + 1, c })
 end
 
+---Set cursor column without changing row.
+---@param c integer 0-indexed
+function M.set_col(c)
+    local r, _ = unpack(vim.api.nvim_win_get_cursor(0))
+    vim.api.nvim_win_set_cursor(0, { r, c })
+end
+
 ---Get all lines of the current buffer.
 ---@return table array of strings.
 function M.get_all_lines()

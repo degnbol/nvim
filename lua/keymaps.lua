@@ -5,6 +5,7 @@ require "keymaps/options"
 require "keymaps/danglish"
 require "keymaps/surround"
 require "keymaps/blockim"
+require "keymaps/comments"
 
 -- shift should have no effect on scroll
 local counts = { "", "2-", "3-", "4-" }
