@@ -13,3 +13,6 @@ let @i="$[fdwA = \<Esc>JJD"
 " could be e.g. arg == something so we find it by finding open paren, jumping 
 " to matching paren to jump over args, then first = should be it.
 let @f="Ifunction \<Esc>f(%f=caw\<BS>\<CR>\<ESC>oend\<ESC>[f=af"
+
+iabbrev edn end
+
