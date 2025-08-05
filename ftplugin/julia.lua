@@ -31,3 +31,10 @@ end
 -- Manual efforts. Install julia LSP as described on
 -- https://github.com/neovim/nvim-lspconfig/blob/master/lsp/julials.lua
 vim.lsp.enable("julials")
+
+-- Annoying bug where something keeps setting buftype=nofile
+vim.api.nvim_create_autocmd("BufWritePre", {
+    buffer = 0,
+    group = vim.api.nvim_create_augroup("julia_bug", { clear = true }),
+    callback = function() vim.bo.buftype = nil end
+})
