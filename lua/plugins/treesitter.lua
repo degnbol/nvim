@@ -46,6 +46,7 @@ return {
                 "sql",
                 "graphql", --ext .gql, e.g. schema for graph databases
                 "qf",      -- see below. Run :TSInstall qf
+                "yaml",
             }
 
             -- TODO: add
