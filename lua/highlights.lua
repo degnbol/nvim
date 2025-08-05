@@ -211,8 +211,8 @@ local function afterColorscheme()
     -- bold and @type.function is often not, e.g. in this very file.
     hi.link("@lsp.type.function", "@function.call")
     -- Python has it on e.g. `@dataclass(...)` before `class`, which is not Function coloured if called like `@dataclass`.
-    -- Currently choosing consistency by showing these decorators with PreProc colors.
-    hi.clear("@lsp.type.function.python")
+    -- However it will also have this hi on `return *fn(...)` so we should keep it for that.
+    -- hi.clear("@lsp.type.function.python")
     hi.link("@lsp.type.method", "@function.call")
     hi.link("@lsp.type.string", "@string")
     -- E.g. in importing macro in rust. By default no colour.
