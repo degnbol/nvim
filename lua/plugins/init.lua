@@ -7,6 +7,12 @@ return {
     -- coerce:
     -- crs: snake_case, crm: MixedCase, crc: camelCase, cru: UPPER_CASE, cr-: dash-case, cr.: dot.case, cr<SPACE>: space case, crt: Title Case
     "tpope/vim-abolish",
+    -- monkoose/matchparen.nvim is supposedly faster and less buggy version of neovim default plugin matchparen,
+    -- which detects matching parenthesis etc., highlights them with `MatchParen` and allows jumping to them with %.
+    -- { "monkoose/matchparen.nvim", config = true, },
+    -- We use the popular vim-matchup, even though the author monkoose once said it is really slow.
+    -- I'm not seeing the slowness, and it has matching for quotation marks around strings.
+    "andymass/vim-matchup",
     {
         "tpope/vim-unimpaired",
         config = function()
@@ -113,16 +119,21 @@ return {
         end
     },
     {
-        "ludovicchabant/vim-gutentags",
-        -- NOTE: can't use ft filter with this plugin
-        init = function()
-            -- hide tag files where logs and other caches for nvim are stored
-            vim.g.gutentags_cache_dir = "~/.local/state/nvim/tags/"
-            -- exclude filetypes as default in order to opt-in.
-            -- I added all that I use from `ctags --list-languages`, especially
-            -- those that has LSP and/or treesitter.
-            -- Using tags when there is LSP is useful for using c-] inplace of gd when I import using ROOT
-            vim.g.gutentags_exclude_filetypes = {
+        "linrongbin16/gentags.nvim",
+        opts = {
+            -- Auto cleaning up tag cache.
+            gc = {
+                -- Remove old tags when cache gets too big.
+                trigger = "20MB",
+            },
+            -- Excluded filetypes.
+            -- Exclude filetypes as default in order to opt-in.
+            -- Here listing all that I use from `ctags --list-languages`,
+            -- especially those that has LSP and/or treesitter.
+            -- Using tags when there is LSP is useful for using c-] inplace of
+            -- gd when I import using ROOT.
+            disabled_filetypes = {
+                -- "asciidoc",
                 "python",
                 "matlab",
                 -- "julia",
@@ -139,34 +150,65 @@ return {
                 "sh",
                 "json",
                 "bibtex",
-            }
-            -- to be extra explicit I specify a comma separated list of case
-            -- insensitive enabled languages
-            vim.g.gutentags_ctags_extra_args = {
-                "--languages=asciidoc,julia,java,lua,tex",
-            }
-            vim.g.gutentags_ctags_extra_args = {
-                -- tried, almost worked. Was slow when worked and only inside buffer.
-                -- [[--langdef=tex]],
-                -- [[--langmap=tex:.tex]],
-                -- [[--regex-tex=/^\\newglossaryentry\{([A-Za-z0-9 ]+)/\1/g,glossary/i]],
-            }
-        end,
+            },
+            -- ctags options
+            ctags = {
+                "--tag-relative=never",
+
+                -- Recommended Options:
+
+                -- exclude logs
+                "--exclude=*.log",
+
+                -- exclude vcs
+                "--exclude=*.git",
+                "--exclude=*.svg",
+                "--exclude=*.hg",
+
+                -- exclude nodejs
+                "--exclude=node_modules",
+
+                -- exclude tags/cscope
+                "--exclude=*tags*",
+                "--exclude=*cscope.*",
+
+                -- exclude python
+                "--exclude=*.pyc",
+
+                -- exclude jvm class
+                "--exclude=*.class",
+
+                -- exclude VS project generated
+                "--exclude=*.pdb",
+                "--exclude=*.sln",
+                "--exclude=*.csproj",
+                "--exclude=*.csproj.user",
+
+                -- exclude blobs
+                "--exclude=*.exe",
+                "--exclude=*.dll",
+                "--exclude=*.mp3",
+                "--exclude=*.ogg",
+                "--exclude=*.flac",
+                "--exclude=*.swp",
+                "--exclude=*.swo",
+                "--exclude=*.bmp",
+                "--exclude=*.gif",
+                "--exclude=*.ico",
+                "--exclude=*.jpg",
+                "--exclude=*.png",
+                "--exclude=*.rar",
+                "--exclude=*.zip",
+                "--exclude=*.tar",
+                "--exclude=*.tar.gz",
+                "--exclude=*.tar.xz",
+                "--exclude=*.tar.bz2",
+                "--exclude=*.pdf",
+                "--exclude=*.doc",
+                "--exclude=*.docx",
+                "--exclude=*.ppt",
+                "--exclude=*.pptx",
+            },
+        },
     },
-
-    -- monkoose/matchparen.nvim is supposedly faster and less buggy version of neovim default plugin matchparen,
-    -- which detects matching parenthesis etc., highlights them with `MatchParen` and allows jumping to them with %.
-    -- { "monkoose/matchparen.nvim", config = true, },
-    -- We use the popular vim-matchup, even though the author monkoose once said it is really slow.
-    -- I'm not seeing the slowness, and it has matching for quotation marks around strings.
-    "andymass/vim-matchup",
-
-    -- dim code that isn't currently being edited with :Twilight.
-    {
-        "folke/twilight.nvim",
-        lazy = true,
-        cmd = { "Twilight", "TwilightEnable" },
-        opts = { dimming = { alpha = 0.5 }, context = 20 },
-    },
-
 }
