@@ -2,7 +2,7 @@ local grp = vim.api.nvim_create_augroup("chmodx", { clear = true })
 
 -- Auto chmod u+x some filetypes.
 vim.api.nvim_create_autocmd("BufNewFile", {
-    pattern = { "*.sh", "*.zsh", "*.py", "*.r", "*.jl" },
+    pattern = { "*.sh", "*.zsh", "*.r", "*.jl" },
     group = grp,
     -- Automatically do chmod u+x for a new file if it gets written.
     callback = function()

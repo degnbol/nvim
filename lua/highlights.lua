@@ -329,6 +329,9 @@ local function afterColorscheme()
         fg = StatusLineNC["fg"],
         bg = StatusLineNC["bg"],
     })
+
+    hi.mod("TabLine", { fg = "grey" })
+    hi.mod("TabLineFill", { fg = "grey" })
 end
 
 -- local defaultDark = 'fluoromachine'
@@ -342,13 +345,11 @@ local defaultLight = 'dawnfox'
 local grp = vim.api.nvim_create_augroup("afterColorscheme", { clear = false })
 
 vim.api.nvim_create_autocmd("Colorscheme", {
-    pattern = "*",
     group = grp,
     callback = afterColorscheme,
 })
 
 vim.api.nvim_create_autocmd("VimEnter", {
-    pattern = "*",
     group = grp,
     callback = function()
         vim.schedule(function()
