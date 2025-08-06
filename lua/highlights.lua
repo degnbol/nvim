@@ -80,6 +80,9 @@ local function afterColorscheme()
     -- Treesitter hl with NonText "… 35 …" could be too little attention and get overlooked.
     hi.link("Folded", "NonText")
 
+    -- Background colour for cmdline.
+    hi.setbg("MsgArea", hi.bg("StatusLine"))
+
     _GitSigns()
 
     -- Matching parenthesis is indicated by colour sometimes.

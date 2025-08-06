@@ -92,4 +92,62 @@ return {
             clear_always = false,
         }
     },
+    {
+        'b0o/incline.nvim',
+        init = function()
+            -- This plugin only makes sense with global statusline,
+            -- or no statusline at all.
+            -- The latter is possible with a trick.
+            -- By setting cmdheight=0 and (optionally) clearing the
+            -- 'statusline' setting we can use a single line for cmdline and
+            -- (secret) global statusline.
+            vim.opt.laststatus = 3
+            vim.opt.cmdheight = 0
+            -- TODO:
+            -- decide if there should be more of standard statusline info (such as "HELP" for help files) that should be added to render.
+            vim.opt.statusline = " "
+        end,
+        config = function()
+            local helpers = require 'incline.helpers'
+            local devicons = require 'nvim-web-devicons'
+            require('incline').setup {
+                ignore = {
+                    -- Also display for help etc.
+                    buftypes = {},
+                    wintypes = {},
+                    unlisted_buffers = false,
+                },
+                window = {
+                    padding = 0,
+                    margin = { horizontal = 0, vertical = 0, },
+                    placement = {
+                        -- Keep at top since it fits well with TS-context that also provides breadcrumps.
+                        -- vertical = "bottom",
+                    },
+                    overlap = {
+                        borders = false,
+                        -- statusline = true,
+                        -- tabline = true,
+                        -- winbar = true,
+                    },
+                    -- Above fidget if margin.vertical =1 and placement.vertical = "bottom" but not if margin.vertical = 0
+                    -- zindex = 100,
+                },
+                render = function(props)
+                    local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
+                    if filename == '' then
+                        filename = '[No Name]'
+                    end
+                    local ft_icon, ft_color = devicons.get_icon_color(filename)
+                    local modified = vim.bo[props.buf].modified
+                    return {
+                        ft_icon and { ft_icon, guifg = ft_color } or '',
+                        ' ',
+                        { filename, gui = modified and 'bold' or nil, guifg = props.focused and "white" or "gray" },
+                    }
+                end,
+            }
+        end,
+        event = 'VeryLazy',
+    },
 }

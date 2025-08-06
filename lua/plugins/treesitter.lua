@@ -12,7 +12,7 @@ return {
             nvim_treesitter.setup {}
             nvim_treesitter.install {
                 "awk",
-                "bash",
+                -- "bash", -- so broken
                 "c_sharp",
                 "lua",
                 "json",
