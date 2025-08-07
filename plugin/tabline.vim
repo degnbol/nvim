@@ -41,6 +41,5 @@ if exists("+showtabline")
         let s ..= '%T%#TabLineFill#%='
         return s
     endfunction
-    set stal=2
     set tabline=%!CustomTabLine()
 endif

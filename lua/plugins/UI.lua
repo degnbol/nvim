@@ -101,11 +101,18 @@ return {
             -- By setting cmdheight=0 and (optionally) clearing the
             -- 'statusline' setting we can use a single line for cmdline and
             -- (secret) global statusline.
-            vim.opt.laststatus = 3
-            vim.opt.cmdheight = 0
+            -- The problem with this approach is how buggy cmdheight=0 still is.
+            -- A different solution is laststatus=0 where the statusline is redesigned as a simple border.
+            vim.opt.laststatus = 0
             -- TODO:
             -- decide if there should be more of standard statusline info (such as "HELP" for help files) that should be added to render.
-            vim.opt.statusline = " "
+            vim.opt.statusline = ("─"):rep(vim.api.nvim_win_get_width(0))
+            vim.api.nvim_create_autocmd("WinResized", {
+                group = vim.api.nvim_create_augroup("statusline-update", { clear = true }),
+                callback = function()
+                    vim.opt.statusline = ("─"):rep(vim.api.nvim_win_get_width(0))
+                end
+            })
         end,
         config = function()
             local helpers = require 'incline.helpers'

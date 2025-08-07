@@ -325,13 +325,17 @@ local function afterColorscheme()
     -- blink.cmp should be defaulting to this hl with its BlinkCmpSignatureHelpActiveParameter.
     hi.link("LspSignatureActiveParameter", "Underlined")
 
-    local StatusLineNC = hi.get("StatusLineNC")
-    hi.set("StatusLine", {
-        -- underline = true,
-        bold = true,
-        fg = StatusLineNC["fg"],
-        bg = StatusLineNC["bg"],
-    })
+    -- local StatusLineNC = hi.get("StatusLineNC")
+    -- hi.set("StatusLine", {
+    --     -- underline = true,
+    --     bold = true,
+    --     fg = StatusLineNC["fg"],
+    --     bg = StatusLineNC["bg"],
+    -- })
+    -- For reformatting statusline as a simple border with laststatus=0.
+    -- See lua/plugins/UI.lua
+    hi.set('Statusline', { bg = nil, fg = hi.bg("Statusline") })
+    hi.set('StatuslineNC', { bg = nil, fg = hi.bg("StatuslineNC") })
 
     hi.mod("TabLine", { fg = "grey" })
     hi.mod("TabLineFill", { fg = "grey" })
