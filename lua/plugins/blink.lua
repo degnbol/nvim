@@ -1,3 +1,4 @@
+local map = require "utils/keymap"
 -- Using blink since it seems to be more responsive,
 -- and allows typo, frecency, etc.
 
@@ -112,17 +113,13 @@ return {
             require("luasnip.loaders.from_vscode").lazy_load({ paths = "~/.config/nvim/snippets" })
 
             -- Also jump between snippets with same mappings in normal mode.
-            vim.keymap.set('n', '<C-,>', function()
-                require "blink.cmp".snippet_backward()
-            end, { desc = "snippet_backward" })
-            vim.keymap.set('n', '<C-.>', function()
-                require "blink.cmp".snippet_forward()
-            end, { desc = "snippet_forward" })
+            map.n('<C-,>', function() require "blink.cmp".snippet_backward() end, "snippet_backward")
+            map.n('<C-.>', function() require "blink.cmp".snippet_forward() end, "snippet_forward")
 
             -- Complete only snippets, or if snippet is already active cycle choice node.
             -- Also works when completion menu is visible.
             -- Like pressing ? for choices.
-            vim.keymap.set({ "i", "s", "n" }, "<C-/>", function()
+            map({ "i", "s", "n" }, "<C-/>", function()
                 local luasnip = require "luasnip"
                 if luasnip.choice_active() then
                     luasnip.change_choice(1)
@@ -142,15 +139,15 @@ return {
                 end
             end)
             -- with shift to go backwards
-            vim.keymap.set({ "i", "s", "n" }, "<C-S-/>", function()
+            map({ "i", "s", "n" }, "<C-S-/>", function()
                 local luasnip = require "luasnip"
                 if luasnip.choice_active() then
                     luasnip.change_choice(-1)
                 end
             end)
 
-            -- Spell completion.
-            vim.keymap.set({ "i", "s", "n" }, "<C-s>", function()
+            -- Spell completion. We have the standard <C-x><C-s> and now <C-s> defaults to signature help.
+            map({ "i", "s", "n" }, "<C-S-s>", function()
                 local cmp = require 'blink.cmp'
                 -- This will also change an active popup menu listing to only show snippets
                 cmp.show({ providers = { 'dictionary' } })
