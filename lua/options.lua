@@ -126,6 +126,10 @@ vim.wo.foldlevel = 99 -- so we don't fold from the start
 vim.wo.foldmethod = 'expr'
 vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 
+-- Reduce content jumping when splitting and unsplitting screens.
+-- Seems cleaner when doing e.g. goto-ref, then close qf.
+vim.opt.splitkeep = "screen"
+
 -- vim.opt.messagesopt='wait:200,history:500'
 
 -- blinking cursor would be nice but only after jumps
