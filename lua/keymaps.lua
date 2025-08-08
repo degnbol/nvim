@@ -1,5 +1,6 @@
 local util = require "utils/init"
 local map = require "utils/keymap"
+local ts = require "utils/treesitter"
 
 require "keymaps/options"
 require "keymaps/danglish"
@@ -193,15 +194,23 @@ map.n('<leader>tt', "<Cmd>InspectTree<CR>", "Inspect tree")
 map.n('<leader>tI', "<Cmd>Capture TSInstallInfo<CR>", "Install info")
 map.n('<leader>tn', function()
     local node = vim.treesitter.get_node()
-    local text = vim.treesitter.get_node_text(node, 0)
-    local type = node:type()
-    print(text, "type =", type)
+    if node == nil then
+        print("No node found")
+    else
+        local text = vim.treesitter.get_node_text(node, 0)
+        local type = node:type()
+        print(text, "type =", type)
+    end
 end, "node")
 map.n('<leader>tN', function()
     local node = vim.treesitter.get_node():parent()
-    local text = vim.treesitter.get_node_text(node, 0)
-    local type = node:type()
-    print(text, "type =", type)
+    if node == nil then
+        print("No parent node found")
+    else
+        local text = vim.treesitter.get_node_text(node, 0)
+        local type = node:type()
+        print(text, "type =", type)
+    end
 end, "parent")
 
 -- window layout.
@@ -286,6 +295,18 @@ map.desc('n', 'gra', "Code actions")
 map.desc('n', 'gri', "Implementations")
 map.desc('n', 'grn', "Rename")
 map.desc('n', 'grt', "Type definitions")
+
+
+vim.keymap.set({ 'i' }, '<C-s>', function()
+    -- TODO: modify float to remove empty lines at top and bottom.
+    -- TODO: update signature help when pressing comma or deleting a comma or moving cursor.
+    -- Also decide if repeated <C-s> should cycle the signatures, as is default.
+    local call_expression = ts.get_parent('call_expression')
+    if call_expression == nil then return end
+    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+    local start_row, start_col, end_row, end_col = vim.treesitter.get_node_range(call_expression)
+    vim.lsp.buf.signature_help({ title = nil, offset_x = start_col - c, close_events = { "WinScrolled", "ModeChanged" } })
+end, { desc = "Signature help" })
 
 -- custom gx function that supports more website links.
 map.n("gx", function()

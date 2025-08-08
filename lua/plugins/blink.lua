@@ -52,6 +52,8 @@ local keymap = {
     -- no fallbacks, since that is just inserting . and ,
     ['<C-,>'] = { 'snippet_backward' },
     ['<C-.>'] = { 'snippet_forward' },
+    -- Using builtin.
+    -- ['<C-s>'] = { 'show_signature' },
 }
 -- Same keymaps as opts.keymap. Consistency. <C-space> does the same etc.
 local keymap_cmdline = vim.tbl_extend('force', keymap, {
@@ -389,8 +391,20 @@ return {
                     auto_show_delay_ms = 0,
                 },
             },
-            -- Experimental signature help support
-            signature = { enabled = true },
+            -- Experimental signature help support.
+            -- https://cmp.saghen.dev/configuration/reference.html#signature
+            signature = {
+                -- Work on the builtin signature_help.
+                enabled = false,
+                trigger = {
+                    -- Don't auto-open signature help. It's too distracting in e.g. julia.
+                    -- Actually have to be enabled to have the float update.
+                    enabled = true,
+                    -- Show the signature help window when the cursor comes after a trigger character when entering insert mode.
+                    -- The line above describes the intended purpose, but actually we need this on to update the float.
+                    show_on_insert_on_trigger_character = true,
+                },
+            },
             appearance = {
                 -- Defaults commented out.
                 -- https://cmp.saghen.dev/configuration/reference.html#completion-menu
