@@ -247,4 +247,26 @@ function M.schedule_notify(obj)
     end)
 end
 
+---Like string find, but gives the first match going backwards.
+---@param fullString string
+---@param searchString string
+---@param init? integer
+---@param plain? boolean
+---@return integer|nil
+---@return integer|nil
+function M.rfind(fullString, searchString, init, plain)
+    local n = #fullString
+    init = init and n - init
+    local _start, _end = fullString:reverse():find(searchString:reverse(), init, plain)
+    if _start == nil then return nil end
+    return n - _end + 1, n - _start + 1
+end
+
+function M.cword_cols()
+    local cword = vim.fn.expand("<cword>")
+    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+    local line = vim.api.nvim_get_current_line()
+    return M.rfind(line, cword, c + 1, true)
+end
+
 return M

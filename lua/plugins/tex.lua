@@ -1,3 +1,4 @@
+local util = require "utils/init"
 local latexmk = require "tex.latexmk"
 local g = vim.g
 
@@ -157,6 +158,22 @@ return {
                     if mainfile ~= nil then vim.b.vimtex_main = mainfile end
                 end
             })
+
+            -- TODO: Do we still need this as a bdelete alternative mapping?
+            ---Delete buffer. Repeat for unnamed empty buffers.
+            ---@param opts table with bool key force (passed to vim.api.nvim_buf_delete)
+            ---@param lastbufnr integer? for recursion
+            local function bufdel(opts, lastbufnr)
+                opts = opts or {}
+                local bufnr = vim.api.nvim_get_current_buf()
+                -- make sure to not retry if a previous call failed
+                if bufnr == lastbufnr then return end
+                vim.api.nvim_buf_delete(0, opts)
+                -- repeat if next buffer is empty (stop annoying behaviour of vimtex)
+                if not util.is_named() and util.is_empty() then
+                    vim.schedule(function() bufdel(opts, bufnr) end)
+                end
+            end
         end,
     },
 }

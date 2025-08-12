@@ -1,8 +1,11 @@
+local map = require "utils/keymap"
 
-vim.keymap.set('n', '<leader>cc',     ":Crun\n",   { buffer=true, desc="Cargo run" })
-vim.keymap.set('n', '<LocalLeader>r', ":Crun\n",   { buffer=true, desc="Cargo run" })
-vim.keymap.set('n', '<LocalLeader>b', ":Cbuild\n", { buffer=true, desc="Cargo build" })
-vim.keymap.set('n', '<LocalLeader>c', ":Ccheck\n", { buffer=true, desc="Cargo check" })
-vim.keymap.set('n', '<LocalLeader>C', ":Cclean\n", { buffer=true, desc="Cargo clean" })
-vim.keymap.set('n', '<LocalLeader>t', ":Ctest\n",  { buffer=true, desc="Cargo test" })
-vim.keymap.set('n', '<LocalLeader>u', ":Cupdate\n",{ buffer=true, desc="Cargo update" })
+map.n('<leader>cc',     ":Crun\n",   "Cargo run", {buffer=true} )
+map.n('<LocalLeader>r', ":Crun\n",   "Cargo run", {buffer=true} )
+map.n('<LocalLeader>b', ":Cbuild\n", "Cargo build", {buffer=true} )
+map.n('<LocalLeader>c', ":Ccheck\n", "Cargo check", {buffer=true} )
+map.n('<LocalLeader>C', ":Cclean\n", "Cargo clean", {buffer=true} )
+map.n('<LocalLeader>t', ":Ctest\n",  "Cargo test", {buffer=true} )
+map.n('<LocalLeader>u', ":Cupdate\n","Cargo update", {buffer=true} )
+
+map.i(';;', ";<Esc>", "Escape at EOL", {buffer=true, remap=false})

@@ -119,23 +119,11 @@ map.n("<leader>Q2", "<Cmd>ll 2<CR>", "Entry 2")
 map.n("<leader>Q3", "<Cmd>ll 3<CR>", "Entry 3")
 -- we don't map :lnext etc here since we have ]l etc
 
----Delete buffer. Repeat for unnamed empty buffers.
----@param opts table with bool key force (passed to vim.api.nvim_buf_delete)
----@param lastbufnr integer? for recursion
-local function bufdel(opts, lastbufnr)
-    opts = opts or {}
-    local bufnr = vim.api.nvim_get_current_buf()
-    -- make sure to not retry if a previous call failed
-    if bufnr == lastbufnr then return end
-    vim.api.nvim_buf_delete(0, opts)
-    -- repeat if next buffer is empty (stop annoying behaviour of vimtex)
-    if not util.is_named() and util.is_empty() then
-        vim.schedule(function() bufdel(opts, bufnr) end)
-    end
-end
-
-map.n('<leader>bd', bufdel, "Delete")
-map.n('<leader>bD', function() bufdel { force = true } end, "Delete!")
+map.n('<leader>bd', function () require"mini.bufremove".delete(vim.v.count) end, "bdel without win close")
+map.n('<leader>bD', function() require"mini.bufremove".delete(vim.v.count, true) end, "bdel! without win close")
+map.n('<leader>bw', function () require"mini.bufremove".wipeout(vim.v.count) end, "bwipe without win close")
+map.n('<leader>bW', function() require"mini.bufremove".wipeout(vim.v.count, true) end, "bwipe! without win close")
+map.n('<leader>bu', function () require"mini.bufremove".unshow(vim.v.count) end, "unshow without win close")
 map.n('<leader>bn', "<Cmd>enew<CR>", "New")
 map.n('<leader>bc', "<Cmd>tabclose<CR>", "tabclose")
 
@@ -296,8 +284,8 @@ map.desc('n', 'gri', "Implementations")
 map.desc('n', 'grn', "Rename")
 map.desc('n', 'grt', "Type definitions")
 
-
-vim.keymap.set({ 'i' }, '<C-s>', function()
+-- TODO: the LSP nmap K should also show the float aligned to the function name start and not cursor.
+map.i('<C-s>', function()
     -- TODO: modify float to remove empty lines at top and bottom.
     -- TODO: update signature help when pressing comma or deleting a comma or moving cursor.
     -- Also decide if repeated <C-s> should cycle the signatures, as is default.
@@ -305,8 +293,20 @@ vim.keymap.set({ 'i' }, '<C-s>', function()
     if call_expression == nil then return end
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
     local start_row, start_col, end_row, end_col = vim.treesitter.get_node_range(call_expression)
-    vim.lsp.buf.signature_help({ title = nil, offset_x = start_col - c, close_events = { "WinScrolled", "ModeChanged" } })
-end, { desc = "Signature help" })
+    vim.lsp.buf.signature_help { title = nil, offset_x = start_col - c, close_events = { "WinScrolled", "ModeChanged" } }
+end, "Signature help")
+
+vim.api.nvim_create_autocmd("LspAttach", {
+    group = vim.api.nvim_create_augroup("my_lsp_attach", { clear = true }),
+    callback = function()
+        -- TODO: complete this after work
+        -- map.n("K", function()
+        --     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+        --     local cword_start, _ = util.cword_cols()
+        --     vim.lsp.buf.hover { offset_x = cword_start - c, }
+        -- end, "LSP hover", { buffer = true })
+    end
+})
 
 -- custom gx function that supports more website links.
 map.n("gx", function()

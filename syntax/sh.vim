@@ -18,7 +18,7 @@ syn match @flag / \zs+[A-Za-z_0-9+]\+/
 hi def link @flag Function
 
 " paths.
-syn match @path '[A-Za-z0-9.*_-]*[/.][/A-Za-z0-9.*_-]*' contains=FunctionPath,Wildcard containedin=shIf,shCommandSub
+syn match @path '\~\?[A-Za-z0-9.*_-]*[/.][/A-Za-z0-9.*_-]*' contains=FunctionPath,Wildcard containedin=shIf,shCommandSub
 hi def link @path @text.underline
 
 " First word on a line or only preceded by an env var assignment (e.g. `LC_ALL=C tr ...`)
@@ -56,4 +56,6 @@ syn match FunctionPath '\(^\s*\S*\($(.*)\)\?\)\@<=[/A-Za-z0-9._-]*/\zs[A-Za-z._-
 " accomplished with \@<!
 " The required text is then $( made into a single "atom": \( ... \)
 syn match Function /\(\$(\)\@<=[A-Za-z_-]\+/ contained containedin=zshSubstQuoted,shCommandSub
+
+syn match Delimiter /;/
 

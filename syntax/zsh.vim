@@ -31,7 +31,7 @@ hi def link zshSubstDelim Delimiter
 hi def link zshOperator Operator
 hi def link zshParentheses Delimiter
 
-syn match Delimiter /\$/ contained containedin=zshDeref,zshShortDeref,zshSubstQuoted,zshSubstDelim,zshSubst nextgroup=zshPathOp
+syn match Delimiter /\$/ contained containedin=zshDeref,zshShortDeref,zshSubstQuoted,zshSubstDelim,zshSubst,zshArraySubscript,zshString nextgroup=zshPathOp
 
 " They are never actually numbers right? Just strings that may be interpreted 
 " as numbers by other programs.
@@ -67,6 +67,10 @@ syn match Operator /\(${\)\@<==/ contained containedin=zshSubst
 " \h == head of word, i.e. [A-Za-z_], and \w == word, i.e. the same plus 
 " digits.
 syn match Operator /\(\h\+\w*\)\@<==/
+" [ ... ] used for test expressions is matched as zshArraySubscript.
+" Match = in e.g. `[ "$var" = "value" ]`
+syn match Operator /=/ contained containedin=zshArraySubscript
+syn region zshString matchgroup=zshStringDelimiter start=/"/ skip=/\\"/ end=/"/ contained containedin=zshArraySubscript
 
 syn match Operator /!/
 

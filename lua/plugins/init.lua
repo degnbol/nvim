@@ -61,6 +61,12 @@ return {
     -- Also provides ic which will catch multiline so not ideal but the
     -- treesitter one doesn't seem to work.
     {
+        "kana/vim-arpeggio",
+        config = function ()
+            vim.fn["arpeggio#map"]('i', '', 0, 'jk', '<Esc>')
+        end,
+    },
+    {
         "glts/vim-textobj-comment",
         dependencies = { "kana/vim-textobj-user" },
     },
