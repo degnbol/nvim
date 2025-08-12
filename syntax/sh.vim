@@ -1,8 +1,8 @@
 " neovim treats bash more or less as sh, but has a variable vim.b.is_bash or 
 " in vimscript b:is_bash which is 1 if the shell is bash.
-if exists("b:is_bash") && b:is_bash
+" if exists("b:is_bash") && b:is_bash
     runtime syntax/bash.vim
-endif
+" endif
 
 syn keyword Keyword in
 syn keyword @function.builtin mkdir sed tr gzip gunzip rm cd cat mv
