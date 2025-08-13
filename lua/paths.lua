@@ -37,7 +37,9 @@ vim.env.CONDA_PREFIX = vim.env.HOME .. '/miniconda3'
 -- add lsp/completion for pymol.
 -- In .py script, write `from pymol import cmd`
 local rtp = vim.opt.runtimepath:get()[1]
-if vim.env.PYTHONPATH ~= nil then
+if vim.env.PYTHONPATH == nil then
+    vim.env.PYTHONPATH = rtp .. "/lsp/pymol-open-source/modules"
+else
     vim.env.PYTHONPATH = vim.env.PYTHONPATH .. ':' .. rtp .. "/lsp/pymol-open-source/modules"
 end
 
