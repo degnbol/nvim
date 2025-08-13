@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 return {
     {
         -- :Git and similar commands

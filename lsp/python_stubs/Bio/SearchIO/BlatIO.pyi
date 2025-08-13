@@ -1,0 +1,23 @@
+from Bio.SearchIO._index import SearchIndexer
+from _typeshed import Incomplete
+
+__all__ = ['BlatPslParser', 'BlatPslIndexer', 'BlatPslWriter']
+
+class BlatPslParser:
+    handle: Incomplete
+    line: Incomplete
+    pslx: Incomplete
+    def __init__(self, handle, pslx: bool = False) -> None: ...
+    def __iter__(self): ...
+
+class BlatPslIndexer(SearchIndexer):
+    def __init__(self, filename, pslx: bool = False) -> None: ...
+    def __iter__(self): ...
+    def get_raw(self, offset): ...
+
+class BlatPslWriter:
+    handle: Incomplete
+    header: Incomplete
+    pslx: Incomplete
+    def __init__(self, handle, header: bool = False, pslx: bool = False) -> None: ...
+    def write_file(self, qresults): ...

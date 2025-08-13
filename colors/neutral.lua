@@ -1,19 +1,19 @@
-local hl = require "utils/highlights"
+local hi = require "utils/highlights"
 
 -- mods to default nvim colorscheme
 vim.cmd "hi clear"
 
-hl.set("Keyword", {fg="#9a808f", italic=true})
-hl.link("@conditional", "Keyword")
-hl.link("@repeat", "Keyword")
-hl.link("@include", "Keyword")
-hl.link("Exception", "Keyword")
-hl.set("Type", {fg="#9a808f", bold=true})
-hl.link("Operator", "Type")
-hl.set("@keyword.function", {fg="#9a808f"})
-hl.set("Preproc", {fg="#8888ff"})
-hl.link("Identifier", "@variable")
-hl.link("Special", "PreProc")
-hl.link("Number", "String")
-hl.link("Constant", "String")
-hl.link("@constant.builtin", "String")
+hi.set("Keyword", { fg = "#9a808f", italic = true })
+hi.link("@conditional", "Keyword")
+hi.link("@repeat", "Keyword")
+hi.link("@include", "Keyword")
+hi.link("Exception", "Keyword")
+hi.set("Type", { fg = "#9a808f", bold = true })
+hi.link("Operator", "Type")
+hi.set("@keyword.function", { fg = "#9a808f" })
+hi.set("Preproc", { fg = "#8888ff" })
+hi.link("Identifier", "@variable")
+hi.link("Special", "PreProc")
+hi.link("Number", "String")
+hi.link("Constant", "String")
+hi.link("@constant.builtin", "String")

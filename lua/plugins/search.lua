@@ -1,59 +1,86 @@
-#!/usr/bin/env lua
-
--- vim.keymap.set('n', '<Esc>', ":noh<CR><Esc>", { silent=true, remap=false, desc="Disable search highlights" })
--- disable when entering visual
-local grp = vim.api.nvim_create_augroup("auto_hlsearch", {clear=true})
-vim.api.nvim_create_autocmd("ModeChanged", {
-    -- Mode changed is indicated as <before>:<after> with the codes:
-    -- i=insert, c=cmdline, n=normal, v=visual, V=line visual, \x16=block visual (guessing it means <C-V>), no=normal operator pending.
-    -- we need to avoid responding to changes between normal and cmdline mode since that change is triggered frequently by plugins etc.
-    -- these patterns should capture the same:
-    -- pattern = "*:*[oivV\x16]*",
-    pattern = "*:*[^nc]",
-    group = grp,
-    callback = function ()
-        vim.schedule(vim.cmd.nohlsearch)
-    end
-})
-
+local map = require "utils/keymap"
 
 return {
-    -- let's search result box show number of matches when there's >99 matches
+    -- Let's search result box show number of matches when there's >99 matches.
     {
         "google/vim-searchindex",
-        -- keys={"/", "g/"} -- keys doesn't seem to work
+        -- keys = { "/", "g/", "*", "#", "g*", "g#" }
     },
-    -- show a scrollbar, mostly in order to show search results far away in file
-    -- requires hlslens to show search results in scrollbar
-    {"petertriho/nvim-scrollbar", cmd={"ScrollbarToggle", "ScrollbarShow"},
-    dependencies={"kevinhwang91/nvim-hlslens"},
-    init = function ()
-        vim.keymap.set("n", "yoS", "<Cmd>ScrollbarToggle<CR>", { desc="Scrollbar" })
-    end,
-    opts = {
-        show = false, -- enable with :ScrollbarToggle etc.
-        marks = { Search = { color = "yellow" } },
-        handlers = {
-            diagnostics = false,
-            search = true
-        }
-    }},
-    -- show counter for how many n or N's a search result is away from cursor
-    -- also lots of other search highlight customizations possible
+    -- Show a scrollbar, mostly in order to show search results far away in file.
+    -- Requires hlslens to show search results in scrollbar.
+    {
+        "petertriho/nvim-scrollbar",
+        cmd = { "ScrollbarToggle", "ScrollbarShow" },
+        dependencies = { "kevinhwang91/nvim-hlslens" },
+        init = function()
+            map.n("yoS", function()
+                require "scrollbar.utils".toggle()
+                -- The solution from scrollbar to not auto start hlslens virtual texts doesn't seem to work.
+                require "hlslens".disable()
+            end, "Scrollbar")
+        end,
+        config = function()
+            require("scrollbar").setup {
+                show = false, -- enable with :ScrollbarToggle etc.
+                handlers = {
+                    diagnostics = true,
+                    search = true
+                }
+            }
+        end,
+    },
+    -- Improvements to nmap *, etc.
+    {
+        "haya14busa/vim-asterisk",
+        init = function()
+            -- Option to keep cursor at the same location within searched cword.
+            -- Useful for refactoring, e.g. FOO_|BAR.
+            vim.g["asterisk#keeppos"] = 1
+            -- Version of normal map * that doesn't move cursor is <Plug>(asterisk-z*).
+            -- Instead of having mappings with z prefix, I think a nice
+            -- solution is * searched as default vim on all repeated presses.
+            local function is_searching_for_cword()
+                local cword = vim.fn.expand("<cword>")
+                -- Check if cword is the most recent search term.
+                -- Not currently checking if we are currently searching or if this was just from the last search.
+                local search_term = vim.fn.getreg("/")
+                return cword == search_term or "\\<" .. cword .. "\\>" == search_term
+            end
+            ---Get the keymap expression from vim-asterisk given the stock vim expression.
+            ---Returns function since the string expression will depend on if
+            ---we have started a cword search or not.
+            ---@param stock_expr string *, #, g*, or g#
+            ---@return function
+            local function asterisk_expr(stock_expr)
+                local prefix, suffix
+                if #stock_expr > 1 then
+                    prefix = stock_expr:sub(1, -2)
+                    suffix = stock_expr:sub(-1)
+                else
+                    prefix = ""
+                    suffix = stock_expr
+                end
+                return function()
+                    if is_searching_for_cword() then
+                        return "<Plug>(asterisk-" .. prefix .. suffix .. ")"
+                    else
+                        return "<Plug>(asterisk-" .. prefix .. "z" .. suffix .. ")"
+                    end
+                end
+            end
+            map.nox("*", asterisk_expr("*"), "Search next \\<cword\\>", { expr = true })
+            map.nox("#", asterisk_expr("#"), "Search previous \\<cword\\>", { expr = true })
+            map.nox("g*", asterisk_expr("g*"), "Search next cword", { expr = true })
+            map.nox("g#", asterisk_expr("g#"), "Search previous cword", { expr = true })
+        end,
+    },
+    -- Show counter for how many n or N's a search result is away from cursor.
     {
         "kevinhwang91/nvim-hlslens",
-        cmd = {"HlSearchLensEnable", "HlSearchLensToggle"},
-        init = function ()
-            vim.keymap.set("n", "yoH", function () require'hlslens'.toggle() end, { desc="HlSearchLens", silent=true })
-            -- integrate with haya14busa/vim-asterisk
-            vim.api.nvim_set_keymap('n',  '*', [[<Plug>(asterisk-z*) <Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-            vim.api.nvim_set_keymap('n',  '#', [[<Plug>(asterisk-z#) <Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-            vim.api.nvim_set_keymap('n', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-            vim.api.nvim_set_keymap('n', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-            vim.api.nvim_set_keymap('x',  '*', [[<Plug>(asterisk-z*) <Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-            vim.api.nvim_set_keymap('x',  '#', [[<Plug>(asterisk-z#) <Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-            vim.api.nvim_set_keymap('x', 'g*', [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
-            vim.api.nvim_set_keymap('x', 'g#', [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {desc="Search word under cursor"})
+        lazy = true,
+        cmd = { "HlSearchLensEnable", "HlSearchLensToggle" },
+        init = function()
+            map.n("yoH", function() require 'hlslens'.toggle() end, "HlSearchLens", { silent = true })
         end,
         opts = {
             auto_enable = false,

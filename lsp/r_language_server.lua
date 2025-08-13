@@ -1,0 +1,3 @@
+
+-- :MasonInstall r-languageserver
+return {}

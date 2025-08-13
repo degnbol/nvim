@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 local rtp = vim.opt.runtimepath:get()[1]
 
 -- async overleaf sync on save and load

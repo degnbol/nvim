@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 
 -- is lazy.nvim plugin
 if vim.api.nvim_buf_get_name(0):match("lua/plugins/") then

@@ -1,3 +1,4 @@
+iabbrev fucntion function
 " extra capitalization
 Abolish TH{ere,en,e,is} Th{}
 " lazy apostrophe
@@ -7,7 +8,7 @@ Abolish itøs it's
 iabbrev THeres There's
 " I by itself is useful in regular text but i can be a variable, and also 
 " mentioned in comments, so i should only get abb to I in prose, if possible. 
-" iabbrev im I'm " TODO: OMG!!! stop changing this in lua code when writing vim. ...
+iabbrev im I'm
 iabbrev Im I'm
 iabbrev IM I'm
 " Abolish ive I've " keeps annoying me when writing five
@@ -72,6 +73,8 @@ Abolish embarass{,ing,ingly} embarrass{,ing,ingly}
 Abolish corespond{,s,ing} correspond{,s,ing}
 Abolish discernable discernible
 Abolish wildtype wild type
+Abolish occurence occurrence
+Abolish occur{,r}ance occurrence
 
 " language specific, see lua/keymap
 " TODO: make this a bit more convenient, for autocorrecting language specific 

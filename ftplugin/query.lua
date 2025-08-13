@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 
 -- https://github.com/ribru17/ts_query_ls
 local function LSP_start(cmdpath)

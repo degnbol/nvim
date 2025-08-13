@@ -1,3 +1,4 @@
+local map = require "utils/keymap"
 -- Using blink since it seems to be more responsive,
 -- and allows typo, frecency, etc.
 
@@ -12,38 +13,64 @@
 -- https://cmp.saghen.dev/recipes#select-nth-item-from-the-list
 
 local source_icon = {
-    buffer        = " ",
-    omni          = " ",
-    lsp           = " ",
-    luasnip       = " ",
-    nvim_lua      = " ",
-    nerdfonts     = "󰊪 ",
-    latex_symbols = " ",
-    vimtex        = " ",
-    calc          = " ",
-    path          = "/ ",
-    dictionary    = " ",
-    spell         = " ",
-    treesitter    = " ",
-    zsh           = "󰞷 ",
-    plugins       = " ",
-    pymol_settings= " ",
-    plotly        = " ",
-    asciidoc      = " ",
-    emoji         = "😃",
+    buffer         = " ",
+    omni           = " ",
+    lsp            = " ",
+    luasnip        = " ",
+    nvim_lua       = " ",
+    nerdfonts      = "󰊪 ",
+    latex_symbols  = " ",
+    vimtex         = " ",
+    calc           = " ",
+    path           = "/ ",
+    dictionary     = " ",
+    spell          = " ",
+    treesitter     = " ",
+    zsh            = "󰞷 ",
+    plugins        = " ",
+    pymol_settings = " ",
+    plotly         = " ",
+    asciidoc       = " ",
+    emoji          = "😃",
 }
 
 local zsh_sources = { "zsh", "lsp", "path", "snippets", "buffer" }
 
 local only_snippets = false
 
+local keymap = {
+    preset = 'none',
+    ['<C-p>'] = { 'select_prev', 'fallback' },
+    ['<C-n>'] = { 'show', 'select_next', 'fallback' },
+    ['<C-e>'] = { 'hide' },
+    ['<C-y>'] = { 'select_and_accept' },
+    ['<C-space>'] = { 'show', 'select_and_accept', 'fallback' },
+    -- cancel = revert auto_insert and hide completion menu (but stay in insert mode)
+    ['<C-c>'] = { 'cancel', 'fallback' },
+    ['<C-b>'] = { 'show_documentation', 'scroll_documentation_up', 'fallback' },
+    ['<C-f>'] = { 'show_documentation', 'scroll_documentation_down', 'fallback' },
+    -- no fallbacks, since that is just inserting . and ,
+    ['<C-,>'] = { 'snippet_backward' },
+    ['<C-.>'] = { 'snippet_forward' },
+    -- Using builtin.
+    -- ['<C-s>'] = { 'show_signature' },
+}
+-- Same keymaps as opts.keymap. Consistency. <C-space> does the same etc.
+local keymap_cmdline = vim.tbl_extend('force', keymap, {
+    -- Removing fallback seems to fix mappings doing nothing.
+    ['<C-p>'] = { 'select_prev', },
+    ['<C-n>'] = { 'show', 'select_next', },
+})
+
+
 return {
     {
         'saghen/blink.compat',
+        build = 'cargo build --release', -- for delimiters
         -- use the latest release, via version = '*', if you also use the latest release for blink.cmp
         version = '*',
         lazy = true,
-        opts = {impersonate_nvim_cmp = true,},
+        opts = { impersonate_nvim_cmp = true, },
     },
     {
         "folke/lazydev.nvim",
@@ -58,14 +85,14 @@ return {
         'saghen/blink.cmp',
         enabled = true,
         dependencies = {
-           {"L3MON4D3/LuaSnip", version = 'v2.*' },
+            { "L3MON4D3/LuaSnip", version = 'v2.*' },
             -- sources
             "folke/lazydev.nvim",
             "hrsh7th/cmp-nvim-lua", -- neovim Lua API
             -- "L3MON4D3/cmp-luasnip-choice", -- show choice node choices
-            "tamago324/cmp-zsh",         -- neovim zsh completion
+            "tamago324/cmp-zsh",    -- neovim zsh completion
             -- "hrsh7th/cmp-calc",          -- quick math in completion
-            "ray-x/cmp-treesitter",      -- treesitter nodes
+            "ray-x/cmp-treesitter", -- treesitter nodes
             -- "jmbuhr/otter.nvim",         -- TODO: use this for code injected in markdown
             -- "chrisgrieser/cmp-nerdfont", -- :<search string> to get icons
             "KadoBOT/cmp-plugins",
@@ -82,24 +109,20 @@ return {
         -- If you use nix, you can build from source using latest nightly rust with:
         -- build = 'nix run .#build-plugin',
 
-        init = function ()
+        init = function()
             -- We are managing snippets with luasnip instead of default currently, since we already wrote many snippets with luasnip and it allows for more complexity.
             -- However, we have also written some quick ones in VS code style that we should have available.
             require("luasnip.loaders.from_vscode").lazy_load({ paths = "~/.config/nvim/snippets" })
 
             -- Also jump between snippets with same mappings in normal mode.
-            vim.keymap.set('n', '<C-,>', function ()
-                require"blink.cmp".snippet_backward()
-            end, { desc="snippet_backward" })
-            vim.keymap.set('n', '<C-.>', function ()
-                require"blink.cmp".snippet_forward()
-            end, { desc="snippet_forward" })
+            map.n('<C-,>', function() require "blink.cmp".snippet_backward() end, "snippet_backward")
+            map.n('<C-.>', function() require "blink.cmp".snippet_forward() end, "snippet_forward")
 
             -- Complete only snippets, or if snippet is already active cycle choice node.
             -- Also works when completion menu is visible.
             -- Like pressing ? for choices.
-            vim.keymap.set({ "i", "s", "n" }, "<C-/>", function()
-                local luasnip = require"luasnip"
+            map({ "i", "s", "n" }, "<C-/>", function()
+                local luasnip = require "luasnip"
                 if luasnip.choice_active() then
                     luasnip.change_choice(1)
                 else
@@ -114,50 +137,30 @@ return {
                         end,
                         once = true,
                     })
-                    cmp.show({ providers = { 'snippets', 'lsp', }})
+                    cmp.show({ providers = { 'snippets', 'lsp', } })
                 end
             end)
             -- with shift to go backwards
-            vim.keymap.set({ "i", "s", "n" }, "<C-S-/>", function()
-                local luasnip = require"luasnip"
+            map({ "i", "s", "n" }, "<C-S-/>", function()
+                local luasnip = require "luasnip"
                 if luasnip.choice_active() then
                     luasnip.change_choice(-1)
                 end
             end)
 
-            -- Spell completion.
-            vim.keymap.set({ "i", "s", "n" }, "<C-s>", function()
+            -- Spell completion. We have the standard <C-x><C-s> and now <C-s> defaults to signature help.
+            map({ "i", "s", "n" }, "<C-S-s>", function()
                 local cmp = require 'blink.cmp'
                 -- This will also change an active popup menu listing to only show snippets
                 cmp.show({ providers = { 'dictionary' } })
             end)
-
-            -- underline active parameter in signature help rather than colour it in some pale unhelpful colour
-            vim.api.nvim_set_hl(0, "BlinkCmpSignatureHelpActiveParameter", {link="Underlined"})
         end,
 
         ---@module 'blink.cmp'
         ---@type blink.cmp.Config
         opts = {
-            -- 'default' for mappings similar to built-in completion
-            -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
-            -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
-            -- See the full "keymap" documentation for information on defining your own keymap.
-            keymap = {
-                preset = 'none',
-                ['<C-p>'] = { 'select_prev', 'fallback' },
-                ['<C-n>'] = { 'show', 'select_next', 'fallback' },
-                ['<C-e>'] = { 'hide' },
-                ['<C-y>'] = { 'select_and_accept' },
-                ['<C-space>'] = { 'show', 'select_and_accept', 'fallback' },
-                -- cancel = revert auto_insert and hide completion menu (but stay in insert mode)
-                ['<C-c>'] = { 'cancel', 'fallback' },
-                ['<C-b>'] = { 'show_documentation', 'scroll_documentation_up', 'fallback' },
-                ['<C-f>'] = { 'show_documentation', 'scroll_documentation_down', 'fallback' },
-                -- no fallbacks, since that is just inserting . and ,
-                ['<C-,>'] = { 'snippet_backward' },
-                ['<C-.>'] = { 'snippet_forward' },
-            },
+            keymap = keymap,
+            cmdline = { keymap = keymap_cmdline, },
 
             -- Default list of enabled providers defined so that you can extend it
             -- elsewhere in your config, without redefining it, due to `opts_extend`
@@ -171,7 +174,7 @@ return {
                     python = { "pymol_settings", "lsp", "omni", "path", "snippets", "buffer" },
                     julia = { "plotly", "lsp", "omni", "path", "snippets", "buffer" },
                     -- lacks LSP, hence the custom asciidoc provider
-                    asciidoc = {"asciidoc", "lsp", "omni", "snippets", "buffer", "dictionary" },
+                    asciidoc = { "asciidoc", "lsp", "omni", "snippets", "buffer", "dictionary" },
                     tex = {
                         "lsp",
                         "omni",
@@ -226,12 +229,12 @@ return {
                     pymol_settings = {
                         name = "pymol_settings",
                         module = "completion.pymol.blink_pymol_settings",
-                        enabled = function () return vim.g.loaded_pymol end
+                        enabled = function() return vim.g.loaded_pymol end
                     },
                     plotly = {
                         name = "plotly",
                         module = "completion.plotlyjs.blink_plotlyjs",
-                        enabled = function () return vim.g.loaded_plotly end
+                        enabled = function() return vim.g.loaded_plotly end
                     },
                     asciidoc = {
                         name = "asciidoc",
@@ -262,8 +265,9 @@ return {
                         }
                     },
                     buffer = {
+                        score_offset = -10,
                         -- keep case of first char
-                        transform_items = function (a, items)
+                        transform_items = function(a, items)
                             local keyword = a.get_keyword()
                             local correct, case
                             if keyword:match('^%l') then
@@ -281,7 +285,7 @@ return {
                             for _, item in ipairs(items) do
                                 local raw = item.insertText
                                 if raw:match(correct) then
-                                    local text = case(raw:sub(1,1)) .. raw:sub(2)
+                                    local text = case(raw:sub(1, 1)) .. raw:sub(2)
                                     item.insertText = text
                                     item.label = text
                                 end
@@ -318,11 +322,11 @@ return {
                 },
             },
             completion = {
-                list = { selection = { preselect = false, auto_insert = true },},
+                list = { selection = { preselect = false, auto_insert = true }, },
                 accept = {
                     auto_brackets = {
                         override_brackets_for_filetypes = {
-                            tex = {"{", "}"},
+                            tex = { "{", "}" },
                         },
                         -- Synchronously use the kind of the item to determine if brackets should be added
                         kind_resolution = {
@@ -356,14 +360,18 @@ return {
                         -- icon at end instead of before word
                         columns = {
                             { "label", "label_description" },
-                            { "kind_icon", gap=1, "source_icon",
+                            {
+                                "kind_icon",
+                                gap = 1,
+                                "source_icon",
                                 -- "source_name"
                             }
                         },
                         -- padding = {0,1},
                         padding = 0,
                         -- Use treesitter to highlight the label text for the given list of sources
-                        treesitter = { 'lsp' },
+                        -- Broken in sh for some reason
+                        -- treesitter = { 'lsp' },
                     }
                 },
                 -- Ghost text clashes with auto_insert
@@ -383,8 +391,20 @@ return {
                     auto_show_delay_ms = 0,
                 },
             },
-            -- Experimental signature help support
-            signature = { enabled = true },
+            -- Experimental signature help support.
+            -- https://cmp.saghen.dev/configuration/reference.html#signature
+            signature = {
+                -- Work on the builtin signature_help.
+                enabled = false,
+                trigger = {
+                    -- Don't auto-open signature help. It's too distracting in e.g. julia.
+                    -- Actually have to be enabled to have the float update.
+                    enabled = true,
+                    -- Show the signature help window when the cursor comes after a trigger character when entering insert mode.
+                    -- The line above describes the intended purpose, but actually we need this on to update the float.
+                    show_on_insert_on_trigger_character = true,
+                },
+            },
             appearance = {
                 -- Defaults commented out.
                 -- https://cmp.saghen.dev/configuration/reference.html#completion-menu
@@ -423,7 +443,7 @@ return {
             },
             snippets = {
                 preset = "luasnip",
-      },
+            },
         },
         opts_extend = { "sources.default" }
     },

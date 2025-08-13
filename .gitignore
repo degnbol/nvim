@@ -9,7 +9,6 @@ node_modules/
 *.log
 
 # vim binaries
-*.spl
 *.sug
 
 # common temp file names

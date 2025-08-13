@@ -1,4 +1,3 @@
-#!/usr/bin/env lua
 local util = require "utils/init"
 local vtu = require "utils/vimtex"
 local is_inside = vtu.is_inside
@@ -10,12 +9,12 @@ local M = {}
 -- TODO:
 -- functions or ways of moving/deleting/adding rows/columns.
 -- Maybe each a function but ideally a more modular (vim) way, e.g. selection of row/col,
--- moving between cells, etc. But might not be possible without elaborate 
+-- moving between cells, etc. But might not be possible without elaborate
 -- function due to things like header row, and not having one row per line.
 
 -- TODO: can we get sideways scroll to lag less
 
--- TODO: maybe conceal makecell, and somehow conceal overflowing cell or 
+-- TODO: maybe conceal makecell, and somehow conceal overflowing cell or
 -- consider conceal setting when deciding space a cell takes up (after conceal)
 
 -- get tabular-like env start r and c
@@ -29,17 +28,19 @@ local function getTabular()
 end
 
 -- return tex table column 0-index by counting (unescaped) ampersands (&) before cursor "column" c.
--- Deprecate, since it doesn't read multi. Use getCurrentCell instead with 
+-- Deprecate, since it doesn't read multi. Use getCurrentCell instead with
 -- parseTable
 local function getCurrentColumn()
     local _, c = unpack(vim.api.nvim_win_get_cursor(0))
     local line = vim.api.nvim_get_current_line():gsub('\\&', '  ')
-    local nAmp = #line:sub(1,c):gsub('[^&]', '')
-    if not line:match('multicol') then return nAmp else
-        local beforeCell = line:sub(1,c):match('.*&') -- matches the last & before cursor
+    local nAmp = #line:sub(1, c):gsub('[^&]', '')
+    if not line:match('multicol') then
+        return nAmp
+    else
+        local beforeCell = line:sub(1, c):match('.*&') -- matches the last & before cursor
         if beforeCell then
-            for n in beforeCell:gmatch[[\multicolumn{(%d+)}]] do
-                nAmp=nAmp + n-1
+            for n in beforeCell:gmatch [[\multicolumn{(%d+)}]] do
+                nAmp = nAmp + n - 1
             end
         end
         return nAmp
@@ -62,12 +63,12 @@ local function getPreTabular()
     local pre_begin, pre_end = line:match('\\begin{tabular.}%b{}()%b{}()')
     if pre_begin == nil then -- tabular
         pre_begin, pre_end = line:match('\\begin{tabular}%b[]()%b{}()')
-    end -- cannot test pre_begin from first if-statement in second if it is an elseif
+    end                      -- cannot test pre_begin from first if-statement in second if it is an elseif
     if pre_begin == nil then
         pre_begin, pre_end = line:match('\\begin{tabular}()%b{}()')
     end
-    pre_begin=pre_begin+1
-    pre_end=pre_end-2
+    pre_begin = pre_begin + 1
+    pre_end = pre_end - 2
     return r_tabular, pre_begin, line:sub(pre_begin, pre_end)
 end
 
@@ -81,27 +82,27 @@ local function parsePre()
         local part = _pre:match("^.%b{}")
         if part ~= nil then
             table.insert(parsed, part)
-            _pre = _pre:sub(1+#part)
+            _pre = _pre:sub(1 + #part)
         else
             -- for e.g. ||
             local nonalpha = _pre:match("^[^%a]+")
             if nonalpha ~= nil then
                 table.insert(parsed, nonalpha)
-                _pre = _pre:sub(1+#nonalpha)
+                _pre = _pre:sub(1 + #nonalpha)
             else
-                table.insert(parsed, _pre:sub(1,1))
+                table.insert(parsed, _pre:sub(1, 1))
                 _pre = _pre:sub(2)
             end
         end
     end
     -- attach modifiers <{...} and >{...} to what they modify
     local parsedMod = {}
-    local i=0
-    while i<#parsed do
-        i=i+1
+    local i = 0
+    while i < #parsed do
+        i = i + 1
         if parsed[i]:match("^[><]") then
-            table.insert(parsedMod, parsed[i]..parsed[i+1])
-            i=i+1
+            table.insert(parsedMod, parsed[i] .. parsed[i + 1])
+            i = i + 1
         else
             table.insert(parsedMod, parsed[i])
         end
@@ -118,23 +119,23 @@ end
 
 -- return tex table column 0-index assuming the cursor (with "column" c) is at the preamble line.
 local function getCurrentColumnPre(c, c_pre, pre)
-    local until_cursor = pre:sub(1, c+2-c_pre)
+    local until_cursor = pre:sub(1, c + 2 - c_pre)
     local nAlpha = #until_cursor:gsub("%b{}", ""):gsub('[^%a]', '')
     -- 0-indexing
-    return math.max(0, nAlpha-1)
+    return math.max(0, nAlpha - 1)
 end
 
 -- jump to or from the relevant column in the preamble for a tabular/tabularx/tabulary table.
 vim.keymap.set("n", "<plug>TableJumpPre", function()
     local r_tabular, c_pre, pre = getPreTabular()
     if r_tabular == nil then return end
-    
+
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
     if r == r_tabular then
         local col = getCurrentColumnPre(c, c_pre, pre)
         -- goto first line with the most cells found.
         -- scan 9 lines for now. 0-indexing means r excludes preamble.
-        local scan = vim.api.nvim_buf_get_lines(0, r, r+10, false)
+        local scan = vim.api.nvim_buf_get_lines(0, r, r + 10, false)
         local iGoto, maxAmp = r, 0
         for i, v in ipairs(scan) do
             scan[i] = v:gsub('\\&', '  ')
@@ -148,49 +149,54 @@ vim.keymap.set("n", "<plug>TableJumpPre", function()
         if cGoto == nil then
             -- there was no match so the line is lacking &s
             -- we go to EOL although before optional \\
-            if lGoto:sub(-2) == [[\\]] then cGoto = #lGoto-2
-            else cGoto = #lGoto end
+            if lGoto:sub(-2) == [[\\]] then
+                cGoto = #lGoto - 2
+            else
+                cGoto = #lGoto
+            end
         end
         -- go to first non-whitespace as long as not & (indicating the next cell)
-        local _, firstNonW = lGoto:sub(cGoto+1):find("^%s*[^%s&]")
+        local _, firstNonW = lGoto:sub(cGoto + 1):find("^%s*[^%s&]")
         if firstNonW == nil then -- the cell is empty
-            if cGoto == 0 then -- the very first cell
+            if cGoto == 0 then   -- the very first cell
                 -- we want to go to indentation.
                 -- Take indentation from previous line.
                 -- ERRORs if we are jumping to first line in table.
                 -- Maybe rethink the scan 10 lines logic to jump to first line with >1 cell (jump over hline and without multicol)
-                firstNonW = scan[iGoto-1]:find("%S")
+                firstNonW = scan[iGoto - 1]:find("%S")
             else
                 firstNonW = 1
             end
         end
-        cGoto = cGoto + firstNonW-1
+        cGoto = cGoto + firstNonW - 1
         -- Mark current location for jumplist to work (e.g. <c-o> to go back in table)
         -- lua version doesn't work
         cmd "normal m`"
-        vim.api.nvim_win_set_cursor(0, {r+iGoto, cGoto})
+        vim.api.nvim_win_set_cursor(0, { r + iGoto, cGoto })
     else
         local col = getCurrentColumn()
         -- go across preamble string for "col" alphanumerics ignoring {...}
         local bracketDepth = 0
         local cGoto = 0
         while cGoto < #pre do
-            cGoto=cGoto+1
+            cGoto = cGoto + 1
             local char = pre:sub(cGoto, cGoto)
-            if char == '{' then bracketDepth=bracketDepth+1
-            elseif char == '}' then bracketDepth=bracketDepth-1
+            if char == '{' then
+                bracketDepth = bracketDepth + 1
+            elseif char == '}' then
+                bracketDepth = bracketDepth - 1
             elseif bracketDepth == 0 and char:match("%a") then
-                col=col-1
+                col = col - 1
                 if col < 0 then break end
             end
         end
-        cGoto=cGoto+c_pre-2
+        cGoto = cGoto + c_pre - 2
         -- Mark current location for jumplist to work (e.g. <c-o> to go back in table)
         -- lua version doesn't work
         cmd "normal m`"
-        vim.api.nvim_win_set_cursor(0, {r_tabular, cGoto})
+        vim.api.nvim_win_set_cursor(0, { r_tabular, cGoto })
     end
-end, {desc="Goto preamble"})
+end, { desc = "Goto preamble" })
 
 
 
@@ -199,31 +205,31 @@ function parseTable()
     if not envname:match("^tabular") then return end
     -- -1 since we are using 1-indexed r1, r2 in 0-indexed end-exclusive function
     -- to get the lines withinh the end, so excluding the begin/end lines
-    r2=r2-1
+    r2 = r2 - 1
     local lines = vim.api.nvim_buf_get_lines(0, r1, r2, true)
     -- final newline necessary to not lose final cell
     local text = table.concat(lines, '\n') .. '\n'
     local indentation = text:match('^[%s\t]*')
     local texts = {}
-    local rows = {} -- row in table
-    local cols = {} -- column in table
+    local rows = {}    -- row in table
+    local cols = {}    -- column in table
     local presufs = {} -- column prefix (if whitespace), suffix (if ends in newline) or empty string.
     local row = 0
     local col = 0
     local lasti = 0
     local presuf = indentation
     -- rs and cs marks the first char of a cell, e.g. right after & or screen col 0.
-    local rs = {} -- 1-indexed
-    local cs = {} -- 0-indexed
-    local r = r1+1 -- +1 to move past preamble line. TODO: this will break with multiline
-    local c = 0 -- keeps track of the beginning of the section in screen columns
+    local rs = {}    -- 1-indexed
+    local cs = {}    -- 0-indexed
+    local r = r1 + 1 -- +1 to move past preamble line. TODO: this will break with multiline
+    local c = 0      -- keeps track of the beginning of the section in screen columns
     local maxrow = 0 -- max among cells, i.e. excluding \bottomrule
 
     -- find the position of each & and \\, the latter assumed to be at end of line.
     -- This assumption avoids \\ inside cell with forced linebreak.
     for i, m in text:gmatch('()([&\n])') do
-        local section = text:sub(lasti+1, i-1)
-        if m == '&' and text:sub(i,i) ~= '\\' then
+        local section = text:sub(lasti + 1, i - 1)
+        if m == '&' and text:sub(i, i) ~= '\\' then
             -- the minus works like *, except match as shortly as possible, which let's us trim whitespace.
             local text = section:match('\n?%s*([^\n]-)%s*$')
             table.insert(texts, text)
@@ -233,9 +239,9 @@ function parseTable()
             table.insert(rs, r)
             table.insert(cs, c)
             local colspan = text:match("^\\multicolumn{(%d+)}") or 1
-            col=col + colspan
+            col = col + colspan
             presuf = ""
-            c=c+i-lasti
+            c = c + i - lasti
         elseif m == '\n' then
             local cell = section:match('\n?%s*([^\n]-)%s*\\\\%s*$')
             -- doesn't have \\, if
@@ -255,11 +261,11 @@ function parseTable()
                 table.insert(presufs, ' \\\\\n')
                 table.insert(rs, r)
                 table.insert(cs, c)
-                maxrow=row
-                row=row+1
-                col=0
+                maxrow = row
+                row = row + 1
+                col = 0
             end
-            r=r+1
+            r = r + 1
             c = 0
             presuf = indentation
         end
@@ -267,22 +273,22 @@ function parseTable()
     end
     local maxcol = math.max(unpack(cols))
     return {
-        texts=texts,
-        rows=rows,
-        cols=cols,
-        presufs=presufs,
-        maxrow=maxrow,
-        maxcol=maxcol,
-        r1=r1,
-        r2=r2,
-        rs=rs,
-        cs=cs,
+        texts = texts,
+        rows = rows,
+        cols = cols,
+        presufs = presufs,
+        maxrow = maxrow,
+        maxcol = maxcol,
+        r1 = r1,
+        r2 = r2,
+        rs = rs,
+        cs = cs,
     }
 end
 
 ---tab: table {r1=int, r2=int, maxcol=int, texts=string[], cols=int[], presufs=string[] }
 ---maxwidth: maximum allowed column width
----usemax: in case a cell exceeds the max, should it be ignored (default), or 
+---usemax: in case a cell exceeds the max, should it be ignored (default), or
 ---should the column be set to maxwidth (usemax=true).
 local function writeTable(tab, opts)
     opts = opts or {}
@@ -312,26 +318,26 @@ local function writeTable(tab, opts)
     for i, cell in ipairs(tab.texts) do
         local col = tab.cols[i]
         local presuf = tab.presufs[i]
-        -- flagged for ignoring, which is final cell without & or \\ or e.g. 
+        -- flagged for ignoring, which is final cell without & or \\ or e.g.
         -- \toprule
         if col == -1 then
             table.insert(text, cell .. presuf)
             idealw, currentw = 0, 0
         else
-            idealw=idealw + widths[col]
+            idealw = idealw + widths[col]
             local multicol = cell:match("^\\multicolumn{(%d+)}")
             if multicol ~= nil then
-                for i = 1, multicol-1 do
-                    idealw=idealw + 3 + widths[col+i]
+                for i = 1, multicol - 1 do
+                    idealw = idealw + 3 + widths[col + i]
                 end
             end
             if presuf == "" or presuf:match('\n$') then
                 if cell ~= "" then cell = " " .. cell end
             else -- is indentation
-                cell = presuf..cell
-                idealw=idealw+#presuf
+                cell = presuf .. cell
+                idealw = idealw + #presuf
             end
-            currentw=currentw + #cell
+            currentw = currentw + #cell
             if currentw < idealw then
                 cell = cell .. string.rep(' ', idealw - currentw)
                 currentw = idealw
@@ -340,25 +346,25 @@ local function writeTable(tab, opts)
                 cell = cell .. presuf
                 idealw, currentw = 0, 0
             else
-                if cell ~= "" or currentw+1 < idealw then
-                    cell=cell.." "
-                    currentw=currentw+1
+                if cell ~= "" or currentw + 1 < idealw then
+                    cell = cell .. " "
+                    currentw = currentw + 1
                 end
-                cell=cell.."&"
-                currentw=currentw+1
-                idealw=idealw+3
+                cell = cell .. "&"
+                currentw = currentw + 1
+                idealw = idealw + 3
             end
             table.insert(text, cell)
         end
     end
-    local lines = vim.split(table.concat(text):gsub('\n$', ''), '\n', {plain=true})
+    local lines = vim.split(table.concat(text):gsub('\n$', ''), '\n', { plain = true })
     vim.api.nvim_buf_set_lines(0, tab.r1, tab.r2, true, lines)
 end
 
 
 --- Work for either a visual selection or for the current env.
 ---maxwidth: maximum allowed column width
----usemax: in case a cell exceeds the max, should it be ignored (default), or 
+---usemax: in case a cell exceeds the max, should it be ignored (default), or
 ---should the column be set to maxwidth (usemax=true).
 local function alignTable(opts)
     if not in_env("table") then return end
@@ -374,7 +380,7 @@ local function getCurrentCell(tab)
         local c = tab.cs[i]
         -- check that we have gone past a cell
         if r > rCur or r == rCur and c > cCur then
-            return tab.rows[i-1], tab.cols[i-1]
+            return tab.rows[i - 1], tab.cols[i - 1]
         end
     end
     -- last entry
@@ -395,12 +401,12 @@ local function gotoCell(tab, row, col)
             if tab.texts[i] ~= "" then
                 local presuf = tab.presufs[i]
                 if presuf == "" or presuf:match("\n$") then
-                    c=c+1
+                    c = c + 1
                 else -- indentation
-                    c=c+#presuf
+                    c = c + #presuf
                 end
             end
-            vim.api.nvim_win_set_cursor(0, {r, c})
+            vim.api.nvim_win_set_cursor(0, { r, c })
             return true
         end
     end
@@ -410,33 +416,33 @@ end
 -- inspired by https://gist.github.com/tpope/287147
 vim.keymap.set("i", "&", function()
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    
+
     -- -1 since nvim_win_get_cursor is (1,0)-indexed and nvim_buf_set_text is 0-indexed.
-    if not in_env("table") or vim.api.nvim_buf_get_text(0, r-1, c-1, r-1, c, {})[1] == "\\" then
+    if not in_env("table") or vim.api.nvim_buf_get_text(0, r - 1, c - 1, r - 1, c, {})[1] == "\\" then
         -- just write a regular & and exit
-        vim.api.nvim_buf_set_text(0, r-1, c, r-1, c, {'&'})
-        vim.api.nvim_win_set_cursor(0, {r, c+1})
+        vim.api.nvim_buf_set_text(0, r - 1, c, r - 1, c, { '&' })
+        vim.api.nvim_win_set_cursor(0, { r, c + 1 })
         return
     end
 
-    vim.api.nvim_buf_set_text(0, r-1, c, r-1, c, {'& '})
+    vim.api.nvim_buf_set_text(0, r - 1, c, r - 1, c, { '& ' })
     local line = vim.api.nvim_get_current_line()
     local column = #line:sub(1, c + 2):gsub('\\&', ''):gsub('[^&]', '')
-    
+
     cmd [[silent! exe "normal \<Plug>TableAlign"]]
-    
+
     -- the alignTable call moves the cursor and modifies lines.
     -- The cursor is now at the top of inside the table env.
     line = vim.fn.getline(r)
     -- replace escaped ampersands with something else so they don't get counted
     _, c = line:gsub('\\&', '  '):find(('[^&]*&'):rep(column))
-    vim.api.nvim_win_set_cursor(0, {r, c+1})
+    vim.api.nvim_win_set_cursor(0, { r, c + 1 })
     -- Hacks to clear message area.
     -- Needed in combination with silent! above to not see any prints.
     -- Another solution I saw somewhere temporarily redefines some print functions to not do anything.
     print " "
     cmd "echo ' '"
-end, {remap=false, silent=true, buffer=true})
+end, { remap = false, silent = true, buffer = true })
 
 local function deleteColumn(opts)
     if not in_env("table") then return end
@@ -450,14 +456,14 @@ local function deleteColumn(opts)
         local presuf = tab.presufs[i]
         if col < colDel then
             table.insert(texts, text)
-            table.insert(cols,  col)
+            table.insert(cols, col)
             table.insert(presufs, presuf)
         elseif col > colDel then
             table.insert(texts, text)
-            table.insert(cols,  col-1)
+            table.insert(cols, col - 1)
             -- keep indent
             if col == 1 then
-                table.insert(presufs, tab.presufs[i-1])
+                table.insert(presufs, tab.presufs[i - 1])
             else
                 table.insert(presufs, presuf)
             end
@@ -467,20 +473,20 @@ local function deleteColumn(opts)
     tab.texts = texts
     tab.cols = cols
     tab.presufs = presufs
-    tab.maxcol=tab.maxcol-1
+    tab.maxcol = tab.maxcol - 1
     writeTable(tab, opts)
 
     -- remove entry from preamble
     local r, c, pre, parts, premap = parsePre()
     -- +1 for index conv
-    table.remove(parts, premap[colDel+1])
+    table.remove(parts, premap[colDel + 1])
     -- from 1 to 0 indexing
-    vim.api.nvim_buf_set_text(0, r-1, c-1, r-1, c+#pre-1, {table.concat(parts)})
+    vim.api.nvim_buf_set_text(0, r - 1, c - 1, r - 1, c + #pre - 1, { table.concat(parts) })
 end
 
--- Delete everything between & and &, as opposed to changeInCell that leaves 
+-- Delete everything between & and &, as opposed to changeInCell that leaves
 -- whitespace.
--- register: name of register to store the contents of the deleted cell. 
+-- register: name of register to store the contents of the deleted cell.
 -- Default=unnamed register.
 function M.deleteInCell(register)
     register = register or ""
@@ -493,13 +499,13 @@ function M.deleteInCell(register)
             local c = tab.cs[i]
             -- don't delete indent
             local presuf = tab.presufs[i]
-            if presuf:match("^[\t%s]+$") then c=c+#presuf end
+            if presuf:match("^[\t%s]+$") then c = c + #presuf end
             -- find nearest &, \\ or newline
-            local line = vim.api.nvim_buf_get_lines(0, r-1, r, true)[1]
-            local c2 = c + #line:sub(c+1):gsub("\\\\$", ""):gsub("\\&", "  "):gsub("&.*", "")
+            local line = vim.api.nvim_buf_get_lines(0, r - 1, r, true)[1]
+            local c2 = c + #line:sub(c + 1):gsub("\\\\$", ""):gsub("\\&", "  "):gsub("&.*", "")
             -- r-1 for index conv
-            vim.api.nvim_buf_set_text(0, r-1, c, r-1, c2, {})
-            vim.api.nvim_win_set_cursor(0, {r, c})
+            vim.api.nvim_buf_set_text(0, r - 1, c, r - 1, c2, {})
+            vim.api.nvim_win_set_cursor(0, { r, c })
             vim.fn.setreg(register, tab.texts[i])
             return true
         end
@@ -518,19 +524,22 @@ local function selectInCell()
             local c = tab.cs[i]
             -- don't include indent or leading single space
             local presuf = tab.presufs[i]
-            if presuf:match("^[\t%s]+$") then c=c+#presuf
-            elseif text ~= "" then c=c+1 end
-            vim.api.nvim_win_set_cursor(0, {r, c})
+            if presuf:match("^[\t%s]+$") then
+                c = c + #presuf
+            elseif text ~= "" then
+                c = c + 1
+            end
+            vim.api.nvim_win_set_cursor(0, { r, c })
             vim.cmd.normal 'v'
             -- assuming single line
-            vim.api.nvim_win_set_cursor(0, {r, c + #text - 1})
+            vim.api.nvim_win_set_cursor(0, { r, c + #text - 1 })
             return true
         end
     end
 end
 
 -- change text in cell except for single surrounding spaces.
--- register: name of register to store the contents of the deleted cell 
+-- register: name of register to store the contents of the deleted cell
 -- (without space padding). Default=unnamed register.
 function M.changeInCell(register)
     local tab = parseTable()
@@ -543,22 +552,23 @@ function M.changeInCell(register)
             -- don't delete indent and no leading space in that case
             local presuf = tab.presufs[i]
             if presuf:match("^[\t%s]+$") then
-                c=c+#presuf
+                c = c + #presuf
                 replacement = " "
             end
             -- find nearest &, \\ or newline
-            local line = vim.api.nvim_buf_get_lines(0, r-1, r, true)[1]
-            local c2 = c + #line:sub(c+1):gsub("\\\\$", ""):gsub("\\&", "  "):gsub("&.*", "")
+            local line = vim.api.nvim_buf_get_lines(0, r - 1, r, true)[1]
+            local c2 = c + #line:sub(c + 1):gsub("\\\\$", ""):gsub("\\&", "  "):gsub("&.*", "")
             -- r-1 for index conv
-            vim.api.nvim_buf_set_text(0, r-1, c, r-1, c2, {replacement})
-            vim.api.nvim_win_set_cursor(0, {r, c+#replacement-1})
+            vim.api.nvim_buf_set_text(0, r - 1, c, r - 1, c2, { replacement })
+            vim.api.nvim_win_set_cursor(0, { r, c + #replacement - 1 })
             vim.fn.setreg(register, tab.texts[i])
             vim.cmd.startinsert()
             return true
         end
     end
 end
--- TODO: vix to select contents without any space, cix to change except a 
+
+-- TODO: vix to select contents without any space, cix to change except a
 -- single leading and final space. yix to yank same selection as vix.
 
 local function swapColumn(left, opts)
@@ -570,49 +580,54 @@ local function swapColumn(left, opts)
     local rowCur, colCur = getCurrentCell(tab)
     local first = colCur
     if left then
-        first=first-1
+        first = first - 1
         if first < 0 then return end
-    elseif first+1 > tab.maxcol then return end
+    elseif first + 1 > tab.maxcol then
+        return
+    end
 
     local texts2, cols2, presufs2 = {}, {}, {}
     local i = 0
     while i <= #tab.texts do
-        i=i+1
+        i = i + 1
         local text = tab.texts[i]
         local col = tab.cols[i]
         local presuf = tab.presufs[i]
         if col == first then
-            table.insert(texts2, tab.texts[i+1])
-            table.insert(cols2,  col)
+            table.insert(texts2, tab.texts[i + 1])
+            table.insert(cols2, col)
             table.insert(presufs2, presuf)
             table.insert(texts2, text)
-            table.insert(cols2,  tab.cols[i+1])
-            table.insert(presufs2, tab.presufs[i+1])
-            i=i+1
+            table.insert(cols2, tab.cols[i + 1])
+            table.insert(presufs2, tab.presufs[i + 1])
+            i = i + 1
         else
             table.insert(texts2, text)
-            table.insert(cols2,  col)
+            table.insert(cols2, col)
             table.insert(presufs2, presuf)
         end
     end
     tab.texts = texts2
     tab.cols = cols2
     tab.presufs = presufs2
-    
+
     writeTable(tab, opts)
 
     -- also mod preamble
     local r, c, pre, parts, premap = parsePre()
-    local leftPart = parts[premap[first+1]] -- +1 for index conv
-    parts[premap[first+1]] = parts[premap[first+2]]
-    parts[premap[first+2]] = leftPart
+    local leftPart = parts[premap[first + 1]] -- +1 for index conv
+    parts[premap[first + 1]] = parts[premap[first + 2]]
+    parts[premap[first + 2]] = leftPart
     -- from 1 to 0 indexing
-    vim.api.nvim_buf_set_text(0, r-1, c-1, r-1, c+#pre-1, {table.concat(parts)})
+    vim.api.nvim_buf_set_text(0, r - 1, c - 1, r - 1, c + #pre - 1, { table.concat(parts) })
 
-    -- move cursor to stay on the same column. Reparse, since there may have 
+    -- move cursor to stay on the same column. Reparse, since there may have
     -- been changes.
-    if left then colCur=colCur-1
-    else colCur=colCur+1 end
+    if left then
+        colCur = colCur - 1
+    else
+        colCur = colCur + 1
+    end
     gotoCell(parseTable(), rowCur, colCur)
 end
 
@@ -623,7 +638,6 @@ function M.addCol(tab, index, opts)
     local presufs = {}
 
     if index <= tab.maxcol then
-
         for i = 1, #tab.texts do
             local col = tab.cols[i]
             local presuf = tab.presufs[i]
@@ -638,16 +652,15 @@ function M.addCol(tab, index, opts)
                     table.insert(presufs, presuf)
                     presuf = ""
                 end
-                col=col+1
+                col = col + 1
             elseif col > index then
                 -- all later columns shifted 1
-                col=col+1
+                col = col + 1
             end
             table.insert(texts, tab.texts[i])
             table.insert(cols, col)
             table.insert(presufs, presuf)
         end
-
     else
         -- also have to be able to add new column at very end
         for i = 1, #tab.texts do
@@ -671,21 +684,21 @@ function M.addCol(tab, index, opts)
     tab.texts = texts
     tab.cols = cols
     tab.presufs = presufs
-    tab.maxcol=tab.maxcol+1
+    tab.maxcol = tab.maxcol + 1
     writeTable(tab, opts)
 
     -- jump cursor to preamble to describe new column
     local r, c, pre, parts, premap = parsePre()
-    if index > tab.maxcol-1 then -- -1 since the value has just been updated
+    if index > tab.maxcol - 1 then -- -1 since the value has just been updated
         for i = 1, premap[#premap] do
-            c=c+#parts[i]
+            c = c + #parts[i]
         end
     else
-        for i = 1, premap[index+1]-1 do
-            c=c+#parts[i]
+        for i = 1, premap[index + 1] - 1 do
+            c = c + #parts[i]
         end
     end
-    vim.api.nvim_win_set_cursor(0, {r, c-1})
+    vim.api.nvim_win_set_cursor(0, { r, c - 1 })
     vim.cmd.startinsert()
 end
 
@@ -697,7 +710,7 @@ local function yankTable(onlycells, delim)
     local tab = parseTable()
     local lines = {}
     local lastrow = -1 -- to add lines
-    local lastcol -- to choose number of delimiters to write
+    local lastcol      -- to choose number of delimiters to write
     for i, text in ipairs(tab.texts) do
         local row = tab.rows[i]
         local col = tab.cols[i]
@@ -705,16 +718,16 @@ local function yankTable(onlycells, delim)
         if col == -1 then
             if not onlycells then
                 -- strip is only necessary since format lines are left alone completely in the parse
-                lines[#lines+1] = util.strip(text)
-                row=row-1 -- so that next cell (if there is one) will make a new line
+                lines[#lines + 1] = util.strip(text)
+                row = row - 1 -- so that next cell (if there is one) will make a new line
             end
         else
             -- new line?
             if row ~= lastrow then
-                lines[#lines+1] = ""
+                lines[#lines + 1] = ""
                 lastcol = 0
             end
-            lines[#lines]=lines[#lines] .. delim:rep(col - lastcol) .. text
+            lines[#lines] = lines[#lines] .. delim:rep(col - lastcol) .. text
         end
         lastrow = row
         lastcol = col
@@ -724,7 +737,7 @@ local function yankTable(onlycells, delim)
 end
 
 ---if not a row then a line can be \toprule, comment line, empty line etc
----@return bool
+---@return boolean
 local function isRow(fields)
     -- TODO: what about a row of all empty cells
     -- is row if multiple fields that aren't empty
@@ -744,7 +757,7 @@ local function isRow(fields)
     return true
 end
 
----Given a delim separated table in clipboard (register "+), format it as tex 
+---Given a delim separated table in clipboard (register "+), format it as tex
 ---and paste at cursor location if normal mode or replace a range if visual.
 ---@delim char field separator
 local function pasteTable(delim, opts)
@@ -766,22 +779,22 @@ local function pasteTable(delim, opts)
         else
             local col = 0
             while col < #fields do
-                local field = fields[col+1]
+                local field = fields[col + 1]
                 table.insert(texts, field) -- -> 1-ind
                 table.insert(cols, col)
                 table.insert(presufs, "")
                 local colspan = field:match("\\multicolumn{(%d+)}")
                 if colspan then
                     -- skip empty cells after multicolumn
-                    for i = col+1, col+colspan-1 do
+                    for i = col + 1, col + colspan - 1 do
                         -- -> 1-ind
-                        if fields[i+1] ~= "" then break end
+                        if fields[i + 1] ~= "" then break end
                         col = i
                     end
                 end
-                col=col+1
+                col = col + 1
             end
-            presufs[#presufs-#fields+1] = indentation
+            presufs[#presufs - #fields + 1] = indentation
             presufs[#presufs] = " \\\\\n"
         end
     end
@@ -793,75 +806,64 @@ local function pasteTable(delim, opts)
         r2 = r1
     else
         r1, _, r2, _ = util.get_visual_range()
-        r1=r1-1
+        r1 = r1 - 1
     end
 
     local maxcol = math.max(unpack(cols))
-    local tab = {r1=r1, r2=r2, maxcol=maxcol, texts=texts, cols=cols, presufs=presufs}
-    -- print(vim.inspect(tab))
+    local tab = { r1 = r1, r2 = r2, maxcol = maxcol, texts = texts, cols = cols, presufs = presufs }
     writeTable(tab, opts)
 end
 
-vim.keymap.set('n', "<plug>TableYank", yankTable, {buffer=true, desc="Yank table"})
-vim.keymap.set({'n', 'v'}, "<plug>TablePaste", pasteTable, {buffer=true, desc="Paste table"})
-vim.keymap.set(
-    'n', "<plug>TableAlign", alignTable,
-    { buffer=true, silent=true, desc="Align columns in tex table", }
-)
-vim.keymap.set(
-    'n', "<plug>TableDelCol", deleteColumn,
-    { buffer=true, silent=true, desc="Delete current column (also from preamble)", }
-)
-vim.keymap.set(
-    'n', "<plug>TableSwapRight", swapColumn,
-    { buffer=true, silent=true, desc="Swap table column right (also mod preamble)", }
-)
-vim.keymap.set(
-    'n', "<plug>TableSwapLeft", function () swapColumn(true) end,
-    { buffer=true, silent=true, desc="Swap table column left (also mod preamble)", }
-)
-vim.keymap.set('n', "<plug>TableGoLeft", function ()
-    local count = vim.v.count
-    if count == 0 then count = 1 end
-    local tab = parseTable()
-    local row, col = getCurrentCell(tab)
-    gotoCell(tab, row, col-count)
-end, { buffer=true })
-vim.keymap.set('n', "<plug>TableGoRight", function ()
-    local count = vim.v.count
-    if count == 0 then count = 1 end
-    local tab = parseTable()
-    local row, col = getCurrentCell(tab)
-    gotoCell(tab, row, col+count)
-end, { buffer=true })
-vim.keymap.set('n', "<plug>TableGoUp", function ()
-    local count = vim.v.count
-    if count == 0 then count = 1 end
-    local tab = parseTable()
-    local row, col = getCurrentCell(tab)
-    gotoCell(tab, row-count, col)
-end, { buffer=true })
-vim.keymap.set('n', "<plug>TableGoDown", function ()
-    local count = vim.v.count
-    if count == 0 then count = 1 end
-    local tab = parseTable()
-    local row, col = getCurrentCell(tab)
-    gotoCell(tab, row+count, col)
-end, { buffer=true })
 
-vim.keymap.set('n', '<Plug>TableAddColLeft', function ()
+local function map(mode, lhs, rhs, desc)
+    local opts = { buffer = true, silent = true }
+    opts.desc = desc
+    vim.keymap.set(mode, lhs, rhs, opts)
+end
+
+local function nmap(lhs, rhs, desc)
+    map('n', lhs, rhs, desc)
+end
+
+nmap("<plug>TableYank", yankTable, "Yank table")
+map({ 'n', 'v' }, "<plug>TablePaste", pasteTable, "Paste table")
+nmap("<plug>TableAlign", alignTable, "Align columns in tex table")
+nmap("<plug>TableDelCol", deleteColumn, "Delete current column (also from preamble)")
+nmap("<plug>TableSwapRight", swapColumn, "Swap table column right (also mod preamble)")
+nmap("<plug>TableSwapLeft", function() swapColumn(true) end, "Swap table column left (also mod preamble)")
+nmap("<plug>TableGoLeft", function()
+    local tab = parseTable()
+    local row, col = getCurrentCell(tab)
+    gotoCell(tab, row, col - vim.v.count1)
+end)
+nmap("<plug>TableGoRight", function()
+    local tab = parseTable()
+    local row, col = getCurrentCell(tab)
+    gotoCell(tab, row, col + vim.v.count1)
+end)
+nmap("<plug>TableGoUp", function()
+    local tab = parseTable()
+    local row, col = getCurrentCell(tab)
+    gotoCell(tab, row - vim.v.count1, col)
+end)
+nmap("<plug>TableGoDown", function()
+    local tab = parseTable()
+    local row, col = getCurrentCell(tab)
+    gotoCell(tab, row + vim.v.count1, col)
+end)
+
+nmap('<Plug>TableAddColLeft', function()
     local tab = parseTable()
     local _, col = getCurrentCell(tab)
     M.addCol(tab, col)
-end, { buffer=true, desc="Add new empty column to the left" })
+end, "Add new empty column to the left")
 
-vim.keymap.set('n', '<Plug>TableAddColRight', function ()
+nmap('<Plug>TableAddColRight', function()
     local tab = parseTable()
     local _, col = getCurrentCell(tab)
-    M.addCol(tab, col+1)
-end, { desc="Add new empty column to the right" })
+    M.addCol(tab, col + 1)
+end, "Add new empty column to the right")
 
-vim.keymap.set('v', '<Plug>TableSelInCell', selectInCell, { buffer=true, silent=true, desc="Select in cell" })
+map('v', '<Plug>TableSelInCell', selectInCell, "Select in cell")
 
 return M
-

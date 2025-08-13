@@ -1,0 +1,6 @@
+from _typeshed import Incomplete
+
+class FeatureValueCleaner:
+    keys_to_process: Incomplete
+    def __init__(self, to_process=...) -> None: ...
+    def clean_value(self, key_name, value): ...

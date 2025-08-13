@@ -6,4 +6,3 @@ setlocal conceallevel=1
 " setlocal fo+=ar
 " setlocal sidescrolloff=0
 setlocal wrap
-

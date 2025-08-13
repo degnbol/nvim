@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 
 vim.schedule(function ()
     vim.cmd "syn match Comment /b #   # b #   b #   # b #   b #   # b #/"

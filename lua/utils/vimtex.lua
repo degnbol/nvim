@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 local make_condition = require("luasnip.extras.conditions").make_condition
 
 local M = {}

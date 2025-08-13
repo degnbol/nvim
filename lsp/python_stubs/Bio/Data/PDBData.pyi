@@ -1,0 +1,8 @@
+from _typeshed import Incomplete
+
+protein_letters_3to1: Incomplete
+protein_letters_1to3: Incomplete
+protein_letters_3to1_extended: Incomplete
+nucleic_letters_3to1: Incomplete
+nucleic_letters_3to1_extended: Incomplete
+residue_sasa_scales: Incomplete

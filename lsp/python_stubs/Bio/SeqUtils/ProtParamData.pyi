@@ -1,0 +1,35 @@
+from _typeshed import Incomplete
+
+kd: Incomplete
+ab: Incomplete
+al: Incomplete
+ag: Incomplete
+bm: Incomplete
+bb: Incomplete
+cs: Incomplete
+ci: Incomplete
+cw: Incomplete
+es: Incomplete
+eg: Incomplete
+fs: Incomplete
+fc: Incomplete
+gd: Incomplete
+gy: Incomplete
+jo: Incomplete
+ju: Incomplete
+ki: Incomplete
+mi: Incomplete
+pa: Incomplete
+po: Incomplete
+ro: Incomplete
+rm: Incomplete
+sw: Incomplete
+ta: Incomplete
+wi: Incomplete
+zi: Incomplete
+gravy_scales: Incomplete
+Flex: Incomplete
+hw: Incomplete
+em: Incomplete
+ja: Incomplete
+DIWV: Incomplete

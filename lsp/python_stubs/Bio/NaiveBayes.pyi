@@ -1,0 +1,13 @@
+from Bio import BiopythonDeprecationWarning as BiopythonDeprecationWarning, MissingPythonDependencyError as MissingPythonDependencyError
+from _typeshed import Incomplete
+
+class NaiveBayes:
+    classes: Incomplete
+    p_conditional: Incomplete
+    p_prior: Incomplete
+    dimensionality: Incomplete
+    def __init__(self) -> None: ...
+
+def calculate(nb, observation, scale: bool = False): ...
+def classify(nb, observation): ...
+def train(training_set, results, priors: Incomplete | None = None, typecode: Incomplete | None = None): ...

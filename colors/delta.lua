@@ -10,8 +10,7 @@ require "fluoromachine".setup {
 require('fluoromachine.config').load()
 
 -- visual selection is not clear enough.
-hi.bg("Visual", "#6a3b6a")
+hi.setbg("Visual", "#6a3b6a")
 
 -- It's green by default which I associate with line added
-hi.set("CursorLineNr", {fg="white", bold=true})
-
+hi.set("CursorLineNr", { fg = "white", bold = true })

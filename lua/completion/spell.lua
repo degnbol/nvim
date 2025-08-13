@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 local async = require "blink.cmp.lib.async"
 local Kind = vim.lsp.protocol.CompletionItemKind
 

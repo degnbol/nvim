@@ -1,3 +1,2 @@
-#!/usr/bin/env lua
 -- Errors.
-vim.diagnostic.disable()
+vim.diagnostic.enable(false)

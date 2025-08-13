@@ -1,2 +1,3 @@
-" for some reason this isn't already set
-setlocal comments+=://
+" commentstring was set but 'comments' was missing.
+setlocal comments=://
+

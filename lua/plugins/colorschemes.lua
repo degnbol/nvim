@@ -1,5 +1,3 @@
-#!/usr/bin/env lua
-
 vim.keymap.set("n", "<leader>cs", function()
     -- Load colorschemes. Using lazy keys didn't work
     -- https://www.reddit.com/r/neovim/comments/12tcx0b/attempt_at_adding_color_schemes_to_list_of/
@@ -9,25 +7,36 @@ vim.keymap.set("n", "<leader>cs", function()
         vim.api.nvim_exec_autocmds("User", { pattern = "ColorSchemeLoadDark" })
     end
     require("telescope.builtin").colorscheme()
-end, { desc="Colorscheme" })
+end, { desc = "Colorscheme" })
 
 return {
+    {
+        "rktjmp/lush.nvim",
+        config = function()
+            local lush = require('lush')
+            local hsl = lush.hsl
+            -- TODO: decide if we want to use lush, or find another way to mix
+            -- colors, to get e.g. dimmed colour for module etc.
+        end
+    },
     {
         "norcalli/nvim-base16.lua",
         -- TODO: find way to use each of the builtin ones from this with colorscheme cmd
         lazy = true,
         -- event = "User ColorSchemeLoad",
-        dependencies={"norcalli/nvim.lua"},
+        dependencies = { "norcalli/nvim.lua" },
     },
 
     {
         "NTBBloodbath/sweetie.nvim",
         event = "User ColorSchemeLoad",
-        config = function ()
-            vim.g.sweetie = { overrides = {
-                Comment = { italic = false },
-                CommentBold = { italic = false, },
-            }}
+        config = function()
+            vim.g.sweetie = {
+                overrides = {
+                    Comment = { italic = false },
+                    CommentBold = { italic = false, },
+                }
+            }
         end,
     },
 
@@ -55,8 +64,8 @@ return {
 
     {
         -- minimal colors
-        -- zenwritten, neobones, vimbones, rosebones, forestbones, nordbones, 
-        -- tokyobones, seoulbones, duckbones, zenburned, kanagawabones, 
+        -- zenwritten, neobones, vimbones, rosebones, forestbones, nordbones,
+        -- tokyobones, seoulbones, duckbones, zenburned, kanagawabones,
         -- randombones
         -- kanagawa-bones is from here and currently is the default dark theme for kitty
         "mcchrish/zenbones.nvim",
@@ -69,7 +78,7 @@ return {
         'rose-pine/neovim',
         event = "User ColorSchemeLoad",
         name = 'rose-pine',
-        opts = { }
+        opts = {}
     },
 
     {
@@ -102,17 +111,17 @@ return {
             groups = {
                 -- In carbonfox there's a lot of shades of blue being used and builtins were colored "red" from the palette.
                 -- We instead are using italic to signify builtin and matched colour on the builtins to the non-builtin equivalent group.
-                -- This means we have red from the palette freed up to show 
-                -- something else so we change all the special hl groups to 
+                -- This means we have red from the palette freed up to show
+                -- something else so we change all the special hl groups to
                 -- red from a blue that is used for function.
                 carbonfox = {
-                    Special = {fg="palette.red"},
+                    Special = { fg = "palette.red" },
                 },
                 -- For terafox the red looks too aggressive and there is an underutilized pink.
                 terafox = {
-                    Special = {fg="palette.pink"},
+                    Special = { fg = "palette.pink" },
                     -- @tag has color like keyword. We link it to Tag which is linked to Special which makes it pink.
-                    ["@tag"] = {link="Tag"},
+                    ["@tag"] = { link = "Tag" },
                 }
             }
         }

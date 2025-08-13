@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 local ls = require "luasnip"
 local extras = require "luasnip/extras"
 local s = ls.s

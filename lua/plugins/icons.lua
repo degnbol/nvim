@@ -1,11 +1,12 @@
-#!/usr/bin/env lua
+
 -- NOTE: Icons should be consistent with ~/dotfiles/exa/icons.sh
 -- Colors:
--- Data containing files. color = "#89e051", cterm_color = "113",
--- Text containing files. color = "#519aba", cterm_color = "67",
+-- Binary data files. color = "#89e051", cterm_color = "113",
+-- Text files. color = "#519aba", cterm_color = "67",
 return {
     {
-        "nvim-tree/nvim-web-devicons", opts = {
+        "nvim-tree/nvim-web-devicons",
+        opts = {
             override = {
                 blend = {
                     icon = "󰂫",
@@ -108,7 +109,7 @@ return {
                 pdf = {
                     icon = "",
                     color = "#b30b00",
-                    ctermfg=124,
+                    ctermfg = 124,
                     name = "PortableDocumentFormat",
                 },
                 pkl = {

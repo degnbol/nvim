@@ -1,6 +1,20 @@
-Try out snacks.picker in place of fzf lua.
+Simplify config.
+Ideas:
+- we currently have mini.files, nvim-tree (or nvim-neo-tree?), and now fyler getting set up. We should probably aim to only use tree explorer.
+  - There's also oil.nvim with a similar role.
+- fzf-lua, telescope are both installed. See if we can use only fzf-lua, or mini.pick or snacks.picker.
+- colorscheme stuff is complex and messy. Lots is loaded globally that's only relevant to some filetypes. Also, I think nvim loads twice because of some colorscheme config. That's not ideal. There's some plugins that may be of use, if we don't mind adding another plugin.
+
+Try out snacks.picker in place of fzf-lua.
 Why? fzf lua was supposed to be fast but doesn't always seem that fast, plus things like oldfiles/recent doesn't give me the buffer I literally just closed, then what is the point.
 https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
+
+Highlight final \ in python at EOL
+
+Change to or add british English dict.
+
+Consider adding plugin that allows for undoing for a line selection.
+https://github.com/SunnyTamang/select-undo.nvim
 
 Maybe make a simple snippet for gcc on blank line -> whatever commentchar for the filetype
 
@@ -20,18 +34,8 @@ Number includes ± char
 
 FIXME: fix .sh icon yet again.
 
-FIXME: julia autoindent broken for @chain. e.g. try writing
-```
-avgEval0 = @chain avgEvalAccLab lstrip.('_') rstrip.()
-```
-
 When opening a new ipython REPL with leader tT it doesn't activate the right 
 env. Possibly because it doesn't understand autoenv.
-
-TODO: improve julia LSP. Slow, doesn't have completion, e.g. mean from stats.
-I think you need to understand some basics, watch tj on lsp servers, interact 
-directly with julia lsp server to see if it works. Maybe set it up without any 
-mason help.
 
 FIXME: understand the runtime in terms of colorscheme etc. zshFunction and 
 operator are linked to none.
@@ -39,8 +43,6 @@ We want to change them to link to function and operator. Some things in syntax/
 are getting applied, things in after/syntax are not. We don't want options to 
 be ignored, maybe by the double setting of the colorscheme.
 NOTE: it sometimes helps to use `hi! default` instead of `hi`
-
-<< moves cursor up 1 line if we are too close to line start.
 
 Could browse files with
 https://github.com/nvim-telescope/telescope-file-browser.nvim
@@ -118,8 +120,6 @@ Custom completion sources, e.g. valid string values for ggplot, e.g. annotate an
 inspiration from youtuber showing custom cmp source:
 https://github.com/wincent/wincent/blob/2d926177773f/aspects/nvim/files/.config/nvim/lua/wincent/cmp/handles.lua
 
-conceal \textcolor in tex and show the contained color in the chosen color.
-
 highlight _ that is outside math env with ERROR color in tex.
 
 https://neovimcraft.com/plugin/folke/noice.nvim/index.html
@@ -183,7 +183,7 @@ if they are using env variables defined in the same script or if using e.g.
 "`git root`/src/hello.jl"
 ```
 
-FIXME: horixontal scroll lag, e.g. ~/Topology/Chromatin/Pub/Su_2020/hicVsImg.jl
+FIXME: horixontal scroll lag, e.g. ~/Documents/phd/Chromatin/Pub/Su_2020/hicVsImg.jl
 
 Low priority. Forward and reverse search in typst inspired by vimtex.
 
@@ -235,3 +235,10 @@ copy paste table content and reformat to/from tsv.
 
 useful stuff from:
 https://github.com/folke/snacks.nvim
+
+https://old.reddit.com/r/neovim/comments/1j9fy2w/diffviewnvim_is_so_underrated/
+
+If you start using ghostty or if you want a more "correct" approach to dark/light switching in the future then consider
+https://github.com/afonsofrancof/OSC11.nvim/
+
+

@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 local M = {}
 
 ---Is this terminal kitty?

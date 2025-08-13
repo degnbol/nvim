@@ -73,3 +73,4 @@ iabbrev --- ⎯
 " local to window. Some window I'm switching to sometimes must be setting it 
 " so I disable it here.
 setlocal signcolumn=no
+

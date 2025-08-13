@@ -1076,7 +1076,7 @@ syn region     pymolSkip        matchgroup=pymolCommand start=+^skip$+ end=+^ski
 syn region     pymolPython      matchgroup=pymolCommand start=+^python$+ end=+^python end$+ contains=@python
 syn match      pymolPython      "^/.*" contains=@python
 
-hi def link    pymolCommand     Statement
+hi def link    pymolCommand     @function.call
 " hi def link    pymolIdentifier  Symbol
 " hi def link    pymolOperator    Operator
 hi def link    pymolOperatorK   @keyword.operator
@@ -1085,8 +1085,8 @@ hi def link    pymolOperator1   operator
 hi def link    pymolSkip        Comment
 hi def link    pymolComment     Comment
 hi def link    pymolString      String
-hi def link    pymolSelector    Function
-hi def link    pymolPunctuation SpecialChar
+hi def link    pymolSelector    @variable.builtin
+hi def link    pymolPunctuation Delimiter
 hi def link    pymolSetting     Identifier
 hi def link    pymolRun         Include
 hi def link    pymolKwArg       @parameter

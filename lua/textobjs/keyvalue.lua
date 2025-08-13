@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+
 local M = {}
 
 ---@param inner boolean inner value excludes trailing commas or semicolons, outer includes them. Both exclude trailing comments.
