@@ -36,6 +36,7 @@ return {
                 "bibtex",
                 "gitcommit",
                 "gitignore",
+                "git_config",
                 "gitattributes",
                 "diff",  -- for diff output https://github.com/the-mikedavis/tree-sitter-diff
                 "query", -- what treesitter queries (*.scm) are written in
