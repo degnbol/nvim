@@ -1,12 +1,18 @@
-
 -- Alts are pyright, pylsp, jedi_language_server, etc.
 -- https://old.reddit.com/r/neovim/comments/1bh0kba/psa_new_python_lsp_that_supports_inlay_hints_and/
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#basedpyright
+
+local pythonPath
+-- Use conda python if available.
+if vim.env.CONDA_PREFIX ~= nil then
+    pythonPath = vim.env.CONDA_PREFIX .. '/bin/python'
+end
+-- There is also :PyrightSetPythonPath to set it on the fly
+
 return {
     settings = {
         python = {
-            -- Has :PyrightSetPythonPath to set it on the fly
-            pythonPath = vim.env.CONDA_PREFIX .. '/bin/python'
+            pythonPath = pythonPath
         },
         basedpyright = {
             analysis = {

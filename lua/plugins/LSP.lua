@@ -1,4 +1,35 @@
-
+local ensure_installed
+if vim.fn.executable("npm") == 1 and vim.fn.executable("cargo") == 1 then
+    ensure_installed = {
+        "bashls",
+        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#omnisharp
+        -- "csharp_ls", -- instead see install/csharp.sh. There's also omnisharp on other LSPs on Mason.
+        -- python:
+        -- "jedi_language_server",
+        -- "pyright",
+        -- "pylsp",
+        "basedpyright",
+        -- "julials", -- Manual
+        -- "ltex", -- grammar check for latex, markdown, etc
+        "texlab",
+        -- "r_language_server",
+        "lua_ls",
+        -- "vimls",
+        "rust_analyzer",
+        -- "ts_ls", -- javascript. MasonInstall typescript-language-server
+        "sqlls",
+        -- "latexindent",
+        -- "matlab_ls",
+        -- "kotlin-language-server",
+        "yamlls",
+        -- "awk_ls",
+        -- "cypher_ls", -- neo4j
+        -- spell check/autocorrectors:
+        -- "misspell",
+        -- "typos",
+        -- "typos_lsp",
+    }
+end
 
 return {
     -- scala (not yet in Mason)
@@ -90,42 +121,14 @@ return {
     },
     {
         "williamboman/mason-lspconfig.nvim",
-        -- NOTE: can't be lazy for some lsp servers to work, e.g. lua
+        -- NOTE: can't be lazy for some lsp servers to work, e.g. lua.
         -- cmd = {"Mason", "MasonUpdate", "MasonInstall", "MasonLog", "MasonUninstall", "MasonUninstallAll"},
         dependencies = { "neovim/nvim-lspconfig", "williamboman/mason.nvim" },
         -- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
         -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
         -- also see lsp.lua
         opts = {
-            ensure_installed = {
-                "bashls",
-                -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#omnisharp
-                -- "csharp_ls", -- instead see install/csharp.sh. There's also omnisharp on other LSPs on Mason.
-                -- python:
-                -- "jedi_language_server",
-                -- "pyright",
-                -- "pylsp",
-                "basedpyright",
-                -- "julials", -- Manual
-                -- "ltex", -- grammar check for latex, markdown, etc
-                "texlab",
-                -- "r_language_server",
-                "lua_ls",
-                -- "vimls",
-                "rust_analyzer",
-                "ts_ls", -- javascript. MasonInstall typescript-language-server
-                "sqlls",
-                -- "latexindent",
-                "matlab_ls",
-                -- "kotlin-language-server",
-                "yamlls",
-                -- "awk_ls",
-                -- "cypher_ls", -- neo4j
-                -- spell check/autocorrectors:
-                -- "misspell",
-                -- "typos",
-                -- "typos_lsp",
-            }
+            ensure_installed = ensure_installed
         }
     },
     -- flutter tools contains LSP for dart.

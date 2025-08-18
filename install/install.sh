@@ -1,24 +1,22 @@
 #!/usr/bin/env zsh
-if [ -z "$XDG_CONFIG_HOME" ]; then
-    export XDG_CONFIG_HOME=~/dotfiles/config
-fi
-ln -s $XDG_CONFIG_HOME/nvim ~/nvim
-cd $XDG_CONFIG_HOME/nvim/install
+cd $0:h
 
-./neovim.sh || ./neovim_alt.sh
+# Installing from source to get :restart and vim.pack
+./neovim_source.sh
 
-./spell.sh
+# We are tracking the dic files in git so no need to build them.
+# ./spell.sh
 
 # https://tree-sitter.github.io/tree-sitter/creating-parsers#installation
 cargo install tree-sitter-cli
 
 # ripgrep for telescope to perform searching of words within files
-mamba install -yc conda-forge ripgrep pynvim
+conda install -yc conda-forge ripgrep pynvim
 
 # ./scala.sh
 
 # for editing jupyter notebooks
-mamba install -yc conda-forge jupytext
+conda install -yc conda-forge jupytext
 
 ../tex/unicode/install.sh
 
@@ -34,9 +32,15 @@ mamba install -yc conda-forge jupytext
 # https://github.com/python-lsp/python-lsp-server
 pip install python-lsp-server
 
-# for asciidoc editing.
+# As fallback to LSP for goto def using CTRL-].
+# E.g. for asciidoc.
 # tags is to goto definition for xrefs, since there is no LSP, treesitter or similar.
-brew uninstall ctags
-brew install asciidoctor universal-ctags
-
-
+if [ `uname` = "Darwin" ]; then
+    brew uninstall ctags
+    brew install asciidoctor universal-ctags
+elif command -v pacman > /dev/null; then
+    sudo pacman -Sy universal-ctags
+else
+    echo "Install universal-ctags"
+    return 1
+fi
