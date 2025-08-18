@@ -10,45 +10,48 @@ return {
         config = function()
             local nvim_treesitter = require 'nvim-treesitter'
             nvim_treesitter.setup {}
-            nvim_treesitter.install {
-                "awk",
-                -- "bash", -- so broken
-                "c_sharp",
-                "lua",
-                "json",
-                "python",
-                "julia",
-                "matlab",
-                "latex",
-                -- "java",
-                -- "kotlin",
-                "vimdoc",
-                "r",
-                "markdown",        -- for block code
-                "markdown_inline", -- for inline code
-                "toml",
-                "vim",
-                "regex",
-                "make",
-                -- "norg",
-                "cmake",
-                "cpp",
-                "bibtex",
-                "gitcommit",
-                "gitignore",
-                "git_config",
-                "gitattributes",
-                "diff",  -- for diff output https://github.com/the-mikedavis/tree-sitter-diff
-                "query", -- what treesitter queries (*.scm) are written in
-                "awk",
-                "rust",
-                "javascript",
-                "scala",
-                "sql",
-                "graphql", --ext .gql, e.g. schema for graph databases
-                "qf",      -- see below. Run :TSInstall qf
-                "yaml",
-            }
+            -- TS installations will keep retrying unless the TS CLI is installed (with cargo).
+            if vim.fn.executable("cargo") == 1 then
+                nvim_treesitter.install {
+                    "awk",
+                    -- "bash", -- so broken
+                    "c_sharp",
+                    "lua",
+                    "json",
+                    "python",
+                    "julia",
+                    "matlab",
+                    "latex",
+                    -- "java",
+                    -- "kotlin",
+                    "vimdoc",
+                    "r",
+                    "markdown",        -- for block code
+                    "markdown_inline", -- for inline code
+                    "toml",
+                    "vim",
+                    "regex",
+                    "make",
+                    -- "norg",
+                    "cmake",
+                    "cpp",
+                    "bibtex",
+                    "gitcommit",
+                    "gitignore",
+                    "git_config",
+                    "gitattributes",
+                    "diff",  -- for diff output https://github.com/the-mikedavis/tree-sitter-diff
+                    "query", -- what treesitter queries (*.scm) are written in
+                    "awk",
+                    "rust",
+                    "javascript",
+                    "scala",
+                    "sql",
+                    "graphql", --ext .gql, e.g. schema for graph databases
+                    "qf",      -- see below. Run :TSInstall qf
+                    "yaml",
+                }
+            end
 
             -- TODO: add
             -- https://github.com/nvim-treesitter/nvim-treesitter/#adding-parsers

@@ -7,8 +7,14 @@ cd $0:h
 # We are tracking the dic files in git so no need to build them.
 # ./spell.sh
 
+command -v npm > /dev/null || echo "Install npm to get LSP installs"
+
 # https://tree-sitter.github.io/tree-sitter/creating-parsers#installation
-cargo install tree-sitter-cli
+if command -v cargo > /dev/null; then
+    cargo install tree-sitter-cli
+else
+    echo "Install cargo to get treesitter CLI"
+fi
 
 # ripgrep for telescope to perform searching of words within files
 conda install -yc conda-forge ripgrep pynvim
