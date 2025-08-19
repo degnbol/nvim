@@ -83,6 +83,7 @@ local function afterColorscheme()
     -- Background colour for cmdline.
     hi.setbg("MsgArea", hi.bg("StatusLine"))
 
+    hi.mod("DiffDelete", {fg=hi.bg("Normal")})
     _GitSigns()
 
     -- Matching parenthesis is indicated by colour sometimes.
