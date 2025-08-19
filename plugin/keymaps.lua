@@ -202,7 +202,7 @@ map.n('<leader>tN', function()
 end, "parent")
 
 -- window layout.
-vim.api.nvim_create_autocmd("Filetype", {
+vim.api.nvim_create_autocmd("FileType", {
     pattern = "*",
     group = vim.api.nvim_create_augroup("WindowLayout", { clear = true }),
     callback = function()

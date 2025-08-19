@@ -1,3 +1,5 @@
+local map = require "utils/keymap"
+
 return {
     {
         -- :Git and similar commands
@@ -27,7 +29,7 @@ return {
             "ibhagwan/fzf-lua",              -- optional
         },
         init = function()
-            vim.keymap.set('n', '<leader>gn', "<Cmd>Neogit<CR>", { desc = "Neogit" })
+            map.n('<leader>gn', "<Cmd>Neogit<CR>", "Neogit")
         end,
         config = function()
             -- it seems NeogitDiffAdd and Delete are set to color fg + no bg version of DiffAdd and DiffDelete (DiffAdd by default is the same but DiffDelete has bg and no fg).
@@ -64,27 +66,24 @@ return {
         dependencies = { 'nvim-lua/plenary.nvim' },
         init = function()
             local gs = require "gitsigns"
-            local map = vim.keymap.set
 
-            map("n", "<leader>ga", gs.stage_hunk, { desc = "Add/stage hunk" })
-            map("n", "<leader>gA", gs.stage_buffer, { desc = "Add/stage buffer" })
-            map("n", "<leader>gu", gs.undo_stage_hunk, { desc = "Unstage hunk" })
-            map("n", "<leader>gb", gs.blame_line, { desc = "Blame line" })
-            map("n", "<leader>gp", gs.preview_hunk, { desc = "Preview hunk" })
-            map("n", "<leader>gi", gs.preview_hunk_inline, { desc = "Preview hunk inline" })
-            map("n", "<leader>gr", gs.reset_hunk, { desc = "Reset hunk" })
-            map("n", "<leader>gR", gs.reset_buffer, { desc = "Reset buffer" })
+            map.n("<leader>ga", gs.stage_hunk, "Add/stage hunk")
+            map.n("<leader>gA", gs.stage_buffer, "Add/stage buffer")
+            map.n("<leader>gu", gs.undo_stage_hunk, "Unstage hunk")
+            map.n("<leader>gb", gs.blame_line, "Blame line")
+            map.n("<leader>gp", gs.preview_hunk, "Preview hunk")
+            map.n("<leader>gi", gs.preview_hunk_inline, "Preview hunk inline")
+            map.n("<leader>gr", gs.reset_hunk, "Reset hunk")
+            map.n("<leader>gR", gs.reset_buffer, "Reset buffer")
             -- not as good as diffview
-            -- map("n", "<leader>gd", gs.diffthis       , { desc="Diff buffer" })
-            map("n", "<leader>gt", gs.toggle_deleted, { desc = "Toggle deleted" })
-            map("n", "[h", function() gs.nav_hunk('prev') end, { desc = "Previous hunk" })
-            map("n", "]h", function() gs.nav_hunk('next') end, { desc = "Next hunk" })
-            map("v", "<leader>gs", function() gs.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end,
-                { desc = "Stage hunks" })
-            map("v", "<leader>gr", function() gs.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end,
-                { desc = "Reset hunks" })
+            -- map.n("<leader>gd", gs.diffthis       , "Diff buffer")
+            map.n("<leader>gt", gs.toggle_deleted, "Toggle deleted")
+            map.n("[h", function() gs.nav_hunk('prev') end, "Previous hunk")
+            map.n("]h", function() gs.nav_hunk('next') end, "Next hunk")
+            map.x("<leader>gs", function() gs.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end, "Stage hunks")
+            map.x("<leader>gr", function() gs.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end, "Reset hunks")
             -- Text object
-            map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = "Hunk" })
+            map.ox('ih', ':<C-U>Gitsigns select_hunk<CR>', "Hunk")
         end,
         opts = {
             -- by default they are '~' to indicate that try to be compromise between bar and underscore.
@@ -114,10 +113,9 @@ return {
             -- hide untracked files with -uno.
             -- hide gitsigns' file explorer with DiffviewToggleFiles (unhide with <leader>e like NvimTreeToggle)
             -- Open during merge or rebase should show conflicts nicer automatically.
-            vim.keymap.set("n", "<leader>gd", "<Cmd>DiffviewOpen -uno<CR>:DiffviewToggleFiles<CR>",
-                { desc = "Diffview open" })
+            map.n("<leader>gd", "<Cmd>DiffviewOpen -uno<CR>:DiffviewToggleFiles<CR>", "Diffview open")
             -- pretty cool: works on ranges
-            vim.keymap.set({ "n", "x" }, "<leader>gh", "<Cmd>DiffviewFileHistory %<CR>", { desc = "History" })
+            map({ "n", "x" }, "<leader>gh", "<Cmd>DiffviewFileHistory %<CR>", { desc = "History" })
         end,
         config = function()
             local diffview = require "diffview"

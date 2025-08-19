@@ -57,8 +57,8 @@ opt.smoothscroll = true               -- if we wrap lines, then show partial sta
 -- a linebreak has been forced.
 -- opt.linebreak = true
 opt.numberwidth = 2 -- reduce default numbering from starting as 3 characters wide to 2
-opt.mouse =
-"a"                 -- activate the mouse, i.e. click to move cursor, drag to visual select and scroll to scroll window instead of cursor
+-- Mouse click navigation even in cmdline mode. Default is not in cmdline mode but otherwise.
+opt.mouse = "a"
 opt.mousescroll = "ver:1,hor:1"
 opt.termguicolors = true
 opt.cursorline = true        -- highlight current line
@@ -150,7 +150,7 @@ function FoldText()
 end
 
 vim.opt.foldtext = "v:lua.FoldText()"
-vim.opt.fillchars = 'fold: '
+vim.opt.fillchars:append('fold: ')
 
 -- Enable second pass hunk visual that aligns lines for a git diff better giving nicer overview of changes.
 -- https://old.reddit.com/r/neovim/comments/1ihpvaf/the_linematch_diffopt_makes_builtin_diff_so_sweat/
