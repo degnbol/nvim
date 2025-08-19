@@ -1,12 +1,12 @@
 -- start treesitter for each new filetype
-vim.api.nvim_create_autocmd("Filetype", {
+vim.api.nvim_create_autocmd("FileType", {
     pattern = "*",
     group = vim.api.nvim_create_augroup("start_treesitter", { clear = false }),
     callback = function(args)
         local disabled = {
-            "vim",               -- not perfect
-            "latex",             -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$
-            "sh", "bash", "zsh", -- broken
+            "vim",                                   -- not perfect
+            "latex",                                 -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$
+            "sh", "bash", "zsh", "sh.zsh", "zsh.sh", -- broken
         }
         local additional_vim_regex_highlighting = {
             "vimdoc",   -- treesitter version doesn't contain useful colors from :h group-name
@@ -19,7 +19,7 @@ vim.api.nvim_create_autocmd("Filetype", {
             "sql",  -- custom postgres highlight in syntax/sql.vim
             "wgsl", -- custom in syntax/wgsl.vim
         }
-        if disabled[vim.bo.filetype] == nil then
+        if not vim.list_contains(disabled, vim.bo.filetype) then
             -- Ignore errors for buffers where treesitter parser is not installed.
             pcall(vim.treesitter.start, args.buf)
             if additional_vim_regex_highlighting[vim.bo.filetype] then

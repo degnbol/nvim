@@ -36,5 +36,9 @@ vim.env.PATH = vim.env.HOME .. '/.local/bin/:/opt/homebrew/Caskroom/miniforge/ba
 -- add lsp/completion for pymol.
 -- In .py script, write `from pymol import cmd`
 local rtp = vim.opt.runtimepath:get()[1]
-vim.env.PYTHONPATH = vim.env.PYTHONPATH .. ':' .. rtp .. "/lsp/pymol-open-source/modules"
+if vim.env.PYTHONPATH == nil then
+    vim.env.PYTHONPATH = rtp .. "/lsp/pymol-open-source/modules"
+else
+    vim.env.PYTHONPATH = vim.env.PYTHONPATH .. ':' .. rtp .. "/lsp/pymol-open-source/modules"
+end
 

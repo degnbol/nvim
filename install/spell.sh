@@ -1,9 +1,12 @@
 #!/usr/bin/env zsh
 cd $0:h/..
 
+# Install aspell
 if ! command -v aspell > /dev/null; then
     if [ `uname` = "Darwin" ]; then
         brew install aspell
+    elif command -v pacman > /dev/null; then
+        sudo pacman -Sy --noconfirm aspell
     else
         echo "install aspell"
         exit 1
