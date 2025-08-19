@@ -1,4 +1,4 @@
-require "paths"
+-- map leaders has to be set before running lazy
 require "options"
 
 -- bootstrap lazy.nvim
@@ -22,6 +22,3 @@ require 'lazy'.setup('plugins', {
     install = { colorscheme = { "default" } }, -- Don't switch colorscheme after startup install
 })
 
-require "highlights"
-require "keymaps"
-require "autocmds"

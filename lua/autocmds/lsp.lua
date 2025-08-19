@@ -60,8 +60,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
         map_fzf('<leader>wd', "workspace_diagnostics", "Diagnostics")
 
         map.n('gh', vim.lsp.buf.signature_help, "Signature", opts)
-        -- currently autoformatting on save (see below). Maybe TODO have a way to toggle this.
-        map.nx('<leader>lf', vim.lsp.buf.format, "Format", opts)
+        -- TODO: maybe have a way to enable auto format on write or make an explicit keybind that does format and write both.
+        map.nx('grf', vim.lsp.buf.format, "Format", opts)
 
         -- Builtin auto-completion disabled for now since blink.cmp claims to be faster.
         -- Enable auto-completion. Note: Use CTRL-Y to select an item. |complete_CTRL-Y|
@@ -74,18 +74,18 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         -- Auto-format on save.
         -- Usually not needed if server supports "textDocument/willSaveWaitUntil".
-        if not client:supports_method('textDocument/willSaveWaitUntil')
-            and client:supports_method('textDocument/formatting') then
-            vim.api.nvim_create_autocmd('BufWritePre', {
-                group = grp,
-                buffer = args.buf,
-                callback = function()
-                    -- Short timeout so it doesn't hang.
-                    -- If it needs more time then invoke formatting manually.
-                    -- pcall so it doesn't complain if it didn't finish in time.
-                    pcall(vim.lsp.buf.format, { bufnr = args.buf, id = client.id, timeout_ms = 400 })
-                end,
-            })
-        end
+        -- if not client:supports_method('textDocument/willSaveWaitUntil')
+        --     and client:supports_method('textDocument/formatting') then
+        --     vim.api.nvim_create_autocmd('BufWritePre', {
+        --         group = grp,
+        --         buffer = args.buf,
+        --         callback = function()
+        --             -- Short timeout so it doesn't hang.
+        --             -- If it needs more time then invoke formatting manually.
+        --             -- pcall so it doesn't complain if it didn't finish in time.
+        --             pcall(vim.lsp.buf.format, { bufnr = args.buf, id = client.id, timeout_ms = 400 })
+        --         end,
+        --     })
+        -- end
     end,
 })
