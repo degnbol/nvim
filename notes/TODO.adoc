@@ -4,6 +4,7 @@ Ideas:
   - There's also oil.nvim with a similar role.
 - fzf-lua, telescope are both installed. See if we can use only fzf-lua, or mini.pick or snacks.picker.
 - colorscheme stuff is complex and messy. Lots is loaded globally that's only relevant to some filetypes. Also, I think nvim loads twice because of some colorscheme config. That's not ideal. There's some plugins that may be of use, if we don't mind adding another plugin.
+- There is git diffing with Gitsigns diffthis and Diffview. We use Gitsigns for hunk navigation and previews I think, which is useful. Can we get rid of diffview, and just have one diffing tool?
 
 Try out snacks.picker in place of fzf-lua.
 Why? fzf lua was supposed to be fast but doesn't always seem that fast, plus things like oldfiles/recent doesn't give me the buffer I literally just closed, then what is the point.

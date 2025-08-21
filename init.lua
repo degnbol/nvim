@@ -19,6 +19,6 @@ require 'lazy'.setup('plugins', {
         patterns = { "degnbol" },
         fallback = true,                       -- Fallback to git when local plugin doesn't exist
     },
-    install = { colorscheme = { "default" } }, -- Don't switch colorscheme after startup install
+    install = { colorscheme = { "terafox" } }, -- Don't switch colorscheme after startup install
 })
 

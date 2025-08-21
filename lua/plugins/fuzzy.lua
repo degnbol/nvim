@@ -41,8 +41,12 @@ return {
             quickfile = { enabled = false }, -- doesn't seem to make a difference.
         },
         keys = {
-            { "\\",         function() require "snacks".picker.smart() end,      desc = "Smart Find Files" },
-            { "<leader>fh", function() require "snacks".picker.highlights() end, desc = "Highlights" },
+            { "<leader>Fs", function() require "snacks".picker() end,                       desc = "Snacks picker" },
+            { "<leader>ff", function() require "snacks".picker.smart() end,                 desc = "Smart Find Files" },
+            { "<leader>fh", function() require "snacks".picker.highlights() end,            desc = "Highlights" },
+            { "<leader>fb", function() require "snacks".picker.buffers() end,               desc = "Buffers" },
+            { "<leader>fs", function() require "snacks".picker.lsp_symbols() end,           desc = "Symbols" },
+            { "<leader>fS", function() require "snacks".picker.lsp_workspace_symbols() end, desc = "Workspace symbols" },
         },
         init = function()
             -- Instead of default float.
@@ -70,6 +74,9 @@ return {
         -- optional for icon support
         dependencies = { "nvim-tree/nvim-web-devicons" },
         init = function()
+            hi.def("FzfLuaBorder", "FloatBorder")
+            hi.def("FzfLuaTitle", "Title")
+
             -- Simple picker with TAB (by default) for toggling preview, where fzf lua has preview by default.
             require 'mini.pick'.setup {
                 options = {
@@ -93,8 +100,10 @@ return {
             end
 
             -- General starting point
-            map_fzf("f<leader>", "builtin", "Builtin")
-            map_fzf("ff", "resume", "Resume")
+            map_fzf("Fl", "builtin", "FzfLua")
+            -- Not that useful? Doesn't seem to save state much, so it's just repeating the keybind last used essentially.
+            -- Then it doesn't save any time, and is just less explicit.
+            map_fzf("f<leader>", "resume", "Resume")
 
             -- Buffers and Files
 
@@ -104,7 +113,7 @@ return {
             map_fzf("fP", "files", "PWD files")
             map_fzf("fD", "files", "~/dotfiles/", { cwd = "~/dotfiles/" })
             map_fzf("fN", "files", "~/nvim/", { cwd = "~/nvim/" })
-            map_fzf("fb", "buffers", "Open buffers")
+            -- map_fzf("fb", "buffers", "Open buffers")
             map_fzf("fo", "oldfiles", "Opened files history")
             -- map("ft", "tabs", "Tabs")
             map_fzf("fq", "quickfix", "Quickfix list")
@@ -197,6 +206,9 @@ return {
                     delay = 10,
                     -- Doesn't move with the preview anyways.
                     scrollbar = false,
+                    -- Preview should only be 50%, by default it makes e.g. filepath listing too small.
+                    horizontal = "right:50%",
+                    vertical = "down:50%",
                 },
             },
             keymap = {
