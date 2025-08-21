@@ -34,6 +34,10 @@ opt.smartindent = false -- has to be set to false explicitly even though it is d
 -- treesitter indent, if for no other lang.
 vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 
+-- s: Don't say "search hit BOTTOM, continuing at TOP"
+-- A: Don't make ATTENTION warning when a swap file exists, i.e. file is open somewhere else.
+vim.opt.shortmess:append("sA")
+
 -- Has to be set for bufferline to work by hiding an open buffer when switching to another
 opt.hidden = true
 opt.ignorecase = true -- search ignoring case. use \c \C anywhere in search pattern to force case-sensitivity.
