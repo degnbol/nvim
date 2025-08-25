@@ -144,6 +144,7 @@ local function afterColorscheme()
     hi.mod("Number", { italic = false })
     -- If you find constants that you don't want to make italic then mod the semantic @lsp global instead.
     hi.set("Constant", { italic = false, bold = true })
+    hi.set("@constant", { italic = false, bold = true })
     -- Nothing is constant in python and it's just based on if chars are uppercase.
     hi.set("@constant.python", {})
     hi.mod("Exception", { italic = true })
@@ -173,8 +174,9 @@ local function afterColorscheme()
     hi.set("@function.builtin", { italic = true, fg = hi.fg("@function.call") })
     hi.link("@attribute", "PreProc")
     hi.set("@attribute.builtin", { italic = true, fg = hi.fg("@attribute") })
-    hi.mod("@constant.builtin", { italic = true, fg = hi.fg("@constant") })
+    hi.set("@constant.builtin", { bold=true, italic = true, fg = hi.fg("@constant") })
     hi.set("@type.builtin", { italic = true, fg = hi.fg("@type") })
+    hi.set("@identifier.builtin", { italic = true, fg = hi.fg("Identifier") })
     -- @lsp understands types better than TS. TS annotates def type(...) in class as @type.builtin.
     hi.set("@type.builtin.python", { italic = false })
     hi.mod("@module.builtin", { italic = true, fg = hi.fg("@module") })

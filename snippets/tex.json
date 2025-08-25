@@ -1,1 +1,12 @@
-{"definition":{"body":["\\begin{definition}[$1]","\t\\label{eq:$1}","\t$2","\\end{definition}"],"prefix":"definition"},"cases":{"body":["\\begin{cases}","    ${1:x} & \\text{if } ${2:x > 0}, \\\\\\\\","    ${3:0} & \\text{otherwise.}","\\end{cases}"],"prefix":"cases"},"columns":{"body":["\\begin{columns}","\t\\column{0.4\\textwidth}","    $1","\t\\column{0.6\\textwidth}","    $2","\\end{columns}"],"prefix":"columns"}}
+{"definition":{
+    "body":["\\begin{definition}[$1]","\t\\label{eq:$1}","\t$2","\\end{definition}"],
+    "prefix":"definition"
+},"cases":{"body":[
+    "\\begin{cases}",
+    "    ${1:x} & \\text{if } ${2:x > 0}, \\\\\\\\",
+    "    ${3:0} & \\text{otherwise.}",
+    "\\end{cases}"
+],"prefix":"cases"},"columns":{
+    "body":["\\begin{columns}","\t\\column{0.4\\textwidth}","    $1","\t\\column{0.6\\textwidth}","    $2","\\end{columns}"],
+    "prefix":"columns"
+}}
