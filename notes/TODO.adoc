@@ -1,3 +1,5 @@
+OMFG stop basedpyright lsp from goto def going to build/ dir
+ 
 Simplify config.
 Ideas:
 - we currently have mini.files, nvim-tree (or nvim-neo-tree?), and now fyler getting set up. We should probably aim to only use tree explorer.
@@ -242,4 +244,6 @@ https://old.reddit.com/r/neovim/comments/1j9fy2w/diffviewnvim_is_so_underrated/
 If you start using ghostty or if you want a more "correct" approach to dark/light switching in the future then consider
 https://github.com/afonsofrancof/OSC11.nvim/
 
+Decrease the intensity of hl-cursorline and thus the linked quickfix line hl group.
+Do this after making a more dynamic setter of hl groups with color mixing, intensity setting etc.
 

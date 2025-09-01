@@ -73,6 +73,8 @@ syn match Operator /=/ contained containedin=zshArraySubscript
 syn region zshString matchgroup=zshStringDelimiter start=/"/ skip=/\\"/ end=/"/ contained containedin=zshArraySubscript
 
 syn match Operator /!/
+" By default matches as an operator.
+syn match Delimiter /;/ containedin=zshOperator
 
 " zshString is both "" and '', we need to distinguish to avoid highlighting 
 " e.g. ":" in literal.
