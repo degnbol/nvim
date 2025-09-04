@@ -183,7 +183,7 @@ local function afterColorscheme()
     hi.set("@function.builtin", { italic = true, fg = hi.fg("@function.call") })
     hi.link("@attribute", "PreProc")
     hi.set("@attribute.builtin", { italic = true, fg = hi.fg("@attribute") })
-    hi.set("@constant.builtin", { bold=true, italic = true, fg = hi.fg("@constant") })
+    hi.set("@constant.builtin", { bold=false, italic = true, fg = value_fg }) -- The value_fg is enough to indicate constant.
     hi.set("@type.builtin", { italic = true, fg = hi.fg("@type") })
     hi.set("@identifier.builtin", { italic = true, fg = hi.fg("Identifier") })
     -- @lsp understands types better than TS. TS annotates def type(...) in class as @type.builtin.
@@ -364,7 +364,7 @@ local defaultLight = 'dawnfox'
 -- Don't clear so we can add to the same group for plugin and filetype specific hls.
 local grp = vim.api.nvim_create_augroup("afterColorscheme", { clear = false })
 
-vim.api.nvim_create_autocmd("Colorscheme", {
+vim.api.nvim_create_autocmd("ColorScheme", {
     group = grp,
     callback = afterColorscheme,
 })

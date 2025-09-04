@@ -11,7 +11,7 @@ vim.api.nvim_create_autocmd("BufNewFile", {
         local fname = vim.fs.basename(path)
         -- We look for any occurrence of a literal dot, i.e. a file like
         -- ".gitignore" is also fine.
-        if not fname:contains('.') then
+        if not fname:match('%.[^.]') then
             vim.cmd.quit()
         end
     end
