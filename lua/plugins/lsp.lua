@@ -66,7 +66,7 @@ return {
             -- add to lsp default config
             lsp.util.default_config = vim.tbl_deep_extend('force', lsp.util.default_config, {
                 capabilities = capabilities,
-                on_attach = on_attach
+                -- on_attach = on_attach
             })
 
             -- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
