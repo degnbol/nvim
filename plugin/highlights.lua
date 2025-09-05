@@ -157,7 +157,11 @@ local function afterColorscheme()
     hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.fg("@operator") })
     -- TEMP hardcoded colour.
     hi.mod("@parameter", { italic = false, fg = "#ac9ba1" })
-    hi.link("@variable.parameter", "@parameter")
+    -- attribute is by default linked to constant.
+    -- Attributes are not constant.
+    -- TODO: what's the difference between attribute, parameter, and property?
+    hi.link("@attribute", "@parameter")
+    hi.link("@variable.attribute", "@attribute")
     hi.mod("@function", { italic = false, bold = true })
     hi.setfg("@function.call", hi.fg("Function"))
     hi.link("@function.method", "function.call")
@@ -170,9 +174,9 @@ local function afterColorscheme()
     hi.mod("Boolean", { italic = true, bold = false })
     -- italic is enough distinction, and fits with the pattern. No need for a different colour.
     hi.set("@variable.builtin", { italic = true, })
-    hi.mod("@variable.parameter.builtin", { italic = true })
+    hi.mod("@variable.attribute.builtin", { italic = true })
     hi.set("@function.builtin", { italic = true, fg = hi.fg("@function.call") })
-    hi.link("@attribute", "PreProc")
+    -- hi.link("@attribute", "PreProc")
     hi.set("@attribute.builtin", { italic = true, fg = hi.fg("@attribute") })
     hi.set("@constant.builtin", { bold=true, italic = true, fg = hi.fg("@constant") })
     hi.set("@type.builtin", { italic = true, fg = hi.fg("@type") })
@@ -180,13 +184,15 @@ local function afterColorscheme()
     -- @lsp understands types better than TS. TS annotates def type(...) in class as @type.builtin.
     hi.set("@type.builtin.python", { italic = false })
     hi.mod("@module.builtin", { italic = true, fg = hi.fg("@module") })
-    -- underline tags since they are kinda like links
+    -- underline tags since they are kinda like links in some filetypes like asciidoc I think, but they are more basic elements in xml and html.
     hi.mod("Tag", { underline = true })
-    hi.mod("@tag", { underline = true })
+    hi.link("@tag", "Tag")
+    hi.mod("@tag.html", {underline=false})
+    hi.mod("@tag.xml", {underline=false})
     hi.mod("@tag.builtin", { underline = true, italic = true })
-    hi.mod("@tag.attribute", { underline = false, italic = false })
+    -- E.g. the "version" in xml `<release version="...`, i.e. it's not both a tag and an attribute, it's an attribute of a tag.
+    hi.set("@tag.attribute", { underline = false, italic = false, fg=hi.fg("@attribute") })
     hi.link("@tag.delimiter", "@comment")
-    hi.link("@tag.html", "@keyword") -- used for all the basic structure
     hi.mod("@lsp.type.ref", { underline = true })
     hi.mod("@lsp.type.link", { underline = true })
     hi.set("@markup.raw", { underline = false, fg = hi.fg("@markup.raw") }) -- trying to just remove italic
@@ -257,7 +263,7 @@ local function afterColorscheme()
     -- fortran some types will also be captured as variables, and we would ideally
     -- keep the type colouring.
     -- local variable = hi.getfg("@variable")
-    local variable = hi.fg("@parameter")
+    local variable = hi.fg("@attribute")
     hi.setfg("@variable", hi.fg("Normal"))
     -- Except for some languages where variable shouldn't be neutral:
     for _, showVar in ipairs { "typst", "markdown", "asciidoc", "latex" } do
