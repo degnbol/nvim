@@ -66,6 +66,13 @@ local function afterColorscheme()
     _diagnostics()
     _spellBad()
 
+    -- TEMP: the colour for statement should look more like function. Trying something closer, e.g. blue for function, purple for statement.
+    local statement_fg = "#8577af"
+    hi.mod("Statement", {fg=statement_fg})
+    hi.mod("Keyword", {fg=statement_fg})
+    -- Maybe make this slightly different in future if we think it's meaningful
+    hi.mod("Conditional", {fg=statement_fg})
+
     hi.mod("NonText", { bold = true })
     -- NonText shouldn't be exactly like comments
     if hi.fg("Comment") == hi.fg("NonText") then
@@ -130,7 +137,7 @@ local function afterColorscheme()
     -- testfiles/
     hi.mod("Comment", { italic = false })
     hi.set("Operator", { bold = true, fg = hi.fg("Function") })
-    hi.mod("Include", { italic = true })
+    hi.set("Include", { italic = true, bold=true, fg=statement_fg })
     hi.mod("Repeat", { italic = true })
     -- Labels are meant to be read, they should definitely not be italic.
     hi.mod("Label", { italic = false, bold = true })
@@ -141,18 +148,20 @@ local function afterColorscheme()
     -- distinguish them from : used in e.g. ranges.
     -- hl.mod("@conditional.ternary", {italic=false})
     hi.mod("Identifier", { italic = false })
-    hi.mod("Number", { italic = false })
+    -- TEMP from blending string colour with the red-ish for more builtin things.
+    local value_fg = "#7eb1b1"
+    hi.mod("Number", { italic = false, fg= value_fg})
     -- If you find constants that you don't want to make italic then mod the semantic @lsp global instead.
-    hi.set("Constant", { italic = false, bold = true })
-    hi.set("@constant", { italic = false, bold = true })
+    hi.set("Constant", { italic = false, fg=value_fg })
+    hi.set("@constant", { italic = false, fg=value_fg })
     -- Nothing is constant in python and it's just based on if chars are uppercase.
     hi.set("@constant.python", {})
     hi.mod("Exception", { italic = true })
     hi.mod("@include", { italic = true })
     hi.link("@keyword", "Keyword")
     hi.mod("Keyword", { italic = true, bold = false })
-    hi.mod("@keyword.function", { italic = true })
-    hi.mod("@keyword.return", { italic = true })
+    hi.mod("@keyword.function", { italic = true, fg=statement_fg })
+    hi.set("@keyword.return", { italic = true, bold=true, fg=statement_fg })
     -- all same as  keyword except bold since operators are bold.
     hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.fg("@operator") })
     -- TEMP hardcoded colour.
@@ -178,7 +187,7 @@ local function afterColorscheme()
     hi.set("@function.builtin", { italic = true, fg = hi.fg("@function.call") })
     -- hi.link("@attribute", "PreProc")
     hi.set("@attribute.builtin", { italic = true, fg = hi.fg("@attribute") })
-    hi.set("@constant.builtin", { bold=true, italic = true, fg = hi.fg("@constant") })
+    hi.set("@constant.builtin", { bold=false, italic = true, fg = value_fg }) -- The value_fg is enough to indicate constant.
     hi.set("@type.builtin", { italic = true, fg = hi.fg("@type") })
     hi.set("@identifier.builtin", { italic = true, fg = hi.fg("Identifier") })
     -- @lsp understands types better than TS. TS annotates def type(...) in class as @type.builtin.
@@ -203,7 +212,8 @@ local function afterColorscheme()
 
     -- I like having @string.documentation different colour from regular string to make it clear it has a different special role and is recognised as such.
     -- By default it was linked to keyword which is implying builtin, e.g. italic.
-    hi.link("@string.documentation", "Special")
+    -- TEMP: between string, comment, function, and statement/keyword colours
+    hi.set("@string.documentation", {fg="#738fa6"})
 
     -- delim.
     hi.setfg("Delimiter", hi.fg("Keyword"))
@@ -360,7 +370,7 @@ local defaultLight = 'dawnfox'
 -- Don't clear so we can add to the same group for plugin and filetype specific hls.
 local grp = vim.api.nvim_create_augroup("afterColorscheme", { clear = false })
 
-vim.api.nvim_create_autocmd("Colorscheme", {
+vim.api.nvim_create_autocmd("ColorScheme", {
     group = grp,
     callback = afterColorscheme,
 })

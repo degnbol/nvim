@@ -32,14 +32,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
             map_fzf("<leader>lr", "references", "References")
         end
 
-        if client:supports_method('textDocument/definition') then
-            -- `vim.lsp.buf.definition`
-            map_fzf("gd", "definitions", "Definition")
-        end
-
         if client:supports_method('textDocument/declaration') then
             -- `vim.lsp.buf.declaration`
-            map_fzf("gD", "declaration", "Declaration")
+            map_fzf("grD", "declaration", "Declaration")
         end
 
         -- `vim.lsp.buf.type_definition`

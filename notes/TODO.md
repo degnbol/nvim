@@ -1,3 +1,16 @@
+Colorscheme overhaul. Functional and simpler.
+E.g. values such as numbers are currently coloured similar to types.
+Should instead be similar to strings, which are also simple dataformats, and things like `None` in python which are builtin simple values.
+Docstrings should also be coloured similar to strings, e.g. somewhere between string and comment. Also, keywords and statements are currently red while function calls are blue. This is two very different colours, however what is function and what is statement is not very different and gets overlapping by language. Also there's `repeat` which is almost the same colour, and the import or include keywords as well.
+All of these could probably be more similar in colour, which would work ok because the keywords are still distinguished by being italic.
+character.special could also be more similar to character and character could also be in between string and the color for numbers/boolean/"None"/etc.
+We also have to think about the colour wheel. E.g. if we want function to be some kind of blue and string to be some kind of green, then they are right next to each other in terms of hue. Then if we want numbers to be a colour between string and statement/keyword, which e.g. is purple, then the number will become blue and clash with function. For this reason it might make sense to make some choice along the hue about which concepts should be next to each other. With parameters, which are bit like variables but also flags, and import statements which are keywords, and types are a bit like variables or sometimes can be called like functions, and filenames and directory names which should have same colour outside in term, and are a bit like strings but also relate to Include and @import, I think if you draw a diagram of all the concepts and how they relate to each other there will be almost just one way to place them along hue, with lightness+saturation being a matter of indicating important, e.g. the torch in torch. should be dim.
+Delimiters doesn't have to have same color as keyword/statement. keyword operator probably don't need to be bold.
+Executable files in term could be highlighted blue like functions inside nvim.
+What about types being called? E.g. str(...) or a class or class instance. Any meaningful way to indicate calling vs. type/function/class with hue, saturation, lightness, bold, italic, underline, etc..
+
+OMFG stop basedpyright lsp from goto def going to build/ dir
+ 
 Simplify config.
 Ideas:
 - we currently have mini.files, nvim-tree (or nvim-neo-tree?), and now fyler getting set up. We should probably aim to only use tree explorer.
@@ -242,4 +255,6 @@ https://old.reddit.com/r/neovim/comments/1j9fy2w/diffviewnvim_is_so_underrated/
 If you start using ghostty or if you want a more "correct" approach to dark/light switching in the future then consider
 https://github.com/afonsofrancof/OSC11.nvim/
 
+Decrease the intensity of hl-cursorline and thus the linked quickfix line hl group.
+Do this after making a more dynamic setter of hl groups with color mixing, intensity setting etc.
 

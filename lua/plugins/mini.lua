@@ -130,6 +130,7 @@ return {
                     { mode = 'n', keys = '<leader>b',     desc = "Buffer|Tab" },
                     { mode = 'n', keys = '<leader>c',     desc = "Compilation" },
                     { mode = 'n', keys = '<leader>d',     desc = "Diagnostics" },
+                    { mode = 'n', keys = '<leader>D',     desc = "DAP" },
                     { mode = 'n', keys = '<leader>e',     desc = "Explore/manipulate directories" },
                     { mode = 'n', keys = '<leader>f',     desc = "Find|File" },
                     { mode = 'n', keys = '<leader>g',     desc = "Git" },

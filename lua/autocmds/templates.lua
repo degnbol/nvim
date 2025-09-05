@@ -104,6 +104,9 @@ local defaultlines = {
     end,
 }
 
+-- Has to be outside here defined as variable group when clear=true.
+-- Otherwise will reset for each iteration of the loop.
+local grp = vim.api.nvim_create_augroup("defaultfile", { clear = true })
 for ext, lines in pairs(defaultlines) do
     local callback
     if type(lines) == "function" then
@@ -118,7 +121,8 @@ for ext, lines in pairs(defaultlines) do
     end
     vim.api.nvim_create_autocmd("BufNewFile", {
         pattern = "*." .. ext,
-        group = vim.api.nvim_create_augroup("defaultfile", { clear = true }),
+        group = grp,
         callback = callback
     })
 end
+

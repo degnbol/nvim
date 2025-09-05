@@ -159,6 +159,11 @@ return {
         ---@module 'blink.cmp'
         ---@type blink.cmp.Config
         opts = {
+            enabled = function()
+                -- Auto completes aggresively in DAP REPL when no asked.
+                -- I tried setting all the auto-ish settings to false and it still does it.
+                return vim.bo.buftype ~= 'prompt'
+            end,
             keymap = keymap,
             cmdline = { keymap = keymap_cmdline, },
 
@@ -322,7 +327,14 @@ return {
                 },
             },
             completion = {
-                list = { selection = { preselect = false, auto_insert = true }, },
+                list = {
+                    selection = {
+                        preselect = false,
+                        auto_insert = function(ctx)
+                            return ctx.mode ~= 'cmdline' and vim.bo.buftype ~= "prompt"
+                        end,
+                    },
+                },
                 accept = {
                     auto_brackets = {
                         override_brackets_for_filetypes = {
@@ -346,7 +358,9 @@ return {
                 },
                 menu = {
                     -- don't autoshow completion in cmdline
-                    auto_show = function(ctx) return ctx.mode ~= 'cmdline' end,
+                    auto_show = function(ctx)
+                        return ctx.mode ~= 'cmdline' and vim.bo.buftype ~= "prompt"
+                    end,
                     draw = {
                         components = {
                             source_icon = {

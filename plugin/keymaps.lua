@@ -283,6 +283,7 @@ map.desc('n', 'gra', "Code actions")
 map.desc('n', 'gri', "Implementations")
 map.desc('n', 'grn', "Rename")
 map.desc('n', 'grt', "Type definitions")
+map.n('grd', vim.lsp.buf.definition, "Definition")
 
 -- TODO: the LSP nmap K should also show the float aligned to the function name start and not cursor.
 map.i('<C-s>', function()
