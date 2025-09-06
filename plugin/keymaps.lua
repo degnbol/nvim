@@ -352,3 +352,9 @@ map.n("gx", function()
     local url = vim.fn.getreg("z")
     vim.ui.open(url)
 end, "Smart URL opener")
+
+-- Clear the builtin C-leftclick which is goto tag def.
+-- It can't be removed with vim.keymap.del since it's builtin.
+-- We always just use C-] for explicit tag lookup and C-leftmouse is mapped from Cmd-leftmouse in arch.
+map.n("<C-leftmouse>", "")
+

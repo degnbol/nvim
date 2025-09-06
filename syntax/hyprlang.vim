@@ -1,7 +1,7 @@
 hi def link hyprCommand Statement
 syn match Operator /=/ containedin=hyprCategory
 syn match Operator /\$\ze[A-Za-z0-9]/
-syn keyword HyprKey SHIFT ALT SUPER
+syn keyword HyprKey SHIFT ALT SUPER CTRL
 hi def link HyprKey Constant
 syn match Delimiter /,/ containedin=hyprValue
 syn keyword Type rgba containedin=hyprCategory nextgroup=rgbaColor

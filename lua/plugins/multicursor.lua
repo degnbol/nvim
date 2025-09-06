@@ -5,6 +5,7 @@ local map = require "utils/keymap"
 return {
     {
         "mg979/vim-visual-multi",
+        enabled = false, -- maps C-click which is currently used as cmd-click for URLs
         init = function()
             vim.g.VM_mouse_mappings = true
             vim.g.VM_leader = "<leader>m"
@@ -85,8 +86,8 @@ return {
             -- Delete the main cursor.
             map({ "n", "v" }, "<leader>mx", mc.deleteCursor, { desc = "Delete main cursor" })
 
-            -- Add and remove cursors with control + left click.
-            map.n("<c-leftmouse>", mc.handleMouse)
+            -- Add and remove cursors with alt + left click.
+            map.n("<a-leftmouse>", mc.handleMouse)
 
             map({ "n", "v" }, "<leader>mm", function()
                 if mc.cursorsEnabled() then
