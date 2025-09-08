@@ -8,6 +8,18 @@ We also have to think about the colour wheel. E.g. if we want function to be som
 Delimiters doesn't have to have same color as keyword/statement. keyword operator probably don't need to be bold.
 Executable files in term could be highlighted blue like functions inside nvim.
 What about types being called? E.g. str(...) or a class or class instance. Any meaningful way to indicate calling vs. type/function/class with hue, saturation, lightness, bold, italic, underline, etc..
+There's so many edge cases to think about, e.g. in python `@string.regexp`, `@string.escape`, `@operator.regex`, `@punctuation.bracket.regex`. How these should convey the operator, etc. role and how similar and different they should be to just regular string.
+```python
+    re_xyz = re.compile(r"(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)")
+```
+Type is sometimes almost a comment, e.g. in untyped languages like python. Maybe that's a relation for the graph of concepts?
+Type is often used as function.
+Should there be a difference between bracket and delimiter? maybe a subtle one, which is a compromise step in the direction of using rainbow brackets.
+I think often the brackets are not interesting to read, e.g. boring function calls with no args or in python where the parenthesis are used to spread an expression across multiple lines.
+So Maybe they should not be bold etc. but just be a slightly dimmed version of the delimiter?
+An argument for having bold operator is dot is both an operator and delimiter in julia, so this way we can distinguish and highlight broadcasting which makes an important subtle difference.
+An argument for Keyword and function being similar colour is if operator is the same colour to function, then a line like `if x or y` will have `if` and `or` in similar colour which makes sense.
+However having `if` the exact same colour as functions is bad, they should just be neighbours.
 
 OMFG stop basedpyright lsp from goto def going to build/ dir
  
@@ -193,7 +205,7 @@ Relevant for req/import/using statements etc that I generally write with one thi
 
 Would be cool to have essentially zsh/bash LSP, where gf works for paths even 
 if they are using env variables defined in the same script or if using e.g.
-```
+```julia
 "`git root`/src/hello.jl"
 ```
 
