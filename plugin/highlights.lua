@@ -218,6 +218,12 @@ local function afterColorscheme()
     hi.setfg("Delimiter", hi.fg("Keyword"))
     hi.link("@punctuation.bracket", "Delimiter")
     hi.link("@punctuation.delimiter", "Delimiter")
+    -- In python this is curly braces in f"{...}" which are like delimiters, 
+    -- except they are neutral. They don't form a dict like regular {} and the 
+    -- different highlighting within them vs the string around makes them 
+    -- visually redundant. For this reason we want them to look like delimiter but dimmed.
+    -- TEMP: this is hardcoded here.
+    hi.set("@punctuation.special", {fg="#504768"})
     -- Was overwriting the rainbow ext marks:
     hi.clear("@lsp.type.punct.typst")
     -- Not sure what "pol" is but it was lined to @variable which is neutral color globally but not for typst.
