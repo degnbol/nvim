@@ -57,5 +57,5 @@ syn match FunctionPath '\(^\s*\S*\($(.*)\)\?\)\@<=[/A-Za-z0-9._-]*/\zs[A-Za-z._-
 " The required text is then $( made into a single "atom": \( ... \)
 syn match Function /\(\$(\)\@<=[A-Za-z_-]\+/ contained containedin=zshSubstQuoted,shCommandSub
 
-syn match Delimiter /;/
-
+" Change from default shOperator match.
+syn match Delimiter /;/ contained containedin=shIf,shOperator
