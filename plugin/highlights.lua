@@ -145,7 +145,7 @@ local function afterColorscheme()
     -- have ? and : italic since that is meant for words, but it does help
     -- distinguish them from : used in e.g. ranges.
     -- We can also replace italics with bold, similar to operator, but it's still different because of the colour.
-    hi.mod("@conditional.ternary", {italic=false, bold=true})
+    hi.mod("@keyword.conditional.ternary", {italic=false, bold=true})
     hi.mod("Identifier", { italic = false })
     -- TEMP from blending string colour with the red-ish for more builtin things.
     local value_fg = "#7eb1b1"
