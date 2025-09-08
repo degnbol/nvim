@@ -18,7 +18,6 @@ for _, i in ipairs(counts) do
     end
 end
 
--- Keymaps for better default experience
 map({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 -- in the terminal map escape to changing from terminal mode (insert mode) to
@@ -145,8 +144,11 @@ map.i("<S-down>", "<C-o>$")
 
 map.i("<C-l>", "<right>", "Right")
 
+-- Mac bindings.
 map.c('<A-left>', "<s-left>", "move back one word")
 map.c('<A-right>', "<s-right>", "move forward one word")
+map({'n', 'v', 'c', 'i'}, '<D-left>', "<home>", {desc="Start of line"})
+map({'n', 'v', 'c', 'i'}, '<D-right>', "<end>", {desc="Start of line"})
 map.c('<A-BS>', "<C-w>", "Delete back one word")
 -- Doesn't work well since we go one WORD to the right but only delete one word back.
 map.c('<A-delete>', "<S-right><C-w>", "Delete next word")

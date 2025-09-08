@@ -144,7 +144,8 @@ local function afterColorscheme()
     -- for e.g. julia there is the `a = bool ? b : c` notation. It's weird to
     -- have ? and : italic since that is meant for words, but it does help
     -- distinguish them from : used in e.g. ranges.
-    -- hl.mod("@conditional.ternary", {italic=false})
+    -- We can also replace italics with bold, similar to operator, but it's still different because of the colour.
+    hi.mod("@keyword.conditional.ternary", {italic=false, bold=true})
     hi.mod("Identifier", { italic = false })
     -- TEMP from blending string colour with the red-ish for more builtin things.
     local value_fg = "#7eb1b1"
@@ -160,7 +161,7 @@ local function afterColorscheme()
     hi.mod("Keyword", { italic = true, bold = false })
     hi.mod("@keyword.function", { italic = true, fg=statement_fg })
     hi.set("@keyword.return", { italic = true, bold=true, fg=statement_fg })
-    -- all same as  keyword except bold since operators are bold.
+    -- all same as keyword except bold since operators are bold.
     hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.fg("@operator") })
     -- TEMP hardcoded colour.
     hi.mod("@parameter", { italic = false, fg = "#ac9ba1" })
@@ -217,6 +218,12 @@ local function afterColorscheme()
     hi.setfg("Delimiter", hi.fg("Keyword"))
     hi.link("@punctuation.bracket", "Delimiter")
     hi.link("@punctuation.delimiter", "Delimiter")
+    -- In python this is curly braces in f"{...}" which are like delimiters, 
+    -- except they are neutral. They don't form a dict like regular {} and the 
+    -- different highlighting within them vs the string around makes them 
+    -- visually redundant. For this reason we want them to look like delimiter but dimmed.
+    -- TEMP: this is hardcoded here.
+    hi.set("@punctuation.special", {fg="#504768"})
     -- Was overwriting the rainbow ext marks:
     hi.clear("@lsp.type.punct.typst")
     -- Not sure what "pol" is but it was lined to @variable which is neutral color globally but not for typst.
@@ -356,6 +363,17 @@ local function afterColorscheme()
 
     hi.mod("TabLine", { fg = "grey" })
     hi.mod("TabLineFill", { fg = "grey" })
+
+    -- Indicated for the whole regex string. By default shown as a colour like `Type` has, which is just confusing.
+    -- Should be same as String or at least similar.
+    hi.link("@string.regexp", "@string")
+    -- @string.escape.regex linked to this by default.
+    -- Could be linked to Character in the future when this is different from string.
+    hi.link("@string.escape", "Macro")
+    -- E.g. "\." for literal dot in regexp.
+    hi.link("@string.regexp.regex", "@string.escape")
+    -- Compromise between Operator and other things?
+    -- hi.set("@operator.regex", {fg=hi.fg("Macro"), bold=true})
 end
 
 -- local defaultDark = 'fluoromachine'

@@ -59,3 +59,9 @@ syn match Function /\(\$(\)\@<=[A-Za-z_-]\+/ contained containedin=zshSubstQuote
 
 " Change from default shOperator match.
 syn match Delimiter /;/ contained containedin=shIf,shOperator
+
+" {a,b} which expands to multiple alternatives.
+syn region ExpandAlts matchgroup=Delimiter start=/{/ end=/}/
+syn match ExpandAltsComma /,/ contained containedin=ExpandAlts
+hi def link ExpandAltsComma Delimiter
+
