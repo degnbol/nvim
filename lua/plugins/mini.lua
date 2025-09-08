@@ -3,7 +3,7 @@ local map = require "utils/keymap"
 
 return {
     {
-        'echasnovski/mini.nvim',
+        'nvim-mini/mini.nvim',
         version = false,
         -- higher than default 50 to allow mini parts loaded in other files.
         priority = 100,
