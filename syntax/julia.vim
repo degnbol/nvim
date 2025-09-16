@@ -2,4 +2,3 @@
 let b:current_syntax = "julia"
 " Define custom regex syntax highlights missing from treesitter highlights
 syn match @punctuation.delimiter ';'
-

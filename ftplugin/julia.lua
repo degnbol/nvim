@@ -30,3 +30,9 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     group = vim.api.nvim_create_augroup("julia_bug", { clear = true }),
     callback = function() vim.bo.buftype = nil end
 })
+
+-- TEMP: there should be a better way to do this. syn must be getting reset somewhere.
+vim.defer_fn(function ()
+    vim.cmd [[syn keyword @variable.builtin stdin stdout stderr]]
+end, 0)
+

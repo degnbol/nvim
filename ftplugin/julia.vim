@@ -15,4 +15,3 @@ let @i="$[fdwA = \<Esc>JJD"
 let @f="Ifunction \<Esc>f(%f=caw\<BS>\<CR>\<ESC>oend\<ESC>[f=af"
 
 iabbrev edn end
-
