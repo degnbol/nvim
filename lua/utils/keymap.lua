@@ -137,6 +137,21 @@ function M.qf_item_is_self(item)
     return item.filename == vim.api.nvim_buf_get_name(0) and item.lnum == vim.api.nvim_win_get_cursor(0)[1]
 end
 
+---Open quickfix with height set to number of entries if less than default 
+---height (10) and if only one entry, jump to it without opening qf.
+---@param options vim.fn.setqflist.what `:h setqflist-what`
+function M.qf_mini(options)
+    if #options.items == 1 then
+        local item = options.items[1]
+        vim.api.nvim_win_set_cursor(0, {item.lnum, item.col-1})
+    else
+        vim.fn.setqflist({}, ' ', options)
+        local default_qf_height = 10
+        local height = math.min(default_qf_height, #options.items)
+        vim.cmd('botright copen ' .. height)
+    end
+end
+
 ---Get the ListOpts which can be given to e.g. vim.lsp.buf.references or other
 ---lsp function.
 ---Filters the results placed in qf using the given `fun`.
@@ -154,8 +169,7 @@ function M.filter_lsp_items(fun)
                 end
             end
             options.items = items
-            vim.fn.setqflist({}, ' ', options)
-            vim.cmd('botright copen')
+            M.qf_mini(options)
         end
     }
 end
