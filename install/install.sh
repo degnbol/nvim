@@ -41,11 +41,11 @@ pip install python-lsp-server
 # As fallback to LSP for goto def using CTRL-].
 # E.g. for asciidoc.
 # tags is to goto definition for xrefs, since there is no LSP, treesitter or similar.
-if [ `uname` = "Darwin" ]; then
+if command -v brew > /dev/null; then
     brew uninstall ctags
     brew install asciidoctor universal-ctags
 elif command -v pacman > /dev/null; then
-    sudo pacman -Sy universal-ctags
+    sudo pacman -Sy --no-confirm universal-ctags asciidoctor asciidoctor-pdf
 else
     echo "Install universal-ctags"
     return 1
