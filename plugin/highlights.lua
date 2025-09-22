@@ -155,6 +155,8 @@ local function afterColorscheme()
     hi.set("@constant", { italic = false, fg=value_fg })
     -- Nothing is constant in python and it's just based on if chars are uppercase.
     hi.set("@constant.python", {})
+    -- In python format string "{x:.3f}" the .3f is captured as @none.python, which is ignored by default showing .3f as string.
+    hi.link("@none.python", "Macro")
     hi.mod("Exception", { italic = true })
     hi.mod("@include", { italic = true })
     hi.link("@keyword", "Keyword")

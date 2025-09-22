@@ -118,11 +118,11 @@ map.n("<leader>Q2", "<Cmd>ll 2<CR>", "Entry 2")
 map.n("<leader>Q3", "<Cmd>ll 3<CR>", "Entry 3")
 -- we don't map :lnext etc here since we have ]l etc
 
-map.n('<leader>bd', function () require"mini.bufremove".delete(vim.v.count) end, "bdel without win close")
-map.n('<leader>bD', function() require"mini.bufremove".delete(vim.v.count, true) end, "bdel! without win close")
-map.n('<leader>bw', function () require"mini.bufremove".wipeout(vim.v.count) end, "bwipe without win close")
-map.n('<leader>bW', function() require"mini.bufremove".wipeout(vim.v.count, true) end, "bwipe! without win close")
-map.n('<leader>bu', function () require"mini.bufremove".unshow(vim.v.count) end, "unshow without win close")
+map.n('<leader>bd', function() require "mini.bufremove".delete(vim.v.count) end, "bdel without win close")
+map.n('<leader>bD', function() require "mini.bufremove".delete(vim.v.count, true) end, "bdel! without win close")
+map.n('<leader>bw', function() require "mini.bufremove".wipeout(vim.v.count) end, "bwipe without win close")
+map.n('<leader>bW', function() require "mini.bufremove".wipeout(vim.v.count, true) end, "bwipe! without win close")
+map.n('<leader>bu', function() require "mini.bufremove".unshow(vim.v.count) end, "unshow without win close")
 map.n('<leader>bn', "<Cmd>enew<CR>", "New")
 map.n('<leader>bc', "<Cmd>tabclose<CR>", "tabclose")
 
@@ -147,8 +147,8 @@ map.i("<C-l>", "<right>", "Right")
 -- Mac bindings.
 map.c('<A-left>', "<s-left>", "move back one word")
 map.c('<A-right>', "<s-right>", "move forward one word")
-map({'n', 'v', 'c', 'i'}, '<D-left>', "<home>", {desc="Start of line"})
-map({'n', 'v', 'c', 'i'}, '<D-right>', "<end>", {desc="Start of line"})
+map({ 'n', 'v', 'c', 'i' }, '<D-left>', "<home>", { desc = "Start of line" })
+map({ 'n', 'v', 'c', 'i' }, '<D-right>', "<end>", { desc = "Start of line" })
 map.c('<A-BS>', "<C-w>", "Delete back one word")
 -- Doesn't work well since we go one WORD to the right but only delete one word back.
 map.c('<A-delete>', "<S-right><C-w>", "Delete next word")
@@ -285,7 +285,11 @@ map.desc('n', 'gra', "Code actions")
 map.desc('n', 'gri', "Implementations")
 map.desc('n', 'grn', "Rename")
 map.desc('n', 'grt', "Type definitions")
-map.n('grd', vim.lsp.buf.definition, "Definition")
+map.n('grd', function()
+    vim.lsp.buf.definition(map.filter_lsp_items(function(item)
+        return not map.qf_item_is_self(item)
+    end))
+end, "Definition")
 
 -- TODO: the LSP nmap K should also show the float aligned to the function name start and not cursor.
 map.i('<C-s>', function()
@@ -359,4 +363,3 @@ end, "Smart URL opener")
 -- It can't be removed with vim.keymap.del since it's builtin.
 -- We always just use C-] for explicit tag lookup and C-leftmouse is mapped from Cmd-leftmouse in arch.
 map.n("<C-leftmouse>", "")
-

@@ -143,11 +143,11 @@ end
 function M.qf_mini(options)
     if #options.items == 1 then
         local item = options.items[1]
-        vim.api.nvim_win_set_cursor(0, {item.lnum, item.col-1})
+        util.jump(item.filename, item.lnum-1, item.col-1)
     else
         vim.fn.setqflist({}, ' ', options)
         local default_qf_height = 10
-        local height = math.min(default_qf_height, #options.items)
+        local height = math.max(1, math.min(default_qf_height, #options.items))
         vim.cmd('botright copen ' .. height)
     end
 end
