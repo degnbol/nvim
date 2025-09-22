@@ -131,12 +131,14 @@ function M.jumplist_add()
 end
 
 ---Jump to position in specific file.
----@param filename string
+---@param filepath string
 ---@param lnum integer 0-indexed
 ---@param col integer 0-indexed
-function M.jump(filename, lnum, col)
+function M.jump(filepath, lnum, col)
     M.jumplist_add()
-    vim.cmd.edit(filename)
+    if filepath ~= vim.api.nvim_buf_get_name(0) then
+        vim.cmd.edit(filepath)
+    end
     vim.api.nvim_win_set_cursor(0, {lnum+1, col})
 end
 
