@@ -2,7 +2,7 @@ syn keyword KeydKey C M A S f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 e
 syn keyword Error ctrl
 syn keyword KeydOption overload_tap_timeout
 syn keyword @title.builtin ids global main containedin=Title
-syn keyword @function.builtin oneshot overload macro layer swap swapm toggle
+syn keyword @function.builtin oneshot overload macro command layer swap swapm toggle
 hi def link KeydKey Constant
 hi def link KeydOption Identifier
 hi def @title.builtin gui=underdouble,italic
