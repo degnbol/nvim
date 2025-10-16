@@ -205,6 +205,8 @@ local function afterColorscheme()
     hi.link("@tag.delimiter", "@comment")
     hi.mod("@lsp.type.ref", { underline = true })
     hi.mod("@lsp.type.link", { underline = true })
+    -- E.g. in typst with \<
+    hi.link("@lsp.type.escape", "@string.escape")
     hi.set("@markup.raw", { underline = false, fg = hi.fg("@markup.raw") }) -- trying to just remove italic
     hi.set("@markup.link", { underline = true, fg = hi.fg("@markup.link.label") })
     hi.mod("@markup.link.url", { italic = false })                          -- underscore is enough distinction
