@@ -34,8 +34,11 @@ return {
                 g.vimtex_view_skim_reading_bar = true
             else
                 -- :h vimtex-view-zathura
-                -- requires xdotool
-                g.vimtex_view_method = 'zathura'
+                -- There's also 'zathura', which requires xdotool to check for other zathura viewers running with
+                -- `xdotool search --class Zathura`
+                -- This only works on x11, and we are currently on wayland (hyprland).
+                -- https://github.com/lervag/vimtex/issues/2046
+                g.vimtex_view_method = 'zathura_simple'
             end
 
             local ignore = {
