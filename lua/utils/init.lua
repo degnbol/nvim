@@ -269,4 +269,8 @@ function M.cword_cols()
     return M.rfind(line, cword, c + 1, true)
 end
 
+function M.is_mac()
+    return vim.uv.os_uname().sysname == "Darwin"
+end
+
 return M

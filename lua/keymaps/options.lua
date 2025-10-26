@@ -170,3 +170,4 @@ map.n('>sw', disable_wrap, "wrap")
 map.n('yon', toggle_number, "number")
 map.n('yor', toggle_relativenumber, "relativenumber")
 map.n('yog', toggle_signcolumn, "git signcolumn")
+
