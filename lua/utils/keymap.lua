@@ -143,12 +143,16 @@ end
 function M.qf_mini(options)
     if #options.items == 1 then
         local item = options.items[1]
-        vim.api.nvim_win_set_cursor(0, {item.lnum, item.col-1})
+        util.jump(item.filename, item.lnum-1, item.col-1)
     else
         vim.fn.setqflist({}, ' ', options)
         local default_qf_height = 10
         local height = math.min(default_qf_height, #options.items)
-        vim.cmd('botright copen ' .. height)
+        if height == 0 then
+            print("No qf entries.")
+        else
+            vim.cmd('botright copen ' .. height)
+        end
     end
 end
 
@@ -162,14 +166,22 @@ end
 function M.filter_lsp_items(fun)
     return {
         on_list = function(options)
+            if #options.items == 0 then
+                print("No LSP items to filter.")
+                return
+            end
             local items = {}
             for _, item in ipairs(options.items) do
                 if fun(item) then
                     table.insert(items, item)
                 end
             end
-            options.items = items
-            M.qf_mini(options)
+            if #items == 0 then
+                print("No LSP items after filtering.")
+            else
+                options.items = items
+                M.qf_mini(options)
+            end
         end
     }
 end

@@ -4,10 +4,12 @@
 
 local pythonPath
 -- Use conda python if available.
+-- Actually no, this will switch to conda when uv would be found nicely by default.
+-- TODO: maybe have a way of auto setting it to conda only if uv is not active?
+-- There is also :PyrightSetPythonPath to set it manually.
 if vim.env.CONDA_PREFIX ~= nil then
-    pythonPath = vim.env.CONDA_PREFIX .. '/bin/python'
+    -- pythonPath = vim.env.CONDA_PREFIX .. '/bin/python'
 end
--- There is also :PyrightSetPythonPath to set it on the fly
 
 return {
     settings = {

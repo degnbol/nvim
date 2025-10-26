@@ -285,7 +285,11 @@ map.desc('n', 'gra', "Code actions")
 map.desc('n', 'gri', "Implementations")
 map.desc('n', 'grn', "Rename")
 map.desc('n', 'grt', "Type definitions")
-map.n('grd', vim.lsp.buf.definition, "Definition")
+map.n('grd', function()
+    vim.lsp.buf.definition(map.filter_lsp_items(function(item)
+        return not map.qf_item_is_self(item)
+    end))
+end, "Definition")
 
 -- TODO: the LSP nmap K should also show the float aligned to the function name start and not cursor.
 map.i('<C-s>', function()
@@ -359,4 +363,3 @@ end, "Smart URL opener")
 -- It can't be removed with vim.keymap.del since it's builtin.
 -- We always just use C-] for explicit tag lookup and C-leftmouse is mapped from Cmd-leftmouse in arch.
 map.n("<C-leftmouse>", "")
-

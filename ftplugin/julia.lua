@@ -23,6 +23,7 @@ end
 -- Manual efforts. Install julia LSP as described on
 -- https://github.com/neovim/nvim-lspconfig/blob/master/lsp/julials.lua
 vim.lsp.enable("julials")
+-- vim.lsp.enable("jetls")
 
 -- Annoying bug where something keeps setting buftype=nofile
 vim.api.nvim_create_autocmd("BufWritePre", {

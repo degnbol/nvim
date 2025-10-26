@@ -124,6 +124,25 @@ function M.set_col(c)
     vim.api.nvim_win_set_cursor(0, { r, c })
 end
 
+---Add current cursor position to the jumplist.
+---Useful for setting cursor and having the change function as a jump.
+function M.jumplist_add()
+    vim.cmd "normal! m`"
+end
+
+---Jump to position in specific file.
+---@param filepath string
+---@param lnum integer 0-indexed
+---@param col integer 0-indexed
+function M.jump(filepath, lnum, col)
+    M.jumplist_add()
+    if filepath ~= vim.api.nvim_buf_get_name(0) then
+        vim.cmd.edit(filepath)
+    end
+    vim.api.nvim_win_set_cursor(0, {lnum+1, col})
+end
+
+
 ---Get all lines of the current buffer.
 ---@return table array of strings.
 function M.get_all_lines()
