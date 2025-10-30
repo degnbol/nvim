@@ -4,9 +4,12 @@ vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("start_treesitter", { clear = false }),
     callback = function(args)
         local disabled = {
-            "vim",                                   -- not perfect
-            "latex",                                 -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$
-            "sh", "bash", "zsh", "sh.zsh", "zsh.sh", -- broken
+            -- not perfect
+            "vim",
+            -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$,
+            "latex", "plaintex", "tex",
+            -- broken
+            "sh", "bash", "zsh", "sh.zsh", "zsh.sh",
         }
         local additional_vim_regex_highlighting = {
             "vimdoc",   -- treesitter version doesn't contain useful colors from :h group-name

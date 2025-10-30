@@ -22,16 +22,24 @@ return {
             -- We want <leader>l for LSP and double leader (i.e. localleader) for filetype specific mappings.
             g.vimtex_mappings_prefix = "<localleader>"
 
-            -- g.vimtex_view_method = 'sioyek' -- not working
-            g.vimtex_view_method = 'skim'
-            -- inspiration from https://dr563105.github.io/blog/skim-vimtex-setup/
-            -- forward search after every successful compilation.
-            -- Changed back to default, can get annoying with jumping around with slow compilation.
-            -- Use manual VimtexView (<leader>cv) instead to do forward search.
-            g.vimtex_view_skim_sync = false
-            -- change focus to skim after command `:VimtexView` is given
-            g.vimtex_view_skim_activate = true
-            g.vimtex_view_skim_reading_bar = true
+            if util.is_mac() then
+                g.vimtex_view_method = 'skim'
+                -- inspiration from https://dr563105.github.io/blog/skim-vimtex-setup/
+                -- forward search after every successful compilation.
+                -- Changed back to default, can get annoying with jumping around with slow compilation.
+                -- Use manual VimtexView (<leader>cv) instead to do forward search.
+                g.vimtex_view_skim_sync = false
+                -- change focus to skim after command `:VimtexView` is given
+                g.vimtex_view_skim_activate = true
+                g.vimtex_view_skim_reading_bar = true
+            else
+                -- :h vimtex-view-zathura
+                -- There's also 'zathura', which requires xdotool to check for other zathura viewers running with
+                -- `xdotool search --class Zathura`
+                -- This only works on x11, and we are currently on wayland (hyprland).
+                -- https://github.com/lervag/vimtex/issues/2046
+                g.vimtex_view_method = 'zathura_simple'
+            end
 
             local ignore = {
                 "Underfull",

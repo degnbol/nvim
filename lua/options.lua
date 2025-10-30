@@ -1,3 +1,4 @@
+local util = require "utils/init"
 local opt = vim.opt
 local g   = vim.g
 local api = vim.api
@@ -63,7 +64,10 @@ opt.smoothscroll = true               -- if we wrap lines, then show partial sta
 opt.numberwidth = 2 -- reduce default numbering from starting as 3 characters wide to 2
 -- Mouse click navigation even in cmdline mode. Default is not in cmdline mode but otherwise.
 opt.mouse = "a"
-opt.mousescroll = "ver:1,hor:1"
+-- Touchpad on Mac should scroll slower.
+if util.is_mac() then
+    opt.mousescroll = "ver:1,hor:1"
+end
 opt.termguicolors = true
 opt.cursorline = true        -- highlight current line
 opt.cursorlineopt = "number" -- only highlight cursorline number
