@@ -7,3 +7,16 @@
     spacing: (min: 100% * 2 / 3, max: 150%),
     tracking: (min: -0.01em, max: 0.02em),
 ))
+
+// Maybe set this to have horizontal division when inline and vertical in block mode.
+// That would replicate the default of latex, but not sure if needed.
+// https://typst.app/docs/reference/math/frac/#parameters-style
+#show math.equation.where(block: false): set math.frac(style: "horizontal")
+
+#set document(
+    title: [TITLE]
+)
+
+#title()
+
+= Section
