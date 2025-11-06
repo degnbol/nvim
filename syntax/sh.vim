@@ -22,8 +22,9 @@ syn match @path '\~\?[A-Za-z0-9.*_-]*[/.][/A-Za-z0-9.*_-]*' contains=FunctionPat
 hi def link @path @text.underline
 
 " First word on a line or only preceded by an env var assignment (e.g. `LC_ALL=C tr ...`)
-syn match Function /^\s*\zs[A-Za-z_-]\+/ containedin=shIf,shCommandSub
-syn match Function /\(^\h\+\w*=\w\+\)\@<= [A-Za-z_-]\+/ containedin=shIf,shCommandSub
+" '+' appears in e.g. `g++`
+syn match Function /^\s*\zs[A-Za-z_+-]\+/ containedin=shIf,shCommandSub
+syn match Function /\(^\h\+\w*=\w\+\)\@<= [A-Za-z_+-]\+/ containedin=shIf,shCommandSub
 " ... or after pipe
 syn match Function /|\@<= *[A-Za-z_-]\+/ containedin=shIf,shCommandSub
 " ... or after `exec`

@@ -342,6 +342,9 @@ local function afterColorscheme()
     -- Only relevant to json without treesitter
     -- hi.link("jsonKeyword", "@variable")
     -- hi.link("jsonQuote", "String")
+    -- for e.g. '"' around string in dockerfile.
+    -- TODO: used a dimmed string color?
+    hi.link("Quote", "String")
     -- -- Why are commas called noise?
     -- hi.link("jsonNoise", "Delimiter")
     -- Dim things that would be concealed if conceallevel>0
@@ -378,6 +381,13 @@ local function afterColorscheme()
     hi.link("@string.regexp.regex", "@string.escape")
     -- Compromise between Operator and other things?
     -- hi.set("@operator.regex", {fg=hi.fg("Macro"), bold=true})
+
+    -- Make a prompt hl group that matches shell, REPL, etc. prompts that various prompts in nvim can link to.
+    hi.setfg("Prompt", "#FF6AC1")
+    hi.link("MiniPickPrompt", "Prompt")
+    hi.link("SnacksPickerPrompt", "Prompt")
+    hi.link("FzfLuaFzfPrompt", "Prompt")
+    -- hi.link("FzfLuaLivePrompt", "Prompt")
 end
 
 -- local defaultDark = 'fluoromachine'

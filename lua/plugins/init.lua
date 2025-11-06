@@ -243,11 +243,13 @@ return {
         end
     },
     {
+        -- An alt to consider: https://github.com/JMarkin/gentags.lua/tree/main
         "linrongbin16/gentags.nvim",
         -- Only enable if ctags command is available.
         -- Otherwise we would get an error on each startup.
         enabled = function()
-            return vim.fn.executable("ctags") == 1
+            return false -- Slows down closing nvim and maybe is the cause for the freezes?
+            -- return vim.fn.executable("ctags") == 1
         end,
         opts = {
             -- Auto cleaning up tag cache.
