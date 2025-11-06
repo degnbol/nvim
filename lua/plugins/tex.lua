@@ -38,6 +38,7 @@ return {
                 -- `xdotool search --class Zathura`
                 -- This only works on x11, and we are currently on wayland (hyprland).
                 -- https://github.com/lervag/vimtex/issues/2046
+                -- g.vimtex_view_method = 'zathura'
                 g.vimtex_view_method = 'zathura_simple'
             end
 
