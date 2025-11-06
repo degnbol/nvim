@@ -388,6 +388,7 @@ local function afterColorscheme()
     hi.link("SnacksPickerPrompt", "Prompt")
     hi.link("FzfLuaFzfPrompt", "Prompt")
     -- hi.link("FzfLuaLivePrompt", "Prompt")
+    hi.link("TelescopeSelectionCaret", "Prompt")
 end
 
 -- local defaultDark = 'fluoromachine'
