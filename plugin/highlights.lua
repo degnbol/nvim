@@ -167,6 +167,8 @@ local function afterColorscheme()
     hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.fg("@operator") })
     -- TEMP hardcoded colour.
     hi.mod("@parameter", { italic = false, fg = "#ac9ba1" })
+    hi.link("@variable.parameter", "@parameter")
+    hi.set("@variable.parameter.builtin", {italic = true, fg=hi.fg("@parameter")})
     -- attribute is by default linked to constant.
     -- Attributes are not constant.
     -- TODO: what's the difference between attribute, parameter, and property?
