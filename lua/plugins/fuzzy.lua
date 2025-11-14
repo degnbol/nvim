@@ -56,6 +56,7 @@ return {
             hi.def("SnacksPickerMatch", "IncSearch")
             -- To dim the dir part of a filename. Default is link to NonText.
             hi.def("SnacksPickerDir", "Directory")
+            hi.def("SnacksPickerPrompt", "Prompt")
         end,
     },
     -- We prefer fzf-lua over telescope for the following reasons:
