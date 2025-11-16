@@ -292,9 +292,14 @@ return {
     },
     -- TODO we don't actually use this yet
     -- search stackoverflow quicker
-    { "lalitmee/browse.nvim", enabled = false, dependencies = { "nvim-telescope/telescope.nvim" } },
+    {
+        "lalitmee/browse.nvim",
+        enabled = false,
+        dependencies = { "nvim-telescope/telescope.nvim" },
+    },
     {
         "nvim-telescope/telescope-bibtex.nvim",
+        enabled = false, -- trying out snacks alt
         dependencies = { 'nvim-telescope/telescope.nvim' },
         ft = "tex",
         config = function()
@@ -305,6 +310,24 @@ return {
             -- by looking for \bibliography and \addbibresource.
             telescope.setup { context = true, }
         end
+    },
+    {
+        "krissen/snacks-bibtex.nvim",
+        dependencies = { "folke/snacks.nvim" },
+        ft = {"tex", "typst"},
+        opts = {
+            -- see https://github.com/krissen/snacks-bibtex.nvim?tab=readme-ov-file#configuration
+            mappings = {
+                ["<C-p>"] = false, -- disable natbib parenthetical cite since <C-p> is naturally "previous".
+            }
+        },
+        keys = {
+            {
+                "<leader>fc",
+                function() require("snacks-bibtex").bibtex() end,
+                desc = "BibTeX citations",
+            },
+        },
     },
     -- consider papis as well.
     -- bibliography references, mostly relevant for citations in .tex documents.
