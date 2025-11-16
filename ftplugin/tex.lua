@@ -6,6 +6,7 @@ require "tex.textcolor".color_textcolor()
 local hi = require "utils/highlights"
 local util = require "utils/init" -- string.contains and schedule_notify
 local latexmk = require "tex.latexmk"
+local map = require "utils/keymap"
 
 -- also defined in lua/plugins/mini.lua as shift+` but we can just use ` since
 -- I don't think it has use in latex, maybe except in some verbatim code block or something?
@@ -25,45 +26,37 @@ vim.fn["textobj#user#plugin"]("tex", {
 
 -- keymaps assume vimtex is used.
 
-local mapbuf = function(keys, rhs, desc, mode, opts)
-    opts = opts or {}
-    opts.desc = desc
-    vim.keymap.set(mode or 'n', keys, rhs, opts)
-end
-local set_keymap_desc = function(...) pcall(require "mini.clue".set_keymap_desc, ...) end
-
-set_keymap_desc('n', '<LocalLeader>a', "Context menu")
-mapbuf('<LocalLeader>A', "<plug>TableAlign", "Align table")
-mapbuf("<LocalLeader>y", "<plug>TableYank", "Yank as TSV")
-mapbuf("<LocalLeader>p", "<plug>TablePaste", "Paste TSV", { 'n', 'v' })
-mapbuf('da|', "<Plug>TableDelCol", "Delete a table column")
-mapbuf("dix", tbl.deleteInCell, "Delete in cell", 'n', { silent = true })
-mapbuf("cix", tbl.changeInCell, "Change in cell", 'n', { silent = true })
-mapbuf("xix", function() tbl.deleteInCell("+") end, "Cut in cell", 'n', { silent = true })
-mapbuf("ix", "<Plug>TableSelInCell", "Select in cell", 'o', { silent = true, })
-mapbuf('<LocalLeader>[', "<Plug>TableSwapLeft", "Swap table column left")
-mapbuf('<LocalLeader>]', "<Plug>TableSwapRight", "Swap table column right")
-mapbuf('<LocalLeader>{', "<Plug>TableAddColLeft", "Add new empty column to the left")
-mapbuf('<LocalLeader>}', "<Plug>TableAddColRight", "Add new empty column to the right")
-mapbuf('<leader>fc', "<Cmd>Telescope bibtex<CR>", "Cite")
-mapbuf('<LocalLeader><left>', "<Plug>TableGoLeft", "Goto left cell")
-mapbuf('<LocalLeader><right>', "<Plug>TableGoRight", "Goto right cell")
-mapbuf('<LocalLeader><up>', "<Plug>TableGoUp", "Goto up cell")
-mapbuf('<LocalLeader><down>', "<Plug>TableGoDown", "Goto down cell")
+map.desc('n', '<LocalLeader>a', "Context menu")
+map.n('<LocalLeader>A', "<plug>TableAlign", "Align table", {buffer=true})
+map.n("<LocalLeader>y", "<plug>TableYank", "Yank as TSV", {buffer=true})
+map.nx("<LocalLeader>p", "<plug>TablePaste", "Paste TSV", {buffer=true})
+map.n('da|', "<Plug>TableDelCol", "Delete a table column", {buffer=true})
+map.n("dix", tbl.deleteInCell, "Delete in cell", { silent = true, buffer=true })
+map.n("cix", tbl.changeInCell, "Change in cell", { silent = true, buffer=true })
+map.n("xix", function() tbl.deleteInCell("+") end, "Cut in cell", { silent = true , buffer=true})
+map.o("ix", "<Plug>TableSelInCell", "Select in cell", { silent = true, })
+map.n('<LocalLeader>[', "<Plug>TableSwapLeft", "Swap table column left", {buffer=true})
+map.n('<LocalLeader>]', "<Plug>TableSwapRight", "Swap table column right", {buffer=true})
+map.n('<LocalLeader>{', "<Plug>TableAddColLeft", "Add new empty column to the left", {buffer=true})
+map.n('<LocalLeader>}', "<Plug>TableAddColRight", "Add new empty column to the right", {buffer=true})
+map.n('<LocalLeader><left>', "<Plug>TableGoLeft", "Goto left cell", {buffer=true})
+map.n('<LocalLeader><right>', "<Plug>TableGoRight", "Goto right cell", {buffer=true})
+map.n('<LocalLeader><up>', "<Plug>TableGoUp", "Goto up cell", {buffer=true})
+map.n('<LocalLeader><down>', "<Plug>TableGoDown", "Goto down cell", {buffer=true})
 -- can't use backspace since it is hardcoded for up one level in mini.clue
-mapbuf('<LocalLeader><del>', "<Plug>(vimtex-clean)", "Clean (rm aux)")
-mapbuf('<LocalLeader><S-del>', "<Plug>(vimtex-clean-all)", "Clean all (rm aux+out)")
-set_keymap_desc('n', '<LocalLeader>e', "Errors")
+map.n('<LocalLeader><del>', "<Plug>(vimtex-clean)", "Clean (rm aux)", {buffer=true})
+map.n('<LocalLeader><S-del>', "<Plug>(vimtex-clean-all)", "Clean all (rm aux+out)", {buffer=true})
+map.desc('n', '<LocalLeader>e', "Errors")
 -- hacky. VimtexErrors puts errors found by Vimtex in quickfix (should be
 -- running, use <leader>Lb) then cclose closes quickfix, and then Telescope
 -- opens the quickfix in a nicer view.
-mapbuf('<space>E', "<Cmd>VimtexErrors<CR>|:cclose|<Cmd>Telescope quickfix<CR>", "Errors")
+map.n('<space>E', "<Cmd>VimtexErrors<CR>|:cclose|<Cmd>Telescope quickfix<CR>", "Errors", {buffer=true})
 -- Avoid accidentally deleting aux files with default keymap that is very similar to the compile keymaps.
 -- no-operation, instead of del since deleting throws error and this means we don't start a vim change motion etc.
-vim.keymap.set('n', "<LocalLeader>c", "<nop>", { buffer = true })
-vim.keymap.set('n', "<LocalLeader>C", "<nop>", { buffer = true })
+map.n("<LocalLeader>c", "<nop>", nil, { buffer = true })
+map.n("<LocalLeader>C", "<nop>", nil, { buffer = true })
 
-mapbuf('<Leader>cg', function()
+map.n('<Leader>cg', function()
     local auxs = vim.fs.find("aux", { upward = true, limit = 5 })
     if #auxs == 0 then
         vim.api.nvim_err_writeln("Couldn't makeglossaries. No aux/ dir found (searched upward)")
@@ -89,7 +82,7 @@ mapbuf('<Leader>cg', function()
             end)
         end)
     end)
-end, "Compile glossary")
+end, "Compile glossary", {buffer=false}) -- No need to make buffer local
 
 ---Run `biber --cache` to get biber cache dir, so far found in /var/folders/...
 ---Then call `rm -rf` on it.
@@ -118,9 +111,9 @@ local function biber_clear_cache(on_exit)
         end
     end)
 end
-vim.api.nvim_create_user_command("BiberClearCache", biber_clear_cache, {})
+map.cmd("BiberClearCache", biber_clear_cache)
 
-mapbuf('<leader>cb', function(main)
+map.n('<leader>cb', function(main)
     if main == nil then main = "main" end
     local biber = function(on_exit)
         vim.system({ "biber", main }, { text = true }, on_exit)
@@ -148,9 +141,9 @@ mapbuf('<leader>cb', function(main)
             end)
         end)
     end)
-end, "Compile bibliography")
+end, "Compile bibliography", {buffer=false}) -- No need for buffer local
 
-mapbuf('gK', function()
+map.n('gK', function()
     local line = vim.api.nvim_get_current_line()
     local pac = line:match("\\usepackage.*{([%w_-]+)}")
     if pac == nil then
@@ -160,9 +153,9 @@ mapbuf('gK', function()
     if obj.code ~= 0 then
         print("texdoc " .. pac .. " failed.")
     end
-end, "texdoc help")
+end, "texdoc help", {buffer=true})
 -- gx can open ctan main site, see plugins/init.lua
-mapbuf('gX', function()
+map.n('gX', function()
     local line = vim.api.nvim_get_current_line()
     local pac = line:match("\\usepackage.*{([%w_-]+)}")
     if pac ~= nil then
@@ -190,26 +183,26 @@ mapbuf('gX', function()
             end
         })
     end
-end, "Open CTAN manual(s) for package")
+end, "Open CTAN manual(s) for package", {buffer=true})
 
-mapbuf('<LocalLeader>s', "<Plug>(vimtex-status)", "Status")
-mapbuf('<LocalLeader>S', "<Plug>(vimtex-status-all)", "Status all")
-set_keymap_desc('n', '<LocalLeader>i', "Info")
-set_keymap_desc('n', '<LocalLeader>I', "Info full")
-set_keymap_desc('n', '<LocalLeader>q', "Log of VimTeX actions")
+map.n('<LocalLeader>s', "<Plug>(vimtex-status)", "Status", {buffer=true})
+map.n('<LocalLeader>S', "<Plug>(vimtex-status-all)", "Status all", {buffer=true})
+map.desc('n', '<LocalLeader>i', "Info")
+map.desc('n', '<LocalLeader>I', "Info full")
+map.desc('n', '<LocalLeader>q', "Log of VimTeX actions")
 -- j for jump. Not using p for preamble since I want to use it for pasting tables.
-mapbuf("<LocalLeader>j", "<Plug>TableJumpPre", "goto/from preamble (table)")
-mapbuf('<LocalLeader>m', "<Plug>(vimtex-toggle-main)", "Toggle compiling main vs subfile")
-set_keymap_desc('n', '<LocalLeader>t', "TOC open")
-set_keymap_desc('n', '<LocalLeader>T', "TOC toggle")
-mapbuf("<LocalLeader>u", "<Plug>Latex2Unicode", "TeX -> unicode")
-mapbuf("<LocalLeader>U", "<Plug>Unicode2Latex", "Unicode -> TeX", { 'n', 'x' })
-mapbuf('<leader>cv', '<Plug>(vimtex-view)', "View")
-mapbuf('<LocalLeader>r', "<Plug>(vimtex-reload)", "Reload")
-mapbuf('<LocalLeader>R', "<Plug>(vimtex-reload-state)", "Reload state")
-mapbuf('<leader>ck', '<Plug>(vimtex-stop)', "Stop")
-mapbuf('<leader>cK', '<Plug>(vimtex-stop-all)', "Stop all")
-mapbuf('<leader>cc', function()
+map.n("<LocalLeader>j", "<Plug>TableJumpPre", "goto/from preamble (table)", {buffer=true})
+map.n('<LocalLeader>m', "<Plug>(vimtex-toggle-main)", "Toggle compiling main vs subfile", {buffer=true})
+map.desc('n', '<LocalLeader>t', "TOC open")
+map.desc('n', '<LocalLeader>T', "TOC toggle")
+map.n("<LocalLeader>u", "<Plug>Latex2Unicode", "TeX -> unicode", {buffer=true})
+map.nx("<LocalLeader>U", "<Plug>Unicode2Latex", "Unicode -> TeX", {buffer=true})
+map.n('<leader>cv', '<Plug>(vimtex-view)', "View", {buffer=true})
+map.n('<LocalLeader>r', "<Plug>(vimtex-reload)", "Reload", {buffer=true})
+map.n('<LocalLeader>R', "<Plug>(vimtex-reload-state)", "Reload state", {buffer=true})
+map.n('<leader>ck', '<Plug>(vimtex-stop)', "Stop", {buffer=true})
+map.n('<leader>cK', '<Plug>(vimtex-stop-all)', "Stop all", {buffer=true})
+map.n('<leader>cc', function()
     -- check for already running latexmk, since running it twice will break things.
     latexmk.is_running(function(is_running)
         if is_running then
@@ -218,8 +211,8 @@ mapbuf('<leader>cc', function()
             vim.schedule(vim.fn["vimtex#compiler#compile_ss"])
         end
     end)
-end, "Compile single shot")
-mapbuf('<leader>cC', function()
+end, "Compile single shot", {buffer=true})
+map.n('<leader>cC', function()
     latexmk.is_running(function(is_running)
         if is_running then
             print("Looks like latexmk is already running, e.g. in another tab. Use :VimtexComile to force.")
@@ -227,54 +220,54 @@ mapbuf('<leader>cC', function()
             vim.schedule(vim.fn["vimtex#compiler#compile"])
         end
     end)
-end, "Compile continuously")
-mapbuf('<leader>cl', '<Plug>(vimtex-compile-output)', "Output")
-mapbuf('<leader>cc', '<Plug>(vimtex-compile-selected)', "Compile selected")
-mapbuf('<CR>', "<plug>(vimtex-compile-selected)", "Compile motion")
-mapbuf('<CR>', "<plug>(vimtex-compile-selected)", "Compile selection")
+end, "Compile continuously", {buffer=true})
+map.n('<leader>cl', '<Plug>(vimtex-compile-output)', "Output", {buffer=true})
+map.n('<leader>cc', '<Plug>(vimtex-compile-selected)', "Compile selected", {buffer=true})
+map.n('<CR>', "<plug>(vimtex-compile-selected)", "Compile motion", {buffer=true})
+map.n('<CR>', "<plug>(vimtex-compile-selected)", "Compile selection", {buffer=true})
 
 -- e.g. \section*{}
-set_keymap_desc('n', 'tsc', "Cmd/Star")
-set_keymap_desc('n', 'tse', "Env/Star")
+map.desc('n', 'tsc', "Cmd/Star")
+map.desc('n', 'tse', "Env/Star")
 -- e.g. with(out) \left
-set_keymap_desc('n', 'tsd', "Delim")
-mapbuf('<LocalLeader>)', "<plug>(vimtex-delim-toggle-modifier)", "Delim")
-mapbuf('<LocalLeader>(', "<plug>(vimtex-delim-toggle-modifier-reverse)", "Delim")
+map.desc('n', 'tsd', "Delim")
+map.n('<LocalLeader>)', "<plug>(vimtex-delim-toggle-modifier)", "Delim", {buffer=true})
+map.n('<LocalLeader>(', "<plug>(vimtex-delim-toggle-modifier-reverse)", "Delim", {buffer=true})
 -- same as d, but looks through g:vimtex_delim_toggle_mod_list in reverse
-set_keymap_desc('n', 'tsD', "Delim rev")
+map.desc('n', 'tsD', "Delim rev")
 -- toggle / <-> \frac
-set_keymap_desc('n', 'tsf', "Fraction")
+map.desc('n', 'tsf', "Fraction")
 -- change surrounding ...
-set_keymap_desc('n', 'csc', "Cmd")
-set_keymap_desc('n', 'cse', "Env")
-set_keymap_desc('n', 'csm', "Math")
+map.desc('n', 'csc', "Cmd")
+map.desc('n', 'cse', "Env")
+map.desc('n', 'csm', "Math")
 -- in/around ...
-set_keymap_desc({ 'o', 'x' }, 'id', "Delim")
-set_keymap_desc({ 'o', 'x' }, 'iP', "Section")
-mapbuf("ts$", "<Plug>(vimtex-env-toggle-math)", "Inline <-> display")
-mapbuf("ts4", "<Plug>(vimtex-env-toggle-math)", "Inline <-> display")
-mapbuf("tsm", "<plug>(vimtex-env-toggle-math)", "Inline <-> display")
-mapbuf("dsm", "<plug>(vimtex-env-delete-math)", "Delete math")
-mapbuf("csm", "<plug>(vimtex-env-change-math)", "Change math")
-mapbuf("xad", "yaddad", "Cut a delim", 'n', { remap = true, })
-mapbuf("xid", "yiddid", "Cut in delim", 'n', { remap = true, })
+map.desc({ 'o', 'x' }, 'id', "Delim")
+map.desc({ 'o', 'x' }, 'iP', "Section")
+map.n("ts$", "<Plug>(vimtex-env-toggle-math)", "Inline <-> display", {buffer=true})
+map.n("ts4", "<Plug>(vimtex-env-toggle-math)", "Inline <-> display", {buffer=true})
+map.n("tsm", "<plug>(vimtex-env-toggle-math)", "Inline <-> display", {buffer=true})
+map.n("dsm", "<plug>(vimtex-env-delete-math)", "Delete math", {buffer=true})
+map.n("csm", "<plug>(vimtex-env-change-math)", "Change math", {buffer=true})
+map.n("xad", "yaddad", "Cut a delim", { remap = true, buffer=true })
+map.n("xid", "yiddid", "Cut in delim", { remap = true, buffer=true })
 -- item with i instead of m and math with m
-mapbuf("ai", "<Plug>(vimtex-am)", "An item", 'o')
-mapbuf("ii", "<Plug>(vimtex-im)", "In item", 'o')
-mapbuf("am", "<Plug>(vimtex-a$)", "An eq", 'o')
-mapbuf("im", "<Plug>(vimtex-i$)", "In eq", 'o')
+map.o("ai", "<Plug>(vimtex-am)", "An item", {buffer=true})
+map.o("ii", "<Plug>(vimtex-im)", "In item", {buffer=true})
+map.o("am", "<Plug>(vimtex-a$)", "An eq", {buffer=true})
+map.o("im", "<Plug>(vimtex-i$)", "In eq", {buffer=true})
 -- shorthand to $ just using 4 ($ without shift)
-mapbuf("a4", "<Plug>(vimtex-a$)", "An eq", 'o')
-mapbuf("i4", "<Plug>(vimtex-i$)", "In eq", 'o')
+map.o("a4", "<Plug>(vimtex-a$)", "An eq", {buffer=true})
+map.o("i4", "<Plug>(vimtex-i$)", "In eq", {buffer=true})
 -- next/prev start/end of ...
-mapbuf("[m", "<Plug>(vimtex-[n)", "Math start")
-mapbuf("[M", "<Plug>(vimtex-[N)", "Math end")
-mapbuf("[4", "<Plug>(vimtex-[n)", "Math start")
-mapbuf("[$", "<Plug>(vimtex-[N)", "Math end")
-mapbuf("]m", "<Plug>(vimtex-]n)", "Math start")
-mapbuf("]M", "<Plug>(vimtex-]N)", "Math end")
-mapbuf("]4", "<Plug>(vimtex-]n)", "Math start")
-mapbuf("]$", "<Plug>(vimtex-]N)", "Math end")
+map.n("[m", "<Plug>(vimtex-[n)", "Math start", {buffer=true})
+map.n("[M", "<Plug>(vimtex-[N)", "Math end", {buffer=true})
+map.n("[4", "<Plug>(vimtex-[n)", "Math start", {buffer=true})
+map.n("[$", "<Plug>(vimtex-[N)", "Math end", {buffer=true})
+map.n("]m", "<Plug>(vimtex-]n)", "Math start", {buffer=true})
+map.n("]M", "<Plug>(vimtex-]N)", "Math end", {buffer=true})
+map.n("]4", "<Plug>(vimtex-]n)", "Math start", {buffer=true})
+map.n("]$", "<Plug>(vimtex-]N)", "Math end", {buffer=true})
 
 ---Get latex root.
 ---@param main string? name of main tex file, by default "main".
@@ -337,17 +330,17 @@ local function get_file_reference(filepath)
     end
 end
 
-mapbuf('<LocalLeader>-', function()
+map.n('<LocalLeader>-', function()
     local parent, linenum = get_file_reference()
     if parent == nil then
         print("No file references found.")
     else
         vim.cmd("edit +" .. linenum .. " " .. parent)
     end
-end, "Go up in latex structure")
+end, "Go up in latex structure", {buffer=true})
 
 -- colorscheme aucmd to fix missing or inconsistent hl links
-vim.api.nvim_create_autocmd("Colorscheme", {
+vim.api.nvim_create_autocmd("ColorScheme", {
     buffer = 0,
     group = vim.api.nvim_create_augroup("Tex", { clear = true }),
     callback = function()

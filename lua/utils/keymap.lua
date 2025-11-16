@@ -2,9 +2,20 @@ local util = require "utils/init"
 
 local M = {}
 
+---Add global user command.
+---Convenience link to nvim_create_user_command and doesn't require opts to be at least {}.
+---@param name string
+---@param command string|fun(args: vim.api.keyset.create_user_command.command_args)
+---@param opts? vim.api.keyset.user_command
+M.cmd = function (name, command, opts)
+    opts = opts or {}
+    vim.api.nvim_create_user_command(name, command, opts)
+end
+
 M.map = vim.keymap.set
+-- This allows for importing M as `map` and directly calling `map("n", ...)` for convenience.
 setmetatable(M, {
-    __call = function(self, ...)
+    __call = function(_, ...)
         vim.keymap.set(...)
     end
 })
@@ -64,6 +75,17 @@ function M.x(lhs, rhs, desc, opts)
     vim.keymap.set('x', lhs, rhs, opts)
 end
 
+---Operator pending map.
+---@param lhs string
+---@param rhs string|function
+---@param desc? string
+---@param opts? table
+function M.o(lhs, rhs, desc, opts)
+    opts = opts or {}
+    opts.desc = desc
+    vim.keymap.set('o', lhs, rhs, opts)
+end
+
 ---Normal and visual map excluding select mode.
 ---@param lhs string
 ---@param rhs string|function
@@ -120,7 +142,7 @@ function M.nox(lhs, rhs, desc, opts)
 end
 
 ---Add desc(ription) to an already defined keymap.
----@param mode string
+---@param mode string|table
 ---@param lhs string
 ---@param desc string
 function M.desc(mode, lhs, desc)
