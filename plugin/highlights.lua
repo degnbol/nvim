@@ -1,4 +1,5 @@
 local hi = require "utils/highlights"
+local col = require "utils/colors"
 
 local function _basic_styling()
     -- Assume we will be working in terminal that supports underline, bold, italic, etc.
@@ -67,11 +68,28 @@ local function afterColorscheme()
     _spellBad()
 
     -- TEMP: the colour for statement should look more like function. Trying something closer, e.g. blue for function, purple for statement.
-    local statement_fg = "#8577af"
-    hi.mod("Statement", {fg=statement_fg})
-    hi.mod("Keyword", {fg=statement_fg})
+    local hex_statement = "#8577af"
+    hi.mod("Statement", {fg=hex_statement})
+    hi.mod("Keyword", {fg=hex_statement})
     -- Maybe make this slightly different in future if we think it's meaningful
-    hi.mod("Conditional", {fg=statement_fg})
+    hi.mod("Conditional", {fg=hex_statement})
+
+    local hex_bg = hi.hex_bg("Normal")
+    local R_bg = col.hex_to_R(hex_bg)
+    local R_preproc = col.hex_to_R(hi.hex_fg("PreProc"))
+    local R_string = col.hex_to_R(hi.hex_fg("String"))
+    local R_keyword = col.hex_to_R(hi.hex_fg("Keyword"))
+    local R_type = col.hex_to_R(hi.hex_fg("Type"))
+    local R_dim
+    local R_bright
+    -- Dark or light theme?
+    if col.hex_to_CIELab(hex_bg).L < 50 then
+        R_dim = col.hex_to_R("#000000")
+        R_bright = col.hex_to_R("#FFFFFF")
+    else
+        R_dim = col.hex_to_R("#FFFFFF")
+        R_bright = col.hex_to_R("#000000")
+    end
 
     hi.mod("NonText", { bold = true })
     -- NonText shouldn't be exactly like comments
@@ -101,11 +119,9 @@ local function afterColorscheme()
     hi.set("Search", { fg = "gray", bg = hi.fg("IncSearch"), standout = true })
     hi.link("CurSearch", "Search")
 
-    -- TEMP, fix using lush plugin
-    -- link to function fg colour
-    hi.setfg("function.call", "#73a3b7")
-    -- dimmed down version of @import / Include / PreProc. Use darkening with lush in dark mode and lighten in light mode.
-    hi.setfg("@module", "#5e5050")
+    -- dimmed down version of @import / Include / PreProc.
+    local R_module = col.mix({R_preproc, R_dim, R_type}, {1, 2, 1})
+    hi.setfg("@module", col.R_to_hex(R_module))
 
     -- Definitions are bold, while the subsequent usage of these classes, types, functions etc are not.
     -- There's also @lsp.mod.definition, which is used when defining e.g. arguments to a function.
@@ -135,7 +151,7 @@ local function afterColorscheme()
     -- testfiles/
     hi.mod("Comment", { italic = false })
     hi.set("Operator", { bold = true, fg = hi.fg("Function") })
-    hi.set("Include", { italic = true, bold=true, fg=statement_fg })
+    hi.set("Include", { italic = true, bold=true, fg=hex_statement })
     hi.mod("Repeat", { italic = true })
     -- Labels are meant to be read, they should definitely not be italic.
     hi.mod("Label", { italic = false, bold = true })
@@ -147,12 +163,13 @@ local function afterColorscheme()
     -- We can also replace italics with bold, similar to operator, but it's still different because of the colour.
     hi.mod("@keyword.conditional.ternary", {italic=false, bold=true})
     hi.mod("Identifier", { italic = false })
-    -- TEMP from blending string colour with the red-ish for more builtin things.
-    local value_fg = "#7eb1b1"
-    hi.mod("Number", { italic = false, fg= value_fg})
+    -- Blending string colour with the red-ish for more builtin things.
+    -- local hex_value = "#7eb1b1"
+    local hex_value = col.R_to_hex(col.mix({R_string, R_keyword}, {3, 1}))
+    hi.mod("Number", { italic = false, fg= hex_value})
     -- If you find constants that you don't want to make italic then mod the semantic @lsp global instead.
-    hi.set("Constant", { italic = false, fg=value_fg })
-    hi.set("@constant", { italic = false, fg=value_fg })
+    hi.set("Constant", { italic = false, fg=hex_value })
+    hi.set("@constant", { italic = false, fg=hex_value })
     -- Nothing is constant in python and it's just based on if chars are uppercase.
     hi.set("@constant.python", {})
     -- In python format string "{x:.3f}" the .3f is captured as @none.python, which is ignored by default showing .3f as string.
@@ -161,12 +178,12 @@ local function afterColorscheme()
     hi.mod("@include", { italic = true })
     hi.link("@keyword", "Keyword")
     hi.mod("Keyword", { italic = true, bold = false })
-    hi.mod("@keyword.function", { italic = true, fg=statement_fg })
-    hi.set("@keyword.return", { italic = true, bold=true, fg=statement_fg })
+    hi.mod("@keyword.function", { italic = true, fg=hex_statement })
+    hi.set("@keyword.return", { italic = true, bold=true, fg=hex_statement })
     -- all same as keyword except bold since operators are bold.
     hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.fg("@operator") })
-    -- TEMP hardcoded colour.
-    hi.mod("@parameter", { italic = false, fg = "#ac9ba1" })
+    local R_parameter = col.mix ({R_module, R_type, R_bright, R_dim}, {1,1,3,3})
+    hi.mod("@parameter", { italic = false, fg = col.R_to_hex(R_parameter) })
     hi.link("@variable.parameter", "@parameter")
     hi.set("@variable.parameter.builtin", {italic = true, fg=hi.fg("@parameter")})
     -- attribute is by default linked to constant.
@@ -190,7 +207,7 @@ local function afterColorscheme()
     hi.set("@function.builtin", { italic = true, fg = hi.fg("@function.call") })
     -- hi.link("@attribute", "PreProc")
     hi.set("@attribute.builtin", { italic = true, fg = hi.fg("@attribute") })
-    hi.set("@constant.builtin", { bold=false, italic = true, fg = value_fg }) -- The value_fg is enough to indicate constant.
+    hi.set("@constant.builtin", { bold=false, italic = true, fg = hex_value }) -- The value_fg is enough to indicate constant.
     hi.set("@type.builtin", { italic = true, fg = hi.fg("@type") })
     hi.set("@identifier.builtin", { italic = true, fg = hi.fg("Identifier") })
     -- @lsp understands types better than TS. TS annotates def type(...) in class as @type.builtin.
@@ -215,21 +232,27 @@ local function afterColorscheme()
     hi.mod("@markup.link.url", { italic = false })                          -- underscore is enough distinction
     hi.mod("@string.special.url", { italic = false })                       -- underscore is enough distinction
 
-    -- I like having @string.documentation different colour from regular string to make it clear it has a different special role and is recognised as such.
-    -- By default it was linked to keyword which is implying builtin, e.g. italic.
-    -- TEMP: between string, comment, function, and statement/keyword colours
-    hi.set("@string.documentation", {fg="#738fa6"})
-
     -- delim.
     hi.setfg("Delimiter", hi.fg("Keyword"))
     hi.link("@punctuation.bracket", "Delimiter")
     hi.link("@punctuation.delimiter", "Delimiter")
+
+    local R_delimiter = col.hex_to_R(hi.hex_fg("Delimiter"))
+    local R_comment = col.hex_to_R(hi.hex_fg("Comment"))
+    local R_function = col.hex_to_R(hi.hex_fg("Function"))
+
+    -- I like having @string.documentation different colour from regular string to make it clear it has a different special role and is recognised as such.
+    -- By default it was linked to keyword which is implying builtin, e.g. italic.
+    -- Between string, comment, and statement/keyword colours
+    local R_documentation = col.mix({R_string, R_comment, R_type}, {1, 1, 1})
+    hi.set("@string.documentation", {fg=col.R_to_hex(R_documentation)})
+
     -- In python this is curly braces in f"{...}" which are like delimiters, 
     -- except they are neutral. They don't form a dict like regular {} and the 
     -- different highlighting within them vs the string around makes them 
     -- visually redundant. For this reason we want them to look like delimiter but dimmed.
-    -- TEMP: this is hardcoded here.
-    hi.set("@punctuation.special", {fg="#504768"})
+    local R_delimiter_dim = col.mix({R_dim, R_string, R_delimiter}, {0.4, 0.1, 0.5})
+    hi.set("@punctuation.special", {fg=col.R_to_hex(R_delimiter_dim)})
     -- Was overwriting the rainbow ext marks:
     hi.clear("@lsp.type.punct.typst")
     -- Not sure what "pol" is but it was lined to @variable which is neutral color globally but not for typst.

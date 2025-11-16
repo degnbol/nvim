@@ -32,10 +32,16 @@ function M.get(name)
     return vim.api.nvim_get_hl(0, { name = name, link = false })
 end
 
+---Get highlight ID of the foreground color for a given highlight group name.
+---@param name string group name.
+---@return number
 function M.fg(name)
     return vim.api.nvim_get_hl(0, { name = name, link = false })['fg']
 end
 
+---Get highlight ID of the background color for a given highlight group name.
+---@param name string group name.
+---@return number
 function M.bg(name)
     return vim.api.nvim_get_hl(0, { name = name, link = false })['bg']
 end
@@ -51,6 +57,28 @@ end
 
 function M.hide(name)
     vim.api.nvim_set_hl(0, name, { fg = "bg" })
+end
+
+---Get the hex string for a foreground color of a highlight group.
+---https://vi.stackexchange.com/questions/20753/getting-an-rgb-color-from-highlight-group
+---@param name string
+---@return string
+function M.hex_fg(name)
+    return vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(name)), "fg#")
+end
+---Get the hex string for a background color of a highlight group.
+---https://vi.stackexchange.com/questions/20753/getting-an-rgb-color-from-highlight-group
+---@param name string
+---@return string
+function M.hex_bg(name)
+    return vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(name)), "bg#")
+end
+---Get the hex string for a special color of a highlight group.
+---https://vi.stackexchange.com/questions/20753/getting-an-rgb-color-from-highlight-group
+---@param name string
+---@return string
+function M.hex_sp(name)
+    return vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(name)), "sp#")
 end
 
 ---Intended for adding highlights relevant to specific filetype or plugin after
