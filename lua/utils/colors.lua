@@ -9,6 +9,7 @@
 -- https://github.com/rvanwijnen/spectral.js/blob/3.0.0/spectral.js
 
 local round = require "utils.math".round
+local clamp = require "utils.math".clamp
 local mul_mat_vec = require "utils.math".mul_mat_vec
 local pi2 = math.pi * 2
 local C = require "utils.color_constants"
@@ -188,10 +189,14 @@ function M.lRGB_to_sRGB(lRGB)
         end
     end
 
+    local function f(t)
+        return clamp(round(compand(t) * 255), 0, 255)
+    end
+
     return M.RGB {
-        round(compand(lRGB.r) * 255),
-        round(compand(lRGB.g) * 255),
-        round(compand(lRGB.b) * 255),
+        f(lRGB.r),
+        f(lRGB.g),
+        f(lRGB.b),
     }
 end
 
