@@ -409,6 +409,10 @@ local function afterColorscheme()
 
     -- Make a prompt hl group that matches shell, REPL, etc. prompts that various prompts in nvim can link to.
     hi.setfg("Prompt", "#FF6AC1")
+    hi.link("vimPrompt", "Prompt")
+    -- Trick to get the cmdline ':' prompt to be prompt coloured.
+    hi.link("@punctuation.delimiter.vim", "Prompt")
+    hi.link("NvimPrompt", "Prompt")
     hi.link("MiniPickPrompt", "Prompt")
     hi.link("SnacksPickerPrompt", "Prompt")
     hi.link("FzfLuaFzfPrompt", "Prompt")
