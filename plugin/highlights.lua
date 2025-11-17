@@ -182,7 +182,7 @@ local function afterColorscheme()
     hi.set("@keyword.return", { italic = true, bold=true, fg=hex_statement })
     -- all same as keyword except bold since operators are bold.
     hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.fg("@operator") })
-    local R_parameter = col.mix ({R_module, R_type, R_bright, R_dim}, {1,1,3,3})
+    local R_parameter = col.mix ({R_module, R_bright, R_dim}, {2,4,3})
     hi.mod("@parameter", { italic = false, fg = col.R_to_hex(R_parameter) })
     hi.link("@variable.parameter", "@parameter")
     hi.set("@variable.parameter.builtin", {italic = true, fg=hi.fg("@parameter")})
@@ -244,7 +244,7 @@ local function afterColorscheme()
     -- I like having @string.documentation different colour from regular string to make it clear it has a different special role and is recognised as such.
     -- By default it was linked to keyword which is implying builtin, e.g. italic.
     -- Between string, comment, and statement/keyword colours
-    local R_documentation = col.mix({R_string, R_comment, R_type}, {1, 1, 1})
+    local R_documentation = col.mix({R_string, R_comment, R_type}, {1, 3, 1})
     hi.set("@string.documentation", {fg=col.R_to_hex(R_documentation)})
 
     -- In python this is curly braces in f"{...}" which are like delimiters, 
