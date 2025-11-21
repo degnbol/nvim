@@ -11,5 +11,5 @@ cd $0:h
 JETLS=~/.local/share/JETLS.jl
 git clone https://github.com/aviatesk/JETLS.jl.git $JETLS
 cd $JETLS
-julia --project=. -e 'using Pkg; Pkg.instantiate()'
+julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.update()'
 

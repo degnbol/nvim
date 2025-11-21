@@ -1,4 +1,5 @@
 -- See install/jetls.sh
+-- This or julials is currently chosen in ftplugin/julia.lua
 local JETLS = vim.fs.abspath("~/.local/share/JETLS.jl")
 return {
     cmd = {
