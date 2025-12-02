@@ -1,3 +1,4 @@
+local util = require "utils/init"
 local hi = require "utils/highlights"
 
 return {
@@ -178,7 +179,11 @@ return {
         "kaarmu/typst.vim",
         ft = "typst",
         init = function()
-            vim.g.typst_pdf_viewer = "sioyek"
+            if util.is_mac() then
+                vim.g.typst_pdf_viewer = "skim"
+            else
+                vim.g.typst_pdf_viewer = "zathura"
+            end
         end,
     },
     -- "MrPicklePinosaur/typst-conceal.vim",
