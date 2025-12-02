@@ -317,7 +317,7 @@ local function afterColorscheme()
     hi.clear("@variable.wgsl")
 
     -- we want members and properties to be neutral colour as well
-    hi.link("@variable.member", "@variable")
+    hi.clear("@variable.member")
     hi.link("@property", "@variable")
 
 
