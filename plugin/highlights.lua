@@ -259,6 +259,7 @@ local function afterColorscheme()
     hi.link("@lsp.type.pol.typst", "@variable.typst")
 
     -- semantic tokens
+    hi.link("@lsp.type.punct", "Delimiter")
     hi.link("@lsp.type.operator", "@operator")
     hi.link("@lsp.type.keyword", "@keyword")
     -- E.g. `Self` in `def fn() -> Self` in python. Might have to remove if it also covers non-builtins.
