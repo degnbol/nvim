@@ -1,3 +1,7 @@
+// Glossary/acronyms/abbreviations/nomenclature
+#import "@preview/glossy:0.9.0": *
+// #show: init-glossary.with(yaml("glossary.yaml"))
+
 // New in 0.14.0
 // Character-level justification
 // https://typst.app/docs/reference/model/par/#parameters-justification-limits
