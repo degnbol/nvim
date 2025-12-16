@@ -75,7 +75,9 @@ local function afterColorscheme()
     hi.mod("Conditional", {fg=hex_statement})
 
     local hex_bg = hi.hex_bg("Normal")
+    local hex_fg = hi.hex_fg("Normal")
     local R_bg = col.hex_to_R(hex_bg)
+    local R_fg = col.hex_to_R(hex_fg)
     local R_preproc = col.hex_to_R(hi.hex_fg("PreProc"))
     local R_string = col.hex_to_R(hi.hex_fg("String"))
     local R_keyword = col.hex_to_R(hi.hex_fg("Keyword"))
@@ -227,7 +229,9 @@ local function afterColorscheme()
     -- E.g. in typst with \<
     hi.link("@lsp.type.escape", "@string.escape")
     hi.set("@markup.raw", { underline = false, fg = hi.fg("@markup.raw") }) -- trying to just remove italic
-    hi.set("@markup.link", { underline = true, fg = hi.fg("@markup.link.label") })
+    local R_link_label = col.hex_to_R(hi.hex_fg("@markup.link.label"))
+    local R_link = col.mix({R_link_label, R_fg}, {1, 2}) -- gentle hint to the tag colour for link destination
+    hi.set("@markup.link", { underline = true, fg = col.R_to_hex(R_link)})
     hi.mod("@markup.link.url", { italic = false })                          -- underscore is enough distinction
     hi.mod("@markup.link.url", { italic = false })                          -- underscore is enough distinction
     hi.mod("@string.special.url", { italic = false })                       -- underscore is enough distinction
