@@ -10,6 +10,15 @@
 
 #set page(numbering: "1")
 
+// Show links written verbatum ("https://..." instead of "click here") with monospace font.
+#import "@preview/linkify:0.1.1"
+#import linkify.display: url-as-raw
+#show: url-as-raw
+// Underline links (either case)
+#show link: underline
+
+#set page(numbering: "1")
+
 // Maybe set this to have horizontal division when inline and vertical in block mode.
 // That would replicate the default of latex, but not sure if needed.
 // https://typst.app/docs/reference/math/frac/#parameters-style
@@ -18,6 +27,10 @@
 // Glossary/acronyms/abbreviations/nomenclature
 #import "@preview/glossy:0.9.0": *
 // #show: init-glossary.with(yaml("glossary.yaml"))
+
+// Chemistry.
+// #import "@preview/chemformula:0.1.1": ch
+// #import "@preview/alchemist:0.1.8": *
 
 #set document(
     title: [TITLE]
