@@ -257,8 +257,6 @@ local function afterColorscheme()
     -- visually redundant. For this reason we want them to look like delimiter but dimmed.
     local R_delimiter_dim = col.mix({R_dim, R_string, R_delimiter}, {0.4, 0.1, 0.5})
     hi.set("@punctuation.special", {fg=col.R_to_hex(R_delimiter_dim)})
-    -- Was overwriting the rainbow ext marks:
-    hi.clear("@lsp.type.punct.typst")
     -- Not sure what "pol" is but it was lined to @variable which is neutral color globally but not for typst.
     hi.link("@lsp.type.pol.typst", "@variable.typst")
 
