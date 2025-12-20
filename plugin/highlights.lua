@@ -105,9 +105,6 @@ local function afterColorscheme()
     -- Treesitter hl with NonText "… 35 …" could be too little attention and get overlooked.
     hi.link("Folded", "NonText")
 
-    -- Background colour for cmdline.
-    hi.setbg("MsgArea", hi.bg("StatusLine"))
-
     hi.mod("DiffDelete", {fg=hi.bg("Normal")})
     _GitSigns()
 
@@ -414,6 +411,10 @@ local function afterColorscheme()
     hi.link("FzfLuaFzfPrompt", "Prompt")
     -- hi.link("FzfLuaLivePrompt", "Prompt")
     hi.link("TelescopeSelectionCaret", "Prompt")
+
+    -- Cmdline.
+    -- hi.set("MsgArea", {bg=hi.fg("StatusLine"), fg=hi.fg("Prompt")})
+    hi.set("MsgArea", {bg=hi.fg("StatusLine")})
 end
 
 -- local defaultDark = 'fluoromachine'
