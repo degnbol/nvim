@@ -6,4 +6,4 @@
 " for config before this was allowed. Since we only use vimscript to configure 
 " neovim we show it as error.
 hi default link vim9comment Error
-
+hi default link vimCmdSep Delimiter

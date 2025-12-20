@@ -20,7 +20,7 @@ return {
             iabbrev THeres There's
             " I by itself is useful in regular text but i can be a variable, and also
             " mentioned in comments, so i should only get abb to I in prose, if possible.
-            iabbrev im I'm
+            " iabbrev im I'm " This is triggered in e.g. julia code for some reason
             iabbrev Im I'm
             iabbrev IM I'm
             " Abolish ive I've " keeps annoying me when writing five

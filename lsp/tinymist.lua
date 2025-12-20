@@ -1,3 +1,4 @@
+local map = require "utils/keymap"
 
 -- https://github.com/Myriad-Dreamin/tinymist/blob/main/editors/neovim/Configuration.md
 -- for typst
@@ -11,11 +12,11 @@ return {
                 client:exec_cmd { command = 'tinymist.pinMain', arguments = { fname } }
             end
         end
-        vim.keymap.set('n', '<LocalLeader>p', function ()
+        map.n('<LocalLeader>p', function ()
             return pinMain(vim.api.nvim_buf_get_name(0))
-        end, { buffer=true, desc="Pin buffer as main" })
+        end, "Pin buffer as main", { buffer=true})
         -- search upwards for a main.typ
         local mainfile = vim.fs.find("main.typ", {type="file", upward=true})[1]
         if mainfile ~= nil then pinMain(mainfile) end
-    end
+    end,
 }

@@ -25,3 +25,9 @@
 
 ((identifier) @type
   (#eq? @type "DataFrame"))
+
+; Make include a builtin function?
+; Although where do we draw the line, since it might just be a std library function like
+; hcat, values, keys, filter, push!, split, splitext, any, all, sum, read, readchomp, isdir, chopsuffix, basename, endswith, and so on.
+((identifier) @function.builtin
+  (#eq? @function.builtin "include"))

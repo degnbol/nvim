@@ -1,0 +1,16 @@
+{
+    "try":{
+        "prefix":"try",
+        "body":[
+            "try",
+            "    $1",
+            "catch e",
+            "    if e isa ${2:Assertion}Error",
+            "        $3",
+            "    else",
+            "        rethrow(e)",
+            "    end",
+            "end"
+        ]
+    }
+}

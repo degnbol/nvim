@@ -75,7 +75,9 @@ local function afterColorscheme()
     hi.mod("Conditional", {fg=hex_statement})
 
     local hex_bg = hi.hex_bg("Normal")
+    local hex_fg = hi.hex_fg("Normal")
     local R_bg = col.hex_to_R(hex_bg)
+    local R_fg = col.hex_to_R(hex_fg)
     local R_preproc = col.hex_to_R(hi.hex_fg("PreProc"))
     local R_string = col.hex_to_R(hi.hex_fg("String"))
     local R_keyword = col.hex_to_R(hi.hex_fg("Keyword"))
@@ -179,7 +181,7 @@ local function afterColorscheme()
     hi.set("@keyword.return", { italic = true, bold=true, fg=hex_statement })
     -- all same as keyword except bold since operators are bold.
     hi.set("@keyword.operator", { italic = true, bold = true, fg = hi.fg("@operator") })
-    local R_parameter = col.mix ({R_module, R_type, R_bright, R_dim}, {1,1,3,3})
+    local R_parameter = col.mix ({R_module, R_bright, R_dim}, {2,4,3})
     hi.mod("@parameter", { italic = false, fg = col.R_to_hex(R_parameter) })
     hi.link("@variable.parameter", "@parameter")
     hi.set("@variable.parameter.builtin", {italic = true, fg=hi.fg("@parameter")})
@@ -190,8 +192,8 @@ local function afterColorscheme()
     hi.link("@variable.attribute", "@attribute")
     hi.mod("@function", { italic = false, bold = true })
     hi.setfg("@function.call", hi.fg("Function"))
-    hi.link("@function.method", "function.call")
-    hi.link("@function.method.call", "function.call")
+    hi.link("@function.method", "@function.call")
+    hi.link("@function.method.call", "@function.call")
     hi.link("@function.macro", "@function.call")
     hi.mod("@conditional", { italic = true, bold = false })
     hi.mod("@conditional.ternary", { italic = false })
@@ -224,7 +226,9 @@ local function afterColorscheme()
     -- E.g. in typst with \<
     hi.link("@lsp.type.escape", "@string.escape")
     hi.set("@markup.raw", { underline = false, fg = hi.fg("@markup.raw") }) -- trying to just remove italic
-    hi.set("@markup.link", { underline = true, fg = hi.fg("@markup.link.label") })
+    local R_link_label = col.hex_to_R(hi.hex_fg("@markup.link.label"))
+    local R_link = col.mix({R_link_label, R_fg}, {1, 2}) -- gentle hint to the tag colour for link destination
+    hi.set("@markup.link", { underline = true, fg = col.R_to_hex(R_link)})
     hi.mod("@markup.link.url", { italic = false })                          -- underscore is enough distinction
     hi.mod("@markup.link.url", { italic = false })                          -- underscore is enough distinction
     hi.mod("@string.special.url", { italic = false })                       -- underscore is enough distinction
@@ -241,7 +245,7 @@ local function afterColorscheme()
     -- I like having @string.documentation different colour from regular string to make it clear it has a different special role and is recognised as such.
     -- By default it was linked to keyword which is implying builtin, e.g. italic.
     -- Between string, comment, and statement/keyword colours
-    local R_documentation = col.mix({R_string, R_comment, R_type}, {1, 1, 1})
+    local R_documentation = col.mix({R_string, R_comment, R_type}, {1, 3, 1})
     hi.set("@string.documentation", {fg=col.R_to_hex(R_documentation)})
 
     -- In python this is curly braces in f"{...}" which are like delimiters, 
@@ -250,12 +254,11 @@ local function afterColorscheme()
     -- visually redundant. For this reason we want them to look like delimiter but dimmed.
     local R_delimiter_dim = col.mix({R_dim, R_string, R_delimiter}, {0.4, 0.1, 0.5})
     hi.set("@punctuation.special", {fg=col.R_to_hex(R_delimiter_dim)})
-    -- Was overwriting the rainbow ext marks:
-    hi.clear("@lsp.type.punct.typst")
     -- Not sure what "pol" is but it was lined to @variable which is neutral color globally but not for typst.
     hi.link("@lsp.type.pol.typst", "@variable.typst")
 
     -- semantic tokens
+    hi.link("@lsp.type.punct", "Delimiter")
     hi.link("@lsp.type.operator", "@operator")
     hi.link("@lsp.type.keyword", "@keyword")
     -- E.g. `Self` in `def fn() -> Self` in python. Might have to remove if it also covers non-builtins.
@@ -314,7 +317,7 @@ local function afterColorscheme()
     hi.clear("@variable.wgsl")
 
     -- we want members and properties to be neutral colour as well
-    hi.link("@variable.member", "@variable")
+    hi.clear("@variable.member")
     hi.link("@property", "@variable")
 
 
@@ -406,6 +409,10 @@ local function afterColorscheme()
 
     -- Make a prompt hl group that matches shell, REPL, etc. prompts that various prompts in nvim can link to.
     hi.setfg("Prompt", "#FF6AC1")
+    hi.link("vimPrompt", "Prompt")
+    -- Trick to get the cmdline ':' prompt to be prompt coloured.
+    hi.link("@punctuation.delimiter.vim", "Prompt")
+    hi.link("NvimPrompt", "Prompt")
     hi.link("MiniPickPrompt", "Prompt")
     hi.link("SnacksPickerPrompt", "Prompt")
     hi.link("FzfLuaFzfPrompt", "Prompt")

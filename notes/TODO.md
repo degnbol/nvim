@@ -1,3 +1,8 @@
+typst:
+gx on e.g. `#import "@preview/glossarium:0.5.9": make-glossary, register-glossary, print-glossary, gls, glspl`
+to go to https://typst.app/universe/package/glossarium
+
+
 Colorscheme overhaul. Functional and simpler.
 E.g. values such as numbers are currently coloured similar to types.
 Should instead be similar to strings, which are also simple dataformats, and things like `None` in python which are builtin simple values.

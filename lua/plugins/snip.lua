@@ -1,3 +1,5 @@
+local map = require "utils/keymap"
+
 return {
     {
         'L3MON4D3/LuaSnip',
@@ -31,9 +33,17 @@ return {
         dependencies = {"stevearc/dressing.nvim", "ibhagwan/fzf-lua"},
         opts = {},
         init = function ()
-            vim.keymap.set( "n", "<leader>xe", function() require("scissors").editSnippet() end, { desc = "Snippet: Edit" })
+            map.n(
+                "<leader>xe",
+                function() require("scissors").editSnippet() end,
+                "Snippet: Edit"
+            )
             -- when used in visual mode, prefills the selection as snippet body
-            vim.keymap.set( { "n", "x" }, "<leader>xa", function() require("scissors").addNewSnippet() end, { desc = "Snippet: Add" })
+            map.nx(
+                "<leader>xa",
+                function() require("scissors").addNewSnippet() end,
+                "Snippet: Add"
+            )
         end,
     }
 }
