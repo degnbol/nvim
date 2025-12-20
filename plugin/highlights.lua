@@ -190,7 +190,7 @@ local function afterColorscheme()
     -- TODO: what's the difference between attribute, parameter, and property?
     hi.link("@attribute", "@parameter")
     hi.link("@variable.attribute", "@attribute")
-    hi.mod("@function", { italic = false, bold = true })
+    hi.mod("@function", { italic = false, bold = false })
     hi.setfg("@function.call", hi.fg("Function"))
     hi.link("@function.method", "@function.call")
     hi.link("@function.method.call", "@function.call")
