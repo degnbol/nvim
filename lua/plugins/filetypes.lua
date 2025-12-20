@@ -249,4 +249,8 @@ return {
             vim.api.nvim_set_hl(0, "Block", { link = "LineNr" })
         end,
     },
+    -- {
+    --     "salkin-mada/openscad.nvim",
+    --     config = true,
+    -- },
 }

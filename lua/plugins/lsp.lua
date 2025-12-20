@@ -28,6 +28,7 @@ if vim.fn.executable("npm") == 1 and vim.fn.executable("cargo") == 1 then
         -- "misspell",
         -- "typos",
         -- "typos_lsp",
+        -- "openscad_lsp", -- for 3d printing
     }
 end
 
