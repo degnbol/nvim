@@ -10,6 +10,7 @@ return {
         config = function()
             local nvim_treesitter = require 'nvim-treesitter'
             nvim_treesitter.setup {}
+
             -- TS installations will keep retrying unless the TS CLI is installed (with cargo).
             if vim.fn.executable("cargo") == 1 then
                 nvim_treesitter.install {
@@ -54,6 +55,21 @@ return {
                     "css",
                 }
             end
+
+
+            -- Add custom openscad parser (not in default list)
+            vim.api.nvim_create_autocmd('User', {
+                pattern = 'TSUpdate',
+                callback = function()
+                    require('nvim-treesitter.parsers').openscad = {
+                        install_info = {
+                            url = 'https://github.com/bollian/tree-sitter-openscad',
+                            branch = 'master',
+                            queries = 'queries', -- directory with highlights.scm etc.
+                        },
+                    }
+                end
+            })
 
             -- TODO: add
             -- https://github.com/nvim-treesitter/nvim-treesitter/#adding-parsers

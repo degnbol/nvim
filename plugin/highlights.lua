@@ -107,9 +107,6 @@ local function afterColorscheme()
     -- Treesitter hl with NonText "… 35 …" could be too little attention and get overlooked.
     hi.link("Folded", "NonText")
 
-    -- Background colour for cmdline.
-    hi.setbg("MsgArea", hi.bg("StatusLine"))
-
     hi.mod("DiffDelete", {fg=hi.bg("Normal")})
     _GitSigns()
 
@@ -193,7 +190,7 @@ local function afterColorscheme()
     -- TODO: what's the difference between attribute, parameter, and property?
     hi.link("@attribute", "@parameter")
     hi.link("@variable.attribute", "@attribute")
-    hi.mod("@function", { italic = false, bold = true })
+    hi.mod("@function", { italic = false, bold = false })
     hi.setfg("@function.call", hi.fg("Function"))
     hi.link("@function.method", "@function.call")
     hi.link("@function.method.call", "@function.call")
@@ -421,6 +418,10 @@ local function afterColorscheme()
     hi.link("FzfLuaFzfPrompt", "Prompt")
     -- hi.link("FzfLuaLivePrompt", "Prompt")
     hi.link("TelescopeSelectionCaret", "Prompt")
+
+    -- Cmdline.
+    -- hi.set("MsgArea", {bg=hi.fg("StatusLine"), fg=hi.fg("Prompt")})
+    hi.set("MsgArea", {bg=hi.fg("StatusLine")})
 end
 
 -- local defaultDark = 'fluoromachine'

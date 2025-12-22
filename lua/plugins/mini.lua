@@ -234,6 +234,10 @@ return {
                     hi.link("MiniNotifyBorder", "Comment") -- dim
                 end
             })
+            -- Access notifications
+            vim.api.nvim_create_user_command("Messages", function ()
+                require('mini.notify').show_history()
+            end, {})
 
             local MiniFiles = require 'mini.files'
             local minifiles_toggle = function(...)

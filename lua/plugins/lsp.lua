@@ -1,3 +1,5 @@
+local map = require "utils/keymap"
+
 local ensure_installed
 if vim.fn.executable("npm") == 1 and vim.fn.executable("cargo") == 1 then
     ensure_installed = {
@@ -28,6 +30,7 @@ if vim.fn.executable("npm") == 1 and vim.fn.executable("cargo") == 1 then
         -- "misspell",
         -- "typos",
         -- "typos_lsp",
+        -- "openscad_lsp", -- for 3d printing
     }
 end
 
@@ -179,32 +182,32 @@ return {
                 },
             }
 
-            local function localmap(key, func, desc)
-                vim.keymap.set("n", "<LocalLeader>" .. key, crates[func], { desc = desc })
+            local function map_crates(key, func, desc)
+                map.n("<LocalLeader>" .. key, crates[func], desc)
             end
 
-            localmap("t", "toggle", "Toggle crates")
-            localmap("r", "reload", "Reload crates")
+            map_crates("t", "toggle", "Toggle crates")
+            map_crates("r", "reload", "Reload crates")
 
-            localmap("v", "show_versions_popup", "Show versions")
-            localmap("f", "show_features_popup", "Show features")
-            localmap("d", "show_dependencies_popup", "Show dependencies")
+            map_crates("v", "show_versions_popup", "Show versions")
+            map_crates("f", "show_features_popup", "Show features")
+            map_crates("d", "show_dependencies_popup", "Show dependencies")
 
-            localmap("u", "update_crate", "Update")
-            localmap("u", "update_crates", "Update")
-            localmap("a", "update_all_crates", "Update all")
-            localmap("U", "upgrade_crate", "Upgrade")
-            localmap("U", "upgrade_crates", "Upgrade")
-            localmap("A", "upgrade_all_crates", "Upgrade all")
+            map_crates("u", "update_crate", "Update")
+            map_crates("u", "update_crates", "Update")
+            map_crates("a", "update_all_crates", "Update all")
+            map_crates("U", "upgrade_crate", "Upgrade")
+            map_crates("U", "upgrade_crates", "Upgrade")
+            map_crates("A", "upgrade_all_crates", "Upgrade all")
 
-            localmap("x", "expand_plain_crate_to_inline_table", "Plain crate -> inline table")
-            localmap("X", "extract_crate_into_table", "Crate -> table")
+            map_crates("x", "expand_plain_crate_to_inline_table", "Plain crate -> inline table")
+            map_crates("X", "extract_crate_into_table", "Crate -> table")
 
-            localmap("H", "open_homepage", "Homepage")
-            localmap("R", "open_repository", "Repo")
-            localmap("D", "open_documentation", "Documentation")
-            localmap("C", "open_crates_io", "crates.io")
-            localmap("L", "open_lib_rs", "lib.rs")
+            map_crates("H", "open_homepage", "Homepage")
+            map_crates("R", "open_repository", "Repo")
+            map_crates("D", "open_documentation", "Documentation")
+            map_crates("C", "open_crates_io", "crates.io")
+            map_crates("L", "open_lib_rs", "lib.rs")
         end,
     },
 }

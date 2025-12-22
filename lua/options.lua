@@ -175,5 +175,6 @@ vim.fn.sign_define("LspDiagnosticsSignWarning", { text = "", numhl = "LspDiag
 vim.fn.sign_define("LspDiagnosticsSignInformation", { text = "", numhl = "LspDiagnosticsDefaultInformation" })
 vim.fn.sign_define("LspDiagnosticsSignHint", { text = "", numhl = "LspDiagnosticsDefaultHint" })
 
-require"vim._extui".enable {}
+-- Enable experimenal cmdline with syntax hl.
+require('vim._extui').enable {}
 
