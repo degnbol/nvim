@@ -19,6 +19,15 @@
 
 #set page(numbering: "1")
 
+#set heading(numbering: "1.1")
+
+// Add padding (larger page margins) on either side of caption, left-adjust, and change "Table" and "Figure" to smallcaps.
+#show figure.caption: it => pad(x: 2em,
+align(left)[                                                       
+    #smallcaps[#it.supplement #it.counter.display(it.numbering)]#it.separator#it.body
+]
+)
+
 // Maybe set this to have horizontal division when inline and vertical in block mode.
 // That would replicate the default of latex, but not sure if needed.
 // https://typst.app/docs/reference/math/frac/#parameters-style
