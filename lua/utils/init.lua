@@ -292,4 +292,20 @@ function M.is_mac()
     return vim.uv.os_uname().sysname == "Darwin"
 end
 
+---Read treesitter query files from runtimepath, concatenating all matches.
+---@param lang string Language/directory name under queries/
+---@param query_name string Query name without .scm extension
+---@return string Combined query source
+function M.read_query(lang, query_name)
+    local files = vim.api.nvim_get_runtime_file('queries/' .. lang .. '/' .. query_name .. '.scm', true)
+    local sources = {}
+    for i = #files, 1, -1 do
+        local content = M.readtext(files[i])
+        if content then
+            table.insert(sources, content)
+        end
+    end
+    return table.concat(sources, '\n')
+end
+
 return M
