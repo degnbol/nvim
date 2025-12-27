@@ -423,7 +423,9 @@ local function afterColorscheme()
     -- hi.set("MsgArea", {bg=hi.fg("StatusLine"), fg=hi.fg("Prompt")})
     hi.set("MsgArea", {bg=hi.fg("StatusLine")})
 
+    -- Used in karabiner.json
     hi.mod("@property.builtin", {underline=true})
+    hi.mod("@string.builtin", {underline=true})
 end
 
 -- local defaultDark = 'fluoromachine'
