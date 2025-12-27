@@ -292,6 +292,26 @@ function M.is_mac()
     return vim.uv.os_uname().sysname == "Darwin"
 end
 
+---Create a root_dir function for vim.lsp.config that resolves symlinks before searching.
+---Needed for symlinked dotfiles where .git may not be in the apparent ancestor chain.
+---@param markers string|string[] Root markers to search for (default: { '.git' })
+---@return function root_dir_fn Function compatible with vim.lsp.config root_dir
+function M.symlink_root_dir(markers)
+    markers = markers or { '.git' }
+    if type(markers) == 'string' then markers = { markers } end
+    return function(bufnr, on_dir)
+        local fname = vim.api.nvim_buf_get_name(bufnr)
+        local resolved = vim.fn.resolve(fname)
+        local root = vim.fs.root(resolved, markers)
+        if root then
+            on_dir(root)
+        else
+            -- Fallback to file's directory for single-file support
+            on_dir(vim.fn.fnamemodify(resolved, ':h'))
+        end
+    end
+end
+
 ---Read treesitter query files from runtimepath, concatenating all matches.
 ---@param lang string Language/directory name under queries/
 ---@param query_name string Query name without .scm extension

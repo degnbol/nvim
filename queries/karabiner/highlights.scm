@@ -5,7 +5,7 @@
     (string_content) @_key) @property.builtin)
   (#any-of? @_key
     "global" "show_in_menu_bar"
-    "rules" "description" "manipulators" "type" "from" "to"
+    "rules" "description" "manipulators" "type" "from" "to" "to_if_alone"
     "key_code" "modifiers" "mandatory" "optional" "conditions" "is_keyboard"
     "frontmost_application_if" "frontmost_application_unless"
     "device_if" "device_unless" "keyboard_type_if" "keyboard_type_unless"

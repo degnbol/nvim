@@ -1,3 +1,3 @@
-" Use 'karabiner' filetype - ftplugin sets up json parser with custom highlights
-au BufNewFile,BufRead karabiner.json set filetype=karabiner
+" Compound filetype: json for LSP, karabiner for custom treesitter highlights
+au BufNewFile,BufRead karabiner.json set filetype=json.karabiner
 
