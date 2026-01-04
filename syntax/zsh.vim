@@ -83,3 +83,5 @@ hi def link zshLiteral zshString
 
 syn match Delimiter /\[\[/
 syn match Delimiter /\]\]/
+
+hi def link zshKSHFunction @lsp.typemod.function.declaration

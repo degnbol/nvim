@@ -4,6 +4,7 @@ local ensure_installed
 if vim.fn.executable("npm") == 1 and vim.fn.executable("cargo") == 1 then
     ensure_installed = {
         "bashls",
+        "jsonls",
         -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#omnisharp
         -- "csharp_ls", -- instead see install/csharp.sh. There's also omnisharp on other LSPs on Mason.
         -- python:
@@ -63,28 +64,24 @@ return {
                 lineFoldingOnly = true
             }
 
-            -- now for adding the language servers
-            local lsp = require "lspconfig"
-
-            -- add to lsp default config
-            lsp.util.default_config = vim.tbl_deep_extend('force', lsp.util.default_config, {
+            -- Default config for all LSP servers
+            -- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
+            -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
+            vim.lsp.config('*', {
                 capabilities = capabilities,
                 -- on_attach = on_attach
             })
 
-            -- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
-            -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
-
             -- Doesn't work as well as tinymist, e.g. for multiple files and goto def.
-            -- lsp.typst_lsp.setup {
+            -- vim.lsp.config('typst_lsp', {
             --     settings = {
             --         exportPdf = "never", -- Choose onType, onSave or never. Toggle in ftplugin/typst.lua
             --         -- serverPath = "", -- Normally, there is no need to uncomment it.
             --     },
-            --     -- LSP can only understand multiple files if main.typ is opened first and then other files after.
-            --     -- Tried pinning the main:
-            --     -- https://github.com/nvarner/typst-lsp/issues/366
-            -- }
+            -- })
+            -- LSP can only understand multiple files if main.typ is opened first and then other files after.
+            -- Tried pinning the main:
+            -- https://github.com/nvarner/typst-lsp/issues/366
 
             -- scala. Linked as minimal setup from on nvim-metals git:
             -- https://github.com/scalameta/nvim-metals/discussions/39
@@ -102,17 +99,18 @@ return {
                 group = nvim_metals_group,
             })
 
+            -- JSON with schemas - see lsp/jsonls.lua
+            vim.lsp.enable('jsonls')
+
             -- grammar. Not yet supporting latex but supports typst.
-            -- lsp.harper_ls.setup {
+            -- vim.lsp.config('harper_ls', {
             --     settings = {
             --         ["harper-ls"] = {
             --             userDictPath = vim.opt.runtimepath:get()[1] .. "/spell/custom.utf8.add",
             --         }
             --     },
-            --     filetypes = {
-            --         "tex", "typst"
-            --     }
-            -- }
+            --     filetypes = { "tex", "typst" }
+            -- })
         end
     },
     -- add :LspInstall <language> and :Mason for conveniently installing LSP language specific servers
@@ -148,11 +146,21 @@ return {
         },
         config = function()
             -- https://github.com/akinsho/flutter-tools.nvim#full-configuration
+            -- Build capabilities same as in nvim-lspconfig config
+            local capabilities
+            local using_blink, blink = pcall(require, "blink.cmp")
+            if using_blink then
+                capabilities = blink.get_lsp_capabilities({
+                    textDocument = { completion = { completionItem = { snippetSupport = true } } },
+                })
+            else
+                capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+            end
             require "flutter-tools".setup {
                 -- there are other fields under lsp than capabilities and
                 -- on_attach, but this is a fine way to write it as long as we
                 -- don't change the other settings.
-                lsp = require "lspconfig".util.default_config
+                lsp = { capabilities = capabilities }
             }
         end
     },
