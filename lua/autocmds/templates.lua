@@ -14,7 +14,7 @@ local defaultlines = {
         vim.api.nvim_set_option_value("filetype", "zsh", { buf = 0 })
         return { shebang .. "zsh", "set -euo pipefail", "cd $0:h" }
     end,
-    zsh = { shebang .. "zsh", "set -euo pipefail", "cd $0:h" },
+    zsh = { shebang .. "zsh", "set -euo pipefail", "cd ${0:A:h}" },
     bash = { shebang .. "bash", "cd $(dirname $0)" },
     scm = {
         ";extends",
