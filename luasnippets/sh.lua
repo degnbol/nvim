@@ -21,9 +21,9 @@ fi
 
 
 s({trig="ifmac", dscr="If MacOS"},
-fmta([[if [ `uname` = "Darwin" ]; then
+fmta([=[if [[ "$OSTYPE" == darwin* ]]; then
     <>
 fi
-]], {i(1)})),
+]=], {i(1)})),
 
 }
