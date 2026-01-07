@@ -10,6 +10,7 @@ return {
         "tpope/vim-abolish",
         config = function()
             vim.cmd [[
+            Abolish aa{,s} amino acid{,s}
             iabbrev fucntion function
             " extra capitalization
             Abolish TH{ere,en,e,is} Th{}
