@@ -134,6 +134,7 @@ return {
                     { mode = 'n', keys = '<leader>e',     desc = "Explore/manipulate directories" },
                     { mode = 'n', keys = '<leader>f',     desc = "Find|File" },
                     { mode = 'n', keys = '<leader>g',     desc = "Git" },
+                    { mode = 'n', keys = '<leader>i',     desc = "Intelligence/AI" },
                     { mode = 'n', keys = '<leader>l',     desc = "LSP" },
                     { mode = 'n', keys = '<leader>m',     desc = "Multicursor" },
                     -- UnconditionalPaste

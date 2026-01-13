@@ -142,7 +142,7 @@ return {
             map.desc('n', ']f', "File next")
             map.desc('n', '[e', "Exchange line before")
             map.desc('n', ']e', "Exchange line after")
-            map.desc('n', ']n', "Conflict")
+            map.desc('n', '[n', "Conflict")
             map.desc('n', ']n', "Conflict")
             -- TODO: move escape motions to more useful keymap. [y and ]y is used by yoink to swap yanks.
             -- map.desc('n', '[y', "C style escape motion")

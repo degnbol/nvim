@@ -33,14 +33,12 @@ opt.smartindent = false -- has to be set to false explicitly even though it is d
 -- https://github.com/JuliaEditorSupport/julia-vim/blob/master/indent/julia.vim
 -- is terrible for julia, so definitely use
 -- treesitter indent, if for no other lang.
-vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+vim.opt.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 
 -- s: Don't say "search hit BOTTOM, continuing at TOP"
 -- A: Don't make ATTENTION warning when a swap file exists, i.e. file is open somewhere else.
 vim.opt.shortmess:append("sA")
 
--- Has to be set for bufferline to work by hiding an open buffer when switching to another
-opt.hidden = true
 opt.ignorecase = true -- search ignoring case. use \c \C anywhere in search pattern to force case-sensitivity.
 opt.smartcase = true  -- only match case-insensitively is query is all lowercase
 opt.scrolloff = 4     -- number of lines of context to always keep above and below the cursorline
@@ -143,6 +141,8 @@ vim.opt.splitkeep = "cursor"
 
 -- blinking cursor would be nice but only after jumps
 -- vim.opt.guicursor:append("n-v-sm:blinkon150")
+-- bar cursor in terminal mode (e.g. agent window)
+vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,t:ver25-TermCursor"
 
 -- only show error for virtual_text since it is often incorrect and is distracting.
 vim.diagnostic.config {
@@ -170,11 +170,12 @@ local kitty = require "utils/kitty"
 kitty.ligatures_pattern(false, { "*.typ", "*.adoc" })
 
 -- replace the default lsp diagnostic letters with prettier symbols
-vim.fn.sign_define("LspDiagnosticsSignError", { text = "", numhl = "LspDiagnosticsDefaultError" })
-vim.fn.sign_define("LspDiagnosticsSignWarning", { text = "", numhl = "LspDiagnosticsDefaultWarning" })
-vim.fn.sign_define("LspDiagnosticsSignInformation", { text = "", numhl = "LspDiagnosticsDefaultInformation" })
-vim.fn.sign_define("LspDiagnosticsSignHint", { text = "", numhl = "LspDiagnosticsDefaultHint" })
+vim.fn.sign_define("DiagnosticSignError", { text = "", numhl = "DiagnosticError" })
+vim.fn.sign_define("DiagnosticSignWarn", { text = "", numhl = "DiagnosticWarn" })
+vim.fn.sign_define("DiagnosticSignInfo", { text = "", numhl = "DiagnosticInfo" })
+vim.fn.sign_define("DiagnosticSignHint", { text = "", numhl = "DiagnosticHint" })
 
--- Enable experimenal cmdline with syntax hl.
-require('vim._extui').enable {}
+-- Enable experimental cmdline with syntax hl.
+-- Disabled: treesitter query error with "tab" node after nvim update
+-- require('vim._extui').enable {}
 

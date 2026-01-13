@@ -111,7 +111,7 @@ map.n("<leader>q2", "<Cmd>cc 2<CR>", "Entry 2")
 map.n("<leader>q3", "<Cmd>cc 3<CR>", "Entry 3")
 -- we don't map :cnext etc here since we have ]q etc
 
-map.n("<leader>Qo", "<Cmd>lopen<CR>", "Open")
+map.n("<leader>QO", "<Cmd>lopen<CR>", "Open (stock)")
 map.n("<leader>QQ", "<Cmd>lclose<CR>", "Close") -- Q for quit and is fast
 map.n("<leader>Q1", "<Cmd>ll 1<CR>", "Entry 1")
 map.n("<leader>Q2", "<Cmd>ll 2<CR>", "Entry 2")

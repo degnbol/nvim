@@ -14,7 +14,6 @@ return {
             -- TS installations will keep retrying unless the TS CLI is installed (with cargo).
             if vim.fn.executable("cargo") == 1 then
                 nvim_treesitter.install {
-                    "awk",
                     -- "bash", -- so broken
                     "c_sharp",
                     "lua",
@@ -49,7 +48,7 @@ return {
                     "scala",
                     "sql",
                     "graphql", --ext .gql, e.g. schema for graph databases
-                    "qf",      -- see below. Run :TSInstall qf
+                    -- "qf",      -- see below. Run :TSInstall qf
                     "yaml",
                     "ini",
                     "css",

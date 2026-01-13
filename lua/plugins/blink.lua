@@ -66,7 +66,6 @@ local keymap_cmdline = vim.tbl_extend('force', keymap, {
 return {
     {
         'saghen/blink.compat',
-        build = 'cargo build --release', -- for delimiters
         -- use the latest release, via version = '*', if you also use the latest release for blink.cmp
         version = '*',
         lazy = true,
