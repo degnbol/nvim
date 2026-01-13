@@ -11,6 +11,12 @@ return {
             local nvim_treesitter = require 'nvim-treesitter'
             nvim_treesitter.setup {}
 
+            -- Run :TSUpdate after lazy sync to keep parsers in sync with queries
+            vim.api.nvim_create_autocmd('User', {
+                pattern = 'LazySync',
+                callback = function() vim.cmd('TSUpdate') end,
+            })
+
             -- TS installations will keep retrying unless the TS CLI is installed (with cargo).
             if vim.fn.executable("cargo") == 1 then
                 nvim_treesitter.install {
