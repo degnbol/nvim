@@ -119,6 +119,7 @@ return {
         config = function()
             local helpers = require 'incline.helpers'
             local devicons = require 'nvim-web-devicons'
+            local hi = require 'utils/highlights'
             require('incline').setup {
                 ignore = {
                     -- Also display for help etc.
@@ -152,7 +153,7 @@ return {
                     return {
                         ft_icon and { ft_icon, guifg = ft_color } or '',
                         ' ',
-                        { filename, gui = modified and 'bold' or nil, guifg = props.focused and "white" or "gray" },
+                        { filename, gui = modified and 'bold' or nil, guifg = props.focused and hi.fg("StatusLine") or "gray" },
                     }
                 end,
             }
