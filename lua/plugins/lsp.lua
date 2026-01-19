@@ -12,6 +12,7 @@ if vim.fn.executable("npm") == 1 and vim.fn.executable("cargo") == 1 then
         -- "pyright",
         -- "pylsp",
         "basedpyright",
+        "ruff",  -- Python linting/formatting (complements basedpyright)
         -- "julials", -- Manual
         -- "ltex", -- grammar check for latex, markdown, etc
         "texlab",
