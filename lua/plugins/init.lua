@@ -92,7 +92,9 @@ return {
             " language specific, see lua/keymap
             " TODO: make this a bit more convenient, for autocorrecting language specific
             " spelling errors in prose only
-            function s:ToggleDanskAbbrev() abort
+            " Note: must use global function, not s:, because vim.cmd doesn't create
+            " a persistent script context for autocmds to reference later.
+            function g:ToggleDanskAbbrev() abort
                 if &iminsert
                     " echom 'Dansk abb'
                     " Dansk
@@ -118,10 +120,10 @@ return {
                         endif
                         endif
                         endfunction
-                        call s:ToggleDanskAbbrev()
+                        call g:ToggleDanskAbbrev()
                         augroup ToggleDanskAbbrev
-                        autocmd User ToggleDansk :call s:ToggleDanskAbbrev()
-                        autocmd FileType * :call s:ToggleDanskAbbrev()
+                        autocmd User ToggleDansk :call g:ToggleDanskAbbrev()
+                        autocmd FileType * :call g:ToggleDanskAbbrev()
                         augroup END
             ]]
         end,

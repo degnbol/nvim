@@ -3,6 +3,10 @@ local lsu = require "utils/luasnip"
 local s = ls.s
 local t = ls.t
 local i = ls.i
+local c = ls.choice_node
+local f = ls.function_node
+local fmta = require("luasnip.extras.fmt").fmta
+local conds = require("luasnip.extras.expand_conditions")
 
 return {
     -- core lang snippets similar to other bracket related ones found in all.lua

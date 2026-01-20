@@ -39,3 +39,6 @@ Toggle `enabled` in `lua/plugins/agents.lua` to switch.
 
 ### Experimental cmdline (`vim._extui`)
 Disabled in options.lua due to treesitter query error with "tab" node after nvim update. Re-enable when fixed upstream.
+
+### Markdown treesitter crash (nvim 0.12)
+The bundled markdown parser in nvim 0.12-dev crashes when `vim.treesitter.start()` is called during initial buffer load with `foldmethod=expr` and treesitter foldexpr. Workaround in `lua/autocmds/treesitter.lua` uses `vim.schedule()` to delay treesitter start for markdown files. Remove workaround when fixed upstream.

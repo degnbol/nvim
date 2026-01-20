@@ -127,8 +127,6 @@ vim.opt.spellfile = rtp .. "/spell/custom.utf8.add"
 vim.opt.commentstring = "#%s"
 
 vim.wo.foldlevel = 99 -- so we don't fold from the start
--- Fallback if treesitter folding doesn't work:
--- vim.wo.foldmethod = 'indent'
 vim.wo.foldmethod = 'expr'
 vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 

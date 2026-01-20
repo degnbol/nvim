@@ -1,5 +1,8 @@
 local ls = require "luasnip"
 local s = ls.s
+local t = ls.t
+local i = ls.i
+local conds = require("luasnip.extras.expand_conditions")
 local util = require "utils/luasnip"
 
 return {

@@ -23,9 +23,16 @@ vim.api.nvim_create_autocmd("FileType", {
             "wgsl", -- custom in syntax/wgsl.vim
         }
         if not vim.list_contains(disabled, vim.bo.filetype) then
-            -- Ignore errors for buffers where treesitter parser is not installed.
-            pcall(vim.treesitter.start, args.buf)
-            if additional_vim_regex_highlighting[vim.bo.filetype] then
+            -- WORKAROUND: nvim 0.12 bundled markdown parser crashes during initial load.
+            -- Delay treesitter.start for markdown to after buffer is fully set up.
+            if vim.bo.filetype == "markdown" then
+                vim.schedule(function()
+                    pcall(vim.treesitter.start, args.buf)
+                end)
+            else
+                pcall(vim.treesitter.start, args.buf)
+            end
+            if vim.list_contains(additional_vim_regex_highlighting, vim.bo.filetype) then
                 vim.bo[args.buf].syntax = 'on'
             end
         end
