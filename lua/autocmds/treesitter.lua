@@ -22,6 +22,7 @@ vim.api.nvim_create_autocmd("FileType", {
             "sql",  -- custom postgres highlight in syntax/sql.vim
             "wgsl", -- custom in syntax/wgsl.vim
         }
+        if vim.b[args.buf].largefile then return end
         if not vim.list_contains(disabled, vim.bo.filetype) then
             -- WORKAROUND: nvim 0.12 bundled markdown parser crashes during initial load.
             -- Delay treesitter.start for markdown to after buffer is fully set up.

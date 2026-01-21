@@ -1,3 +1,6 @@
+-- Check for large files before plugins load
+require("largefile").check_argv()
+
 -- map leaders has to be set before running lazy
 require "options"
 

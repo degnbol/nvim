@@ -1,3 +1,4 @@
+require "autocmds/largefile"
 require "autocmds/lastplace"
 require "autocmds/templates"
 require "autocmds/treesitter"
