@@ -139,7 +139,7 @@ vim.keymap.set("n", "<plug>TableJumpPre", function()
         local iGoto, maxAmp = r, 0
         for i, v in ipairs(scan) do
             scan[i] = v:gsub('\\&', '  ')
-            _, nAmp = scan[i]:gsub('&', '')
+            local _, nAmp = scan[i]:gsub('&', '')
             if nAmp > maxAmp then
                 iGoto, maxAmp = i, nAmp
             end
@@ -200,7 +200,7 @@ end, { desc = "Goto preamble" })
 
 
 
-function parseTable()
+local function parseTable()
     local envname, r1, _, r2, _ = unpack(vtu.get_env())
     if not envname:match("^tabular") then return end
     -- -1 since we are using 1-indexed r1, r2 in 0-indexed end-exclusive function
@@ -292,8 +292,8 @@ end
 ---should the column be set to maxwidth (usemax=true).
 local function writeTable(tab, opts)
     opts = opts or {}
-    maxwidth = opts.maxwidth or 20
-    usemax = opts.usemax or false
+    local maxwidth = opts.maxwidth or 20
+    local usemax = opts.usemax or false
     -- column width preallocate zeros
     local widths = {}
     for i = 0, tab.maxcol do widths[i] = 0 end

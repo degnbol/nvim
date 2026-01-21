@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 -- should be unnessary but s keeps being understood as a bool set somewhere
 local ls = require "luasnip"
 local s = ls.s

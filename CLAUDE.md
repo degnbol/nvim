@@ -42,3 +42,15 @@ Disabled in options.lua due to treesitter query error with "tab" node after nvim
 
 ### Markdown treesitter crash (nvim 0.12)
 The bundled markdown parser in nvim 0.12-dev crashes when `vim.treesitter.start()` is called during initial buffer load with `foldmethod=expr` and treesitter foldexpr. Workaround in `lua/autocmds/treesitter.lua` uses `vim.schedule()` to delay treesitter start for markdown files. Remove workaround when fixed upstream.
+
+### vim.NIL in buffer variables
+When storing sparse Lua tables (e.g., `{[3] = 10}`) in `vim.b`, Vim pads missing indices with `vim.NIL`. This userdata value:
+- Is NOT equal to Lua `nil` (`vim.NIL == nil` is `false`)
+- Is truthy in conditions
+- **Cannot be indexed** — causes "attempt to index a userdata value"
+
+Pattern `t[k] and t[k][j]` fails when `t[k]` is `vim.NIL`. Use a helper to convert `vim.NIL` back to `nil` when reading from `vim.b`. See `denilify()` in `ftplugin/tsv.lua`.
+
+## Testing
+
+Unit tests use plenary.nvim. See `tests/README.md`.

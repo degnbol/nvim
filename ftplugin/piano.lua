@@ -6,7 +6,7 @@ end)
 
 local keys = {"a", "A", "a", "B", " ", "C", "d", "D", "d", "E", " ", "F", "f", "G"}
 
-function putKey()
+local function putKey()
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
     local offset = 7 -- offset that depends on where the piano starts from
     local key = keys[(c+offset) % #keys]

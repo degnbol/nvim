@@ -8,11 +8,11 @@
 -- Mixing colors in LAB color space and also realistic color mixing from
 -- https://github.com/rvanwijnen/spectral.js/blob/3.0.0/spectral.js
 
-local round = require "utils.math".round
-local clamp = require "utils.math".clamp
-local mul_mat_vec = require "utils.math".mul_mat_vec
+local round = require "utils/math".round
+local clamp = require "utils/math".clamp
+local mul_mat_vec = require "utils/math".mul_mat_vec
 local pi2 = math.pi * 2
-local C = require "utils.color_constants"
+local C = require "utils/color_constants"
 
 local M = {}
 

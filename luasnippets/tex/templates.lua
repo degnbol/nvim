@@ -1,3 +1,6 @@
+---@diagnostic disable: undefined-global
+-- LuaSnip globals (s, i, f, fmta, conds, etc.) are injected by the loader
+
 -- sources:
 -- https://castel.dev/post/lecture-notes-1/
 -- https://www.ejmastnak.com/tutorials/vim-latex/luasnip

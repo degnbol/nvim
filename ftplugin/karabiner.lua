@@ -1,7 +1,7 @@
 -- Custom treesitter highlighting for karabiner.json
 -- Uses json parser with queries from queries/karabiner/*.scm
 
-local read_query = require('utils').read_query
+local read_query = require('utils/init').read_query
 
 local base_highlights = read_query('json', 'highlights')
 local karabiner_highlights = read_query('karabiner', 'highlights')

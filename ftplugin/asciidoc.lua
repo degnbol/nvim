@@ -22,7 +22,7 @@ local function get_xref_id()
     end
 end
 -- Goto tag that xref points to under cursor
-function goto_xref_tag()
+local function goto_xref_tag()
     local tag = get_xref_id()
     if tag then
         if not pcall(vim.cmd, "tag " .. tag) then

@@ -141,6 +141,19 @@ function M.nox(lhs, rhs, desc, opts)
     vim.keymap.set({ 'n', 'o', 'x' }, lhs, rhs, opts)
 end
 
+---Buffer-local map. Mode can be string or table.
+---@param mode string|table
+---@param lhs string
+---@param rhs string|function
+---@param desc? string
+---@param opts? table
+function M.buf(mode, lhs, rhs, desc, opts)
+    opts = opts or {}
+    opts.desc = desc
+    opts.buffer = true
+    vim.keymap.set(mode, lhs, rhs, opts)
+end
+
 ---Add desc(ription) to an already defined keymap.
 ---@param mode string|table
 ---@param lhs string

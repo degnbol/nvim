@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 local ls = require "luasnip"
 local s = ls.s
 local lsu = require "utils/luasnip"

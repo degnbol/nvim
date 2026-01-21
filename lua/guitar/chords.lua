@@ -9,8 +9,8 @@ local function cword(line, c, pattern)
 end
 
 local function readjson(filename)
-    file = io.open(filename, "r")
-    content = vim.json.decode(file:read("*a"))
+    local file = io.open(filename, "r")
+    local content = vim.json.decode(file:read("*a"))
     file:close()
     return content
 end
@@ -30,22 +30,22 @@ end
 --- I go for the simplest one to code which may not be easy to play.
 --- name: e.g. "C/G"
 --- returns: {strings, fret}
-function slashChord(name)
-    root, bass = name:match("(.*)/(.*)")
+local function slashChord(name)
+    local root, bass = name:match("(.*)/(.*)")
     root = name2strings[root]
     bass = name2strings[bass]
     if root == nil or bass == nil then return end
-    root, rootFret = unpack(root)
-    bass, bassFret = unpack(bass)
-    -- change to using the lowest note in bass and it should be the lowest 
+    local rootStr, rootFret = unpack(root)
+    local bassStr, bassFret = unpack(bass)
+    -- change to using the lowest note in bass and it should be the lowest
     -- played note.
-    lowest = tostring(bass):match("X*%d")
+    local lowest = tostring(bassStr):match("X*%d")
     -- account for any difference in offset
     if rootFret ~= bassFret then
-        note = tonumber(lowest:sub(-1,-1)) - bassFret + rootFret
+        local note = tonumber(lowest:sub(-1,-1)) - bassFret + rootFret
         lowest = lowest:sub(1,-2) .. tostring(note)
     end
-    return lowest .. tostring(root):sub(#lowest+1), rootFret
+    return lowest .. tostring(rootStr):sub(#lowest+1), rootFret
 end
 
 --- Convert e.g. x00231 to pretty version in guitar notes:
@@ -56,16 +56,16 @@ local function prettyChord(strings, fret)
     strings = tostring(strings)
     -- default to 1, which isn't displayed for simplicity
     fret = fret or 1
-    length = 4
+    local length = 4
     for d in strings:gmatch("%d") do
         length = math.max(length, d)
     end
-    pretty = {}
+    local pretty = {}
     for i = 1, length do
         pretty[i] = {"│","│","│","│","│","│"}
     end
     for i = 1, 6 do
-        d = tonumber(strings:sub(i,i))
+        local d = tonumber(strings:sub(i,i))
         if d == nil then
             pretty[1][i] = "╳"
         elseif d ~= 0 then
@@ -82,21 +82,21 @@ end
 --- Detect a chord name or strings pattern (e.g. x00231) on current line and 
 --- return {strings, fret}
 local function detectChordLine()
-    r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    line = vim.api.nvim_get_current_line()
-    strings = line:match(("[%dxX-]"):rep(6))
+    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+    local line = vim.api.nvim_get_current_line()
+    local strings = line:match(("[%dxX-]"):rep(6))
     if strings ~= nil then
         return strings:gsub('-', '0'), 1
     else
-        name = cword(line, c, "%w/()")
+        local name = cword(line, c, "%w/()")
         print(name)
         if name:match("/") then
             return slashChord(name)
         end
-        chord = name2strings[name]
+        local chord = name2strings[name]
         if chord == nil then
             -- may be written as single chars, e.g. "AeDA" for "A Em D A"
-            char = line:sub(c+1,c+1)
+            local char = line:sub(c+1,c+1)
             chord = name2strings[char]
             if chord == nil then return end
         end
@@ -109,14 +109,15 @@ end
 --- ╳││││●
 --- │││●││
 --- ││││●│
-function prettyChordLine()
-    strings, fret = detectChordLine()
+local function prettyChordLine()
+    local strings, fret = detectChordLine()
     if strings == nil then
         print("Chord code not understood.")
         return
     end
-    pretty = prettyChord(strings, fret)
-    -- place under
+    local pretty = prettyChord(strings, fret)
+    -- place under current line
+    local r = vim.api.nvim_win_get_cursor(0)[1]
     vim.api.nvim_buf_set_lines(0, r, r, true, pretty)
 end
 

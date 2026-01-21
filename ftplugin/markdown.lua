@@ -1,5 +1,5 @@
 
-opt = vim.opt_local
+local opt = vim.opt_local
 -- markdown doesn't really have comments. 
 -- The default is html comments <!-- ... -->.
 -- For making tex documents with the markdown package it is possible to ignore latex comments, hence:
