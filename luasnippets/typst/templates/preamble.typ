@@ -8,8 +8,6 @@
     tracking: (min: -0.01em, max: 0.02em),
 ))
 
-#set page(numbering: "1")
-
 // Show links written verbatum ("https://..." instead of "click here") with monospace font.
 #import "@preview/linkify:0.1.1"
 #import linkify.display: url-as-raw
@@ -37,8 +35,15 @@ align(left)[
 #import "@preview/glossy:0.9.0": *
 // #show: init-glossary.with(yaml("glossary.yaml"))
 
-// Chemistry.
-// #import "@preview/chemformula:0.1.1": ch
+// Chemistry
+// Reclassify operators to "normal" to remove math-mode spacing around bonds
+// #import "@preview/chemformula:0.1.1": ch as _ch
+// #let ch(formula) = {
+//   show sym.minus: math.class("normal", sym.minus)
+//   show "=": math.class("normal", "=")
+//   show ",": math.class("normal", ",")
+//   _ch(formula)
+// }
 // #import "@preview/alchemist:0.1.8": *
 
 #set document(

@@ -230,7 +230,8 @@ return {
                 pattern = "*",
                 group = vim.api.nvim_create_augroup("MiniNotify", { clear = true }),
                 callback = function()
-                    -- hi.link("MiniNotifyTitle", "Title") -- default is FloatTitle
+                    -- Explicit attributes instead of link - linked FloatTitle→Title shows red underlines for unknown reason
+                    hi.set("MiniNotifyTitle", { bold = true, underdouble = true, fg = hi.fg("Normal"), sp = hi.fg("Normal") })
                     hi.link("MiniNotifyNormal", "Comment") -- dim
                     hi.link("MiniNotifyBorder", "Comment") -- dim
                 end

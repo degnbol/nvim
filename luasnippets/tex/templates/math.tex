@@ -1,6 +1,38 @@
 % math
 \usepackage{mathtools} % loads amsmath, plus e.g. \coloneqq,\mathclap,\substack
-\usepackage{amssymb}
+\usepackage{amssymb} % math symbols such as \subseteqq
 \usepackage{siunitx} % provides \SI and column type S (align decimal)
-% experimental support for unicode in math
-\usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+
+\usepackage{textgreek}
+\ifluatex
+	% experimental support for unicode input in math.
+	% bold-style controls what gets changed to upright by \symbf
+	\usepackage[warnings-off={mathtools-colon,mathtools-overbracket},bold-style=ISO]{unicode-math}
+\else
+	% allow utf8 input
+	\usepackage[utf8]{inputenc}
+\fi
+
+% \usepackage{amsthm}
+% % Custom theorem styles
+% \newtheoremstyle{definition}% style name
+% {3ex}% above space
+% {3ex}% below space
+% {}% body font
+% {}% indent amount
+% {\scshape\bfseries}% head font
+% {.}% post head punctuation
+% {5pt plus 1pt minus 1pt}% post head space
+% {}% head spec
+%
+% \newtheoremstyle{remark}% style name
+% {1.5ex}% above space
+% {1.5ex}% below space
+% {}% body font
+% {}% indent amount
+% {\scshape\bfseries}% head font
+% {.}% post head punctuation
+% {5pt plus 1pt minus 1pt}% post head space
+% {}% head spec
+%
+% \theoremstyle{definition}

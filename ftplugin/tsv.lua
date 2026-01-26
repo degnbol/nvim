@@ -1,14 +1,11 @@
 local util = require "utils/init"
 
 -- NOTE Limitations:
--- assumes tab is always field sep and newline is always record sep, no multiline cells.
--- undo doesn't currently work well. extmarks are not a buffer change so aren't
--- undone, but the hiding of text is done with a buffer modification so it is
--- undone. If we were to find a way to not include it in the undo tree then we would have another issue,
--- what if the last change was inside the hidden text? So, I think the best
--- option is to make an UndoEvent and RedoEvent and change the extmark along
--- with the buffer change (and update vartabstop)
--- Hiding cuts through multi chars like €, so this might be a TODO
+-- - Assumes tab is field sep and newline is record sep, no multiline cells.
+-- - Hiding cuts through multi-byte chars like €, might be a TODO.
+-- - Undo/redo: u and <C-r> are mapped to smart versions that unhide before
+--   the operation and re-hide after, making hide transparent. Use zo/za to
+--   actually unhide. Users can remap u/<C-r> or use <Plug>(TsvUndo/Redo).
 
 local defaults = {
     maxwidth = 10,     -- excl gap
@@ -265,6 +262,7 @@ local function hide(cols, maxwidth)
     vim.bo.modified = was_modified
 end
 
+
 ---@param r integer 0-indexed line number
 ---@param c integer? 0-indexed character column, or nil to get number of columns (max)
 ---@return integer col 1-indexed for table column of the cursor.
@@ -395,10 +393,17 @@ vim.api.nvim_create_autocmd(defaults.checkevents, {
 vim.keymap.set('n', '<localleader>a', updateWidths, { desc = "Align columns" })
 
 -- unhide and rehide when saving as to always save the full text to file
+local cols_hidden_before_write = {}
 vim.api.nvim_create_autocmd("BufWritePre", {
     buffer = 0,
     group = grp,
     callback = function()
+        -- Remember which columns are hidden before we unhide them
+        cols_hidden_before_write = {}
+        local hidden = get_hidden()
+        for col, _ in pairs(hidden) do
+            table.insert(cols_hidden_before_write, col)
+        end
         unhide(allCols())
     end
 })
@@ -406,9 +411,14 @@ vim.api.nvim_create_autocmd("BufWritePost", {
     buffer = 0,
     group = grp,
     callback = function()
-        for col, maxwidth in pairs(get_maxwidths()) do
-            hide({ col }, maxwidth)
+        -- Re-hide only columns that were hidden before save
+        local maxwidths = get_maxwidths()
+        for _, col in ipairs(cols_hidden_before_write) do
+            if maxwidths[col] then
+                hide({ col }, maxwidths[col])
+            end
         end
+        cols_hidden_before_write = {}
     end
 })
 
@@ -456,25 +466,141 @@ vim.api.nvim_create_autocmd("TextYankPost", {
     end
 })
 
--- redo the active hiding when pasting line(s)
-vim.api.nvim_create_autocmd("TextChanged", {
-    buffer = 0,
-    group = grp,
-    callback = function()
-        local hidden = get_hidden()
-        if vim.tbl_isempty(hidden) then return end
-        -- 0-ind
-        local _, c1, r2, c2 = util.last_changeyank_range()
-        -- full line(s) edit?
-        if c1 == 0 and c2 + 1 == #util.get_line(r2) then
-            -- iterate "hidden" to make sure we are only rehiding what already has hiding intent
-            local maxwidths = get_maxwidths()
-            for col, _ in pairs(hidden) do
-                hide({ col }, maxwidths[col])
+--- Check if any hidden column has cells longer than maxwidth (hidden text restored).
+local function hiddenTextRestored()
+    local hidden = get_hidden()
+    local maxwidths = get_maxwidths()
+    for col, rows in pairs(hidden) do
+        if type(rows) == "table" then
+            local maxw = maxwidths[col] or defaults.maxwidth
+            for row, _ in pairs(rows) do
+                if type(row) == "number" then
+                    local c1, c2 = getCellRange(row, col)
+                    if c1 and (c2 - c1) > maxw then
+                        return true
+                    end
+                end
             end
         end
     end
-})
+    return false
+end
+
+--- Smart undo: if undo restores hidden text (undoes a hide), skip it.
+local function smartUndo()
+    local hidden = get_hidden()
+    local maxwidths = get_maxwidths()
+
+    -- Collect which columns are hidden
+    local hidden_cols = {}
+    for col, rows in pairs(hidden) do
+        if type(rows) == "table" and not vim.tbl_isempty(rows) then
+            hidden_cols[col] = maxwidths[col] or defaults.maxwidth
+        end
+    end
+
+    if vim.tbl_isempty(hidden_cols) then
+        vim.cmd("silent! undo")
+        return
+    end
+
+    -- Do undo
+    local seq_before = vim.fn.undotree().seq_cur
+    vim.cmd("silent! undo")
+    local seq_after = vim.fn.undotree().seq_cur
+
+    -- If nothing changed, we're at oldest state
+    if seq_before == seq_after then
+        return
+    end
+
+    -- Check if undo restored hidden text (undid a hide operation)
+    if hiddenTextRestored() then
+        -- Try another undo to skip the hide
+        local seq_before2 = vim.fn.undotree().seq_cur
+        vim.cmd("silent! undo")
+        local seq_after2 = vim.fn.undotree().seq_cur
+
+        if seq_before2 ~= seq_after2 then
+            -- Second undo worked, clear old hidden state and re-hide fresh
+            for col, _ in pairs(hidden_cols) do
+                hidden[col] = nil
+                if ns[col] then
+                    vim.api.nvim_buf_clear_namespace(0, ns[col], 0, -1)
+                end
+            end
+            set_hidden(hidden)
+            for col, maxw in pairs(hidden_cols) do
+                hide({ col }, maxw)
+            end
+        else
+            -- At oldest edit, redo to restore hidden state
+            vim.cmd("silent! redo")
+        end
+    end
+end
+
+--- Smart redo: if redo redoes a hide, skip it.
+local function smartRedo()
+    local hidden = get_hidden()
+    local maxwidths = get_maxwidths()
+
+    -- Collect which columns are hidden
+    local hidden_cols = {}
+    for col, rows in pairs(hidden) do
+        if type(rows) == "table" and not vim.tbl_isempty(rows) then
+            hidden_cols[col] = maxwidths[col] or defaults.maxwidth
+        end
+    end
+
+    if vim.tbl_isempty(hidden_cols) then
+        vim.cmd("silent! redo")
+        return
+    end
+
+    -- Do redo
+    local seq_before = vim.fn.undotree().seq_cur
+    vim.cmd("silent! redo")
+    local seq_after = vim.fn.undotree().seq_cur
+
+    -- If nothing changed, we're at newest state
+    if seq_before == seq_after then
+        return
+    end
+
+    -- Check if redo made cells shorter (redid a hide operation)
+    -- If cells are now short but we have hidden state, the redo was a hide
+    -- In this case, do another redo to get the next edit
+    local all_short = true
+    for col, maxw in pairs(hidden_cols) do
+        local rows = hidden[col]
+        if type(rows) == "table" then
+            for row, _ in pairs(rows) do
+                if type(row) == "number" then
+                    local c1, c2 = getCellRange(row, col)
+                    if c1 and (c2 - c1) > maxw then
+                        all_short = false
+                        break
+                    end
+                end
+            end
+        end
+        if not all_short then break end
+    end
+
+    -- If all cells are short after redo, we redid a hide - try another redo
+    if all_short then
+        vim.cmd("silent! redo")
+    end
+end
+
+-- Plugin mappings for smart undo/redo
+vim.keymap.set('n', '<Plug>(TsvUndo)', smartUndo, { buffer = true })
+vim.keymap.set('n', '<Plug>(TsvRedo)', smartRedo, { buffer = true })
+
+-- Default mappings (users can override in their config)
+vim.keymap.set('n', 'u', '<Plug>(TsvUndo)', { buffer = true, remap = true })
+vim.keymap.set('n', '<C-r>', '<Plug>(TsvRedo)', { buffer = true, remap = true })
 
 
 vim.keymap.set('n', ']]', function()

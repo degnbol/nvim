@@ -39,10 +39,9 @@ return {
             local max = math.max
             local min = math.min
 
-            -- Don't link to Title since Title has underdouble which becomes red
-            -- for some reason as this float title, and the underdouble becomes
-            -- discontinuous.
-            vim.api.nvim_set_hl(0, "BqfPreviewTitle", { default = true, link = "NonText" })
+            -- Explicit attributes instead of link - linked FloatTitle→Title shows red underlines for unknown reason
+            local hi = require "utils/highlights"
+            vim.api.nvim_set_hl(0, "BqfPreviewTitle", { bold = true, underdouble = true, fg = hi.fg("Normal"), sp = hi.fg("Normal") })
 
             function _G.qftf(info)
                 local items

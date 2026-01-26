@@ -8,7 +8,7 @@ syn keyword Keyword in
 syn keyword @function.builtin mkdir sed tr gzip gunzip rm cd cat mv
 
 " Final \ at end of line for line continuation.
-syn match Comment /\\$/
+syn match Comment /\\$/ containedin=shCommandSub
 syn match Wildcard /*/
 " Hi defined in lua/highlights.lua
 

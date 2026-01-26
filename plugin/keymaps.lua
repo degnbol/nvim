@@ -254,12 +254,14 @@ end, "new|r!<CMD> with bh=wipe")
 
 
 -- LSP and completion status, overall conf etc.
-map.n("<leader>li", "<Cmd>LspInfo<CR>", "Info")
+map.n("<leader>li", "<Cmd>checkhealth vim.lsp<CR>", "Info")
 -- can't use backspace since it is hardcoded by mini.clue for up one level
-map.n("<leader>l0", "<Cmd>LspStop<CR>", "Stop")
-map.n("<leader>l1", "<Cmd>LspStart<CR>", "Start")
-map.n("<leader>l!", "<Cmd>LspRestart<CR>", "Restart")
-map.n("<leader>lL", "<Cmd>LspLog<CR>", "Log")
+map.n("<leader>l0", "<Cmd>lsp stop<CR>", "Stop")
+map.n("<leader>l1", "<Cmd>lsp enable<CR>", "Enable")
+map.n("<leader>l!", "<Cmd>lsp restart<CR>", "Restart")
+map.n("<leader>lL", function()
+    vim.cmd.edit(vim.lsp.log.get_filename())
+end, "Log")
 -- match other completion related entries under x
 map.n("<leader>xS", "<Cmd>CmpStatus<CR>", "Cmp status")
 

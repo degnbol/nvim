@@ -2,6 +2,10 @@
 \usepackage{float}
 \usepackage{svg} % \includesvg{filename.svg}
 
+% For wrapping text around figures.
+% https://au.mirrors.cicku.me/ctan/macros/latex/contrib/wrapfig/wrapfig-doc.pdf
+% \usepackage{wrapfig}
+
 % https://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do#8353
 \makeatletter
 % set h(ere), t(op) as default figure placement.
@@ -10,25 +14,21 @@
 \makeatother
 
 % Set defaults for \includegraphics:
-% width=\textwidth if no optional args are set (instead of default scale=1).
+% width=\textwidth,height=\textheight if no optional args are set (instead of default scale=1).
 % keepaspectratio by default so image isn't skewed by setting height.
 % Use keepaspectratio=false to change.
 \let\RAWincludegraphics\includegraphics
-\renewcommand{\includegraphics}[2][width=\textwidth]{\RAWincludegraphics[keepaspectratio,#1]{#2}}
+\renewcommand{\includegraphics}[2][width=\textwidth,height=\textheight]{\RAWincludegraphics[keepaspectratio,#1]{#2}}
 
 % import pdf with a pdf_tex file with command \pdftex[\textwidth]{folder/}{filename.pdf}
-% imported files created from svg that you can make with affinity designer, 
+% imported files created from svg that you can make with affinity designer,
 % then convert with shell alias `pdftex filename.svg`
 \newcommand{\pdftex}[3][\columnwidth]{
-	\def\svgwidth{#1}
-	\sans{% sans-serif fonts in figures
+	{
+		\def\svgwidth{#1}
+		% \sffamily % sans-serif fonts in figures
 		\import{#2}{#3_tex}
 	}
 }
 % use the same command to set textsize for subcaption text in figures.
 \newcommand{\subsize}[1]{\Large{#1}}
-
-% For wrapping text around figures.
-% If using, then make snippet
-% https://au.mirrors.cicku.me/ctan/macros/latex/contrib/wrapfig/wrapfig-doc.pdf
-% \usepackage{wrapfig}

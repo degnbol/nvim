@@ -1,3 +1,22 @@
+% Provides \ifluatex for pdflatex vs lualatex specific calls.
+\usepackage{ifluatex}
+
+% Allow newcommand with multiple optional args.
+% Form: \NewDocumentCommand{\foocmd}{ O{default1} O{default2} m }{#1~#2~#3}
+% where O is for optional and m for mandatory.
+\usepackage{xparse}
+
+% ability to unload package
+% https://tex.stackexchange.com/questions/39415/unload-a-latex-package
+% \makeatletter
+% \newcommand{\disablepackage}[2]{%
+% 	\disable@package@load{#1}{#2}%
+% }
+% \newcommand{\reenablepackage}[1]{%
+% 	\reenable@package@load{#1}%
+% }
+% \makeatother
+
 \usepackage{xcolor} % define colors
 \usepackage{hyperref}
 \hypersetup{ % use colored link text rather than neon boxes.
@@ -14,18 +33,24 @@
 % Improve default latex packages.
 % allowing (2%) letter stretch
 \usepackage{microtype}
+% latex by default favours orphan (single line by itself at bottom of page) way too much.
+% this package enforces a minimum number of lines for widows and orphans.
+\usepackage{nowidow}
+\setnowidow[3]
+\setnoclub[3]
+
 % \raggedright ->> \RaggedRight, \flushleft env ->> \FlushLeft, \center ->> \Center
 % https://www.overleaf.com/learn/latex/Text_alignment
 \usepackage{ragged2e}
 % \usepackage{flushend} % enable for two columns, to get equal lengths on last page.
 \usepackage{fancyhdr} % header/footer control
 % paragraph space instead of indent
-\usepackage[parfill]{parskip} 
+\usepackage[parfill]{parskip}
 % appendix
 \usepackage[toc,page]{appendix}
 % \begin{itemize}[label={--}] instead of repeating /item[--]. There is also the outlines package.
 % \usepackage{enumitem} % seemed to break things, at least in pdflatex
-% less boilerplate alt to itemize. \begin{outline}\end{outline} with optional [enumerate]. 
+% less boilerplate alt to itemize. \begin{outline}\end{outline} with optional [enumerate].
 % replace \item and nested \item with \1 and \2.
 % Change bullet style with e.g.:
 % \renewcommand{\labelitemiii}{\textbullet}
@@ -34,9 +59,35 @@
 % pdf bookmarks replacement for hyperref-based that can be made in one run.
 \usepackage{bookmark}
 
+% remove height from box so that we can adjust subfigures etc. to overlap
+\usepackage{adjustbox}
+
 % multi column with ability for varying column width (unlike multicol). Usage example:
 % \columnratio{0.75}
 % \begin{paracol}{2}
 % \switchcolumn
 % \end{paracol}
 \usepackage{paracol}
+
+\usepackage{afterpage}
+
+% sans serif text cmd
+\newcommand{\sans}[1]{{\sffamily #1}}
+
+% % place figure on next page after current content
+% \newcommand{\figurenextpage}[1]{%
+% 	\afterpage{%
+% 		\clearpage%
+% 		\begin{figure}[H]
+% 			#1
+% 		\end{figure}
+% 	}
+% }
+
+% prevent page break in environment
+% https://tex.stackexchange.com/questions/94699/absolutely-definitely-preventing-page-break
+\newenvironment{absolutelynopagebreak}
+{\par\nobreak\vfil\penalty0\vfilneg
+\vtop\bgroup}
+{\par\xdef\tpd{\the\prevdepth}\egroup
+\prevdepth=\tpd}

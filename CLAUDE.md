@@ -51,6 +51,16 @@ When storing sparse Lua tables (e.g., `{[3] = 10}`) in `vim.b`, Vim pads missing
 
 Pattern `t[k] and t[k][j]` fails when `t[k]` is `vim.NIL`. Use a helper to convert `vim.NIL` back to `nil` when reading from `vim.b`. See `denilify()` in `ftplugin/tsv.lua`.
 
+### TSV column hiding and undo
+The TSV ftplugin's column hiding (`zc`/`zo`/`za`) works by actually removing text from the buffer and storing it in `vim.b`. The `modified` flag is preserved so hiding doesn't mark clean buffers as dirty.
+
+**Undo behaviour**: Hide operations are in the undo tree. When undo restores hidden text, a `TextChanged` autocmd clears the stale hidden state to keep `vim.b.tsv_hidden` in sync. Press `zc` to re-hide after undo if needed.
+
+**Why not use concealment?** Concealment (`conceal` extmark option) was attempted but has fundamental issues:
+- Cursor still navigates through concealed text (confusing)
+- Tab alignment breaks because tabs expand based on buffer position, not visual position
+- Would require reimplementing entire tab/column system with virtual text
+
 ## Large File Handling
 
 Files >50MB are handled specially to avoid freezing. See `lua/largefile.lua` and `lua/autocmds/largefile.lua`.
