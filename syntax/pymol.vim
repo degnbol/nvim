@@ -1091,5 +1091,7 @@ hi def link    pymolSetting     Identifier
 hi def link    pymolRun         Include
 hi def link    pymolKwArg       @parameter
 
+" Terminal backslash shown as comment
+syn match Comment '\\$'
 
 let b:current_syntax = "pymol"
