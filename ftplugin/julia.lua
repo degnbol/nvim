@@ -1,3 +1,5 @@
+local map = require "utils/keymap"
+
 -- remove o, we want to continue comments while editing them only (r).
 vim.opt_local.formatoptions = "jwcrql"
 
@@ -6,13 +8,13 @@ vim.opt_local.concealcursor = "nvc"
 
 vim.opt_local.list = false
 
+map.buf('n', '<leader>cc', '<Cmd>!julia %<CR>', "Run this script")
+
 -- using blink.cmp instead
 -- require"completion.plotlyjs.cmp_plotlyjs".setup()
 
 -- manually mark that plotlyjs is being used
-vim.keymap.set('n', '<localleader>+', function()
-    vim.g.loaded_plotly = true
-end, { buffer = true, desc = "Manually load plotlyjs completion" })
+map.buf('n', '<localleader>+', function() vim.g.loaded_plotly = true end, "Manually load plotlyjs completion")
 -- ... or check if plotlyjs is loaded by scanning first 20 lines
 for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 20, false)) do
     if line:lower():match("plotly") then
