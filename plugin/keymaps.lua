@@ -349,6 +349,13 @@ map.n("gx", function()
         end
     end
 
+    -- DOI links (e.g. 10.1234/abc, doi:10.1234/abc)
+    local line = vim.api.nvim_get_current_line()
+    local doi = line:match("10%.%d%d%d%d+/[%w%.%-_/:]+[%w]")
+    if doi then
+        return vim.ui.open("https://doi.org/" .. doi)
+    end
+
     -- Using various-textobjs url finder, we will detect url further ahead,
     -- e.g. useful when being lazy and the url is right there on the line.
     -- visually select URL
