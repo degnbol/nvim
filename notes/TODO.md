@@ -26,7 +26,12 @@ An argument for having bold operator is dot is both an operator and delimiter in
 An argument for Keyword and function being similar colour is if operator is the same colour to function, then a line like `if x or y` will have `if` and `or` in similar colour which makes sense.
 However having `if` the exact same colour as functions is bad, they should just be neighbours.
 
-OMFG stop basedpyright lsp from goto def going to build/ dir
+Evaluate ty (Astral) as basedpyright replacement (2026-02-16)
+Currently beta, stable release planned for 2026. 10–100x faster than pyright, full LSP features.
+Not ready yet: type inference less mature (noisy false positives), no plugin system (Pydantic/Django),
+no equivalent to :Conda/:PyrightSetPythonPath or stubPath config.
+Revisit when stable, or when inference quality reaches pyright level.
+https://docs.astral.sh/ty/ https://astral.sh/blog/ty
  
 Simplify config.
 Ideas:
