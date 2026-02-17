@@ -95,8 +95,10 @@ map.n('<leader>rn', [[:%s/<C-r><C-w>/]], "Search/replace cword")
 -- use a selection that isn't a perfect cword, or just to use the simple search/replace when LSP is attached etc.
 map.x('<leader>rn', [["ry:%s/<C-r>r/]], "Search/replace")
 
--- Disabled since other things might need to override ESC.
--- map.n('<Esc>', ":noh<CR><Esc>", "Disable search highlights", { silent = true, remap = false })
+map.n('<Esc>', function()
+    vim.cmd.nohlsearch()
+    require('mini.notify').clear()
+end, "Clear highlights and notifications", { silent = true })
 
 -- <sa = my keybind for enable setting autoformat
 -- gww = autoformat line

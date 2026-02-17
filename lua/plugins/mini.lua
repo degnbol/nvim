@@ -214,10 +214,23 @@ return {
 
             -- UI notifications of e.g. LSP background work
             -- https://github.com/echasnovski/mini.notify
-            require('mini.notify').setup {
+            local MiniNotify = require('mini.notify')
+            MiniNotify.setup {
+                content = {
+                    -- Remove the timestamp that's prefixed to notifications.
+                    format = function(notif) return notif.msg end,
+                },
                 window = {
-                    -- reduce max width a bit
-                    max_width_share = 0.3,
+                    -- No "transparency" effects.
+                    winblend = 0,
+                    -- Allow to take up full width.
+                    max_width_share = 1.0,
+                    -- Example from docs to place float at bottom right.
+                    config = function()
+                        local has_statusline = vim.o.laststatus > 0
+                        local pad = vim.o.cmdheight + (has_statusline and 1 or 0)
+                        return { anchor = 'SE', col = vim.o.columns, row = vim.o.lines - pad, title = '', border = 'none' }
+                    end,
                 },
                 lsp_progress = {
                     -- A bit too distracting sometimes
@@ -226,13 +239,18 @@ return {
                     -- duration_last = 1000,
                 },
             }
+            vim.notify = MiniNotify.make_notify({
+                ERROR = { duration = 20000 },
+                WARN  = { duration = 20000 },
+                INFO  = { duration = 20000 },
+            })
             vim.api.nvim_create_autocmd("colorscheme", {
                 pattern = "*",
                 group = vim.api.nvim_create_augroup("MiniNotify", { clear = true }),
                 callback = function()
                     -- Explicit attributes instead of link - linked FloatTitle→Title shows red underlines for unknown reason
                     hi.set("MiniNotifyTitle", { bold = true, underdouble = true, fg = hi.fg("Normal"), sp = hi.fg("Normal") })
-                    hi.link("MiniNotifyNormal", "Comment") -- dim
+                    hi.link("MiniNotifyNormal", "MsgArea")
                     hi.link("MiniNotifyBorder", "Comment") -- dim
                 end
             })

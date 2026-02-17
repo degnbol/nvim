@@ -87,6 +87,28 @@ Files >50MB are handled specially to avoid freezing. See `lua/largefile.lua` and
 4. Double-scheduled callback opens file with `edit`
 5. `BufAdd` in largefile.lua intercepts (for session files, not needed for command line)
 
+## Macro Replay and RecordingLeave
+
+`RecordingLeave` fires before the register is populated (in headless tests at least). With `vim.schedule`, the register is available in interactive use.
+
+**`norm @b` doesn't work in `vim.schedule` after `RecordingLeave`.** The `@` command silently fails — no error, but no text changes. Use `vim.fn.feedkeys(reg, "nx")` with the raw register content instead. The `"n"` flag prevents remapping, `"x"` executes immediately.
+
+**Don't pass register content through `nvim_replace_termcodes`.** Register content is already in vim's internal key encoding (`<80><fd>...` sequences for modifiers). `replace_termcodes` double-encodes it, producing garbage.
+
+See `lua/keymaps/blockim.lua` for working example.
+
+## Dynamic Esc Mappings
+
+Avoid `vim.keymap.set`/`vim.keymap.del` for temporary `<Esc>` overrides — they conflict with any global Esc mapping and with other plugins that may also remap Esc. Prefer `RecordingLeave` or `ModeChanged` autocmds, or use a flag variable checked by a single global Esc mapping.
+
+## Debugging Tips
+
+**`nvim --clean --headless`** is useful for automated tests but has limitations — macro recording/register timing differs from interactive use. Some things that work interactively fail in headless mode and vice versa.
+
+**`pcall` inside `vim.schedule`** — errors in scheduled callbacks can be silent. Wrap in `pcall` and print errors to surface them.
+
+**`vim.fn.getreg("x")` returns `""` not `nil` for empty registers.** The pattern `not vim.fn.getreg("x")` is always false (empty string is truthy in Lua). Use `vim.fn.getreg("x") == ""` instead.
+
 ## Testing
 
 Unit tests use plenary.nvim. See `tests/README.md`.
