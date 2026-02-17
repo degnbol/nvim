@@ -20,6 +20,11 @@ end
 
 map({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
+map.n('<leader>cc', function()
+	vim.notify("No compiler for filetype: " .. vim.bo.filetype, vim.log.levels.WARN)
+end, "Compile (no compiler configured)")
+
+
 -- in the terminal map escape to changing from terminal mode (insert mode) to
 -- normal terminal mode <C-\><C-n> then change window to the left assuming that
 -- term is on the right
