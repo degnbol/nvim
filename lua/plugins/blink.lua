@@ -30,6 +30,7 @@ local source_icon = {
     plugins        = " ",
     pymol_settings = " ",
     plotly         = " ",
+    kitty          = "󰄛 ",
     asciidoc       = " ",
     emoji          = "😃",
 }
@@ -177,6 +178,7 @@ return {
                     ["sh.zsh"] = zsh_sources,
                     python = { "pymol_settings", "lsp", "omni", "path", "snippets", "buffer" },
                     julia = { "plotly", "lsp", "omni", "path", "snippets", "buffer" },
+                    kitty = { "kitty", "snippets", "buffer" },
                     -- lacks LSP, hence the custom asciidoc provider
                     asciidoc = { "asciidoc", "lsp", "omni", "snippets", "buffer", "dictionary" },
                     tex = {
@@ -239,6 +241,10 @@ return {
                         name = "plotly",
                         module = "completion.plotlyjs.blink_plotlyjs",
                         enabled = function() return vim.g.loaded_plotly end
+                    },
+                    kitty = {
+                        name = "kitty",
+                        module = "completion.kitty.blink_kitty",
                     },
                     asciidoc = {
                         name = "asciidoc",
