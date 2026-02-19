@@ -73,13 +73,13 @@ function M:_load()
         })
     end
 
-    -- Directives not in iter_all_options()
-    for _, name in ipairs({ "map", "mouse_map" }) do
+    -- Directives (map, mouse_map) — not in iter_all_options()
+    for _, dir in ipairs(data.directives or {}) do
         table.insert(self.option_items, {
-            label = name,
+            label = dir.name,
             kind = Kind.Keyword,
             source = "kitty",
-            documentation = { kind = "markdown", value = "Map a key press or mouse action to an action" },
+            documentation = { kind = "markdown", value = dir.doc },
         })
     end
 

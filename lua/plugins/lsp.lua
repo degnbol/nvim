@@ -103,6 +103,9 @@ return {
             -- JSON with schemas - see lsp/jsonls.lua
             vim.lsp.enable('jsonls')
 
+            -- In-process hover provider for kitty.conf — see lsp/kitty_conf.lua
+            vim.lsp.enable('kitty_conf')
+
             -- grammar. Not yet supporting latex but supports typst.
             -- vim.lsp.config('harper_ls', {
             --     settings = {

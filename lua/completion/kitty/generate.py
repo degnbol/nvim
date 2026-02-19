@@ -25,6 +25,8 @@ def strip_rst(text):
     # .. note:: -> Note:
     text = re.sub(r"\.\. note::", "Note:", text)
     text = re.sub(r"\.\. versionadded:: (\S+)", r"(added in \1)", text)
+    # .. code-block:: lang -> remove
+    text = re.sub(r"\.\. code-block::.*", "", text)
     # |kitty| -> kitty
     text = re.sub(r"\|(\w+)\|", r"\1", text)
     return text.strip()
@@ -88,7 +90,28 @@ for name, mappings in definition.shortcut_map.items():
 
 actions.sort(key=lambda x: x["name"])
 
-data = {"options": options, "multi_options": multi_options, "actions": actions}
+# Directives: map and mouse_map (not in iter_all_options, doc from group start_text)
+directives = []
+for group in definition.root_group.items:
+    if hasattr(group, "name") and group.name == "shortcuts" and group.start_text:
+        directives.append({"name": "map", "doc": strip_rst(group.start_text)})
+        break
+# mouse_map: find its group description by walking the group tree
+def find_group(group, target_name):
+    if hasattr(group, "name") and group.name == target_name:
+        return group
+    if hasattr(group, "items"):
+        for child in group.items:
+            found = find_group(child, target_name)
+            if found:
+                return found
+    return None
+
+mm_group = find_group(definition.root_group, "mouse.mousemap")
+if mm_group and mm_group.start_text:
+    directives.append({"name": "mouse_map", "doc": strip_rst(mm_group.start_text)})
+
+data = {"options": options, "multi_options": multi_options, "actions": actions, "directives": directives}
 
 outpath = Path(__file__).with_name("kitty_options.json")
 with open(outpath, "w") as f:
