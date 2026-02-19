@@ -37,6 +37,11 @@ if vim.fn.executable("npm") == 1 and vim.fn.executable("cargo") == 1 then
 end
 
 return {
+    {
+        dir = vim.opt.runtimepath:get()[1] .. "/kitty-conf.nvim",
+        dev = true,
+        ft = "kitty",
+    },
     -- scala (not yet in Mason)
     {
         "scalameta/nvim-metals",
@@ -102,9 +107,6 @@ return {
 
             -- JSON with schemas - see lsp/jsonls.lua
             vim.lsp.enable('jsonls')
-
-            -- In-process hover provider for kitty.conf — see lsp/kitty_conf.lua
-            vim.lsp.enable('kitty_conf')
 
             -- grammar. Not yet supporting latex but supports typst.
             -- vim.lsp.config('harper_ls', {

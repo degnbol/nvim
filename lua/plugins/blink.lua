@@ -244,7 +244,7 @@ return {
                     },
                     kitty = {
                         name = "kitty",
-                        module = "completion.kitty.blink_kitty",
+                        module = "kitty-conf",
                     },
                     asciidoc = {
                         name = "asciidoc",

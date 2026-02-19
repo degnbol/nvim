@@ -7,3 +7,6 @@
 [submodule "lsp/pymol-open-source"]
 	path = lsp/pymol-open-source
 	url = https://github.com/schrodinger/pymol-open-source
+[submodule "kitty-conf.nvim"]
+	path = kitty-conf.nvim
+	url = git@github.com:degnbol/kitty-conf.nvim.git
