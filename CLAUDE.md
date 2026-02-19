@@ -109,6 +109,14 @@ Avoid `vim.keymap.set`/`vim.keymap.del` for temporary `<Esc>` overrides — they
 
 **`vim.fn.getreg("x")` returns `""` not `nil` for empty registers.** The pattern `not vim.fn.getreg("x")` is always false (empty string is truthy in Lua). Use `vim.fn.getreg("x") == ""` instead.
 
+## In-process LSP Servers
+
+Neovim can host LSP servers inside its own process — no external binary needed. See `kitty-conf.nvim` for a working example.
+
+- **`lsp/*.lua`**: Return `{ cmd = function() ... end, filetypes = {...} }`. The `cmd` function returns `request`, `notify`, `is_closing`, `terminate` handlers.
+- **`plugin/*.lua`**: Auto-runs when lazy.nvim loads the plugin. Good place for `vim.lsp.enable()`.
+- **blink.cmp community sources**: Convention is `lua/<plugin-name>/init.lua`, referenced as `module = "<plugin-name>"` in the provider config.
+
 ## Testing
 
 Unit tests use plenary.nvim. See `tests/README.md`.
