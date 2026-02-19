@@ -114,7 +114,7 @@ Avoid `vim.keymap.set`/`vim.keymap.del` for temporary `<Esc>` overrides — they
 Neovim can host LSP servers inside its own process — no external binary needed. See `kitty-conf.nvim` for a working example.
 
 - **`lsp/*.lua`**: Return `{ cmd = function() ... end, filetypes = {...} }`. The `cmd` function returns `request`, `notify`, `is_closing`, `terminate` handlers.
-- **`plugin/*.lua`**: Auto-runs when lazy.nvim loads the plugin. Good place for `vim.lsp.enable()`.
+- **`plugin/*.lua`**: Call `vim.lsp.enable()` here, not in `ftplugin/`. `enable` registers a `FileType` autocmd internally, so calling it from ftplugin is circular and too late. The `filetypes` in the `lsp/` config gates which buffers actually start the LSP.
 - **blink.cmp community sources**: Convention is `lua/<plugin-name>/init.lua`, referenced as `module = "<plugin-name>"` in the provider config.
 
 ## Testing
