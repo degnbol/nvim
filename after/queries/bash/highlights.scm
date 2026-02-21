@@ -41,7 +41,7 @@
    ; builtins taken from zshPrecommand https://github.com/vim/vim/blob/master/runtime/syntax/zsh.vim
     "noglob" "nocorrect" "exec" "command" "builtin" "time" "sudo"
     ; extras
-    "git" "pip" "pipx" "brew" "conda")
+    "git" "pip" "pipx" "uv" "uvx" "brew" "conda" "mamba")
   ; only a subcommand if it's a word, not e.g. a flag
   (#match? @function.call "^[a-zA-Z][a-zA-Z0-9_-]*$"))
 

@@ -32,6 +32,10 @@ Toggle `enabled` in `lua/plugins/agents.lua` to switch.
 | `<leader>ia` | Accept diff |
 | `<leader>id` | Deny diff |
 
+## Treesitter Commands
+
+nvim-treesitter removed `TSBufToggle`, `TSToggle`, `TSInstallInfo`, and other `TS*` commands. Treesitter highlighting is now built into neovim core — use `vim.treesitter.start()`/`vim.treesitter.stop()` to control it. For install info, use `:checkhealth nvim-treesitter`.
+
 ## Known Issues
 
 ### Terminal cursor shape

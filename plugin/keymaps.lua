@@ -184,11 +184,16 @@ end, "Paste, auto-indent, place cursor after")
 map.c('<D-v>', '<C-r>+', "Paste, place cursor after")
 
 -- treesitter mappings.
-map.n('<leader>th', "<Cmd>TSBufToggle highlight<CR>", "Toggle local highlight")
-map.n('<leader>tH', "<Cmd>TSToggle highlight<CR>", "Toggle global highlight")
+map.n('<leader>th', function()
+    if vim.treesitter.highlighter.active[vim.api.nvim_get_current_buf()] then
+        vim.treesitter.stop()
+    else
+        vim.treesitter.start()
+    end
+end, "Toggle highlight")
 map.n('<leader>ti', vim.show_pos, "Inspect") -- Same as :Inspect
+map.n('<leader>tI', "<Cmd>checkhealth nvim-treesitter<CR>", "Treesitter health")
 map.n('<leader>tt', "<Cmd>InspectTree<CR>", "Inspect tree")
-map.n('<leader>tI', "<Cmd>Capture TSInstallInfo<CR>", "Install info")
 map.n('<leader>tn', function()
     local node = vim.treesitter.get_node()
     if node == nil then
