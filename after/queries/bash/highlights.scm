@@ -12,7 +12,7 @@
 
 ; find word OR concatenation nodes that look like paths
 ([(word) (concatenation)] @path
-  (#match? @path "\~\?[a-zA-Z0-9_/:$@.*-]*[/.*][a-zA-Z0-9_/:$@.*-]*")
+  (#match? @path "\\~?[a-zA-Z0-9_/:$@.*-]*[/.*][a-zA-Z0-9_/:$@.*-]*")
   ; don't consider a single dot a path, since it messes with sourcing (". ./script.sh")
   ; discovering the "not-eq" name was found by starting at https://tree-sitter.github.io/tree-sitter/using-parsers#an-example-program
   ; following Predicates link "WebAssembly binding" https://github.com/tree-sitter/tree-sitter/tree/master/lib/binding_web
@@ -30,7 +30,7 @@
   (#match? @operator "^then$"))
 
 ((command_name) @function.builtin
-  (#match? @function.builtin "^\.$"))
+  (#match? @function.builtin "^\\.$"))
 
 
 (command
