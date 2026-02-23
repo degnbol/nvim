@@ -10,14 +10,14 @@ s({trig="#!", dscr="Zsh shebang.", snippetType="autosnippet", condition=conds.li
 s({trig="exists", dscr="Does it exist?"},
 {t"command -v ", i(1, "cargo"), t" > /dev/null"}),
 
-s({trig="ifexists", dscr="Does it exist?"},
+s({trig="ifexists", dscr="If install tool is avail"},
 fmta([[
 if command -v <> >> /dev/null; then
     <> install <>
 else
     <> <>
 fi
-]], {i(1, "pipx"), rep(1), i(2, "PACKAGE"), i(3, "mamba install -yc conda-forge"), rep(2)})),
+]], {i(1, "uv"), rep(1), i(2, "PACKAGE"), i(3, "mamba install -yc conda-forge"), rep(2)})),
 
 
 s({trig="ifmac", dscr="If MacOS"},

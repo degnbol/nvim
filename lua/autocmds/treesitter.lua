@@ -1,3 +1,7 @@
+-- compound filetype "sh.zsh" defaults to first component for treesitter parser.
+-- register so zsh files use the dedicated zsh parser instead of bash.
+vim.treesitter.language.register("zsh", "sh.zsh")
+
 -- start treesitter for each new filetype
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "*",
@@ -9,11 +13,12 @@ vim.api.nvim_create_autocmd("FileType", {
             -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$,
             "latex", "plaintex", "tex",
             -- broken
-            "sh", "bash", "zsh", "sh.zsh", "zsh.sh",
+            "sh", "bash",
         }
         local additional_vim_regex_highlighting = {
             "vimdoc",   -- treesitter version doesn't contain useful colors from :h group-name
-            "bash",     -- spending too much time writing treesitter query. Also covers zsh.
+            "bash",     -- spending too much time writing treesitter query.
+            "sh.zsh",
             "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
             -- Semicolon isn't currently highlighted in all cases by TS so we want to incl vim regex hl for jl.
             -- However, jl can get slowed down a lot in certain files from the syntax hl. The solution:

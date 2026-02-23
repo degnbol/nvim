@@ -1,5 +1,7 @@
 # Neovim Config
 
+`~/nvim` = `~/.config/nvim` = `~/dotfiles/config/nvim` (symlinks). All the same directory.
+
 ## Keymap Notes
 
 ### Cmd key (`<D-...>`) in Neovim
@@ -32,6 +34,16 @@ Toggle `enabled` in `lua/plugins/agents.lua` to switch.
 | `<leader>ia` | Accept diff |
 | `<leader>id` | Deny diff |
 
+## Treesitter Commands
+
+nvim-treesitter removed `TSBufToggle`, `TSToggle`, `TSInstallInfo`, and other `TS*` commands. Treesitter highlighting is now built into neovim core — use `vim.treesitter.start()`/`vim.treesitter.stop()` to control it. For install info, use `:checkhealth nvim-treesitter`.
+
+### Zsh tree-sitter parser (2025-02)
+
+A dedicated Zsh parser (`georgeharker/tree-sitter-zsh`) is now tier 1 in nvim-treesitter. Install with `:TSInstall zsh` — no more `vim.treesitter.language.register("bash", "zsh")` hack. Actively maintained, handles most Zsh-specific syntax (parameter expansion flags, glob qualifiers, short-form loops, anonymous functions).
+
+**Limitations:** No `indents.scm` (no auto-indent). `~` inside `[[ ]]` misparsed as bitwise negation ([#16](https://github.com/georgeharker/tree-sitter-zsh/issues/16)). Glob qualifier delimiters for `s::`, `n::`, `b::` must use `:`. Zsh builtins (`zparseopts`, `zstyle`, `autoload`) parse as generic commands. Still young (~5 months), edge cases in complex `${(flags)name}` expansions may remain.
+
 ## Known Issues
 
 ### Terminal cursor shape
@@ -60,6 +72,34 @@ The TSV ftplugin's column hiding (`zc`/`zo`/`za`) works by actually removing tex
 - Cursor still navigates through concealed text (confusing)
 - Tab alignment breaks because tabs expand based on buffer position, not visual position
 - Would require reimplementing entire tab/column system with virtual text
+
+## Treesitter Query `#match?` Escaping
+
+Tree-sitter query strings strip backslashes from unknown escape sequences (`\~` → `~`, `\.` → `.`). Nvim's `check_magic` then prepends `\v` (very magic) to `#match?` patterns. In `\v` mode, `~` means "last substitute string" (E33 crash if no prior `:s`), and `.` means "any char".
+
+**Double-escape** Vim-special characters in `#match?` patterns: `\\~` → `\~` (literal tilde), `\\.` → `\.` (literal dot). Bare `?`, `+`, `*`, `{n,m}` work as quantifiers in `\v` mode without escaping.
+
+`#lua-match?` uses Lua patterns (no Vim regex) and avoids this issue entirely.
+
+## Compound Filetypes and Runtime Loading
+
+Neovim splits compound filetypes (e.g., `"sh.zsh"`) on `.` and iterates left-to-right. For each component, `runtime!` searches **all** rtp entries (including `after/` dirs). This means `after/syntax/a.vim` loads *before* `syntax/b.vim`.
+
+Load order for filetype `"a.b"`:
+1. `syntax/a.{vim,lua}` across all rtp (user → bundled → after/)
+2. `syntax/b.{vim,lua}` across all rtp (user → bundled → after/)
+
+Same pattern for `ftplugin/` and `indent/`. Last-write-wins for options, so `b` overrides `a`.
+
+**Treesitter uses only the first component** for parser and query selection (`vim.split(filetype, '.')[1]`). Override with `vim.treesitter.language.register("lang", "a.b")` to use a different parser for the compound filetype. Queries load from `queries/{parser_lang}/`, not from the second filetype component.
+
+**`; inherits`** in treesitter queries loads queries from another language's directory (e.g., `; inherits sh` loads `queries/sh/highlights.scm`). Use this to share queries between parsers.
+
+**`b:current_syntax` guard**: The first syntax component sets it. Subsequent components with the standard `if exists("b:current_syntax") | finish` guard will be skipped — only addon-style syntax files (without the guard) load for the second component.
+
+### Zsh filetype setup
+
+Zsh files use compound filetype `"sh.zsh"` for vim regex syntax (loads sh patterns first, then zsh overrides). `vim.treesitter.language.register("zsh", "sh.zsh")` in `lua/autocmds/treesitter.lua` overrides the default first-component behaviour so treesitter uses the dedicated zsh parser.
 
 ## Large File Handling
 
