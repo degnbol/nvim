@@ -1,5 +1,10 @@
 #!/usr/bin/env zsh
-cd $0:h
+set -euo pipefail
+cd $0:h/..
+# If detached HEAD
+git switch main
+git submodule update --init .
+cd install/
 
 # Installing from source to get :restart and vim.pack
 ./neovim_source.sh
@@ -9,20 +14,23 @@ cd $0:h
 
 command -v npm > /dev/null || echo "Install npm to get LSP installs"
 
+# tree-sitter CLI required for parser compilation (generate + build)
 # https://tree-sitter.github.io/tree-sitter/creating-parsers#installation
-if command -v cargo > /dev/null; then
+if ! command -v tree-sitter > /dev/null; then
+    command -v cargo > /dev/null || ~/dotfiles/install/rust.sh
     cargo install tree-sitter-cli
-else
-    echo "Install cargo to get treesitter CLI"
 fi
+# Install treesitter parsers (waits for async compilation to finish)
+nvim --headless +"lua require('nvim-treesitter')._install_task:wait()" +qa
 
 # ripgrep for telescope to perform searching of words within files
-conda install -yc conda-forge ripgrep pynvim
+# conda install -yc conda-forge ripgrep pynvim
+# uv tool install ripgrep pynvim
 
 # ./scala.sh
 
 # for editing jupyter notebooks
-conda install -yc conda-forge jupytext
+# conda install -yc conda-forge jupytext
 
 ../tex/unicode/install.sh
 
