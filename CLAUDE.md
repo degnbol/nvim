@@ -101,6 +101,14 @@ The R languageserver doesn't resolve `...` forwarding — functions like `scale_
 
 **Mason-lspconfig override:** Mason's `automatic_enable` calls `vim.lsp.config()` with `cmd = { "r-languageserver" }` (Mason's wrapper), overriding the custom cmd from `lsp/*.lua`. Fix: in `lua/plugins/lsp.lua`, the mason-lspconfig config function calls `vim.lsp.config('r_language_server', { cmd = ... })` after `setup()` to re-apply our custom cmd.
 
+## PyMOL Selection Highlighting
+
+Selection keywords (`name`, `chain`, `byres`, etc.) and representation names (`cartoon`, `sticks`, `surface`, etc.) inside Python strings are highlighted via a custom tree-sitter grammar `pymol_select` at `tree-sitter-pymol-select/`. Injected into Python strings dynamically when pymol imports are detected (`ftplugin/python.lua`), scoped to function args and assignments (not docstrings).
+
+Regenerate after grammar changes: `cd tree-sitter-pymol-select && tree-sitter generate && cc -shared -o ~/.local/share/nvim/site/parser/pymol_select.so -I src src/parser.c -O2`. Restart neovim after recompiling.
+
+**Known limitation:** Multi-part values with `+` (e.g. `chain A+B+C`) work via the `multi_value` token, but single-letter selector keywords (`b`, `q`, `x`, `y`, `z`) may be parsed as selectors instead of chain IDs in edge cases.
+
 ## PyMOL Completion
 
 Three independent data sources, not derivations of each other:
@@ -109,7 +117,9 @@ Three independent data sources, not derivations of each other:
 2. **`lua/completion/pymol/pymol.html`** — command reference generated via `cmd.write_html_ref()`. Covers `cmd.*` usage/args/examples. Not currently wired into completions.
 3. **`lua/completion/pymol/pymol_settings_descriptions/*.md`** — scraped from PyMOL Wiki (separate content from the above). Used by the custom blink.cmp `pymol_settings` provider (`lua/completion/pymol/blink_pymol_settings.lua`), which offers setting completions inside `set()`/`cmd.set()` calls.
 
-Loading is conditional: `ftplugin/python.lua` scans the first 10 lines for `import.*pymol`, or use `<localleader>+` manually. Sets `vim.g.loaded_pymol` which gates the blink provider.
+4. **`lua/completion/pymol/blink_pymol_select.lua`** — blink.cmp provider for selection keywords, builtins, operators, and representation names inside Python strings. Activates only where the `pymol_select` treesitter injection is active (uses `parser:language_for_range():lang()` to check), so no completions in docstrings or non-pymol strings.
+
+Loading is conditional: `ftplugin/python.lua` scans the first 10 lines for `import.*pymol`, or use `<localleader>+` manually. Sets `vim.g.loaded_pymol` which gates the blink providers.
 
 ## Testing
 

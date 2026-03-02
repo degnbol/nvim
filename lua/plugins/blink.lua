@@ -29,6 +29,7 @@ local source_icon = {
     zsh            = "󰞷 ",
     plugins        = " ",
     pymol_settings = " ",
+    pymol_select   = " ",
     plotly         = " ",
     kitty          = "󰄛 ",
     asciidoc       = " ",
@@ -176,7 +177,7 @@ return {
                     sh = zsh_sources,
                     zsh = zsh_sources,
                     ["sh.zsh"] = zsh_sources,
-                    python = { "pymol_settings", "lsp", "omni", "path", "snippets", "buffer" },
+                    python = { "pymol_settings", "pymol_select", "lsp", "omni", "path", "snippets", "buffer" },
                     julia = { "plotly", "lsp", "omni", "path", "snippets", "buffer" },
                     kitty = { "kitty", "snippets", "buffer" },
                     -- lacks LSP, hence the custom asciidoc provider
@@ -235,6 +236,11 @@ return {
                     pymol_settings = {
                         name = "pymol_settings",
                         module = "completion.pymol.blink_pymol_settings",
+                        enabled = function() return vim.g.loaded_pymol end
+                    },
+                    pymol_select = {
+                        name = "pymol_select",
+                        module = "completion.pymol.blink_pymol_select",
                         enabled = function() return vim.g.loaded_pymol end
                     },
                     plotly = {
