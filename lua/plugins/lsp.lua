@@ -134,9 +134,18 @@ return {
         -- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
         -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
         -- also see lsp.lua
-        opts = {
-            ensure_installed = ensure_installed
-        }
+        config = function()
+            require("mason-lspconfig").setup({
+                ensure_installed = ensure_installed,
+            })
+            -- R LSP uses a custom cmd (lsp/r_language_server.lua) that patches
+            -- the languageserver at startup. Must re-apply after mason-lspconfig
+            -- since Mason overrides cmd with its own wrapper.
+            local patch = vim.fn.stdpath("config") .. "/lsp_ext/r_lsp_dots.R"
+            vim.lsp.config('r_language_server', {
+                cmd = { "R", "--no-echo", "-e", "source('" .. patch .. "'); languageserver::run()" },
+            })
+        end
     },
     -- flutter tools contains LSP for dart.
     -- The FlutterRun doesn't seem to work, so currently only using the flutter packaged dart lsp,

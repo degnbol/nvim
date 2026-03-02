@@ -25,7 +25,7 @@ local function LSP_start(cmdpath)
     }
 end
 
-local lsppath = vim.opt.runtimepath:get()[1] .. 'lsp/ts_query_ls'
+local lsppath = vim.opt.runtimepath:get()[1] .. 'lsp_ext/ts_query_ls'
 if vim.fn.filereadable(lsppath) then
     LSP_start(lsppath)
 end

@@ -1,0 +1,49 @@
+import types
+from _typeshed import Incomplete
+from collections.abc import Generator
+
+class classproperty:
+    getter: Incomplete
+    def __init__(self, getter) -> None: ...
+    def __get__(self, instance, owner): ...
+
+class LoggerMixin:
+    @classproperty
+    def logger(cls): ...
+
+def log_method(level=..., log_params: bool = True, log_enter: bool = True, log_exit: bool = False, log_return=None): ...
+
+class ProgressLogger:
+    logger: Incomplete
+    level: Incomplete
+    prefix: Incomplete
+    seconds: Incomplete
+    iterations: Incomplete
+    fraction: Incomplete
+    total: Incomplete
+    iteration: int
+    last_iteration: int
+    start_time: Incomplete
+    last_time: Incomplete
+    def __init__(self, logger, prefix, level=..., seconds=None, iterations=None, fraction=None, total=None) -> None: ...
+    def increment(self, by: int = 1) -> None: ...
+    def __iadd__(self, other): ...
+    def logging_iter(self, iterable) -> Generator[Incomplete]: ...
+    def count(self, start: int = 0, step: int = 1) -> Generator[Incomplete]: ...
+    def iterate(self, sequence) -> Generator[Incomplete]: ...
+    def enumerate(self, sequence): ...
+
+class Plog:
+    obj: Incomplete
+    kwargs: Incomplete
+    def __init__(self, obj, *args, **kwargs) -> None: ...
+
+class LoggingContext:
+    logger: Incomplete
+    level: Incomplete
+    handler: Incomplete
+    close: Incomplete
+    def __init__(self, logger, level=None, handler=None, close: bool = True) -> None: ...
+    old_level: Incomplete
+    def __enter__(self) -> None: ...
+    def __exit__(self, et: type[BaseException] | None, ev: BaseException | None, tb: types.TracebackType | None) -> None: ...

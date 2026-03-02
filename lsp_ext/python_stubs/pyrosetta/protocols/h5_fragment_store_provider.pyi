@@ -1,0 +1,16 @@
+from .h5_importer import h5py as h5py, requires_h5py as requires_h5py
+from _typeshed import Incomplete
+from pyrosetta.rosetta.numeric import xyzVector_double_t as xyzVector_double_t
+from pyrosetta.rosetta.protocols.indexed_structure_store import FragmentSpecification as FragmentSpecification, FragmentStore as FragmentStore, FragmentStoreManager as FragmentStoreManager, FragmentStoreProvider as FragmentStoreProvider
+from pyrosetta.rosetta.std import vector_double as vector_double, vector_numeric_xyzVector_double_t as vector_numeric_xyzVector_double_t, vector_std_string as vector_std_string, vector_std_vector_double_t as vector_std_vector_double_t, vector_unsigned_long as vector_unsigned_long
+
+class H5PyFragmentStoreProvider(FragmentStoreProvider):
+    instance: Incomplete
+    def __init__(self, *args, **kwargs) -> None: ...
+    @requires_h5py
+    def append_to_fragment_store(self, fragment_store, store_name, group_field, group_type) -> None: ...
+    @requires_h5py
+    def get_fragment_store(self, store_name): ...
+    def set_target_filename(self, filename) -> None: ...
+
+def init_H5FragmentStoreProvider() -> None: ...

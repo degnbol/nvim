@@ -1,0 +1,20 @@
+{
+  "grammars": [
+    {
+      "name": "pymol_select",
+      "scope": "source.pymol_select",
+      "path": ".",
+      "file-types": [],
+      "highlights": "queries/pymol_select/highlights.scm",
+      "injection-regex": "pymol_select"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Tree-sitter grammar for PyMOL atom selection algebra",
+    "links": {
+      "repository": "https://github.com/degnbol/tree-sitter-pymol-select"
+    }
+  }
+}

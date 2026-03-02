@@ -1,0 +1,16 @@
+name CA and chain A
+resi 1-100
+byres name CA
+within 5 of chain A
+n. CA or r. ALA
+polymer.protein and not solvent
+b > 50
+/obj//A/1-100/CA
+all
+chain A+D+E
+name CA and not (resn ALA or resn GLY)
+%mysel and organic
+elem C+N+O
+/pept/seg/A/100/CA
+A/100/CA
+//A/100/

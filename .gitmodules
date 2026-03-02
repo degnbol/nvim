@@ -5,7 +5,7 @@
 	path = nvim-revJ.lua
 	url = git@github.com:degnbol/nvim-revJ.lua.git
 [submodule "lsp/pymol-open-source"]
-	path = lsp/pymol-open-source
+	path = lsp_ext/pymol-open-source
 	url = https://github.com/schrodinger/pymol-open-source
 [submodule "kitty-conf.nvim"]
 	path = kitty-conf.nvim

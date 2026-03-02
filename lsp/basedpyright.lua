@@ -81,7 +81,7 @@ return {
                 -- Plus when using other's code that we can't change there will also be warnings about their lack of type declaration.
                 -- https://detachhead.github.io/basedpyright/#/configuration
                 typeCheckingMode = "standard",
-                stubPath = "~/.config/nvim/lsp/python_stubs/",
+                stubPath = "~/.config/nvim/lsp_ext/python_stubs/",
                 -- Prevent goto-definition from landing in build/ directories.
                 -- https://docs.basedpyright.com/v1.20.0/configuration/language-server-settings/
                 exclude = { "**/build" },
