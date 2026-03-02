@@ -17,9 +17,9 @@ return {
                 callback = function() vim.cmd('TSUpdate') end,
             })
 
-            -- TS installations will keep retrying unless the TS CLI is installed (with cargo).
-            if vim.fn.executable("cargo") == 1 then
-                nvim_treesitter.install {
+            -- Parsers require the tree-sitter CLI (>= 0.25.0) for generate + build.
+            if vim.fn.executable("tree-sitter") == 1 then
+                local task = nvim_treesitter.install {
                     -- "bash", -- so broken
                     "c_sharp",
                     "lua",
@@ -59,6 +59,9 @@ return {
                     "ini",
                     "css",
                 }
+                -- Expose task so headless scripts can wait on it:
+                -- nvim --headless +"lua require('nvim-treesitter')._install_task:wait()" +qa
+                nvim_treesitter._install_task = task
             end
 
 
