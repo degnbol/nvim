@@ -33,6 +33,8 @@ return {
                 scrollStart = "[r",
                 scrollUp = "[r",
                 scrollDown = "]r",
+                scrollOutputAbove = "[R",
+                scrollOutputBelow = "]R",
                 progress = "<leader>rp",
                 editPaste = "<leader>re",
             },

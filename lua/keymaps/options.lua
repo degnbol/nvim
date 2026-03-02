@@ -88,16 +88,15 @@ end
 -- v:lnum==line(".") line number about to be drawn is cursor line number
 -- v:virtnum==0 line number about to be drawn is for buffer line, not virtual line or wrapped line
 -- %= right align the following by prepending spaces
--- By setting hl group LineNr on line numbers we overwrite the
--- gitsigns hl group but only for the number itself, which allows
--- us to still use the gitsigns hl group for the following
--- whitespace, which gives the impression there is 1 single line
--- signcolumn.
+-- The original approach used %#LineNr# to override gitsigns numhl on the
+-- number text. Removing it so numhl can colour line numbers directly.
+-- The trailing space after %## picks up the gitsigns numhl colour,
+-- giving the impression there is 1 single line signcolumn.
 -- https://old.reddit.com/r/neovim/comments/1dto43b/use_cursorlinenr_highlight_instead_of_gitsigns/
 local statuscolumn_relativenumber =
-'%#CursorLineNr#%{v:lnum==line(".")&&v:virtnum==0?v:lnum:""}%#LineNr#%=%{v:lnum!=line(".")&&v:virtnum==0?v:relnum:""}%## '
+'%#CursorLineNr#%{v:lnum==line(".")&&v:virtnum==0?v:lnum:""}%##%=%{v:lnum!=line(".")&&v:virtnum==0?v:relnum:""}%## '
 local statuscolumn_number         =
-'%#LineNr#%=%{v:lnum!=line(".")&&v:virtnum==0?v:lnum:""}%#CursorLineNr#%{v:lnum==line(".")&&v:virtnum==0?v:lnum:""}%## '
+'%##%=%{v:lnum!=line(".")&&v:virtnum==0?v:lnum:""}%#CursorLineNr#%{v:lnum==line(".")&&v:virtnum==0?v:lnum:""}%## '
 local signcolumn                  = false -- single column signcolumn by itself
 local function toggle_signcolumn()
     if signcolumn then

@@ -1057,7 +1057,7 @@ syntax keyword pymolSelector    resi resn name alt chain segi flag numeric_type 
   \ backbone sidechain donors acceptors
   \ center origin
 
-syntax match   pymolComment     "^#.*$"
+syntax region  pymolComment     start="#" end="$"
 syntax match   pymolNumber      "*[0-9](.[0-9])?"
 syntax match   pymolString1     "'[^']*'"
 syntax match   pymolString2     '"[^"]*"'

@@ -384,3 +384,4 @@ end, "Smart URL opener")
 -- It can't be removed with vim.keymap.del since it's builtin.
 -- We always just use C-] for explicit tag lookup and C-leftmouse is mapped from Cmd-leftmouse in arch.
 map.n("<C-leftmouse>", "")
+

@@ -62,15 +62,23 @@ return {
             end
 
 
-            -- Add custom openscad parser (not in default list)
+            -- Add custom parsers (not in default list)
             vim.api.nvim_create_autocmd('User', {
                 pattern = 'TSUpdate',
                 callback = function()
-                    require('nvim-treesitter.parsers').openscad = {
+                    local parsers = require('nvim-treesitter.parsers')
+                    parsers.openscad = {
                         install_info = {
                             url = 'https://github.com/bollian/tree-sitter-openscad',
                             branch = 'master',
-                            queries = 'queries', -- directory with highlights.scm etc.
+                            queries = 'queries',
+                        },
+                    }
+                    -- PyMOL selection algebra (local grammar in nvim config)
+                    parsers.pymol_select = {
+                        install_info = {
+                            path = vim.fn.stdpath('config') .. '/tree-sitter-pymol-select',
+                            queries = 'queries',
                         },
                     }
                 end

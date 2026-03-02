@@ -19,21 +19,17 @@ vim.api.nvim_create_autocmd("Colorscheme", {
 })
 
 local function load_pymol()
-    -- load additional pymol syntax hl
-    local rtp = vim.opt.runtimepath:get()[1]
-    vim.schedule(function()
-        vim.cmd.source(rtp .. "/syntax/python_pymol.vim")
-    end)
-    -- The above needs to be done for each new buffer but the following only needs to be run once,
-    -- hence the bool check.
+    -- Set up treesitter injection for pymol_select in Python strings.
+    -- Scoped to function args, keyword args, and assignments — not docstrings.
+    local read_query = require('utils/init').read_query
+    local base = read_query('python', 'injections')
+    local pymol_inject = read_query('pymol_select', 'python_injections')
+    vim.treesitter.query.set('python', 'injections', base .. '\n' .. pymol_inject)
+
     -- This global var is also used by blink to enable pymol_settings provider
     if not vim.g.loaded_pymol then
         vim.g.loaded_pymol = true
-        -- load pymol snippets
         require("luasnip").add_snippets("python", require 'luasnippets.python_pymol')
-        -- Load pymol settings completion source.
-        -- Using blink.cmp instead.
-        -- require "completion.pymol.cmp_pymol_settings".setup()
     end
 end
 -- manually load

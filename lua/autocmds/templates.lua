@@ -4,15 +4,10 @@ local shebang = "#!/usr/bin/env "
 -- Either lines, or function producing lines.
 local defaultlines = {
     -- as a function instead of separate patterns as otherwise they would all get triggered.
-    sh = function(filepath)
-        if filepath:match("%.activate.sh$") then
-            return { "conda activate ENVIRONMENT 2> /dev/null" }
-        elseif filepath:match("%.deactivate.sh$") then
-            return { "[ \"$CONDA_DEFAULT_ENV\" = base ] || conda deactivate" }
-        end
+    sh = function()
         -- Get zsh syntax
         vim.api.nvim_set_option_value("filetype", "zsh", { buf = 0 })
-        return { shebang .. "zsh", "set -euo pipefail", "cd $0:h" }
+        return { shebang .. "zsh", "set -euo pipefail", "cd ${0:A:h}" }
     end,
     zsh = { shebang .. "zsh", "set -euo pipefail", "cd ${0:A:h}" },
     bash = { shebang .. "bash", "cd $(dirname $0)" },
@@ -21,7 +16,7 @@ local defaultlines = {
     },
     R = {
         shebang .. "Rscript",
-        [[if (!require("pacman")) install.packages("pacman")]],
+        [[if (!require("pacman", quiet=TRUE)) install.packages("pacman")]],
         [[pacman::p_load(data.table, ggplot2, cowplot, ggh4x, svglite)]],
     },
     py = {
