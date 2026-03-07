@@ -121,6 +121,10 @@ Three independent data sources, not derivations of each other:
 
 Loading is conditional: `ftplugin/python.lua` scans the first 10 lines for `import.*pymol`, or use `<localleader>+` manually. Sets `vim.g.loaded_pymol` which gates the blink providers.
 
+## WGSL / Bevy Shader Highlighting
+
+See [notes/wgsl.md](notes/wgsl.md).
+
 ## Testing
 
 Unit tests use plenary.nvim. See `tests/README.md`.
