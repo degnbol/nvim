@@ -77,13 +77,25 @@ module.exports = grammar({
   word: $ => $.identifier,
 
   rules: {
-    // Top-level allows bare operators for f-string fragments where
-    // interpolation splits the string_content, e.g. f"{x} and polymer"
-    // produces a fragment starting with "and".
+    // Top-level allows bare operators and keywords for f-string fragments
+    // where interpolation splits the string_content, e.g.
+    // f"{x} and polymer" → fragment " and polymer"
+    // f"polymer within {distance} of ligand" → fragment " of ligand"
     source: $ => repeat(choice(
       $.expression,
       $.logical_operator,
       $.not_operator,
+      $.proximity_keyword,
+      $.expansion_keyword,
+      $.of,
+      $.selector,
+      $.number,
+      // Bare identifiers: selection names, object names, etc.
+      $.identifier,
+      // Catch-all for non-pymol characters (file path punctuation, etc.).
+      // Prevents ERROR nodes whose recovery can swallow valid pymol tokens,
+      // causing flickering injection highlights in neovim's decorator.
+      $._fallback,
     )),
 
     expression: $ => choice(
@@ -126,7 +138,7 @@ module.exports = grammar({
       '&', '|',
     ),
 
-    proximity_expr: $ => prec(2, seq(
+    proximity_expr: $ => prec.left(2, seq(
       $.proximity_keyword,
       $.number,
       optional(seq($.of, $.expression)),
@@ -186,18 +198,14 @@ module.exports = grammar({
     // Macro-style selection: /object/segment/chain/resi/atom
     // A single token captures the entire macro path to avoid parser-level
     // conflicts between _macro_segment and identifier.
-    // Three regex forms reject file paths while accepting pymol macros:
+    // All forms require // (empty segment) to distinguish from file paths.
+    // Trailing forms (A/100/CA) removed — too ambiguous with file paths.
+    // Use //A/100/CA instead (standard pymol notation).
     macro: _ => token(prec(4, choice(
-      // 1a. Leading //: //A/100/, ///A/
+      // Leading //: //A/100/, ///A/100/CA
       /\/\/[A-Za-z0-9_*+\-]*(?:\/[A-Za-z0-9_*+\-]*)*/,
-      // 1b. Internal //: /obj//A/100/CA — has filled segments before the //
+      // Internal //: /obj//A/100/CA — has filled segments before the //
       /\/[A-Za-z0-9_*+\-]+(?:\/[A-Za-z0-9_*+\-]+)*\/\/[A-Za-z0-9_*+\-]*(?:\/[A-Za-z0-9_*+\-]*)*/,
-      // 2. Leading / with all 5 segments filled: /pept/seg/A/100/CA
-      //    Exactly 4 internal slashes. 5-segment absolute paths are vanishingly rare.
-      /\/[A-Za-z0-9_*+\-]+\/[A-Za-z0-9_*+\-]+\/[A-Za-z0-9_*+\-]+\/[A-Za-z0-9_*+\-]+\/[A-Za-z0-9_*+\-]+/,
-      // 3. Trailing form (no leading /): A/100/CA, 100/CA
-      //    Right-to-left pymol macro. Limited to 1-4 slashes.
-      /[A-Za-z0-9_*+\-]+(?:\/[A-Za-z0-9_*+\-]*){1,4}/,
     ))),
 
     // Explicit object reference with prefix (%, ?)
@@ -208,5 +216,9 @@ module.exports = grammar({
     wildcard: _ => '*',
     comparison_operator: _ => choice('<', '>', '=', '<=', '>='),
     object_prefix: _ => choice('%', '?'),
+
+    // Lowest-priority catch-all: matches any single non-whitespace character
+    // not consumed by a real token. Hidden (prefixed _) so no tree node.
+    _fallback: _ => token(prec(-1, /[^\s]/)),
   },
 });

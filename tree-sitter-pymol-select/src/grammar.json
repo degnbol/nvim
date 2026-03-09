@@ -19,6 +19,34 @@
           {
             "type": "SYMBOL",
             "name": "not_operator"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "proximity_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "expansion_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "of"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "selector"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "number"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "identifier"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_fallback"
           }
         ]
       }
@@ -158,7 +186,7 @@
       ]
     },
     "proximity_expr": {
-      "type": "PREC",
+      "type": "PREC_LEFT",
       "value": 2,
       "content": {
         "type": "SEQ",
@@ -892,14 +920,6 @@
             {
               "type": "PATTERN",
               "value": "\\/[A-Za-z0-9_*+\\-]+(?:\\/[A-Za-z0-9_*+\\-]+)*\\/\\/[A-Za-z0-9_*+\\-]*(?:\\/[A-Za-z0-9_*+\\-]*)*"
-            },
-            {
-              "type": "PATTERN",
-              "value": "\\/[A-Za-z0-9_*+\\-]+\\/[A-Za-z0-9_*+\\-]+\\/[A-Za-z0-9_*+\\-]+\\/[A-Za-z0-9_*+\\-]+\\/[A-Za-z0-9_*+\\-]+"
-            },
-            {
-              "type": "PATTERN",
-              "value": "[A-Za-z0-9_*+\\-]+(?:\\/[A-Za-z0-9_*+\\-]*){1,4}"
             }
           ]
         }
@@ -974,6 +994,17 @@
           "value": "?"
         }
       ]
+    },
+    "_fallback": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": -1,
+        "content": {
+          "type": "PATTERN",
+          "value": "[^\\s]"
+        }
+      }
     }
   },
   "extras": [

@@ -9,12 +9,20 @@ vim.opt.list = false
 
 map.buf('n', '<leader>cc', '<Cmd>!python %<CR>', "Run this script")
 
+local hi = require "utils/highlights"
+
+local function set_pymol_hl()
+    -- Off-white fg from Normal, so pymol keywords show through green @string
+    hi.set("@variable.builtin.pymol_select", { fg = hi.fg("Normal"), italic = true })
+end
+
 local grp = vim.api.nvim_create_augroup("colorscheme", { clear = true })
 vim.api.nvim_create_autocmd("Colorscheme", {
     buffer = 0,
     group = grp,
     callback = function()
-        vim.api.nvim_set_hl(0, "@cell", { reverse = true })
+        hi.set("@cell", { reverse = true })
+        if vim.g.loaded_pymol then set_pymol_hl() end
     end
 })
 
@@ -25,6 +33,13 @@ local function load_pymol()
     local base = read_query('python', 'injections')
     local pymol_inject = read_query('pymol_select', 'python_injections')
     vim.treesitter.query.set('python', 'injections', base .. '\n' .. pymol_inject)
+    set_pymol_hl()
+
+    -- Force treesitter to re-evaluate injections with the new query
+    local ok, parser = pcall(vim.treesitter.get_parser, 0)
+    if ok and parser then
+        parser:invalidate(true)
+    end
 
     -- This global var is also used by blink to enable pymol_settings provider
     if not vim.g.loaded_pymol then
