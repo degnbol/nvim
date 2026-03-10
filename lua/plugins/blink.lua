@@ -52,8 +52,8 @@ local keymap = {
     ['<C-b>'] = { 'show_documentation', 'scroll_documentation_up', 'fallback' },
     ['<C-f>'] = { 'show_documentation', 'scroll_documentation_down', 'fallback' },
     -- no fallbacks, since that is just inserting . and ,
-    ['<C-,>'] = { 'snippet_backward' },
-    ['<C-.>'] = { 'snippet_forward' },
+    ['<C-,>'] = { 'snippet_backward', 'fallback' },
+    ['<C-.>'] = { 'snippet_forward', 'fallback' },
     -- Using builtin.
     -- ['<C-s>'] = { 'show_signature' },
 }
@@ -111,10 +111,6 @@ return {
         -- build = 'nix run .#build-plugin',
 
         init = function()
-            -- We are managing snippets with luasnip instead of default currently, since we already wrote many snippets with luasnip and it allows for more complexity.
-            -- However, we have also written some quick ones in VS code style that we should have available.
-            require("luasnip.loaders.from_vscode").lazy_load({ paths = "~/.config/nvim/snippets" })
-
             -- Also jump between snippets with same mappings in normal mode.
             map.n('<C-,>', function() require "blink.cmp".snippet_backward() end, "snippet_backward")
             map.n('<C-.>', function() require "blink.cmp".snippet_forward() end, "snippet_forward")

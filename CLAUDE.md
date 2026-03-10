@@ -121,6 +121,12 @@ Three independent data sources, not derivations of each other:
 
 Loading is conditional: `ftplugin/python.lua` scans the first 10 lines for `import.*pymol`, or use `<localleader>+` manually. Sets `vim.g.loaded_pymol` which gates the blink providers.
 
+## File Templates (`lua/autocmds/templates.lua`)
+
+New files get default content via `BufNewFile` autocmds. Templates are `vim.snippet` body strings, supporting `$1`/`${1:placeholder}` tabstops, `$0` (final cursor), and LSP variables (`$TM_FILENAME`). Use `<C-.>`/`<C-,>` to jump between tabstops (same keys as blink.cmp snippet navigation). Neovim's default `<Tab>`/`<S-Tab>` snippet jump mappings are disabled.
+
+Helper functions: `esc(s)` escapes literal `$`, `raw(s)` marks a line as containing snippet syntax, `snippet(lines)` joins lines into a snippet body.
+
 ## WGSL / Bevy Shader Highlighting
 
 See [notes/wgsl.md](notes/wgsl.md).
