@@ -28,3 +28,6 @@ pandoc-unicode-math-from-latex
 # latex
 *.synctex.gz
 aux/
+
+# test dependencies
+rtps/
