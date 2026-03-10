@@ -1,13 +1,6 @@
-local ls = require "luasnip"
+---@diagnostic disable: unused-local
 local lsu = require "utils/luasnip"
-local s = ls.s
-local t = ls.t
-local i = ls.i
-local c = ls.choice_node
-local f = ls.function_node
-local fmta = require("luasnip.extras.fmt").fmta
-local conds = require("luasnip.extras.expand_conditions")
-
+local s, t, i, c, f, d, sn, fmta, conds, rep, ms = lsu.s, lsu.t, lsu.i, lsu.c, lsu.f, lsu.d, lsu.sn, lsu.fmta, lsu.conds, lsu.rep, lsu.ms
 return {
     -- core lang snippets similar to other bracket related ones found in all.lua
 

@@ -3,13 +3,12 @@
 -- is lazy.nvim plugin
 if vim.api.nvim_buf_get_name(0):match("lua/plugins/") then
     local ls = require("luasnip")
-    -- https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md
     local s = ls.s
     local t = ls.t
     local i = ls.i
     local c = ls.c
     local fmta = require("luasnip.extras.fmt").fmta
-    
+
     ls.add_snippets("lua", {
 -- https://github.com/folke/lazy.nvim
 

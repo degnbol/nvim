@@ -58,6 +58,10 @@ map.n("di ", "ciw <Esc>", "Delete excess whitespace")
 map.n('=ss', 'ss=`]', "Substitute+reindent", { remap = true, silent = true })
 map.n("<leader>Sr", "<cmd>source $XDG_CONFIG_HOME/nvim/after/plugin/luasnip.lua<CR>", "Reload snippets")
 
+-- Snippet management (replaces nvim-scissors)
+map.x("<leader>xa", function() require("luasnippets/add").add_from_visual() end, "Snippet: Add")
+map.n("<leader>xe", function() require("luasnippets/add").edit() end, "Snippet: Edit")
+
 -- Built-in vim.snippet jump (same keys as blink.cmp snippet_forward/backward).
 -- Blink's mappings take priority when its snippet session is active; these handle
 -- vim.snippet sessions (e.g. from BufNewFile templates).

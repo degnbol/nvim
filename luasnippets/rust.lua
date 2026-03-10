@@ -1,9 +1,6 @@
--- should be unnessary but s keeps being understood as a bool set somewhere
-local ls = require "luasnip"
-local s = ls.s
-local t = ls.t
-local i = ls.i
-
+---@diagnostic disable: unused-local
+local ls = require "utils/luasnip"
+local s, t, i, c, f, d, sn, fmta, conds, rep, ms = ls.s, ls.t, ls.i, ls.c, ls.f, ls.d, ls.sn, ls.fmta, ls.conds, ls.rep, ls.ms
 return {
 -- not auto
 

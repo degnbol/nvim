@@ -1,6 +1,6 @@
----@diagnostic disable: undefined-global
-local ls = require "luasnip"
-local s = ls.s
+---@diagnostic disable: unused-local
+local ls = require "utils/luasnip"
+local s, t, i, c, f, d, sn, fmta, conds, rep, ms = ls.s, ls.t, ls.i, ls.c, ls.f, ls.d, ls.sn, ls.fmta, ls.conds, ls.rep, ls.ms
 
 -- show_conditions
 local isAttrLine = function (line_to_cursor)
@@ -1040,7 +1040,7 @@ s(
         dscr="Controls whether Rouge uses CSS classes or inline styles. Header only.",
         wordTrig=false,
     },
-    {t":rouge-css: ", i(1, {t"class", t"style"})},
+    {t":rouge-css: ", c(1, {t"class", t"style"})},
     opta
 ),
 s(

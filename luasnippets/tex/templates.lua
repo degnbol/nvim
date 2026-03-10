@@ -1,20 +1,7 @@
----@diagnostic disable: undefined-global
--- LuaSnip globals (s, i, f, fmta, conds, etc.) are injected by the loader
-
--- sources:
--- https://castel.dev/post/lecture-notes-1/
--- https://www.ejmastnak.com/tutorials/vim-latex/luasnip
--- https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets
-local util = require "utils/init"
+---@diagnostic disable: unused-local
 local lsu = require "utils/luasnip"
-local vtu = require "utils/vimtex"
-
-local get_visual = lsu.get_visual
-local virt = lsu.virt
-local re = lsu.re
-local in_text = vtu.in_text
-local in_itemize = vtu.in_itemize
-local in_description = vtu.in_description
+local s, t, i, c, f, d, sn, fmta, conds, rep, ms = lsu.s, lsu.t, lsu.i, lsu.c, lsu.f, lsu.d, lsu.sn, lsu.fmta, lsu.conds, lsu.rep, lsu.ms
+local util = require "utils/init"
 
 local rtp = vim.opt.runtimepath:get()[1]
 
