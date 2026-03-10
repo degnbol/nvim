@@ -21,6 +21,7 @@ return {
             if vim.fn.executable("tree-sitter") == 1 then
                 local task = nvim_treesitter.install {
                     -- "bash", -- so broken
+                    "zsh",
                     "c_sharp",
                     "lua",
                     "json",
