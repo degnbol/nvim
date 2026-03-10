@@ -2,6 +2,7 @@
 -- Appends a new snippet to luasnippets/<ft>.lua, then opens it for editing.
 
 local util = require("utils/init")
+local ls = require("luasnip")
 
 local M = {}
 
@@ -13,44 +14,54 @@ local function snippets_file(ft)
     return rtp .. "/luasnippets/" .. ft .. ".lua"
 end
 
+---Escape for Lua double-quoted string context.
 ---@param str string
 ---@return string
-local function escape_t(str)
+local function escape_lua(str)
     return str:gsub('\\', '\\\\'):gsub('"', '\\"')
 end
 
----Format lines as a multi-line LuaSnip snippet body.
+---Build a LuaSnip snippet that expands into a new snippet definition.
+---Tab stops: 1=trigger name, 2=description, 3=choice between t"" and fmta() body.
 ---@param lines string[]
----@return string[]
-local function format_body(lines)
+---@return table snippet
+local function build_snippet(lines)
+    -- Build t"" option lines
+    local t_opt
     if #lines == 1 then
-        return { '{t"' .. escape_t(lines[1]) .. '"}' }
+        t_opt = { '{t"' .. escape_lua(lines[1]) .. '"}),'}
+    else
+        t_opt = { "{t{" }
+        for _, line in ipairs(lines) do
+            t_opt[#t_opt + 1] = '\t"' .. escape_lua(line) .. '",'
+        end
+        t_opt[#t_opt + 1] = "}}),"
     end
-    local out = { "{t{" }
-    for _, line in ipairs(lines) do
-        out[#out + 1] = '\t"' .. escape_t(line) .. '",'
-    end
-    out[#out + 1] = "}}"
-    return out
-end
 
----Create a snippet entry as lines.
----@param trigger string
----@param desc string
----@param lines string[]
----@return string[] entry_lines
----@return number body_start line offset (0-based) where body begins within entry
-local function format_snippet(trigger, desc, lines)
-    local body = format_body(lines)
-    local entry = {}
-    local desc_part = desc ~= "" and ', dscr="' .. escape_t(desc) .. '"' or ""
-    entry[#entry + 1] = 's({trig="' .. trigger .. '"' .. desc_part .. "},"
-    local body_start = #entry
-    for _, l in ipairs(body) do
-        entry[#entry + 1] = l
+    -- Build fmta option lines
+    local fmta_opt
+    if #lines == 1 then
+        fmta_opt = { 'fmta("' .. escape_lua(lines[1]) .. '", {})),'}
+    else
+        fmta_opt = { "fmta([[" }
+        for _, line in ipairs(lines) do
+            fmta_opt[#fmta_opt + 1] = line
+        end
+        fmta_opt[#fmta_opt + 1] = "]], {})),"
     end
-    entry[#entry + 1] = "),"
-    return entry, body_start
+
+    return ls.s("", {
+        ls.t('s({trig="'),
+        ls.i(1, "name"),
+        ls.t('", dscr="'),
+        ls.i(2, "desc"),
+        ls.t({'"},', ''}),
+        ls.c(3, {
+            ls.t(t_opt),
+            ls.t(fmta_opt),
+        }),
+        ls.t({'', ''}),
+    })
 end
 
 ---Ensure the snippets file exists with the standard header.
@@ -63,13 +74,10 @@ local function ensure_file(path)
     f:close()
 end
 
----Append snippet lines to the file before the final `}`.
----Returns the line number (1-based) where the body starts in the file.
+---Insert a blank line before the final `}` and return its line number (1-based).
 ---@param path string
----@param entry string[]
----@param body_offset number
----@return number? body_line
-local function append_snippet(path, entry, body_offset)
+---@return number? blank_line
+local function insert_blank_line(path)
     local file_lines = {}
     for line in io.lines(path) do
         file_lines[#file_lines + 1] = line
@@ -88,16 +96,12 @@ local function append_snippet(path, entry, body_offset)
         return nil
     end
 
-    -- Insert blank line + entry before the closing brace
     local new = {}
     for idx = 1, insert_at - 1 do
         new[#new + 1] = file_lines[idx]
     end
     new[#new + 1] = ""
-    local entry_start = #new + 1
-    for _, l in ipairs(entry) do
-        new[#new + 1] = l
-    end
+    local blank_line = #new
     for idx = insert_at, #file_lines do
         new[#new + 1] = file_lines[idx]
     end
@@ -107,11 +111,11 @@ local function append_snippet(path, entry, body_offset)
     f:write(table.concat(new, "\n") .. "\n")
     f:close()
 
-    return entry_start + body_offset
+    return blank_line
 end
 
----Add a snippet from visual selection. Prompts for trigger and description,
----then opens the file at the new snippet for further editing (placeholders, etc.).
+---Add a snippet from visual selection. Opens the snippets file and expands the
+---full entry as a snippet — tab through trigger name, description, and body format.
 function M.add_from_visual()
     local r1, c1, r2, c2 = util.get_visual_range()
     local lines = vim.api.nvim_buf_get_text(0, r1 - 1, c1, r2 - 1, c2, {})
@@ -121,22 +125,19 @@ function M.add_from_visual()
     end
 
     local ft = vim.bo.filetype:match("^[^.]+")
+    local path = snippets_file(ft)
+    ensure_file(path)
 
-    vim.ui.input({ prompt = "Trigger: " }, function(trigger)
-        if not trigger or trigger == "" then return end
-        vim.ui.input({ prompt = "Description: " }, function(desc)
-            desc = desc or ""
-            local path = snippets_file(ft)
-            ensure_file(path)
-            local entry, body_offset = format_snippet(trigger, desc, lines)
-            local body_line = append_snippet(path, entry, body_offset)
-            -- Open file at the snippet body for editing
-            vim.cmd.edit(path)
-            if body_line then
-                vim.api.nvim_win_set_cursor(0, { body_line, 0 })
-            end
-        end)
-    end)
+    local snippet = build_snippet(lines)
+    local blank_line = insert_blank_line(path)
+
+    vim.cmd.edit(path)
+    if blank_line then
+        -- Force blink.cmp to apply buffer-local keymaps (snippet_forward/backward)
+        -- to this new buffer. Blink only applies them on InsertEnter.
+        vim.api.nvim_exec_autocmds('InsertEnter', { buffer = 0 })
+        ls.snip_expand(snippet, { pos = { blank_line - 1, 0 } })
+    end
 end
 
 ---Open the luasnippets file for the current filetype.
