@@ -29,6 +29,7 @@ local source_icon = {
     zsh            = "󰞷 ",
     plugins        = " ",
     pymol_settings = " ",
+    mlr            = "󰓫 ",
     pymol_select   = " ",
     plotly         = " ",
     kitty          = "󰄛 ",
@@ -36,7 +37,7 @@ local source_icon = {
     emoji          = "😃",
 }
 
-local zsh_sources = { "zsh", "lsp", "path", "snippets", "buffer" }
+local zsh_sources = { "mlr_columns", "zsh", "lsp", "path", "snippets", "buffer" }
 
 local only_snippets = false
 
@@ -238,6 +239,10 @@ return {
                         name = "pymol_select",
                         module = "completion.pymol.blink_pymol_select",
                         enabled = function() return vim.g.loaded_pymol end
+                    },
+                    mlr_columns = {
+                        name = "mlr",
+                        module = "completion.mlr.blink_mlr_columns",
                     },
                     plotly = {
                         name = "plotly",
