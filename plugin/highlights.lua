@@ -177,6 +177,8 @@ local function afterColorscheme()
     hi.mod("@include", { italic = true })
     hi.link("@keyword", "Keyword")
     hi.mod("Keyword", { italic = true, bold = false })
+    -- Italic is for the small set of rarely used keywords in most languages, not for the large amount of "keywords" in some language.
+    hi.set("kittyKeyword", { italic = false, fg=hi.fg("Keyword") })
     hi.mod("@keyword.function", { italic = true, fg=hex_statement })
     hi.set("@keyword.return", { italic = true, bold=true, fg=hex_statement })
     -- all same as keyword except bold since operators are bold.
@@ -462,10 +464,10 @@ vim.api.nvim_create_autocmd("VimEnter", {
 
 -- commands :Light and :Dark
 vim.api.nvim_create_user_command("Dark", function()
-    vim.fn.system("~/dotfiles/dark.sh")
+    vim.fn.system("~/dotfiles/colors/dark.sh")
     vim.cmd('colorscheme ' .. defaultDark)
 end, {})
 vim.api.nvim_create_user_command("Light", function()
-    vim.fn.system("~/dotfiles/light.sh")
+    vim.fn.system("~/dotfiles/colors/light.sh")
     vim.cmd('colorscheme ' .. defaultLight)
 end, {})
