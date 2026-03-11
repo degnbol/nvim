@@ -62,6 +62,18 @@ For each completion item, `guess_keyword` computes an extended needle:
 
 This means items with `:` (like `fig:my-figure`) CAN match even when `:` is not a keyword character — the guess logic extends `m` to `fig:m` when it finds `fig:` on the line before the keyword.
 
+## Comma-separated Completions in Community Sources
+
+When a community source provides completions for comma-separated values (e.g., `cut -f col1,col2,`), the keyword range and `guess_keyword_range` cause problems:
+
+1. **Keyword range**: After typing `,`, the char is non-keyword, so `get_keyword_range` returns an empty range (start == end). On manual trigger (`<C-Space>`), the keyword is empty.
+2. **`guess_keyword_range`**: Per-item, it extends backwards from the empty keyword through the comma. At the comma it checks `is_valid_word_boundary` (non-alphanumeric → yes), then checks if `line[comma_pos..cursor]` (i.e. `,`) matches the start of the item label. It doesn't match column names like `score`, so the item is filtered out. All items get filtered.
+3. **Result**: No completions shown after a comma, even though the provider returns items.
+
+**Fix**: Return `,` from `get_trigger_characters()` in the community source. When `,` is typed, blink's trigger flow resets the context (step 1 in `on_char_added`). The fresh context starts at cursor (after comma), keyword is empty, and all items match an empty keyword. Community source trigger characters merge into `sources.get_trigger_characters()` alongside LSP-declared ones.
+
+**Trade-off**: The comma trigger fires for ALL buffers where the source is active, not just when the cursor is in a relevant context. The source's `get_completions` must self-gate (return empty outside the expected context) to avoid showing unwanted completions on every comma keystroke. Performance impact is minimal if the gate check is cheap (e.g., a treesitter node walk).
+
 ## Monkey-patching Keyword Characters
 
 To add keyword characters for specific filetypes (e.g., `:` for typst references), three things are needed:

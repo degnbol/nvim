@@ -28,6 +28,10 @@ LuaSnip snippets appear via the built-in `luasnip` source. Snippet jump keymaps 
 
 **Buffer-local keymaps caveat:** Blink applies its keymaps (including snippet jump in `i`/`s` modes) as buffer-local mappings on `InsertEnter`. When expanding snippets programmatically via `ls.snip_expand` on a newly opened buffer (without entering insert mode first), these keymaps won't exist. Fix: fire `vim.api.nvim_exec_autocmds('InsertEnter', { buffer = 0 })` before expanding.
 
+## Community source tips
+
+- **Comma-separated values**: `guess_keyword_range` extends backwards through commas, filtering out items that don't match the extended text. Fix by returning `","` from `get_trigger_characters()` — blink resets context after commas so the keyword starts fresh. The source must self-gate (return empty when not in context) since the trigger fires globally. See [internals](references/internals.md) for details.
+
 ## References
 
 - [Internals: keyword detection, trigger flow, context/bounds, fuzzy matching, monkey-patching](references/internals.md)

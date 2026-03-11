@@ -122,6 +122,93 @@ describe("mlr column completion", function()
         end)
     end)
 
+    describe("rename verb", function()
+        it("shows completions at from position (position 0)", function()
+            local line = "mlr -t --from " .. test_tsv .. " rename "
+            buf = create_zsh_buffer({ line })
+            local labels = get_labels(1, #line)
+            assert.is_true(vim.tbl_contains(labels, "name"))
+            assert.is_true(vim.tbl_contains(labels, "score"))
+        end)
+
+        it("suppresses completions at to position (position 1)", function()
+            -- Cursor on 'x' = one past comma = insert-mode "after comma" position
+            local line = "mlr -t --from " .. test_tsv .. " rename name,x"
+            buf = create_zsh_buffer({ line })
+            local labels = get_labels(1, #line - 1)
+            assert.are.same({}, labels)
+        end)
+
+        it("shows completions at second from position (position 2)", function()
+            -- Cursor on 'x' after second comma = from position (even)
+            local line = "mlr -t --from " .. test_tsv .. " rename name,new_name,x"
+            buf = create_zsh_buffer({ line })
+            local labels = get_labels(1, #line - 1)
+            assert.is_true(vim.tbl_contains(labels, "name"))
+        end)
+
+        it("suppresses completions at second to position (position 3)", function()
+            -- Cursor on 'x' after third comma = to position (odd)
+            local line = "mlr -t --from " .. test_tsv .. " rename name,new_name,score,x"
+            buf = create_zsh_buffer({ line })
+            local labels = get_labels(1, #line - 1)
+            assert.are.same({}, labels)
+        end)
+
+        it("does not suppress in verb after rename (single command node)", function()
+            -- All on one line: mlr ... rename ... + cut -f ...
+            local line = "mlr -t --from " .. test_tsv
+                .. " rename name,Name + cut -f "
+            buf = create_zsh_buffer({ line })
+            local labels = get_labels(1, #line)
+            assert.is_true(#labels > 0)
+        end)
+
+        it("shows completions for non-rename verbs in same chain", function()
+            buf = create_zsh_buffer({
+                "mlr -t --from " .. test_tsv .. " rename name,new_name +\\",
+                "    cut -f ",
+            })
+            local labels = get_labels(2, eol(1))
+            assert.is_true(#labels > 0)
+        end)
+
+        it("applies rename mapping to column names", function()
+            buf = create_zsh_buffer({
+                "mlr -t --from " .. test_tsv .. " rename name,Name +\\",
+                "    cut -f ",
+            })
+            local labels = get_labels(2, eol(1))
+            -- "name" should be renamed to "Name"
+            assert.is_true(vim.tbl_contains(labels, "Name"))
+            assert.is_false(vim.tbl_contains(labels, "name"))
+            -- Other columns unaffected
+            assert.is_true(vim.tbl_contains(labels, "score"))
+        end)
+
+        it("applies rename mapping in single-line chain", function()
+            local line = "mlr -t --from " .. test_tsv
+                .. " rename name,Name + cut -f "
+            buf = create_zsh_buffer({ line })
+            local labels = get_labels(1, #line)
+            assert.is_true(vim.tbl_contains(labels, "Name"))
+            assert.is_false(vim.tbl_contains(labels, "name"))
+        end)
+
+        it("shows completions right before comma in rename (from position)", function()
+            -- Cursor ON the comma in ",Element" — in insert mode this means
+            -- cursor is between the space and comma, text before cursor has 0 commas
+            local line = "mlr -t --from " .. test_tsv
+                .. " rename ,Element + cut -f name"
+            buf = create_zsh_buffer({ line })
+            -- find returns 1-indexed; -1 for 0-indexed = position of comma char
+            local comma_pos = line:find(",Element")
+            local labels = get_labels(1, comma_pos - 1)
+            assert.is_true(vim.tbl_contains(labels, "name"))
+            assert.is_true(vim.tbl_contains(labels, "score"))
+        end)
+    end)
+
     describe("caching", function()
         it("returns same results on second call (cache hit)", function()
             local line = "mlr -t --from " .. test_tsv .. " cut -f x"

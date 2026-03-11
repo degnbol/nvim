@@ -48,12 +48,17 @@ local function find_mlr_chain(start_node)
         end
         if not container then return end
         node = nil
-        -- Recursive search for the closest preceding command node
+        -- Recursive search: prefer command containing cursor, else closest preceding
         local function scan(parent)
             for child in parent:iter_children() do
                 if child:type() == "command" then
-                    local _, _, er, ec = child:range()
-                    if er < row or (er == row and ec <= col) then
+                    local sr, sc, er, ec = child:range()
+                    -- Command contains cursor (whitespace between children)
+                    if (sr < row or (sr == row and sc <= col))
+                        and (er > row or (er == row and ec >= col)) then
+                        node = child
+                    -- Command ends before cursor (closest preceding)
+                    elseif er < row or (er == row and ec <= col) then
                         node = child
                     end
                 else
@@ -205,10 +210,156 @@ local function read_headers(abs_path)
     return columns
 end
 
+--- Extract verb segments from a command node's word children.
+--- Each segment: { verb = string, args = {string...}, end_row, end_col }.
+--- A segment boundary is a `+` word. For the mlr root command, flags before the
+--- first verb are ignored (they're mlr-level flags, not verb args).
+local function verb_segments(cmd_node)
+    local segments = {}
+    local cur_verb, cur_args, cur_end_row, cur_end_col
+    local is_root = command_name(cmd_node) == "mlr"
+    local past_flags = not is_root -- continuations start at the verb immediately
+    local skip_next = false
+
+    for child in cmd_node:iter_children() do
+        local t = child:type()
+        local text
+        if t == "word" or t == "raw_string" or t == "string" then
+            text = node_text(child)
+            text = text:gsub("^['\"]", ""):gsub("['\"]$", "")
+        elseif t == "command_name" then
+            text = node_text(child)
+        end
+        if not text then goto continue end
+
+        local _, _, er, ec = child:range()
+
+        if skip_next then
+            skip_next = false
+        elseif text == "+" then
+            -- Flush current segment
+            if cur_verb then
+                segments[#segments + 1] = {
+                    verb = cur_verb, args = cur_args,
+                    end_row = cur_end_row, end_col = cur_end_col,
+                }
+            end
+            cur_verb, cur_args = nil, nil
+            past_flags = true
+        elseif not past_flags then
+            -- Skip mlr-level flags/args (e.g. -t, --from, path)
+            if text == "--from" then
+                skip_next = true -- skip the following path value
+            elseif not text:match("^%-") and text ~= "mlr" then
+                past_flags = true
+                cur_verb = text
+                cur_args = {}
+            end
+        elseif not cur_verb then
+            cur_verb = text
+            cur_args = {}
+        else
+            cur_args[#cur_args + 1] = text
+        end
+
+        cur_end_row, cur_end_col = er, ec
+        ::continue::
+    end
+    if cur_verb then
+        segments[#segments + 1] = {
+            verb = cur_verb, args = cur_args,
+            end_row = cur_end_row, end_col = cur_end_col,
+        }
+    end
+    return segments
+end
+
+--- Parse rename pairs from a single rename verb segment's args.
+--- Returns a map { old_name = new_name }.
+local function parse_rename_pairs(args)
+    local renames = {}
+    for _, arg in ipairs(args) do
+        if arg:match("^%-") then break end
+        local parts = vim.split(arg, ",", { plain = true })
+        for k = 1, #parts - 1, 2 do
+            if parts[k] ~= "" and parts[k + 1] ~= "" then
+                renames[parts[k]] = parts[k + 1]
+            end
+        end
+    end
+    return renames
+end
+
+--- Analyse rename verbs in the chain relative to the cursor.
+--- Returns:
+---   renames: { old = new } mapping from rename verbs BEFORE cursor's verb
+---   suppress: true if cursor is in a rename verb at a "to" (new name) position
+local function analyse_renames(chain)
+    local cursor_row, cursor_col = unpack(vim.api.nvim_win_get_cursor(0))
+    cursor_row = cursor_row - 1
+
+    local renames = {}
+    local suppress = false
+
+    for _, cmd_node in ipairs(chain) do
+        local segs = verb_segments(cmd_node)
+        for si, seg in ipairs(segs) do
+            -- Determine if cursor is past this segment (segment is before cursor)
+            local seg_before_cursor = seg.end_row < cursor_row
+                or (seg.end_row == cursor_row and seg.end_col <= cursor_col)
+            -- Determine if cursor is within this segment
+            local next_seg = segs[si + 1]
+            local seg_contains_cursor = not seg_before_cursor
+                and (not next_seg
+                    or cursor_row < next_seg.end_row
+                    or (cursor_row == next_seg.end_row and cursor_col <= next_seg.end_col))
+
+            if seg.verb == "rename" then
+                if seg_before_cursor then
+                    -- Collect renames from verbs before cursor
+                    local rename_map = parse_rename_pairs(seg.args)
+                    for old, new in pairs(rename_map) do
+                        renames[old] = new
+                    end
+                elseif seg_contains_cursor then
+                    -- Cursor is inside this rename verb — check comma position.
+                    -- In insert mode cursor_col is already past the last typed char
+                    -- (exclusive), so nvim_buf_get_text gets exactly "text typed so far".
+                    local sr, sc = cmd_node:range()
+                    local lines = vim.api.nvim_buf_get_text(
+                        0, sr, sc, cursor_row, cursor_col, {})
+                    local text = table.concat(lines, "\n")
+                    -- Find the LAST "rename" before cursor and count commas
+                    -- after it (handles single-node chains with multiple renames)
+                    local last_pos = 1
+                    while true do
+                        local s = text:find("rename%s", last_pos)
+                        if not s then break end
+                        last_pos = s + 1
+                    end
+                    local after = text:sub(last_pos - 1):match("rename%s+(.*)")
+                    if after then
+                        -- Only count commas up to the next ` +` boundary
+                        local before_plus = after:match("^(.-)%s+%+") or after
+                        local commas = select(2, before_plus:gsub(",", ""))
+                        suppress = commas % 2 == 1
+                    end
+                end
+            end
+        end
+    end
+
+    return renames, suppress
+end
+
 local M = {}
 
 function M.new()
     return setmetatable({}, { __index = M })
+end
+
+function M:get_trigger_characters()
+    return { "," }
 end
 
 function M:get_completions(_, callback)
@@ -232,7 +383,16 @@ function M:get_completions(_, callback)
         return function() end
     end
 
-    -- Deduplicate columns across files, tracking source
+    -- Analyse rename verbs: collect renames before cursor, check if cursor
+    -- is at a "new name" position in a rename verb
+    local renames, suppress = analyse_renames(chain)
+    if suppress then
+        callback(empty)
+        return function() end
+    end
+
+    -- Deduplicate columns across files, tracking source.
+    -- Apply rename mappings from verbs preceding cursor.
     local seen = {}
     local items = {}
     for _, path in ipairs(paths) do
@@ -240,10 +400,11 @@ function M:get_completions(_, callback)
         local columns = read_headers(abs)
         local basename = vim.fn.fnamemodify(path, ":t")
         for _, col in ipairs(columns) do
-            if not seen[col] then
-                seen[col] = true
+            local display = renames[col] or col
+            if not seen[display] then
+                seen[display] = true
                 items[#items + 1] = {
-                    label = col,
+                    label = display,
                     kind = Kind.Field,
                     labelDetails = { description = basename },
                     source = "mlr",
