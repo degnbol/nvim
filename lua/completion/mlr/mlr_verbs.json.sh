@@ -59,13 +59,37 @@ for opt_file in "$MILLER_DIR"/verb/*.help.opt(N); do
     fi
 done
 
+# Build base flags from flags.help
+local base_flags_json='[]'
+while IFS= read -r comp; do
+    # Skip lines that are just format conversion aliases without descriptions (e.g. "--c2t")
+    # and the trailing zsh completion state directive (": :->from_file")
+    local clean="${comp%%: :->*}"
+    # Handle lines with multiple flag aliases: "--c2c,-c"
+    local primary="${clean%%,*}"
+    if [[ "$primary" =~ '^(-[-a-zA-Z0-9]+)(.*)' ]]; then
+        local flag="${match[1]}"
+        local rest="${match[2]}"
+        local desc=""
+        if [[ "$rest" == '['* ]]; then
+            desc="${rest#\[}"
+            desc="${desc%\]}"
+            desc="${desc#\{*\} }"
+            (( ${#desc} > 80 )) && desc="${desc:0:77}..."
+        fi
+        base_flags_json=$(printf '%s' "$base_flags_json" | jq --arg f "$flag" --arg d "$desc" '. + [[$f, $d]]')
+    fi
+done < "$MILLER_DIR/flags.help"
+
 jq -n \
     --argjson verbs "$verbs_json" \
     --argjson field_flags "$field_flags_json" \
     --argjson verb_flags "$verb_flags_json" \
+    --argjson base_flags "$base_flags_json" \
     '{
         verbs: $verbs,
         field_flags: $field_flags,
         verb_flags: $verb_flags,
+        base_flags: $base_flags,
         positional_field_verbs: ["group-by", "label", "rename", "sec2gmt", "sec2gmtdate"]
     }' > mlr_verbs.json

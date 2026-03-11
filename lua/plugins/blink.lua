@@ -385,7 +385,7 @@ return {
                         },
                         -- icon at end instead of before word
                         columns = {
-                            { "label", "label_description" },
+                            { "label", gap = 1, "label_description" },
                             {
                                 "kind_icon",
                                 gap = 1,

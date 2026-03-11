@@ -32,6 +32,8 @@ LuaSnip snippets appear via the built-in `luasnip` source. Snippet jump keymaps 
 
 - **Comma-separated values**: `guess_keyword_range` extends backwards through commas, filtering out items that don't match the extended text. Fix by returning `","` from `get_trigger_characters()` — blink resets context after commas so the keyword starts fresh. The source must self-gate (return empty when not in context) since the trigger fires globally. See [internals](references/internals.md) for details.
 
+- **Dash-prefixed items** (CLI flags like `-f`, `--output`): hyphen can't start a keyword, so typing `-f` gives keyword `f`. Accepting item `-f` replaces only `f` → `--f`. Fix: use `textEdit` with a range that includes the typed dash prefix. Compute by matching `%-[-a-zA-Z]*$` on text before cursor.
+
 ## References
 
 - [Internals: keyword detection, trigger flow, context/bounds, fuzzy matching, monkey-patching](references/internals.md)

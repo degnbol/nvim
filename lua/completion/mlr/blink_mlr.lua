@@ -198,9 +198,16 @@ local function cursor_context(chain)
         ::continue::
     end
 
+    -- If the token being typed starts with `-`, the user is typing a flag
+    local typing_flag = at_cursor_idx
+        and tokens[at_cursor_idx].text:match("^%-")
+
     -- Verb position: no verb yet, or last token was +/then
     if not current_verb then
-        return { type = "verb" }
+        if in_mlr_flags and typing_flag then
+            return { type = "mlr_flag" }
+        end
+        return { type = "verb", in_mlr_flags = in_mlr_flags }
     end
     if prev_text == "+" or prev_text == "then" then
         return { type = "verb" }
@@ -504,17 +511,45 @@ local function verb_items()
     return items
 end
 
---- Build flag completion items for a specific verb.
---- Blink's keyword can't start with `-`, so typing `-f` gives keyword `f`.
---- Without textEdit, accepting `-f` replaces only `f` → `--f`.
---- Use textEdit to replace from the start of the typed prefix (including dashes).
-local function flag_items(verb)
+--- Compute the typed dash prefix and edit range for flag completion items.
+--- Returns prefix string, edit_start col, row (0-indexed).
+local function flag_edit_range()
     local cursor_row, cursor_col = unpack(vim.api.nvim_win_get_cursor(0))
     local row = cursor_row - 1
     local line_text = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
     local before = line_text:sub(1, cursor_col)
-    local prefix = before:match("%-[-a-zA-Z]*$") or ""
-    local edit_start = cursor_col - #prefix
+    local prefix = before:match("%-[-a-zA-Z0-9]*$") or ""
+    return prefix, cursor_col - #prefix, row
+end
+
+--- Build a flag completion item with textEdit and filterText.
+--- filterText strips leading dashes so blink's keyword (which can't start
+--- with `-`) matches the flag name directly. The typed dash prefix filters
+--- out mismatched items (e.g. `--` prefix excludes single-dash flags).
+local function make_flag_item(flag, desc, prefix, edit_start, row)
+    -- Skip flags that don't match the typed dash prefix
+    if #prefix > 0 and flag:sub(1, #prefix) ~= prefix then
+        return nil
+    end
+    return {
+        label = flag,
+        filterText = flag:gsub("^%-%-?", ""),
+        kind = Kind.Property,
+        labelDetails = { description = desc or "" },
+        textEdit = {
+            range = {
+                start = { line = row, character = edit_start },
+                ["end"] = { line = row, character = edit_start + #prefix },
+            },
+            newText = flag,
+        },
+        source = "mlr",
+    }
+end
+
+--- Build flag completion items for a specific verb.
+local function flag_items(verb)
+    local prefix, edit_start, row = flag_edit_range()
 
     local items = {}
     local flags = data.verb_flags[verb]
@@ -522,19 +557,8 @@ local function flag_items(verb)
         for _, entry in ipairs(flags) do
             local flag, desc = entry[1], entry[2]
             if flag ~= "-h" and flag ~= "--help" then
-                items[#items + 1] = {
-                    label = flag,
-                    kind = Kind.Property,
-                    labelDetails = { description = desc or "" },
-                    textEdit = {
-                        range = {
-                            start = { line = row, character = edit_start },
-                            ["end"] = { line = row, character = cursor_col },
-                        },
-                        newText = flag,
-                    },
-                    source = "mlr",
-                }
+                local item = make_flag_item(flag, desc, prefix, edit_start, row)
+                if item then items[#items + 1] = item end
             end
         end
     end
@@ -548,6 +572,18 @@ local function flag_items(verb)
     return items
 end
 
+--- Build base flag completion items (mlr-level flags like -t, --from, --csv).
+local function base_flag_items()
+    local prefix, edit_start, row = flag_edit_range()
+
+    local items = {}
+    for _, entry in ipairs(data.base_flags) do
+        local item = make_flag_item(entry[1], entry[2], prefix, edit_start, row)
+        if item then items[#items + 1] = item end
+    end
+    return items
+end
+
 local M = {}
 
 function M.new()
@@ -555,7 +591,7 @@ function M.new()
 end
 
 function M:get_trigger_characters()
-    return { "," }
+    return { ",", "-" }
 end
 
 function M:get_completions(_, callback)
@@ -609,8 +645,18 @@ function M:get_completions(_, callback)
 
         local ctx = cursor_context(chain)
 
-        if ctx.type == "verb" then
+        if ctx.type == "mlr_flag" then
+            items = base_flag_items()
+        elseif ctx.type == "verb" then
             items = verb_items()
+            -- Only include base flags when a dash prefix is being typed,
+            -- otherwise `mlr f` would offer `-f` (filterText "f" matches keyword "f")
+            if ctx.in_mlr_flags then
+                local prefix = select(1, flag_edit_range())
+                if #prefix > 0 then
+                    vim.list_extend(items, base_flag_items())
+                end
+            end
         elseif ctx.type == "field" then
             items = column_items(chain)
         elseif ctx.type == "flag" then

@@ -20,6 +20,9 @@ fi
 ]], {i(1, "uv"), rep(1), i(2, "PACKAGE"), i(3, "mamba install -yc conda-forge"), rep(2)})),
 
 
+s({trig="mlr", dscr="mlr -t --from"},
+fmta("mlr -t --from <> <>", {i(1, "file.tsv"), i(0)})),
+
 s({trig="ifmac", dscr="If MacOS"},
 fmta([=[if [[ "$OSTYPE" == darwin* ]]; then
     <>

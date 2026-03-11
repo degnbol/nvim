@@ -391,7 +391,8 @@ describe("mlr completion", function()
             buf = create_zsh_buffer({ line })
             local labels = get_labels(1, #line, true)
             assert.is_true(vim.tbl_contains(labels, "filter"))
-            assert.is_false(vim.tbl_contains(labels, "-f"))
+            -- No base flags: no dash prefix being typed
+            assert.is_false(vim.tbl_contains(labels, "--from"))
         end)
 
         it("offers flags not verbs after complete verb (insert mode)", function()
@@ -408,6 +409,114 @@ describe("mlr completion", function()
             local labels = get_labels(1, #line, true)
             assert.is_true(vim.tbl_contains(labels, "name"))
             assert.is_true(vim.tbl_contains(labels, "score"))
+        end)
+    end)
+
+    describe("base flag completion", function()
+        it("offers base flags when typing dash after mlr", function()
+            buf = create_zsh_buffer({ "mlr -" })
+            local labels = get_labels(1, 5, true)
+            assert.is_true(vim.tbl_contains(labels, "--from"))
+            assert.is_true(vim.tbl_contains(labels, "-t"))
+            assert.is_true(vim.tbl_contains(labels, "--csv"))
+            assert.is_true(vim.tbl_contains(labels, "--t2p"))
+        end)
+
+        it("offers only verbs without dash prefix", function()
+            buf = create_zsh_buffer({ "mlr " })
+            local labels = get_labels(1, 4)
+            assert.is_true(vim.tbl_contains(labels, "cut"))
+            assert.is_false(vim.tbl_contains(labels, "--from"))
+        end)
+
+        it("offers only flags when typing single dash", function()
+            buf = create_zsh_buffer({ "mlr -" })
+            local labels = get_labels(1, 5, true)
+            assert.is_false(vim.tbl_contains(labels, "cut"))
+            assert.is_true(vim.tbl_contains(labels, "-t"))
+            assert.is_true(vim.tbl_contains(labels, "--from"))
+        end)
+
+        it("offers base flags after existing flags with dash prefix", function()
+            buf = create_zsh_buffer({ "mlr -t -" })
+            local labels = get_labels(1, 8, true)
+            assert.is_true(vim.tbl_contains(labels, "--from"))
+            assert.is_true(vim.tbl_contains(labels, "--skip-comments"))
+        end)
+
+        it("does not offer base flags after verb", function()
+            local line = "mlr -t --from " .. test_tsv .. " cut "
+            buf = create_zsh_buffer({ line })
+            local labels = get_labels(1, #line)
+            assert.is_false(vim.tbl_contains(labels, "--from"))
+            assert.is_false(vim.tbl_contains(labels, "--csv"))
+            -- But verb-specific flags should be there
+            assert.is_true(vim.tbl_contains(labels, "-f"))
+        end)
+
+        it("does not offer base flags after + chain", function()
+            local line = "mlr -t --from " .. test_tsv .. " cut -f name + "
+            buf = create_zsh_buffer({ line })
+            local labels = get_labels(1, #line)
+            assert.is_true(vim.tbl_contains(labels, "sort"))
+            assert.is_false(vim.tbl_contains(labels, "--from"))
+        end)
+
+        it("returns Property kind for base flags", function()
+            buf = create_zsh_buffer({ "mlr -" })
+            local kinds = get_kinds(1, 5)
+            assert.are.equal(Kind.Property, kinds["--from"])
+            assert.are.equal(Kind.Property, kinds["-t"])
+        end)
+
+        it("does not offer flags when typing verb without dash", function()
+            buf = create_zsh_buffer({ "mlr f" })
+            local labels = get_labels(1, 5, true)
+            assert.is_true(vim.tbl_contains(labels, "filter"))
+            assert.is_false(vim.tbl_contains(labels, "-f"))
+            assert.is_false(vim.tbl_contains(labels, "--from"))
+        end)
+
+        it("offers only base flags when typing dash prefix", function()
+            buf = create_zsh_buffer({ "mlr --fr" })
+            local labels = get_labels(1, 8, true)
+            assert.is_true(vim.tbl_contains(labels, "--from"))
+            -- Should not include verbs
+            assert.is_false(vim.tbl_contains(labels, "fraction"))
+            assert.is_false(vim.tbl_contains(labels, "cut"))
+        end)
+
+        it("excludes single-dash flags when typed prefix is --", function()
+            buf = create_zsh_buffer({ "mlr --" })
+            local labels = get_labels(1, 6, true)
+            assert.is_true(vim.tbl_contains(labels, "--from"))
+            assert.is_true(vim.tbl_contains(labels, "--csv"))
+            assert.is_false(vim.tbl_contains(labels, "-t"))
+            assert.is_false(vim.tbl_contains(labels, "-c"))
+        end)
+
+        it("has filterText without dashes for better matching", function()
+            buf = create_zsh_buffer({ "mlr --fr" })
+            local items = get_items(1, 8, true)
+            local from_item
+            for _, item in ipairs(items) do
+                if item.label == "--from" then from_item = item; break end
+            end
+            assert.is_not_nil(from_item)
+            assert.are.equal("from", from_item.filterText)
+        end)
+
+        it("textEdit replaces typed dash prefix for base flags", function()
+            buf = create_zsh_buffer({ "mlr --fr" })
+            local items = get_items(1, 8, true)
+            local from_item
+            for _, item in ipairs(items) do
+                if item.label == "--from" then from_item = item; break end
+            end
+            assert.is_not_nil(from_item)
+            assert.is_not_nil(from_item.textEdit)
+            assert.are.equal(4, from_item.textEdit.range.start.character)
+            assert.are.equal("--from", from_item.textEdit.newText)
         end)
     end)
 
