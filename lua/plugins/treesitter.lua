@@ -85,6 +85,13 @@ return {
                             queries = 'queries',
                         },
                     }
+                    -- Miller DSL (local grammar in nvim config)
+                    parsers.miller = {
+                        install_info = {
+                            path = vim.fn.stdpath('config') .. '/tree-sitter-miller',
+                            queries = 'queries',
+                        },
+                    }
                 end
             })
 

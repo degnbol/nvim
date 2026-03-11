@@ -1,0 +1,96 @@
+===
+integers
+===
+42
+0
+---
+
+(source
+  (number)
+  (number))
+
+===
+floats
+===
+3.14
+1e-3
+1.5e10
+---
+
+(source
+  (number)
+  (number)
+  (number))
+
+===
+hex numbers
+===
+0x1F
+0xDEAD
+---
+
+(source
+  (number)
+  (number))
+
+===
+strings
+===
+"hello"
+"with\nnewline"
+"tab\there"
+---
+
+(source
+  (string (string_content))
+  (string (string_content) (escape_sequence) (string_content))
+  (string (string_content) (escape_sequence) (string_content)))
+
+===
+booleans
+===
+true
+false
+---
+
+(source
+  (boolean)
+  (boolean))
+
+===
+array literal
+===
+[1, 2, 3]
+---
+
+(source
+  (array_literal
+    (number)
+    (number)
+    (number)))
+
+===
+map literal
+===
+{"a": 1, "b": 2}
+---
+
+(source
+  (map_literal
+    (map_entry
+      (string (string_content))
+      (number))
+    (map_entry
+      (string (string_content))
+      (number))))
+
+===
+comment
+===
+# this is a comment
+42
+---
+
+(source
+  (comment)
+  (number))

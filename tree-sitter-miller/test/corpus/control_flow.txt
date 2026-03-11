@@ -1,0 +1,119 @@
+===
+if statement
+===
+if ($x > 1) { $y = 2 }
+---
+
+(source
+  (if_statement
+    (binary_expression (field_ref (identifier)) (number))
+    (block
+      (assignment left: (field_ref (identifier)) right: (number)))))
+
+===
+if elif else
+===
+if ($x > 1) { $y = 2 } elif ($x == 1) { $y = 1 } else { $y = 0 }
+---
+
+(source
+  (if_statement
+    (binary_expression (field_ref (identifier)) (number))
+    (block (assignment left: (field_ref (identifier)) right: (number)))
+    (elif_clause
+      (binary_expression (field_ref (identifier)) (number))
+      (block (assignment left: (field_ref (identifier)) right: (number))))
+    (else_clause
+      (block (assignment left: (field_ref (identifier)) right: (number))))))
+
+===
+for-in key-value
+===
+for (k, v in $*) { print k }
+---
+
+(source
+  (for_in_statement
+    (identifier)
+    (identifier)
+    (field_ref)
+    (block (print_statement (identifier)))))
+
+===
+for-in simple
+===
+for (k in $*) { print k }
+---
+
+(source
+  (for_in_statement
+    (identifier)
+    (field_ref)
+    (block (print_statement (identifier)))))
+
+===
+for-in destructured
+===
+for ((k1, k2), v in @map) { print k1 }
+---
+
+(source
+  (for_in_statement
+    (identifier)
+    (identifier)
+    (identifier)
+    (oosvar_ref (identifier))
+    (block (print_statement (identifier)))))
+
+===
+c-style for loop
+===
+for (var i = 0; i < 10; i += 1) { print i }
+---
+
+(source
+  (for_c_statement
+    (assignment (type_name) left: (identifier) right: (number))
+    (binary_expression (identifier) (number))
+    (assignment left: (identifier) right: (number))
+    (block (print_statement (identifier)))))
+
+===
+while loop
+===
+while ($x > 0) { $x -= 1 }
+---
+
+(source
+  (while_statement
+    (binary_expression (field_ref (identifier)) (number))
+    (block
+      (assignment left: (field_ref (identifier)) right: (number)))))
+
+===
+do while loop
+===
+do { $x -= 1 } while ($x > 0)
+---
+
+(source
+  (do_while_statement
+    (block
+      (assignment left: (field_ref (identifier)) right: (number)))
+    (binary_expression (field_ref (identifier)) (number))))
+
+===
+break and continue
+===
+for (k in $*) { if (k == "skip") { continue } break }
+---
+
+(source
+  (for_in_statement
+    (identifier)
+    (field_ref)
+    (block
+      (if_statement
+        (binary_expression (identifier) (string (string_content)))
+        (block (continue_statement)))
+      (break_statement))))

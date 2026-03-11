@@ -1,0 +1,17 @@
+{
+  "grammars": [
+    {
+      "name": "miller",
+      "scope": "source.miller",
+      "path": ".",
+      "file-types": ["mlr"],
+      "highlights": "queries/miller/highlights.scm",
+      "injection-regex": "miller"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Tree-sitter grammar for Miller DSL (put/filter/tee expressions)"
+  }
+}

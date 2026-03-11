@@ -1,0 +1,79 @@
+===
+field reference - identifier
+===
+$name
+---
+
+(source
+  (field_ref (identifier)))
+
+===
+field reference - star
+===
+$*
+---
+
+(source
+  (field_ref))
+
+===
+field reference - computed
+===
+$[k]
+---
+
+(source
+  (field_ref (identifier)))
+
+===
+oosvar reference - identifier
+===
+@count
+---
+
+(source
+  (oosvar_ref (identifier)))
+
+===
+oosvar reference - star
+===
+@*
+---
+
+(source
+  (oosvar_ref))
+
+===
+oosvar reference - computed
+===
+@[k]
+---
+
+(source
+  (oosvar_ref (identifier)))
+
+===
+oosvar reference - indexed
+===
+@sums["x"]
+---
+
+(source
+  (index_expression
+    (oosvar_ref (identifier))
+    (string (string_content))))
+
+===
+special variables
+===
+NR
+NF
+FNR
+FILENAME
+---
+
+(source
+  (special_variable)
+  (special_variable)
+  (special_variable)
+  (special_variable))

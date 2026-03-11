@@ -1,0 +1,93 @@
+===
+print statement
+===
+print $x
+---
+
+(source
+  (print_statement (field_ref (identifier))))
+
+===
+eprint statement
+===
+eprint "debug: " . $x
+---
+
+(source
+  (print_statement
+    (binary_expression
+      (string (string_content))
+      (field_ref (identifier)))))
+
+===
+print with redirect
+===
+print > "out.txt", $x
+---
+
+(source
+  (print_statement
+    (redirect (string (string_content)))
+    (field_ref (identifier))))
+
+===
+emit statement
+===
+emit @sums
+---
+
+(source
+  (emit_statement (oosvar_ref (identifier))))
+
+===
+emitf statement
+===
+emitf @a, @b, @c
+---
+
+(source
+  (emit_statement
+    (oosvar_ref (identifier))
+    (oosvar_ref (identifier))
+    (oosvar_ref (identifier))))
+
+===
+tee with redirect
+===
+tee > "file.dat", $*
+---
+
+(source
+  (tee_statement
+    (redirect (string (string_content)))
+    (field_ref)))
+
+===
+dump statement
+===
+dump
+---
+
+(source
+  (dump_statement))
+
+===
+filter statement
+===
+filter $x > 0
+---
+
+(source
+  (filter_statement
+    (binary_expression (field_ref (identifier)) (number))))
+
+===
+unset statement
+===
+unset $x
+unset @sums
+---
+
+(source
+  (unset_statement (field_ref (identifier)))
+  (unset_statement (oosvar_ref (identifier))))

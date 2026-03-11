@@ -1,0 +1,117 @@
+===
+function call
+===
+floor($x)
+strlen($name)
+---
+
+(source
+  (function_call
+    function_name: (identifier)
+    (field_ref (identifier)))
+  (function_call
+    function_name: (identifier)
+    (field_ref (identifier))))
+
+===
+nested function call
+===
+strlen(toupper($name))
+---
+
+(source
+  (function_call
+    function_name: (identifier)
+    (function_call
+      function_name: (identifier)
+      (field_ref (identifier)))))
+
+===
+multi-arg function call
+===
+sub($x, "old", "new")
+---
+
+(source
+  (function_call
+    function_name: (identifier)
+    (field_ref (identifier))
+    (string (string_content))
+    (string (string_content))))
+
+===
+user-defined function
+===
+func f(a, b) { return a + b }
+---
+
+(source
+  (func_definition
+    name: (identifier)
+    (parameter_list
+      (parameter (identifier))
+      (parameter (identifier)))
+    (block
+      (return_statement
+        (binary_expression (identifier) (identifier))))))
+
+===
+typed function
+===
+func f(num a, num b) :num { return a + b }
+---
+
+(source
+  (func_definition
+    name: (identifier)
+    (parameter_list
+      (parameter (type_name) (identifier))
+      (parameter (type_name) (identifier)))
+    (type_name)
+    (block
+      (return_statement
+        (binary_expression (identifier) (identifier))))))
+
+===
+subroutine definition and call
+===
+subr s(k, v) { print k . " is " . v }
+call s("a", $a)
+---
+
+(source
+  (subr_definition
+    name: (identifier)
+    (parameter_list
+      (parameter (identifier))
+      (parameter (identifier)))
+    (block
+      (print_statement
+        (binary_expression
+          (binary_expression
+            (identifier)
+            (string (string_content)))
+          (identifier)))))
+  (call_statement
+    (function_call
+      function_name: (identifier)
+      (string (string_content))
+      (field_ref (identifier)))))
+
+===
+higher-order function
+===
+func g(num a, funct f) { return f(a) }
+---
+
+(source
+  (func_definition
+    name: (identifier)
+    (parameter_list
+      (parameter (type_name) (identifier))
+      (parameter (type_name) (identifier)))
+    (block
+      (return_statement
+        (function_call
+          function_name: (identifier)
+          (identifier))))))

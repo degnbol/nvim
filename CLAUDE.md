@@ -101,6 +101,14 @@ The R languageserver doesn't resolve `...` forwarding — functions like `scale_
 
 **Mason-lspconfig override:** Mason's `automatic_enable` calls `vim.lsp.config()` with `cmd = { "r-languageserver" }` (Mason's wrapper), overriding the custom cmd from `lsp/*.lua`. Fix: in `lua/plugins/lsp.lua`, the mason-lspconfig config function calls `vim.lsp.config('r_language_server', { cmd = ... })` after `setup()` to re-apply our custom cmd.
 
+## Miller DSL Highlighting
+
+Custom tree-sitter grammar `miller` at `tree-sitter-miller/` provides syntax highlighting for Miller's DSL (the language inside `put`/`filter`/`tee` verbs). Works in `*.mlr` files (nvim filetype `miller`) and will be injected into zsh strings (Phase 2).
+
+Grammar name is `miller` to match nvim's built-in filetype — no `vim.treesitter.language.register()` needed. Registered in `lua/plugins/treesitter.lua` alongside pymol_select.
+
+Regenerate after grammar changes: `cd tree-sitter-miller && tree-sitter generate && cc -shared -o ~/.local/share/nvim/site/parser/miller.so -I src src/parser.c -O2`. Restart neovim after recompiling. Run `tree-sitter test` to validate (58 tests).
+
 ## PyMOL Selection Highlighting
 
 Selection keywords (`name`, `chain`, `byres`, etc.) and representation names (`cartoon`, `sticks`, `surface`, etc.) inside Python strings are highlighted via a custom tree-sitter grammar `pymol_select` at `tree-sitter-pymol-select/`. Injected into Python strings dynamically when pymol imports are detected (`ftplugin/python.lua`), scoped to function args and assignments (not docstrings).

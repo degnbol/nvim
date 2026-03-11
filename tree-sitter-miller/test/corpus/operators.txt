@@ -1,0 +1,135 @@
+===
+arithmetic operators
+===
+$x + $y
+$x - $y
+$x * $y
+$x / $y
+$x // $y
+$x % $y
+$x ** $y
+---
+
+(source
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier))))
+
+===
+string concat
+===
+$a . $b
+---
+
+(source
+  (binary_expression (field_ref (identifier)) (field_ref (identifier))))
+
+===
+comparison operators
+===
+$x == $y
+$x != $y
+$x < $y
+$x > $y
+$x <= $y
+$x >= $y
+$x <=> $y
+---
+
+(source
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier))))
+
+===
+regex operators
+===
+$x =~ "pattern"
+$x !=~ "pattern"
+---
+
+(source
+  (binary_expression (field_ref (identifier)) (string (string_content)))
+  (binary_expression (field_ref (identifier)) (string (string_content))))
+
+===
+logical operators
+===
+$x && $y
+$x || $y
+$x ^^ $y
+!$x
+---
+
+(source
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (unary_expression (field_ref (identifier))))
+
+===
+bitwise operators
+===
+$x & $y
+$x | $y
+$x ^ $y
+~$x
+$x << 2
+$x >> 2
+$x >>> 2
+---
+
+(source
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (unary_expression (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (number))
+  (binary_expression (field_ref (identifier)) (number))
+  (binary_expression (field_ref (identifier)) (number)))
+
+===
+ternary expression
+===
+$x > 0 ? $x : -$x
+---
+
+(source
+  (ternary_expression
+    (binary_expression (field_ref (identifier)) (number))
+    (field_ref (identifier))
+    (unary_expression (field_ref (identifier)))))
+
+===
+null coalescing
+===
+$x ?? $y
+$x ??? $y
+---
+
+(source
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier))))
+
+===
+vectorised operators
+===
+$x .+ $y
+$x .- $y
+$x .* $y
+$x ./ $y
+---
+
+(source
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier)))
+  (binary_expression (field_ref (identifier)) (field_ref (identifier))))

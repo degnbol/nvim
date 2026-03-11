@@ -1,0 +1,65 @@
+===
+simple assignment
+===
+$x = 1
+---
+
+(source
+  (assignment
+    left: (field_ref (identifier))
+    right: (number)))
+
+===
+compound assignments
+===
+$x += 1
+$x -= 1
+$x *= 2
+$x /= 2
+$x //= 2
+$x %= 2
+$x **= 2
+$x .= "suffix"
+---
+
+(source
+  (assignment left: (field_ref (identifier)) right: (number))
+  (assignment left: (field_ref (identifier)) right: (number))
+  (assignment left: (field_ref (identifier)) right: (number))
+  (assignment left: (field_ref (identifier)) right: (number))
+  (assignment left: (field_ref (identifier)) right: (number))
+  (assignment left: (field_ref (identifier)) right: (number))
+  (assignment left: (field_ref (identifier)) right: (number))
+  (assignment left: (field_ref (identifier)) right: (string (string_content))))
+
+===
+typed assignment
+===
+var x = 1
+int x = 1
+float x = 1.0
+str x = "a"
+---
+
+(source
+  (assignment (type_name) left: (identifier) right: (number))
+  (assignment (type_name) left: (identifier) right: (number))
+  (assignment (type_name) left: (identifier) right: (number))
+  (assignment (type_name) left: (identifier) right: (string (string_content))))
+
+===
+oosvar assignment
+===
+@count = 0
+@sums[$a] += $x
+---
+
+(source
+  (assignment
+    left: (oosvar_ref (identifier))
+    right: (number))
+  (assignment
+    left: (index_expression
+      (oosvar_ref (identifier))
+      (field_ref (identifier)))
+    right: (field_ref (identifier))))
