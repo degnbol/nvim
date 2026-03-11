@@ -242,7 +242,7 @@ return {
                     },
                     mlr_columns = {
                         name = "mlr",
-                        module = "completion.mlr.blink_mlr_columns",
+                        module = "completion.mlr.blink_mlr",
                     },
                     plotly = {
                         name = "plotly",
