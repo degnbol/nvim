@@ -107,6 +107,8 @@ Custom tree-sitter grammar `miller` at `tree-sitter-miller/` provides syntax hig
 
 Grammar name is `miller` to match nvim's built-in filetype — no `vim.treesitter.language.register()` needed. Registered in `lua/plugins/treesitter.lua` alongside pymol_select.
 
+Queries use canonical flat structure: `tree-sitter-miller/queries/highlights.scm` (not nested in a `miller/` subdir). nvim-treesitter symlinks `site/queries/miller -> tree-sitter-miller/queries/` via `install_info`. Zsh injection query lives at `queries/zsh/injections.scm` (extends base zsh injections) — it's a query for the zsh parser, not the miller grammar, so it stays in the nvim config.
+
 Regenerate after grammar changes: `cd tree-sitter-miller && tree-sitter generate && cc -shared -o ~/.local/share/nvim/site/parser/miller.so -I src src/parser.c -O2`. Restart neovim after recompiling. Run `tree-sitter test` to validate (58 tests).
 
 ## PyMOL Selection Highlighting
