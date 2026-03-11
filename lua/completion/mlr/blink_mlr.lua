@@ -1,8 +1,13 @@
 local Kind = vim.lsp.protocol.CompletionItemKind
 
 --- Load mlr verb/flag data from generated JSON.
-local data_path = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h") .. "/mlr_verbs.json"
+local dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
+local data_path = dir .. "/mlr_verbs.json"
 local data = vim.json.decode(table.concat(vim.fn.readfile(data_path), "\n"))
+
+--- Load DSL function/keyword data from generated JSON.
+local dsl_path = dir .. "/miller_functions.json"
+local dsl_data = vim.json.decode(table.concat(vim.fn.readfile(dsl_path), "\n"))
 
 -- Convert positional_field_verbs array to set for O(1) lookup
 local positional_field_verbs = {}
@@ -584,6 +589,47 @@ local function base_flag_items()
     return items
 end
 
+--- Build cached DSL completion items (functions, keywords, special variables).
+local dsl_items_cache
+
+local function dsl_items()
+    if dsl_items_cache then return dsl_items_cache end
+    local items = {}
+
+    for name, info in pairs(dsl_data.functions) do
+        items[#items + 1] = {
+            label = name,
+            kind = Kind.Function,
+            insertText = name,
+            labelDetails = { description = info.class },
+            documentation = info.desc,
+            source = "mlr",
+        }
+    end
+
+    for name, desc in pairs(dsl_data.keywords) do
+        items[#items + 1] = {
+            label = name,
+            kind = Kind.Keyword,
+            labelDetails = { description = "keyword" },
+            documentation = desc,
+            source = "mlr",
+        }
+    end
+
+    for name, desc in pairs(dsl_data.special_variables) do
+        items[#items + 1] = {
+            label = name,
+            kind = Kind.Variable,
+            labelDetails = { description = desc },
+            source = "mlr",
+        }
+    end
+
+    dsl_items_cache = items
+    return items
+end
+
 local M = {}
 
 function M.new()
@@ -591,7 +637,7 @@ function M.new()
 end
 
 function M:get_trigger_characters()
-    return { ",", "-" }
+    return { ",", "-", "$" }
 end
 
 function M:get_completions(_, callback)
@@ -635,7 +681,15 @@ function M:get_completions(_, callback)
             callback(empty)
             return function() end
         end
-        items = column_items(chain)
+        -- After '$': offer column names. Otherwise: DSL functions/keywords/variables.
+        local crow, ccol = unpack(vim.api.nvim_win_get_cursor(0))
+        local line = vim.api.nvim_buf_get_lines(0, crow - 1, crow, false)[1] or ""
+        local before = line:sub(1, ccol)
+        if before:match("%$[a-zA-Z_]*$") then
+            items = column_items(chain)
+        else
+            items = dsl_items()
+        end
     else
         local chain = find_mlr_chain(node)
         if not chain then

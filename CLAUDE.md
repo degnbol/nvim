@@ -103,13 +103,21 @@ The R languageserver doesn't resolve `...` forwarding — functions like `scale_
 
 ## Miller DSL Highlighting
 
-Custom tree-sitter grammar `miller` at `tree-sitter-miller/` provides syntax highlighting for Miller's DSL (the language inside `put`/`filter`/`tee` verbs). Works in `*.mlr` files (nvim filetype `miller`) and will be injected into zsh strings (Phase 2).
+Custom tree-sitter grammar `miller` at `tree-sitter-miller/` provides syntax highlighting for Miller's DSL (the language inside `put`/`filter`/`tee` verbs). Works in `*.mlr` files (nvim filetype `miller`) and is injected into zsh single-quoted strings after `put`/`filter`/`tee` verbs via `queries/zsh/injections.scm`.
 
 Grammar name is `miller` to match nvim's built-in filetype — no `vim.treesitter.language.register()` needed. Registered in `lua/plugins/treesitter.lua` alongside pymol_select.
 
 Queries use canonical flat structure: `tree-sitter-miller/queries/highlights.scm` (not nested in a `miller/` subdir). nvim-treesitter symlinks `site/queries/miller -> tree-sitter-miller/queries/` via `install_info`. Zsh injection query lives at `queries/zsh/injections.scm` (extends base zsh injections) — it's a query for the zsh parser, not the miller grammar, so it stays in the nvim config.
 
 Regenerate after grammar changes: `cd tree-sitter-miller && tree-sitter generate && cc -shared -o ~/.local/share/nvim/site/parser/miller.so -I src src/parser.c -O2`. Restart neovim after recompiling. Run `tree-sitter test` to validate (58 tests).
+
+## Miller DSL Completion
+
+Inside `put`/`filter` DSL strings, the `blink_mlr` provider offers context-aware completions:
+- After `$` → column names from referenced input files (existing)
+- Otherwise → DSL builtin functions (223), keywords (40), and special variables (14)
+
+Data generated from `mlr -F` and `mlr -K` by `lua/completion/mlr/miller_functions.json.sh` → `miller_functions.json`. Regenerate after Miller upgrades.
 
 ## PyMOL Selection Highlighting
 
