@@ -674,21 +674,8 @@ function MessageWriter:display_permission_buttons(tool_call_id, options)
         -- Sanitize argument to prevent newlines in the permission request, neovim throws error
         local sanitized_argument = tracker.argument:gsub("\n", "\\n")
 
-        -- Get buffer width and limit the display line
-        local winid = vim.fn.bufwinid(self.bufnr)
-
-        local buf_width = 80 -- default fallback width, in case buf is not visible
-        if winid ~= -1 then
-            buf_width = vim.api.nvim_win_get_width(winid)
-        end
-
         local tool_line =
             string.format(" %s(%s)", tracker.kind, sanitized_argument)
-
-        -- Truncate if longer than buffer width, leaving space for "...)"
-        if #tool_line > buf_width then
-            tool_line = tool_line:sub(1, buf_width - 4) .. "...)"
-        end
 
         vim.list_extend(lines_to_append, {
             tool_line,

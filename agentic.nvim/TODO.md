@@ -1,3 +1,3 @@
-- p for paste with focus on chat should just paste in the input window, instead of giving an error that the chat is not modifiable.
+- Running /context doesn't show anything in the chat window
 
-- Are the claude session killed properly when I just abruptly exit with e.g. :qa! or are there left over processes?
+- Would be cool to add syntax highlighting to the permission commands

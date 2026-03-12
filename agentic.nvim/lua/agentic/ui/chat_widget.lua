@@ -419,6 +419,17 @@ function ChatWidget:_bind_keymaps()
                     )
                 end)
             end
+
+            -- Paste in chat/panel → focus input window and paste there
+            for _, key in ipairs({ "p", "P" }) do
+                BufHelpers.keymap_set(bufnr, "n", key, function()
+                    local input_win = self.win_nrs.input
+                    if input_win and vim.api.nvim_win_is_valid(input_win) then
+                        vim.api.nvim_set_current_win(input_win)
+                        vim.cmd("normal! " .. key)
+                    end
+                end)
+            end
         end
     end
 
