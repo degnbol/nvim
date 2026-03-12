@@ -10,6 +10,8 @@ local M = {}
 --- @field on_state_change fun(state: agentic.acp.ClientConnectionState): nil The transport state like "connecting", "connected", "disconnected", "error"
 --- @field on_message fun(message: agentic.acp.ResponseRaw): nil
 --- @field on_reconnect fun(): nil
+--- @field on_stdout_text? fun(text: string): nil Non-JSON stdout lines (e.g. local command output)
+--- @field on_stderr_text? fun(text: string): nil Stderr lines that don't match ignore patterns
 
 --- @class agentic.acp.StdioTransportConfig
 --- @field command string Command to spawn agent
@@ -196,9 +198,10 @@ function M.create_stdio_transport(config, callbacks)
                         if ok then
                             callbacks.on_message(message)
                         else
-                            Logger.notify(
-                                "Failed to parse JSON-RPC message: " .. line
-                            )
+                            Logger.debug("Non-JSON stdout line: ", line)
+                            if callbacks.on_stdout_text then
+                                callbacks.on_stdout_text(line)
+                            end
                         end
                     end
                 end
@@ -226,6 +229,10 @@ function M.create_stdio_transport(config, callbacks)
                     vim.schedule(function()
                         Logger.debug("ACP stderr: ", data)
                     end)
+
+                    if callbacks.on_stderr_text then
+                        callbacks.on_stderr_text(trimmed)
+                    end
                 end
             end
         end)

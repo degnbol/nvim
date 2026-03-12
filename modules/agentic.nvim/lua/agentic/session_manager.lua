@@ -253,6 +253,20 @@ function SessionManager:_on_session_update(update)
     end
 end
 
+--- Handle non-JSON text from the ACP process (stdout non-JSON or stderr).
+--- Used for local command output (e.g. /context) that bypasses JSON-RPC.
+--- Only displays when a prompt is actively generating to avoid noise.
+--- @param text string
+function SessionManager:_on_stdout_text(text)
+    if not self.is_generating then
+        return
+    end
+
+    self.message_writer:write_message(
+        ACPPayloads.generate_agent_message(text)
+    )
+end
+
 --- Handle tool call update: update UI, history, diff preview, permissions, and reload buffers
 --- @param tool_call_update agentic.ui.MessageWriter.ToolCallBase
 function SessionManager:_on_tool_call_update(tool_call_update)
@@ -701,6 +715,10 @@ function SessionManager:new_session(opts)
 
         on_tool_call_update = function(tool_call_update)
             self:_on_tool_call_update(tool_call_update)
+        end,
+
+        on_stdout_text = function(text)
+            self:_on_stdout_text(text)
         end,
 
         on_request_permission = function(request, callback)
