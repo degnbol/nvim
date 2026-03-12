@@ -10,3 +10,6 @@
 [submodule "kitty-conf.nvim"]
 	path = modules/kitty-conf.nvim
 	url = git@github.com:degnbol/kitty-conf.nvim.git
+[submodule "modules/agentic.nvim"]
+	path = modules/agentic.nvim
+	url = git@github.com:degnbol/agentic.nvim.git
