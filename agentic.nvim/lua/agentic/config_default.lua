@@ -39,6 +39,7 @@
 --- @class agentic.UserConfig.Keymaps
 --- @field widget table<string, agentic.UserConfig.KeymapValue>
 --- @field prompt table<string, agentic.UserConfig.KeymapValue>
+--- @field chat table<string, agentic.UserConfig.KeymapValue>
 --- @field diff_preview table<string, string>
 
 --- Window options passed to nvim_set_option_value
@@ -205,6 +206,12 @@ local ConfigDefault = {
                     mode = { "i" },
                 },
             },
+        },
+
+        --- Key bindings for the chat buffer
+        chat = {
+            prev_prompt = "[[",
+            next_prompt = "]]",
         },
 
         --- Keys bindings for diff preview navigation

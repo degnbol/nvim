@@ -317,27 +317,37 @@ function ChatWidget:_setup_prompt_signs()
     })
 
     -- Jump between prompts
-    vim.keymap.set("n", "[[", function()
-        local row = vim.api.nvim_win_get_cursor(0)[1]
-        local lines = vim.api.nvim_buf_get_lines(chat_buf, 0, row - 1, false)
-        for i = #lines, 1, -1 do
-            if lines[i] == "##" then
-                vim.api.nvim_win_set_cursor(0, { i, 0 })
-                return
+    BufHelpers.multi_keymap_set(
+        Config.keymaps.chat and Config.keymaps.chat.prev_prompt or "[[",
+        chat_buf,
+        function()
+            local row = vim.api.nvim_win_get_cursor(0)[1]
+            local lines = vim.api.nvim_buf_get_lines(chat_buf, 0, row - 1, false)
+            for i = #lines, 1, -1 do
+                if lines[i] == "##" then
+                    vim.api.nvim_win_set_cursor(0, { i, 0 })
+                    return
+                end
             end
-        end
-    end, { buffer = chat_buf, desc = "Previous prompt" })
+        end,
+        { desc = "Agentic: Previous prompt" }
+    )
 
-    vim.keymap.set("n", "]]", function()
-        local row = vim.api.nvim_win_get_cursor(0)[1]
-        local lines = vim.api.nvim_buf_get_lines(chat_buf, row, -1, false)
-        for i, line in ipairs(lines) do
-            if line == "##" then
-                vim.api.nvim_win_set_cursor(0, { row + i, 0 })
-                return
+    BufHelpers.multi_keymap_set(
+        Config.keymaps.chat and Config.keymaps.chat.next_prompt or "]]",
+        chat_buf,
+        function()
+            local row = vim.api.nvim_win_get_cursor(0)[1]
+            local lines = vim.api.nvim_buf_get_lines(chat_buf, row, -1, false)
+            for i, line in ipairs(lines) do
+                if line == "##" then
+                    vim.api.nvim_win_set_cursor(0, { row + i, 0 })
+                    return
+                end
             end
-        end
-    end, { buffer = chat_buf, desc = "Next prompt" })
+        end,
+        { desc = "Agentic: Next prompt" }
+    )
 end
 
 function ChatWidget:_bind_keymaps()

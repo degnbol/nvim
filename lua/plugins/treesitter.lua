@@ -230,6 +230,10 @@ return {
             max_lines = 1,
             min_window_height = 15, -- Hide on small windows.
             multiwindow = true,     -- Show context in inactive windows.
+            exclude_filetypes = {
+                "AgenticChat", "AgenticInput", "AgenticTodos",
+                "AgenticCode", "AgenticFiles", "AgenticDiagnostics",
+            },
         },
         init = function()
             map.n("g<up>", function()
