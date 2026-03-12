@@ -90,7 +90,7 @@ return {
     },
     -- Local fork of agentic.nvim — native chat UI via Agent Client Protocol
     {
-        dir = vim.fn.stdpath("config") .. "/agentic.nvim",
+        dir = vim.fn.stdpath("config") .. "/modules/agentic.nvim",
         name = "agentic.nvim",
         enabled = true,
         build = "npm i -g @zed-industries/claude-agent-acp",

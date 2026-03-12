@@ -9,7 +9,7 @@ return {
     -- :Capture hi to call :hi where you can search etc.
     { "tyru/capture.vim", cmd = "Capture" },
     {
-        dir = vim.opt.runtimepath:get()[1] .. "/kittyREPL.nvim",
+        dir = vim.opt.runtimepath:get()[1] .. "/modules/kittyREPL.nvim",
         dev = true,
         opts = {
             keymap = {

@@ -38,7 +38,7 @@ end
 
 return {
     {
-        dir = vim.opt.runtimepath:get()[1] .. "/kitty-conf.nvim",
+        dir = vim.opt.runtimepath:get()[1] .. "/modules/kitty-conf.nvim",
         dev = true,
         ft = "kitty",
     },

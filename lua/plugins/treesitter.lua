@@ -81,14 +81,14 @@ return {
                     -- PyMOL selection algebra (local grammar in nvim config)
                     parsers.pymol_select = {
                         install_info = {
-                            path = vim.fn.stdpath('config') .. '/tree-sitter-pymol-select',
+                            path = vim.fn.stdpath('config') .. '/modules/tree-sitter-pymol-select',
                             queries = 'queries',
                         },
                     }
                     -- Miller DSL (local grammar in nvim config)
                     parsers.miller = {
                         install_info = {
-                            path = vim.fn.stdpath('config') .. '/tree-sitter-miller',
+                            path = vim.fn.stdpath('config') .. '/modules/tree-sitter-miller',
                             queries = 'queries',
                         },
                     }
