@@ -1,0 +1,33 @@
+# Logs
+logs/
+*.log
+*.log*
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+.cache/
+.temp/
+
+# CI folder where nvim is installed
+.local/
+
+# Folder used for isolated dependencies for tests
+lazy_repro/
+deps/
+
+# Mac files
+.DS_Store
+

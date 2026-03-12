@@ -1,0 +1,105 @@
+--- StatusAnimation module for displaying animated spinners in windows
+---
+--- This module provides utilities to render animated state indicators (spinners)
+--- in buffers using extmarks and timers.
+---
+--- ## Usage
+--- ```lua
+--- local StatusAnimation = require("agentic.ui.status_animation")
+--- local animator = StatusAnimation:new(bufnr)
+--- animator:start("generating")
+--- -- later...
+--- animator:stop()
+--- ```
+---
+
+local Config = require("agentic.config")
+local Theme = require("agentic.theme")
+
+local NS_ANIMATION = vim.api.nvim_create_namespace("agentic_animation")
+
+--- @type table<agentic.Theme.SpinnerState, number>
+local TIMING = {
+    generating = 200,
+    thinking = 600,
+    searching = 600,
+    busy = 100,
+}
+
+--- @class agentic.ui.StatusAnimation
+--- @field _bufnr number Buffer number where animation is rendered
+--- @field _state? agentic.Theme.SpinnerState Current animation state
+--- @field _next_frame_handle? uv.uv_timer_t One-shot deferred function handle from vim.defer_fn
+--- @field _spinner_idx number Current spinner frame index
+--- @field _extmark_id? number Current extmark ID
+local StatusAnimation = {}
+StatusAnimation.__index = StatusAnimation
+
+--- @param bufnr number
+--- @return agentic.ui.StatusAnimation
+function StatusAnimation:new(bufnr)
+    local instance = setmetatable({
+        _bufnr = bufnr,
+        _state = nil,
+        _next_frame_handle = nil,
+        _spinner_idx = 1,
+        _extmark_id = nil,
+    }, StatusAnimation)
+
+    return instance
+end
+
+--- Start the animation with the given state
+--- Always stops and restarts to avoid overlapping with new content
+--- @param state agentic.Theme.SpinnerState
+function StatusAnimation:start(state)
+    self:stop()
+
+    self._state = state
+    self._spinner_idx = 1
+    self:_render_frame()
+end
+
+function StatusAnimation:stop()
+    self._state = nil
+
+    if self._next_frame_handle then
+        pcall(function()
+            self._next_frame_handle:stop()
+        end)
+        pcall(function()
+            self._next_frame_handle:close()
+        end)
+        self._next_frame_handle = nil
+    end
+
+    if self._extmark_id then
+        pcall(
+            vim.api.nvim_buf_del_extmark,
+            self._bufnr,
+            NS_ANIMATION,
+            self._extmark_id
+        )
+    end
+
+    self._extmark_id = nil
+end
+
+function StatusAnimation:_render_frame()
+    if not self._state or not vim.api.nvim_buf_is_valid(self._bufnr) then
+        return
+    end
+
+    local lines = vim.api.nvim_buf_get_lines(self._bufnr, 0, -1, false)
+    local line_num = math.max(0, #lines - 1)
+
+    self._extmark_id =
+        vim.api.nvim_buf_set_extmark(self._bufnr, NS_ANIMATION, line_num, 0, {
+            id = self._extmark_id,
+            virt_lines = { { { " " .. self._state, "NonText" } } },
+            virt_lines_above = false,
+        })
+    -- No timer — static text, no animation loop
+end
+
+return StatusAnimation
