@@ -1,10 +1,10 @@
 #!/usr/bin/env zsh
 # Generate mlr_verbs.json from the zsh completion data.
-# Reads from: ~/dotfiles/miller/completion/
+# Reads from: $XDG_CONFIG_HOME/miller/completion/
 
 set -euo pipefail
 cd ${0:A:h}
-local MILLER_DIR=~/dotfiles/miller/completion
+local MILLER_DIR=$XDG_CONFIG_HOME/miller/completion
 
 if [[ ! -d "$MILLER_DIR/verb" ]]; then
     echo "Error: $MILLER_DIR/verb not found. Run RUNME.zsh in miller/completion first." >&2

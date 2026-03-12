@@ -128,6 +128,7 @@ return {
                     buftypes = {},
                     wintypes = {},
                     unlisted_buffers = false,
+                    filetypes = { 'AgenticInput', 'AgenticFiles' },
                 },
                 window = {
                     padding = 0,
@@ -146,6 +147,14 @@ return {
                     -- zindex = 100,
                 },
                 render = function(props)
+                    if vim.bo[props.buf].filetype == 'AgenticChat' then
+                        local label = '󰻞 Claude'
+                        local headers = vim.t.agentic_headers
+                        if headers and headers.chat and headers.chat.context then
+                            label = label .. ' ' .. headers.chat.context:gsub("^Mode: ", ""):gsub(" Mode$", "")
+                        end
+                        return { { label, guifg = props.focused and hi.fg("StatusLine") or "gray" } }
+                    end
                     local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
                     if filename == '' then
                         filename = '[No Name]'
