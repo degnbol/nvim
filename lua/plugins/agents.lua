@@ -1,6 +1,33 @@
 -- AI coding agent integrations
 -- Toggle `enabled` to switch between plugins (only one should be active)
 
+-- Resolve a UUID prefix to a full UUID by scanning Claude session files.
+-- Returns the full UUID or nil if not found / ambiguous.
+local function resolve_session_prefix(prefix)
+    local claude_dir = vim.fn.expand("~/.claude/projects")
+    if vim.fn.isdirectory(claude_dir) == 0 then return nil end
+    local matches = {}
+    for project_dir, dtype in vim.fs.dir(claude_dir) do
+        if dtype == "directory" then
+            local dir_path = vim.fs.joinpath(claude_dir, project_dir)
+            for file, ftype in vim.fs.dir(dir_path) do
+                if ftype == "file" and file:match("%.jsonl$") then
+                    local uuid = file:gsub("%.jsonl$", "")
+                    if uuid:sub(1, #prefix) == prefix then
+                        table.insert(matches, uuid)
+                    end
+                end
+            end
+        end
+    end
+    if #matches == 1 then
+        return matches[1]
+    elseif #matches > 1 then
+        vim.notify("Ambiguous session prefix: " .. #matches .. " matches", vim.log.levels.WARN)
+    end
+    return nil
+end
+
 -- Open agentic in a dedicated tab; close tab when toggling off.
 -- Exposed globally so `nvim -c 'lua AgenticToggle()'` works from the shell.
 function AgenticToggle()
@@ -35,6 +62,24 @@ function AgenticToggle()
             pcall(vim.api.nvim_buf_delete, ebuf, { force = true })
         end
     end
+end
+
+-- Open agentic and resume an ACP session by UUID prefix.
+-- Usage: `nvim -c 'lua AgenticResume("8583a113")'`
+function AgenticResume(prefix)
+    local full_id = resolve_session_prefix(prefix)
+    if not full_id then
+        vim.notify("No session found matching: " .. prefix, vim.log.levels.ERROR)
+        return
+    end
+
+    -- Open the toggle first to set up the tab/window
+    AgenticToggle()
+
+    -- Defer the load to after the session is created
+    vim.defer_fn(function()
+        require("agentic").load_acp_session(full_id)
+    end, 200)
 end
 
 return {
@@ -130,6 +175,15 @@ return {
                 { "<leader>is", agentic("add_selection"), mode = "v", desc = "Send selection" },
             }
         end,
-        opts = {},
+        opts = {
+            headers = {
+                chat = { title = "Claude" },
+            },
+        },
+        init = function()
+            -- Red text like ripgrep's default match colour.
+            -- terminal_color_1 (ANSI red) is nil — colorscheme doesn't set it.
+            vim.api.nvim_set_hl(0, "AgenticSearchMatch", { link = "DiagnosticError" })
+        end,
     },
 }
