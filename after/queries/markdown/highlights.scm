@@ -24,3 +24,9 @@
   (atx_h6_marker)
   heading_content: (inline) @text.title6)
 
+; Table header cells: use bold instead of Title to avoid heading
+; colour extending over column-alignment padding spaces.
+((pipe_table_header
+  (pipe_table_cell) @markup.strong)
+ (#set! "priority" 200))
+
