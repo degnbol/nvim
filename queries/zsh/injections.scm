@@ -16,6 +16,8 @@
 
 ; Inject python into strings after `python3 -c` / `python -c`
 ; Works with both single-quoted (raw_string) and double-quoted (string) args.
+; Two variants: python as the command name, and python as an argument
+; (covers `uv run --with pkg python3 -c`, `conda run -n env python3 -c`, etc.)
 (command
   name: (command_name) @_cmd
   argument: (word) @_flag
@@ -33,6 +35,29 @@
   .
   argument: (string (string_content) @injection.content)
   (#any-of? @_cmd "python3" "python")
+  (#eq? @_flag "-c")
+  (#set! injection.language "python")
+  (#set! injection.include-children))
+
+(command
+  argument: (word) @_py
+  .
+  argument: (word) @_flag
+  .
+  argument: (raw_string) @injection.content
+  (#any-of? @_py "python3" "python")
+  (#eq? @_flag "-c")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "python")
+  (#set! injection.include-children))
+
+(command
+  argument: (word) @_py
+  .
+  argument: (word) @_flag
+  .
+  argument: (string (string_content) @injection.content)
+  (#any-of? @_py "python3" "python")
   (#eq? @_flag "-c")
   (#set! injection.language "python")
   (#set! injection.include-children))
