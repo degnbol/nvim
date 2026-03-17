@@ -256,6 +256,15 @@ return {
             })
             -- Access notifications
             vim.api.nvim_create_user_command("Messages", function ()
+                -- Find a window without winfixbuf to avoid E151 in plugin windows
+                if vim.wo.winfixbuf then
+                    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+                        if not vim.wo[win].winfixbuf then
+                            vim.api.nvim_set_current_win(win)
+                            break
+                        end
+                    end
+                end
                 require('mini.notify').show_history()
             end, {})
 
