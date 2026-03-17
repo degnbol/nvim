@@ -1,6 +1,8 @@
 -- compound filetype "sh.zsh" defaults to first component for treesitter parser.
 -- register so zsh files use the dedicated zsh parser instead of bash.
 vim.treesitter.language.register("zsh", "sh.zsh")
+-- ```scm fenced code blocks in markdown should use the query parser
+vim.treesitter.language.register("query", "scm")
 
 -- start treesitter for each new filetype
 vim.api.nvim_create_autocmd("FileType", {
