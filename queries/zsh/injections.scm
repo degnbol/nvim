@@ -103,6 +103,28 @@
   (#set! injection.language "javascript")
   (#set! injection.include-children))
 
+; Inject lua into `lua -e '...'`
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_flag
+  .
+  argument: (raw_string) @injection.content
+  (#eq? @_cmd "lua")
+  (#eq? @_flag "-e")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "lua")
+  (#set! injection.include-children))
+
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_flag
+  .
+  argument: (string (string_content) @injection.content)
+  (#eq? @_cmd "lua")
+  (#eq? @_flag "-e")
+  (#set! injection.language "lua")
+  (#set! injection.include-children))
+
 ; Inject lua into `nvim -c "lua ..."` / `nvim -c 'lua ...'`
 ; The -c flag can appear anywhere in the arg list (after --headless, etc.),
 ; so no `.` anchor between command name and -c. The `lua ` prefix is skipped
