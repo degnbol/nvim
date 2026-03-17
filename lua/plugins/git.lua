@@ -64,6 +64,28 @@ return {
         "lewis6991/gitsigns.nvim",
         event = "VeryLazy",
         dependencies = { 'nvim-lua/plenary.nvim' },
+        config = function(_, opts)
+            require("gitsigns").setup(opts)
+            local hi = require "utils/highlights"
+            hi.afterColorscheme(function()
+                local linenr = hi.fg("LineNr")
+                local delete = hi.bg("DiffDelete")
+                local stageddelete = hi.fg("GitSignsDelete")
+                hi.mod("GitSignsDelete", { underline = true, special = delete })
+                hi.mod("GitSignsChangedelete", { underline = true, special = delete })
+                hi.set("GitSignsAddNr", { fg = linenr, bg = hi.fg("DiffAdd") })
+                hi.set("GitSignsStagedAddNr", { fg = linenr, bg = hi.fg("GitSignsStagedAdd") })
+                hi.set("GitSignsChangeNr", { fg = linenr, bg = hi.fg("DiffChange") })
+                hi.set("GitSignsStagedChangeNr", { fg = linenr, bg = hi.fg("GitSignsChangeAdd") })
+                hi.set("GitSignsChangedeleteNr", { fg = linenr, bg = hi.fg("DiffChange"), underline = true, special = delete })
+                hi.set("GitSignsStagedChangedeleteNr",
+                    { fg = linenr, bg = hi.fg("GitSignsChangedelete"), underline = true, special = stageddelete })
+                hi.set("GitSignsTopDeleteNr", { fg = linenr, bg = delete })
+                hi.set("GitSignsStagedTopDeleteNr", { fg = linenr, bg = stageddelete })
+                hi.set("GitSignsDeleteNr", { fg = linenr, underline = true, special = delete })
+                hi.set("GitSignsStagedDeleteNr", { fg = linenr, underline = true, special = stageddelete })
+            end)
+        end,
         init = function()
             local gs = require "gitsigns"
 
