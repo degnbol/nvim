@@ -225,7 +225,10 @@ local function afterColorscheme()
     hi.mod("@lsp.type.link", { underline = true })
     -- E.g. in typst with \<
     hi.link("@lsp.type.escape", "@string.escape")
-    hi.set("@markup.raw", { underline = false, fg = hi.fg("@markup.raw") }) -- trying to just remove italic
+    local R_special = col.hex_to_R(hi.hex_fg("Special"))
+    local R_markup_raw = col.mix({R_fg, R_string, R_special}, {1, 2, 1})
+    hi.set("@markup.raw", { underline = false, fg = col.R_to_hex(R_markup_raw) })
+    hi.link("@markup.raw.block", "@markup.raw")
     local R_link_label = col.hex_to_R(hi.hex_fg("@markup.link.label"))
     local R_link = col.mix({R_link_label, R_fg}, {1, 2}) -- gentle hint to the tag colour for link destination
     hi.set("@markup.link", { underline = true, fg = col.R_to_hex(R_link)})
