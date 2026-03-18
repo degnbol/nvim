@@ -150,6 +150,15 @@
   (#set! injection.language "lua")
   (#set! injection.include-children))
 
+; Inject awk into the first raw_string argument of awk/gawk/mawk
+(command
+  name: (command_name) @_cmd
+  argument: (raw_string) @injection.content
+  (#any-of? @_cmd "awk" "gawk" "mawk")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "awk")
+  (#set! injection.include-children))
+
 ; Inject lua into `nvim -c "lua ..."` / `nvim -c 'lua ...'`
 ; The -c flag can appear anywhere in the arg list (after --headless, etc.),
 ; so no `.` anchor between command name and -c. The `lua ` prefix is skipped
