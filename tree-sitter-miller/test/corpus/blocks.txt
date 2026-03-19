@@ -1,0 +1,51 @@
+===
+begin block
+===
+begin { @count = 0 }
+---
+
+(source
+  (begin_block
+    (block
+      (assignment left: (oosvar_ref (identifier)) right: (number)))))
+
+===
+end block
+===
+end { emit @count }
+---
+
+(source
+  (end_block
+    (block
+      (emit_statement (oosvar_ref (identifier))))))
+
+===
+guarded block
+===
+(NR > 10) { $x = 1 }
+---
+
+(source
+  (guarded_block
+    (binary_expression (special_variable) (number))
+    (block
+      (assignment left: (field_ref (identifier)) right: (number)))))
+
+===
+nested expressions
+===
+$result = floor(($x + $y) * 100) / 100
+---
+
+(source
+  (assignment
+    left: (field_ref (identifier))
+    right: (binary_expression
+      (function_call
+        function_name: (identifier)
+        (binary_expression
+          (paren_expression
+            (binary_expression (field_ref (identifier)) (field_ref (identifier))))
+          (number)))
+      (number))))

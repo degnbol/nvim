@@ -21,6 +21,7 @@ return {
             if vim.fn.executable("tree-sitter") == 1 then
                 local task = nvim_treesitter.install {
                     -- "bash", -- so broken
+                    "zsh",
                     "c_sharp",
                     "lua",
                     "json",
@@ -84,8 +85,16 @@ return {
                             queries = 'queries',
                         },
                     }
+                    -- Miller DSL (local grammar in nvim config)
+                    parsers.miller = {
+                        install_info = {
+                            path = vim.fn.stdpath('config') .. '/tree-sitter-miller',
+                            queries = 'queries',
+                        },
+                    }
                 end
             })
+
 
             -- TODO: add
             -- https://github.com/nvim-treesitter/nvim-treesitter/#adding-parsers

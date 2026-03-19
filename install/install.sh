@@ -17,7 +17,7 @@ command -v npm > /dev/null || echo "Install npm to get LSP installs"
 # tree-sitter CLI required for parser compilation (generate + build)
 # https://tree-sitter.github.io/tree-sitter/creating-parsers#installation
 if ! command -v tree-sitter > /dev/null; then
-    command -v cargo > /dev/null || ~/dotfiles/install/rust.sh
+    command -v cargo > /dev/null || ~/dotfiles/config/cargo/install.sh
     cargo install tree-sitter-cli
 fi
 # Install treesitter parsers (waits for async compilation to finish)

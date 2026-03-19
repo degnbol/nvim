@@ -1,9 +1,6 @@
-local ls = require "luasnip"
-local sn = ls.sn
-local s = ls.s
-local t = ls.t
-local i = ls.i
-local d = ls.d
+---@diagnostic disable: unused-local
+local ls = require "utils/luasnip"
+local s, t, i, c, f, d, sn, fmta, conds, rep, ms = ls.s, ls.t, ls.i, ls.c, ls.f, ls.d, ls.sn, ls.fmta, ls.conds, ls.rep, ls.ms
 
 ---https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md#dynamicnode
 local function _dUpper(args)

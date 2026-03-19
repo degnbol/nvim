@@ -1,24 +1,18 @@
+---@diagnostic disable: unused-local
 -- sources:
 -- https://castel.dev/post/lecture-notes-1/
 -- https://www.ejmastnak.com/tutorials/vim-latex/luasnip
 -- https://github.com/gillescastel/latex-snippets/blob/master/tex.snippets
 
-local ls = require "luasnip"
 local lsu = require "utils/luasnip"
+local s, t, i, c, f, d, sn, fmta, conds, rep, ms = lsu.s, lsu.t, lsu.i, lsu.c, lsu.f, lsu.d, lsu.sn, lsu.fmta, lsu.conds, lsu.rep, lsu.ms
 local vtu = require "utils/vimtex"
-local sn = ls.sn
-local s = ls.s
-local t = ls.t
-local i = ls.i
-local d = ls.d
-local c = ls.c
 local get_visual = lsu.get_visual
 local virt = lsu.virt
 local re = lsu.re
 local in_text = vtu.in_text
 local cond_itemize = vtu.cond_itemize
 local cond_description = vtu.cond_description
-local fmta = require("luasnip.extras.fmt").fmta
 
 ---For use with f(acro, {})
 ---@param _ table args, unused
@@ -368,6 +362,28 @@ fmta([[\pdftex[<>]{<>}{<>}
 })),
 
 -- https://latex-programming.fandom.com/wiki/Minipage_(LaTeX_environment)
+s({trig="definition", dscr="Definition environment"},
+fmta([[\begin{definition}[<>]
+	\label{eq:<>}
+	<>
+\end{definition}
+]], {i(1), rep(1), i(2)})),
+
+s({trig="cases", dscr="Cases environment", condition=in_text},
+fmta([[\begin{cases}
+    <> & \text{if } <>, \\
+    <> & \text{otherwise.}
+\end{cases}]], {i(1, "x"), i(2, "x > 0"), i(3, "0")})),
+
+s({trig="columns", dscr="Beamer columns"},
+fmta([[\begin{columns}
+	\column{0.4\textwidth}
+    <>
+	\column{0.6\textwidth}
+    <>
+\end{columns}
+]], {i(1), i(2)})),
+
 s({trig="minipage", dscr="Minipage"},
 fmta([[\begin{minipage}<><><>{<>}
     <>

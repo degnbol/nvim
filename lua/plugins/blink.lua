@@ -16,7 +16,7 @@ local source_icon = {
     buffer         = " ",
     omni           = " ",
     lsp            = " ",
-    luasnip        = " ",
+    snippets       = " ",
     nvim_lua       = " ",
     nerdfonts      = "󰊪 ",
     latex_symbols  = " ",
@@ -29,6 +29,7 @@ local source_icon = {
     zsh            = "󰞷 ",
     plugins        = " ",
     pymol_settings = " ",
+    mlr            = "󰓫 ",
     pymol_select   = " ",
     plotly         = " ",
     kitty          = "󰄛 ",
@@ -36,7 +37,7 @@ local source_icon = {
     emoji          = "😃",
 }
 
-local zsh_sources = { "zsh", "lsp", "path", "snippets", "buffer" }
+local zsh_sources = { "mlr_columns", "zsh", "lsp", "path", "snippets", "buffer" }
 
 local only_snippets = false
 
@@ -52,8 +53,8 @@ local keymap = {
     ['<C-b>'] = { 'show_documentation', 'scroll_documentation_up', 'fallback' },
     ['<C-f>'] = { 'show_documentation', 'scroll_documentation_down', 'fallback' },
     -- no fallbacks, since that is just inserting . and ,
-    ['<C-,>'] = { 'snippet_backward' },
-    ['<C-.>'] = { 'snippet_forward' },
+    ['<C-,>'] = { 'snippet_backward', 'fallback' },
+    ['<C-.>'] = { 'snippet_forward', 'fallback' },
     -- Using builtin.
     -- ['<C-s>'] = { 'show_signature' },
 }
@@ -111,10 +112,6 @@ return {
         -- build = 'nix run .#build-plugin',
 
         init = function()
-            -- We are managing snippets with luasnip instead of default currently, since we already wrote many snippets with luasnip and it allows for more complexity.
-            -- However, we have also written some quick ones in VS code style that we should have available.
-            require("luasnip.loaders.from_vscode").lazy_load({ paths = "~/.config/nvim/snippets" })
-
             -- Also jump between snippets with same mappings in normal mode.
             map.n('<C-,>', function() require "blink.cmp".snippet_backward() end, "snippet_backward")
             map.n('<C-.>', function() require "blink.cmp".snippet_forward() end, "snippet_forward")
@@ -242,6 +239,10 @@ return {
                         name = "pymol_select",
                         module = "completion.pymol.blink_pymol_select",
                         enabled = function() return vim.g.loaded_pymol end
+                    },
+                    mlr_columns = {
+                        name = "mlr",
+                        module = "completion.mlr.blink_mlr",
                     },
                     plotly = {
                         name = "plotly",
@@ -384,7 +385,7 @@ return {
                         },
                         -- icon at end instead of before word
                         columns = {
-                            { "label", "label_description" },
+                            { "label", gap = 1, "label_description" },
                             {
                                 "kind_icon",
                                 gap = 1,
@@ -401,6 +402,16 @@ return {
                 },
                 -- Ghost text clashes with auto_insert
                 -- ghost_text = { enabled = true },
+                trigger = {
+                    -- Block ':' as a trigger character in typst so it doesn't reset
+                    -- the completion context when typing @fig:label references.
+                    show_on_blocked_trigger_characters = function()
+                        if vim.bo.filetype == 'typst' then
+                            return { ' ', '\n', '\t', ':' }
+                        end
+                        return { ' ', '\n', '\t' }
+                    end,
+                },
                 keyword = {
                     -- 'prefix' will fuzzy match on the text before the cursor
                     -- 'full' will fuzzy match on the text before *and* after the cursor
@@ -470,6 +481,38 @@ return {
                 preset = "luasnip",
             },
         },
+        config = function(_, opts)
+            require('blink.cmp').setup(opts)
+
+            -- In typst, treat ':' as part of keywords so completion stays open
+            -- for @fig:label, @sec:name references. Blink's keyword chars are
+            -- hardcoded (letters, digits, underscore, hyphen) in both the Rust
+            -- and Lua implementations. This extends them for typst buffers.
+            local fuzzy = require('blink.cmp.fuzzy')
+
+            local orig_is_kw = fuzzy.is_keyword_character
+            function fuzzy.is_keyword_character(char)
+                if char == ':' and vim.bo.filetype == 'typst' then return true end
+                return orig_is_kw(char)
+            end
+
+            local orig_range = fuzzy.get_keyword_range
+            function fuzzy.get_keyword_range(line, col, range)
+                local s, e = orig_range(line, col, range)
+                if vim.bo.filetype == 'typst' then
+                    -- Extend keyword range backwards through ':' segments.
+                    -- e.g. for @fig:my| → extends from "my" to "fig:my"
+                    while s > 0 do
+                        -- line:byte(s) is Lua 1-indexed = 0-indexed s-1, the char before keyword
+                        if line:byte(s) ~= 58 then break end -- 58 = ':'
+                        local ps = orig_range(line, s - 1, range)
+                        if ps >= s - 1 then break end -- no keyword chars before ':'
+                        s = ps
+                    end
+                end
+                return s, e
+            end
+        end,
         opts_extend = { "sources.default" }
     },
 }

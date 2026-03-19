@@ -242,7 +242,15 @@
       "required": false,
       "types": [
         {
+          "type": "expansion_keyword",
+          "named": true
+        },
+        {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "identifier",
           "named": true
         },
         {
@@ -251,6 +259,22 @@
         },
         {
           "type": "not_operator",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "of",
+          "named": true
+        },
+        {
+          "type": "proximity_keyword",
+          "named": true
+        },
+        {
+          "type": "selector",
           "named": true
         }
       ]

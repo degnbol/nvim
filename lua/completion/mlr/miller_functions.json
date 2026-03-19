@@ -1,0 +1,1177 @@
+{
+  "functions": {
+    "!": {
+      "class": "boolean",
+      "nargs": 1,
+      "desc": "Logical negation."
+    },
+    "!=": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "String/numeric inequality. Mixing number and string results in string compare."
+    },
+    "!=~": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "String (left-hand side) does not match regex (right-hand side), e.g. '$name !=~ \"^a.*b$\"'."
+    },
+    "%": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Remainder; never negative-valued (pythonic)."
+    },
+    "&": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Bitwise AND."
+    },
+    "&&": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "Logical AND."
+    },
+    "*": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Multiplication, with integer*integer overflow to float."
+    },
+    "**": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Exponentiation. Same as pow, but as an infix operator."
+    },
+    ".": {
+      "class": "string",
+      "nargs": 2,
+      "desc": "String concatenation. Non-strings are coerced, so you can do '\"ax\".98' etc."
+    },
+    ".*": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Multiplication, with integer-to-integer overflow."
+    },
+    ".+": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Addition, with integer-to-integer overflow."
+    },
+    ".-": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Subtraction, with integer-to-integer overflow."
+    },
+    "./": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Integer division, rounding toward zero."
+    },
+    "/": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Division. Integer / integer is integer when exact, else floating-point: e.g. 6/3 is 2 but 6/4 is 1.5."
+    },
+    "//": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Pythonic integer division, rounding toward negative."
+    },
+    "<": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "String/numeric less-than. Mixing number and string results in string compare."
+    },
+    "<<": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Bitwise left-shift."
+    },
+    "<=": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "String/numeric less-than-or-equals. Mixing number and string results in string compare."
+    },
+    "<=>": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "Comparator, nominally for sorting. Given a <=> b, returns <0, 0, >0 as a < b, a == b, or a > b, respectively."
+    },
+    "==": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "String/numeric equality. Mixing number and string results in string compare."
+    },
+    "=~": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "String (left-hand side) matches regex (right-hand side), e.g. '$name =~ \"^a.*b$\"'. Capture groups \\1 through \\9 are matched from (...) in the right-hand side, and can be used within subsequent DSL statements. See also \"Regular expressions\" at https://miller.readthedocs.io."
+    },
+    ">": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "String/numeric greater-than. Mixing number and string results in string compare."
+    },
+    ">=": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "String/numeric greater-than-or-equals. Mixing number and string results in string compare."
+    },
+    ">>": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Bitwise signed right-shift."
+    },
+    ">>>": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Bitwise unsigned right-shift."
+    },
+    "?:": {
+      "class": "boolean",
+      "nargs": 3,
+      "desc": "Standard ternary operator."
+    },
+    "??": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "Absent-coalesce operator. $a ?? 1 evaluates to 1 if $a isn't defined in the current record."
+    },
+    "???": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "Absent/empty-coalesce operator. $a ??? 1 evaluates to 1 if $a isn't defined in the current record, or has empty value."
+    },
+    "^": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Bitwise XOR."
+    },
+    "^^": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "Logical XOR."
+    },
+    "abs": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Absolute value."
+    },
+    "acos": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Inverse trigonometric cosine."
+    },
+    "acosh": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Inverse hyperbolic cosine."
+    },
+    "antimode": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the least frequently occurring value in an array or map. Returns error for non-array/non-map types. Values are stringified for comparison, so for example string \"1\" and integer 1 are not distinct. In cases of ties, first-found wins."
+    },
+    "any": {
+      "class": "higher-order-functions",
+      "nargs": 2,
+      "desc": "Given a map or array as first argument and a function as second argument, yields a boolean true if the argument function returns true for any array/map element, false otherwise. For arrays, the function should take one argument, for array element; for maps, it should take two, for map-element key and value. In either case it should return a boolean."
+    },
+    "append": {
+      "class": "collections",
+      "nargs": 2,
+      "desc": "Appends second argument to end of first argument, which must be an array."
+    },
+    "apply": {
+      "class": "higher-order-functions",
+      "nargs": 2,
+      "desc": "Given a map or array as first argument and a function as second argument, applies the function to each element of the array/map. For arrays, the function should take one argument, for array element; it should return a new element. For maps, it should take two arguments, for map-element key and value; it should return a new key-value pair (i.e. a single-entry map)."
+    },
+    "arrayify": {
+      "class": "collections",
+      "nargs": 1,
+      "desc": "Walks through a nested map/array, converting any map with consecutive keys \"1\", \"2\", ... into an array. Useful to wrap the output of unflatten."
+    },
+    "asin": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Inverse trigonometric sine."
+    },
+    "asinh": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Inverse hyperbolic sine."
+    },
+    "asserting_absent": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_absent on the argument returns false, else returns its argument."
+    },
+    "asserting_array": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_array on the argument returns false, else returns its argument."
+    },
+    "asserting_bool": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_bool on the argument returns false, else returns its argument."
+    },
+    "asserting_boolean": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_boolean on the argument returns false, else returns its argument."
+    },
+    "asserting_empty": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_empty on the argument returns false, else returns its argument."
+    },
+    "asserting_empty_map": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_empty_map on the argument returns false, else returns its argument."
+    },
+    "asserting_error": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_error on the argument returns false, else returns its argument."
+    },
+    "asserting_float": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_float on the argument returns false, else returns its argument."
+    },
+    "asserting_int": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_int on the argument returns false, else returns its argument."
+    },
+    "asserting_map": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_map on the argument returns false, else returns its argument."
+    },
+    "asserting_nonempty_map": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_nonempty_map on the argument returns false, else returns its argument."
+    },
+    "asserting_not_array": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_not_array on the argument returns false, else returns its argument."
+    },
+    "asserting_not_empty": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_not_empty on the argument returns false, else returns its argument."
+    },
+    "asserting_not_map": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_not_map on the argument returns false, else returns its argument."
+    },
+    "asserting_not_null": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_not_null on the argument returns false, else returns its argument."
+    },
+    "asserting_null": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_null on the argument returns false, else returns its argument."
+    },
+    "asserting_numeric": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_numeric on the argument returns false, else returns its argument."
+    },
+    "asserting_present": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_present on the argument returns false, else returns its argument."
+    },
+    "asserting_string": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Aborts with an error if is_string on the argument returns false, else returns its argument."
+    },
+    "atan": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "One-argument arctangent."
+    },
+    "atan2": {
+      "class": "math",
+      "nargs": 2,
+      "desc": "Two-argument arctangent."
+    },
+    "atanh": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Inverse hyperbolic tangent."
+    },
+    "bitcount": {
+      "class": "arithmetic",
+      "nargs": 1,
+      "desc": "Count of 1-bits."
+    },
+    "boolean": {
+      "class": "conversion",
+      "nargs": 1,
+      "desc": "Convert int/float/bool/string to boolean."
+    },
+    "capitalize": {
+      "class": "string",
+      "nargs": 1,
+      "desc": "Convert string's first character to uppercase."
+    },
+    "cbrt": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Cube root."
+    },
+    "ceil": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Ceiling: nearest integer at or above."
+    },
+    "clean_whitespace": {
+      "class": "string",
+      "nargs": 1,
+      "desc": "Same as collapse_whitespace and strip, followed by type inference."
+    },
+    "collapse_whitespace": {
+      "class": "string",
+      "nargs": 1,
+      "desc": "Strip repeated whitespace from string."
+    },
+    "contains": {
+      "class": "string",
+      "nargs": 2,
+      "desc": "Returns true if the first argument contains the second as a substring. This is like saying `index(arg1, arg2) >= 0`but with less keystroking."
+    },
+    "cos": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Trigonometric cosine."
+    },
+    "cosh": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Hyperbolic cosine."
+    },
+    "count": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the length of an array or map. Returns error for non-array/non-map types."
+    },
+    "depth": {
+      "class": "collections",
+      "nargs": 1,
+      "desc": "Prints maximum depth of map/array. Scalars have depth 0."
+    },
+    "dhms2fsec": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Recovers floating-point seconds as in dhms2fsec(\"5d18h53m20.250000s\") = 500000.250000"
+    },
+    "dhms2sec": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Recovers integer seconds as in dhms2sec(\"5d18h53m20s\") = 500000"
+    },
+    "distinct_count": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the number of disinct values in an array or map. Returns error for non-array/non-map types. Values are stringified for comparison, so for example string \"1\" and integer 1 are not distinct."
+    },
+    "erf": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Error function."
+    },
+    "erfc": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Complementary error function."
+    },
+    "every": {
+      "class": "higher-order-functions",
+      "nargs": 2,
+      "desc": "Given a map or array as first argument and a function as second argument, yields a boolean true if the argument function returns true for every array/map element, false otherwise. For arrays, the function should take one argument, for array element; for maps, it should take two, for map-element key and value. In either case it should return a boolean."
+    },
+    "exp": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Exponential function e**x."
+    },
+    "expm1": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "e**x - 1."
+    },
+    "float": {
+      "class": "conversion",
+      "nargs": 1,
+      "desc": "Convert int/float/bool/string to float."
+    },
+    "floor": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Floor: nearest integer at or below."
+    },
+    "fmtifnum": {
+      "class": "conversion",
+      "nargs": 2,
+      "desc": "Identical to fmtnum, except returns the first argument as-is if the output would be an error."
+    },
+    "fmtnum": {
+      "class": "conversion",
+      "nargs": 2,
+      "desc": "Convert int/float/bool to string using printf-style format string (https://pkg.go.dev/fmt), e.g. '$s = fmtnum($n, \"%08d\")' or '$t = fmtnum($n, \"%.6e\")'. Miller-specific extension: \"%_d\" and \"%_f\" for comma-separated thousands. This function recurses on array and map values."
+    },
+    "fold": {
+      "class": "higher-order-functions",
+      "nargs": 3,
+      "desc": "Given a map or array as first argument and a function as second argument, accumulates entries into a final output -- for example, sum or product. For arrays, the function should take two arguments, for accumulated value and array element. For maps, it should take four arguments, for accumulated key and value, and map-element key and value; it should return the updated accumulator as a new key-value pair (i.e. a single-entry map). The start value for the accumulator is taken from the third argument."
+    },
+    "fsec2dhms": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Formats floating-point seconds as in fsec2dhms(500000.25) = \"5d18h53m20.250000s\""
+    },
+    "fsec2hms": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Formats floating-point seconds as in fsec2hms(5000.25) = \"01:23:20.250000\""
+    },
+    "get_keys": {
+      "class": "collections",
+      "nargs": 1,
+      "desc": "Returns array of keys of map or array"
+    },
+    "get_values": {
+      "class": "collections",
+      "nargs": 1,
+      "desc": "Returns array of values of map or array -- in the latter case, returns a copy of the array"
+    },
+    "gmt2nsec": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Parses GMT timestamp as integer nanoseconds since the epoch."
+    },
+    "gmt2sec": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Parses GMT timestamp as integer seconds since the epoch."
+    },
+    "gssub": {
+      "class": "string",
+      "nargs": 3,
+      "desc": "Like gsub but does no regexing. No characters are special."
+    },
+    "gsub": {
+      "class": "string",
+      "nargs": 3,
+      "desc": "'$name = gsub($name, \"old\", \"new\")': replace all, with support for regular expressions. Capture groups \\1 through \\9 in the new part are matched from (...) in the old part, and must be used within the same call to gsub -- they don't persist for subsequent DSL statements. See also =~ and regextract. See also \"Regular expressions\" at https://miller.readthedocs.io."
+    },
+    "haskey": {
+      "class": "collections",
+      "nargs": 2,
+      "desc": "True/false if map has/hasn't key, e.g. 'haskey($*, \"a\")' or 'haskey(mymap, mykey)', or true/false if array index is in bounds / out of bounds. Error if 1st argument is not a map or array. Note -n..-1 alias to 1..n in Miller arrays."
+    },
+    "hexfmt": {
+      "class": "conversion",
+      "nargs": 1,
+      "desc": "Convert int to hex string, e.g. 255 to \"0xff\"."
+    },
+    "hms2fsec": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Recovers floating-point seconds as in hms2fsec(\"01:23:20.250000\") = 5000.250000"
+    },
+    "hms2sec": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Recovers integer seconds as in hms2sec(\"01:23:20\") = 5000"
+    },
+    "hostname": {
+      "class": "system",
+      "nargs": 0,
+      "desc": "Returns the hostname as a string."
+    },
+    "index": {
+      "class": "string",
+      "nargs": 2,
+      "desc": "Returns the index (1-based) of the second argument within the first. Returns -1 if the second argument isn't a substring of the first. Stringifies non-string inputs. Uses UTF-8 encoding to count characters, not bytes."
+    },
+    "invqnorm": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Inverse of normal cumulative distribution function. Note that invqorm(urand()) is normally distributed."
+    },
+    "is_absent": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "False if field is present in input, true otherwise"
+    },
+    "is_array": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if argument is an array."
+    },
+    "is_bool": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if field is present with boolean value. Synonymous with is_boolean."
+    },
+    "is_boolean": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if field is present with boolean value. Synonymous with is_bool."
+    },
+    "is_empty": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if field is present in input with empty string value, false otherwise."
+    },
+    "is_empty_map": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if argument is a map which is empty."
+    },
+    "is_error": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if if argument is an error, such as taking string length of an integer."
+    },
+    "is_float": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if field is present with value inferred to be float"
+    },
+    "is_int": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if field is present with value inferred to be int"
+    },
+    "is_map": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if argument is a map."
+    },
+    "is_nan": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if the argument is the NaN (not-a-number) floating-point value. Note that NaN has the property that NaN != NaN, so you need 'is_nan(x)' rather than 'x == NaN'."
+    },
+    "is_nonempty_map": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if argument is a map which is non-empty."
+    },
+    "is_not_array": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if argument is not an array."
+    },
+    "is_not_empty": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if field is present in input with non-empty value, false otherwise"
+    },
+    "is_not_map": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if argument is not a map."
+    },
+    "is_not_null": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "False if argument is null (empty, absent, or JSON null), true otherwise."
+    },
+    "is_null": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if argument is null (empty, absent, or JSON null), false otherwise."
+    },
+    "is_numeric": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if field is present with value inferred to be int or float"
+    },
+    "is_present": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if field is present in input, false otherwise."
+    },
+    "is_string": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "True if field is present with string (including empty-string) value"
+    },
+    "joink": {
+      "class": "conversion",
+      "nargs": 2,
+      "desc": "Makes string from map/array keys. First argument is map/array; second is separator string."
+    },
+    "joinkv": {
+      "class": "conversion",
+      "nargs": 3,
+      "desc": "Makes string from map/array key-value pairs. First argument is map/array; second is pair-separator string; third is field-separator string. Mnemonic: the \"=\" comes before the \",\" in the output and in the arguments to joinkv."
+    },
+    "joinv": {
+      "class": "conversion",
+      "nargs": 2,
+      "desc": "Makes string from map/array values. First argument is map/array; second is separator string."
+    },
+    "json_parse": {
+      "class": "collections",
+      "nargs": 1,
+      "desc": "Converts value from JSON-formatted string."
+    },
+    "kurtosis": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the sample kurtosis of values in an array or map. Returns empty string AKA void for array/map of length less than two; returns error for non-array/non-map types."
+    },
+    "latin1_to_utf8": {
+      "class": "string",
+      "nargs": 1,
+      "desc": "Tries to convert Latin-1-encoded string to UTF-8-encoded string. If argument is array or map, recurses into it."
+    },
+    "leafcount": {
+      "class": "collections",
+      "nargs": 1,
+      "desc": "Counts total number of terminal values in map/array. For single-level map/array, same as length."
+    },
+    "leftpad": {
+      "class": "string",
+      "nargs": 3,
+      "desc": "Left-pads first argument to at most the specified length (second, integer argument) using specified pad value (third, string argument). If the first argument is not a string, it will be stringified first."
+    },
+    "length": {
+      "class": "collections",
+      "nargs": 1,
+      "desc": "Counts number of top-level entries in array/map. Scalars have length 1."
+    },
+    "log": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Natural (base-e) logarithm."
+    },
+    "log10": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Base-10 logarithm."
+    },
+    "log1p": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "log(1-x)."
+    },
+    "logifit": {
+      "class": "math",
+      "nargs": 3,
+      "desc": "Given m and b from logistic regression, compute fit: $yhat=logifit($x,$m,$b)."
+    },
+    "lstrip": {
+      "class": "string",
+      "nargs": 1,
+      "desc": "Strip leading whitespace from string."
+    },
+    "madd": {
+      "class": "arithmetic",
+      "nargs": 3,
+      "desc": "a + b mod m (integers)"
+    },
+    "maxlen": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the maximum string length of values in an array or map. Returns empty string AKA void for array/map of length less than two; returns error for non-array/non-map types."
+    },
+    "md5": {
+      "class": "hashing",
+      "nargs": 1,
+      "desc": "MD5 hash."
+    },
+    "mean": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the arithmetic mean of values in an array or map. Returns empty string AKA void for empty array/map; returns error for non-array/non-map types."
+    },
+    "meaneb": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the error bar for arithmetic mean of values in an array or map, assuming the values are independent and identically distributed. Returns empty string AKA void for array/map of length less than two; returns error for non-array/non-map types."
+    },
+    "mexp": {
+      "class": "arithmetic",
+      "nargs": 3,
+      "desc": "a ** b mod m (integers)"
+    },
+    "minlen": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the minimum string length of values in an array or map. Returns empty string AKA void for array/map of length less than two; returns error for non-array/non-map types."
+    },
+    "mmul": {
+      "class": "arithmetic",
+      "nargs": 3,
+      "desc": "a * b mod m (integers)"
+    },
+    "mode": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the most frequently occurring value in an array or map. Returns error for non-array/non-map types. Values are stringified for comparison, so for example string \"1\" and integer 1 are not distinct. In cases of ties, first-found wins."
+    },
+    "msub": {
+      "class": "arithmetic",
+      "nargs": 3,
+      "desc": "a - b mod m (integers)"
+    },
+    "nsec2gmtdate": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Formats integer nanoseconds since epoch as GMT timestamp with year-month-date. Leaves non-numbers as-is."
+    },
+    "null_count": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the number of values in an array or map which are empty-string (AKA void) or JSON null. Returns error for non-array/non-map types. Values are stringified for comparison, so for example string \"1\" and integer 1 are not distinct."
+    },
+    "os": {
+      "class": "system",
+      "nargs": 0,
+      "desc": "Returns the operating-system name as a string."
+    },
+    "pow": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Exponentiation. Same as **, but as a function."
+    },
+    "qnorm": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Normal cumulative distribution function."
+    },
+    "reduce": {
+      "class": "higher-order-functions",
+      "nargs": 2,
+      "desc": "Given a map or array as first argument and a function as second argument, accumulates entries into a final output -- for example, sum or product. For arrays, the function should take two arguments, for accumulated value and array element, and return the accumulated element. For maps, it should take four arguments, for accumulated key and value, and map-element key and value; it should return the updated accumulator as a new key-value pair (i.e. a single-entry map). The start value for the accumulator is the first element for arrays, or the first element's key-value pair for maps."
+    },
+    "regextract": {
+      "class": "string",
+      "nargs": 2,
+      "desc": "Extracts a substring (the first, if there are multiple matches), matching a regular expression, from the input. Does not use capture groups; see also the =~ operator which does."
+    },
+    "regextract_or_else": {
+      "class": "string",
+      "nargs": 3,
+      "desc": "Like regextract but the third argument is the return value in case the input string (first argument) doesn't match the pattern (second argument)."
+    },
+    "rightpad": {
+      "class": "string",
+      "nargs": 3,
+      "desc": "Right-pads first argument to at most the specified length (second, integer argument) using specified pad value (third, string argument). If the first argument is not a string, it will be stringified first."
+    },
+    "round": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Round to nearest integer."
+    },
+    "roundm": {
+      "class": "math",
+      "nargs": 2,
+      "desc": "Round to nearest multiple of m: roundm($x,$m) is the same as round($x/$m)*$m."
+    },
+    "rstrip": {
+      "class": "string",
+      "nargs": 1,
+      "desc": "Strip trailing whitespace from string."
+    },
+    "sec2dhms": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Formats integer seconds as in sec2dhms(500000) = \"5d18h53m20s\""
+    },
+    "sec2gmtdate": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Formats seconds since epoch (integer part) as GMT timestamp with year-month-date. Leaves non-numbers as-is."
+    },
+    "sec2hms": {
+      "class": "time",
+      "nargs": 1,
+      "desc": "Formats integer seconds as in sec2hms(5000) = \"01:23:20\""
+    },
+    "select": {
+      "class": "higher-order-functions",
+      "nargs": 2,
+      "desc": "Given a map or array as first argument and a function as second argument, includes each input element in the output if the function returns true. For arrays, the function should take one argument, for array element; for maps, it should take two, for map-element key and value. In either case it should return a boolean."
+    },
+    "sgn": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "+1, 0, -1 for positive, zero, negative input respectively."
+    },
+    "sha1": {
+      "class": "hashing",
+      "nargs": 1,
+      "desc": "SHA1 hash."
+    },
+    "sha256": {
+      "class": "hashing",
+      "nargs": 1,
+      "desc": "SHA256 hash."
+    },
+    "sha512": {
+      "class": "hashing",
+      "nargs": 1,
+      "desc": "SHA512 hash."
+    },
+    "sin": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Trigonometric sine."
+    },
+    "sinh": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Hyperbolic sine."
+    },
+    "skewness": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the sample skewness of values in an array or map. Returns empty string AKA void for array/map of length less than two; returns error for non-array/non-map types."
+    },
+    "sort_collection": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "This is a helper function for the percentiles function; please see its online help for details."
+    },
+    "splita": {
+      "class": "conversion",
+      "nargs": 2,
+      "desc": "Splits string into array with type inference. First argument is string to split; second is the separator to split on."
+    },
+    "splitax": {
+      "class": "conversion",
+      "nargs": 2,
+      "desc": "Splits string into array without type inference. First argument is string to split; second is the separator to split on."
+    },
+    "splitkv": {
+      "class": "conversion",
+      "nargs": 3,
+      "desc": "Splits string by separators into map with type inference. First argument is string to split; second argument is pair separator; third argument is field separator."
+    },
+    "splitkvx": {
+      "class": "conversion",
+      "nargs": 3,
+      "desc": "Splits string by separators into map without type inference (keys and values are strings). First argument is string to split; second argument is pair separator; third argument is field separator."
+    },
+    "splitnv": {
+      "class": "conversion",
+      "nargs": 2,
+      "desc": "Splits string by separator into integer-indexed map with type inference. First argument is string to split; second argument is separator to split on."
+    },
+    "splitnvx": {
+      "class": "conversion",
+      "nargs": 2,
+      "desc": "Splits string by separator into integer-indexed map without type inference (values are strings). First argument is string to split; second argument is separator to split on."
+    },
+    "sqrt": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Square root."
+    },
+    "ssub": {
+      "class": "string",
+      "nargs": 3,
+      "desc": "Like sub but does no regexing. No characters are special."
+    },
+    "stat": {
+      "class": "system",
+      "nargs": 1,
+      "desc": "Returns a map containing information about the provided path: \"name\" with string value, \"size\" as decimal int value, \"mode\" as octal int value, \"modtime\" as int-valued epoch seconds, and \"isdir\" as boolean value."
+    },
+    "stddev": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the sample standard deviation of values in an array or map. Returns empty string AKA void for array/map of length less than two; returns error for non-array/non-map types."
+    },
+    "strfntime": {
+      "class": "time",
+      "nargs": 2,
+      "desc": "Formats integer nanoseconds since the epoch as timestamp. Format strings are as at https://pkg.go.dev/github.com/lestrrat-go/strftime, with the Miller-specific addition of \"%1S\" through \"%9S\" which format the seconds with 1 through 9 decimal places, respectively. (\"%S\" uses no decimal places.) See also https://miller.readthedocs.io/en/latest/reference-dsl-time/ for more information on the differences from the C library (\"man strftime\" on your system). See also strftime_local."
+    },
+    "strftime": {
+      "class": "time",
+      "nargs": 2,
+      "desc": "Formats seconds since the epoch as timestamp. Format strings are as at https://pkg.go.dev/github.com/lestrrat-go/strftime, with the Miller-specific addition of \"%1S\" through \"%9S\" which format the seconds with 1 through 9 decimal places, respectively. (\"%S\" uses no decimal places.) See also https://miller.readthedocs.io/en/latest/reference-dsl-time/ for more information on the differences from the C library (\"man strftime\" on your system). See also strftime_local."
+    },
+    "string": {
+      "class": "conversion",
+      "nargs": 1,
+      "desc": "Convert int/float/bool/string/array/map to string."
+    },
+    "strip": {
+      "class": "string",
+      "nargs": 1,
+      "desc": "Strip leading and trailing whitespace from string."
+    },
+    "strlen": {
+      "class": "string",
+      "nargs": 1,
+      "desc": "String length."
+    },
+    "strmatch": {
+      "class": "string",
+      "nargs": 2,
+      "desc": "Boolean yes/no for whether the stringable first argument matches the regular-expression second argument. No regex captures are provided; please see `strmatch`."
+    },
+    "strmatchx": {
+      "class": "string",
+      "nargs": 2,
+      "desc": "Extended information for whether the stringable first argument matches the regular-expression second argument. Regex captures are provided in the return-value map; \\1, \\2, etc. are not set, in contrast to the `=~` operator. As well, while the `=~` operator limits matches to \\1 through \\9, an arbitrary number are supported here."
+    },
+    "strpntime": {
+      "class": "time",
+      "nargs": 2,
+      "desc": "strpntime: Parses timestamp as integer nanoseconds since the epoch. See also strpntime_local."
+    },
+    "strptime": {
+      "class": "time",
+      "nargs": 2,
+      "desc": "strptime: Parses timestamp as floating-point seconds since the epoch. See also strptime_local."
+    },
+    "sub": {
+      "class": "string",
+      "nargs": 3,
+      "desc": "'$name = sub($name, \"old\", \"new\")': replace once (first match, if there are multiple matches), with support for regular expressions. Capture groups \\1 through \\9 in the new part are matched from (...) in the old part, and must be used within the same call to sub -- they don't persist for subsequent DSL statements. See also =~ and regextract. See also \"Regular expressions\" at https://miller.readthedocs.io."
+    },
+    "substr": {
+      "class": "string",
+      "nargs": 3,
+      "desc": "substr is an alias for substr0. See also substr1. Miller is generally 1-up with all array and string indices, but, this is a backward-compatibility issue with Miller 5 and below. Arrays are new in Miller 6; the substr function is older."
+    },
+    "substr0": {
+      "class": "string",
+      "nargs": 3,
+      "desc": "substr0(s,m,n) gives substring of s from 0-up position m to n inclusive. Negative indices -len .. -1 alias to 0 .. len-1. See also substr and substr1."
+    },
+    "substr1": {
+      "class": "string",
+      "nargs": 3,
+      "desc": "substr1(s,m,n) gives substring of s from 1-up position m to n inclusive. Negative indices -len .. -1 alias to 1 .. len. See also substr and substr0."
+    },
+    "sum": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the sum of values in an array or map. Returns error for non-array/non-map types."
+    },
+    "sum2": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the sum of squares of values in an array or map. Returns error for non-array/non-map types."
+    },
+    "sum3": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the sum of cubes of values in an array or map. Returns error for non-array/non-map types."
+    },
+    "sum4": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the sum of fourth powers of values in an array or map. Returns error for non-array/non-map types."
+    },
+    "sysntime": {
+      "class": "time",
+      "nargs": 0,
+      "desc": "Returns the system time in 64-bit nanoseconds since the epoch."
+    },
+    "system": {
+      "class": "system",
+      "nargs": 1,
+      "desc": "Run command string, yielding its stdout minus final carriage return."
+    },
+    "systime": {
+      "class": "time",
+      "nargs": 0,
+      "desc": "Returns the system time in floating-point seconds since the epoch."
+    },
+    "systimeint": {
+      "class": "time",
+      "nargs": 0,
+      "desc": "Returns the system time in integer seconds since the epoch."
+    },
+    "tan": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Trigonometric tangent."
+    },
+    "tanh": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Hyperbolic tangent."
+    },
+    "tolower": {
+      "class": "string",
+      "nargs": 1,
+      "desc": "Convert string to lowercase."
+    },
+    "toupper": {
+      "class": "string",
+      "nargs": 1,
+      "desc": "Convert string to uppercase."
+    },
+    "truncate": {
+      "class": "string",
+      "nargs": 2,
+      "desc": "Truncates string first argument to max length of int second argument."
+    },
+    "typeof": {
+      "class": "typing",
+      "nargs": 1,
+      "desc": "Convert argument to type of argument (e.g. \"str\"). For debug."
+    },
+    "unflatten": {
+      "class": "collections",
+      "nargs": 2,
+      "desc": "Reverses flatten. Useful for nested JSON-like structures for non-JSON file formats like CSV. The first argument is a map, and the second argument is the flatten separator. See also arrayify. See \"Flatten/unflatten: converting between JSON and tabular formats\" at https://miller.readthedocs.io for more information."
+    },
+    "unformat": {
+      "class": "string",
+      "nargs": 2,
+      "desc": "Using first argument as format string, unpacks second argument into an array of matches, with type-inference. On non-match, returns error -- use is_error() to check."
+    },
+    "unformatx": {
+      "class": "string",
+      "nargs": 2,
+      "desc": "Same as unformat, but without type-inference."
+    },
+    "upntime": {
+      "class": "time",
+      "nargs": 0,
+      "desc": "Returns the time in 64-bit nanoseconds since the current Miller program was started."
+    },
+    "uptime": {
+      "class": "time",
+      "nargs": 0,
+      "desc": "Returns the time in floating-point seconds since the current Miller program was started."
+    },
+    "urand": {
+      "class": "math",
+      "nargs": 0,
+      "desc": "Floating-point numbers uniformly distributed on the unit interval."
+    },
+    "urand32": {
+      "class": "math",
+      "nargs": 0,
+      "desc": "Integer uniformly distributed 0 and 2**32-1 inclusive."
+    },
+    "urandelement": {
+      "class": "math",
+      "nargs": 1,
+      "desc": "Random sample from the first argument, which must be an non-empty array."
+    },
+    "urandint": {
+      "class": "math",
+      "nargs": 2,
+      "desc": "Integer uniformly distributed between inclusive integer endpoints."
+    },
+    "urandrange": {
+      "class": "math",
+      "nargs": 2,
+      "desc": "Floating-point numbers uniformly distributed on the interval [a, b)."
+    },
+    "utf8_to_latin1": {
+      "class": "string",
+      "nargs": 1,
+      "desc": "Tries to convert UTF-8-encoded string to Latin-1-encoded string. If argument is array or map, recurses into it."
+    },
+    "variance": {
+      "class": "stats",
+      "nargs": 1,
+      "desc": "Returns the sample variance of values in an array or map. Returns empty string AKA void for array/map of length less than two; returns error for non-array/non-map types."
+    },
+    "version": {
+      "class": "system",
+      "nargs": 0,
+      "desc": "Returns the Miller version as a string."
+    },
+    "|": {
+      "class": "arithmetic",
+      "nargs": 2,
+      "desc": "Bitwise OR."
+    },
+    "||": {
+      "class": "boolean",
+      "nargs": 2,
+      "desc": "Logical OR."
+    },
+    "~": {
+      "class": "arithmetic",
+      "nargs": 1,
+      "desc": "Bitwise NOT. Beware '$y=~$x' since =~ is the regex-match operator: try '$y = ~$x'."
+    }
+  },
+  "keywords": {
+    "all": "used in \"emit1\", \"emit\", \"emitp\", and \"unset\" as a synonym for @*",
+    "begin": "defines a block of statements to be executed before input records",
+    "bool": "declares a boolean local variable in the current curly-braced scope.",
+    "break": "causes execution to continue after the body of the current for/while/do-while loop.",
+    "call": "used for invoking a user-defined subroutine.",
+    "continue": "causes execution to skip the remaining statements in the body of",
+    "do": "with \"while\", introduces a do-while loop. The body statements must be wrapped",
+    "dump": "prints all currently defined out-of-stream variables immediately",
+    "edump": "prints all currently defined out-of-stream variables immediately",
+    "elif": "the way Miller spells \"else if\". The body statements must be wrapped",
+    "else": "terminates an if/elif/elif chain. The body statements must be wrapped",
+    "emit": "inserts an out-of-stream variable into the output record stream. Hashmap",
+    "emitf": "inserts non-indexed out-of-stream variable(s) side-by-side into the",
+    "emitp": "inserts an out-of-stream variable into the output record stream.",
+    "end": "defines a block of statements to be executed after input records",
+    "eprint": "prints expression immediately to stderr.",
+    "eprintn": "prints expression immediately to stderr, without trailing newline.",
+    "false": "the boolean literal value.",
+    "filter": "includes/excludes the record in the output record stream.",
+    "float": "declares a floating-point local variable in the current curly-braced scope.",
+    "for": "defines a for-loop using one of three styles. The body statements must",
+    "func": "used for defining a user-defined function.",
+    "funct": "used for saying that a function argument is a user-defined function.",
+    "if": "starts an if/elif/elif chain. The body statements must be wrapped",
+    "in": "used in for-loops over stream records or out-of-stream variables.",
+    "int": "declares an integer local variable in the current curly-braced scope.",
+    "map": "declares a map-valued local variable in the current curly-braced scope.",
+    "num": "declares an int/float local variable in the current curly-braced scope.",
+    "print": "prints expression immediately to stdout.",
+    "printn": "prints expression immediately to stdout, without trailing newline.",
+    "return": "specifies the return value from a user-defined function.",
+    "stderr": "Used for tee, emit, emitf, emitp, print, and dump in place of filename",
+    "stdout": "Used for tee, emit, emitf, emitp, print, and dump in place of filename",
+    "str": "declares a string local variable in the current curly-braced scope.",
+    "subr": "used for defining a subroutine.",
+    "tee": "prints the current record to specified file.",
+    "true": "the boolean literal value.",
+    "unset": "clears field(s) from the current record, or an out-of-stream or local variable.",
+    "var": "declares an untyped local variable in the current curly-braced scope.",
+    "while": "introduces a while loop, or with \"do\", introduces a do-while loop."
+  },
+  "special_variables": {
+    "FILENAME": "Name of current input file",
+    "FILENUM": "Index of current input file (1-based)",
+    "FLATSEP": "Separator for flattening nested data",
+    "FNR": "Record number within current file",
+    "IFS": "Input field separator",
+    "IPS": "Input pair separator",
+    "IRS": "Input record separator",
+    "M_E": "Mathematical constant e",
+    "M_PI": "Mathematical constant pi",
+    "NF": "Number of fields in current record",
+    "NR": "Current record number (across all files)",
+    "OFS": "Output field separator",
+    "OPS": "Output pair separator",
+    "ORS": "Output record separator"
+  }
+}

@@ -1,14 +1,25 @@
-
 local M = {}
 
 local ls = require "luasnip"
 local conds = require("luasnip.extras.expand_conditions")
--- otherwise we get errors in other scripts that says s is defined as a bool
-local s = ls.snippet
 local sn = ls.snippet_node
 local i = ls.insert_node
 local f = ls.f
 local d = ls.d
+
+-- Re-export LuaSnip symbols so snippet files can destructure from one require.
+M.s = ls.s
+M.sn = sn
+M.t = ls.t
+M.i = i
+M.f = f
+M.c = ls.c
+M.d = d
+M.fmta = require("luasnip.extras.fmt").fmta
+M.conds = conds
+M.rep = require("luasnip.extras").rep
+M.ms = ls.multi_snippet
+
 
 function M.get_visual(args, parent)
     -- Summary: When `SELECT_RAW` is populated with a visual selection, the function

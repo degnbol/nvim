@@ -58,6 +58,34 @@ map.n("di ", "ciw <Esc>", "Delete excess whitespace")
 map.n('=ss', 'ss=`]', "Substitute+reindent", { remap = true, silent = true })
 map.n("<leader>Sr", "<cmd>source $XDG_CONFIG_HOME/nvim/after/plugin/luasnip.lua<CR>", "Reload snippets")
 
+-- Snippet management (replaces nvim-scissors)
+map.x("<leader>xa", function() require("luasnippets/add").add_from_visual() end, "Snippet: Add")
+map.n("<leader>xe", function() require("luasnippets/add").edit() end, "Snippet: Edit")
+
+-- Built-in vim.snippet jump (same keys as blink.cmp snippet_forward/backward).
+-- Blink's mappings take priority when its snippet session is active; these handle
+-- vim.snippet sessions (e.g. from BufNewFile templates).
+-- Built-in vim.snippet jump (same keys as blink.cmp snippet_forward/backward).
+-- Blink's mappings take priority when its snippet session is active; these handle
+-- vim.snippet sessions (e.g. from BufNewFile templates).
+-- Uses expr + <Cmd> (like neovim's default Tab mapping) so select mode is preserved.
+local function snippet_jump_expr(direction)
+    return function()
+        if vim.snippet.active({ direction = direction }) then
+            return string.format('<Cmd>lua vim.snippet.jump(%d)<CR>', direction)
+        end
+        return ''
+    end
+end
+vim.keymap.set({ 'i', 's' }, '<C-.>', snippet_jump_expr(1), { expr = true, silent = true, desc = "snippet_forward" })
+vim.keymap.set({ 'i', 's' }, '<C-,>', snippet_jump_expr(-1), { expr = true, silent = true, desc = "snippet_backward" })
+map.n('<C-.>', function()
+    if vim.snippet.active({ direction = 1 }) then vim.snippet.jump(1) end
+end, "snippet_forward")
+map.n('<C-,>', function()
+    if vim.snippet.active({ direction = -1 }) then vim.snippet.jump(-1) end
+end, "snippet_backward")
+
 -- use the following two commands to enable spelling
 -- setlocal spell
 -- set spelllang=en_us

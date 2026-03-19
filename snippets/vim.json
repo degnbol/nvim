@@ -1,3 +1,0 @@
-{
-    "range":{"body":"syn range $1 matchgroup=$2 start='(' end=')'","prefix":"range"}
-}

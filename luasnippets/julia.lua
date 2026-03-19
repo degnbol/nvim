@@ -1,7 +1,6 @@
----@diagnostic disable: undefined-global
--- should be unnessary but s keeps being understood as a bool set somewhere
-local ls = require "luasnip"
-local s = ls.s
+---@diagnostic disable: unused-local
+local ls = require "utils/luasnip"
+local s, t, i, c, f, d, sn, fmta, conds, rep, ms = ls.s, ls.t, ls.i, ls.c, ls.f, ls.d, ls.sn, ls.fmta, ls.conds, ls.rep, ls.ms
 
 
 return {
@@ -19,7 +18,6 @@ s({trig="ROOT", dscr="Git root.", show_condition=conds.line_end},
     t[[("$ROOT/]], i(2), t[[")]],
 }),
 
--- replace dumb pr -> print("<>") from one of the snippet bundles
 s({trig="pr", dscr="println"},
 {t"println(", i(1), t")"}),
 
@@ -78,7 +76,18 @@ help = "<>"
 }, {
 -- auto
 
--- overwrite the one from https://github.com/honza/vim-snippets
+s({trig="try", dscr="try-catch"},
+fmta([[try
+    <>
+catch e
+    if e isa <>Error
+        <>
+    else
+        rethrow(e)
+    end
+end
+]], {i(1), i(2, "Assertion"), i(3)})),
+
 s({trig="#!", dscr="shebang", condition=conds.line_begin * conds.line_end},
 t{"#!/usr/bin/env julia", ""}),
 

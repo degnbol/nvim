@@ -89,6 +89,8 @@ return {
             Abolish occurence occurrence
             Abolish occur{,r}ance occurrence
 
+            iabbrev oC °C
+
             " language specific, see lua/keymap
             " TODO: make this a bit more convenient, for autocorrecting language specific
             " spelling errors in prose only

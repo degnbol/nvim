@@ -1,7 +1,6 @@
----@diagnostic disable: undefined-global
-local ls = require "luasnip"
-local s = ls.s
+---@diagnostic disable: unused-local
 local lsu = require "utils/luasnip"
+local s, t, i, c, f, d, sn, fmta, conds, rep, ms = lsu.s, lsu.t, lsu.i, lsu.c, lsu.f, lsu.d, lsu.sn, lsu.fmta, lsu.conds, lsu.rep, lsu.ms
 local virt = lsu.virt
 
 return {

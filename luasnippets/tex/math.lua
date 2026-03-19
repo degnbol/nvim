@@ -1,4 +1,6 @@
+---@diagnostic disable: unused-local
 local lsu = require "utils/luasnip"
+local s, t, i, c, f, d, sn, fmta, conds, rep, ms = lsu.s, lsu.t, lsu.i, lsu.c, lsu.f, lsu.d, lsu.sn, lsu.fmta, lsu.conds, lsu.rep, lsu.ms
 local vtu = require "utils/vimtex"
 local in_math = vtu.in_math
 local re = lsu.re

@@ -101,6 +101,24 @@ The R languageserver doesn't resolve `...` forwarding — functions like `scale_
 
 **Mason-lspconfig override:** Mason's `automatic_enable` calls `vim.lsp.config()` with `cmd = { "r-languageserver" }` (Mason's wrapper), overriding the custom cmd from `lsp/*.lua`. Fix: in `lua/plugins/lsp.lua`, the mason-lspconfig config function calls `vim.lsp.config('r_language_server', { cmd = ... })` after `setup()` to re-apply our custom cmd.
 
+## Miller DSL Highlighting
+
+Custom tree-sitter grammar `miller` at `tree-sitter-miller/` provides syntax highlighting for Miller's DSL (the language inside `put`/`filter`/`tee` verbs). Works in `*.mlr` files (nvim filetype `miller`) and is injected into zsh single-quoted strings after `put`/`filter`/`tee` verbs via `queries/zsh/injections.scm`.
+
+Grammar name is `miller` to match nvim's built-in filetype — no `vim.treesitter.language.register()` needed. Registered in `lua/plugins/treesitter.lua` alongside pymol_select.
+
+Queries use canonical flat structure: `tree-sitter-miller/queries/highlights.scm` (not nested in a `miller/` subdir). nvim-treesitter symlinks `site/queries/miller -> tree-sitter-miller/queries/` via `install_info`. Zsh injection query lives at `queries/zsh/injections.scm` (extends base zsh injections) — it's a query for the zsh parser, not the miller grammar, so it stays in the nvim config.
+
+Regenerate after grammar changes: `cd tree-sitter-miller && tree-sitter generate && cc -shared -o ~/.local/share/nvim/site/parser/miller.so -I src src/parser.c -O2`. Restart neovim after recompiling. Run `tree-sitter test` to validate (58 tests).
+
+## Miller DSL Completion
+
+Inside `put`/`filter` DSL strings, the `blink_mlr` provider offers context-aware completions:
+- After `$` → column names from referenced input files (existing)
+- Otherwise → DSL builtin functions (223), keywords (40), and special variables (14)
+
+Data generated from `mlr -F` and `mlr -K` by `lua/completion/mlr/miller_functions.json.sh` → `miller_functions.json`. Regenerate after Miller upgrades.
+
 ## PyMOL Selection Highlighting
 
 Selection keywords (`name`, `chain`, `byres`, etc.) and representation names (`cartoon`, `sticks`, `surface`, etc.) inside Python strings are highlighted via a custom tree-sitter grammar `pymol_select` at `tree-sitter-pymol-select/`. Injected into Python strings dynamically when pymol imports are detected (`ftplugin/python.lua`), scoped to function args and assignments (not docstrings).
@@ -120,6 +138,12 @@ Three independent data sources, not derivations of each other:
 4. **`lua/completion/pymol/blink_pymol_select.lua`** — blink.cmp provider for selection keywords, builtins, operators, and representation names inside Python strings. Activates only where the `pymol_select` treesitter injection is active (uses `parser:language_for_range():lang()` to check), so no completions in docstrings or non-pymol strings.
 
 Loading is conditional: `ftplugin/python.lua` scans the first 10 lines for `import.*pymol`, or use `<localleader>+` manually. Sets `vim.g.loaded_pymol` which gates the blink providers.
+
+## File Templates (`lua/autocmds/templates.lua`)
+
+New files get default content via `BufNewFile` autocmds. Templates are `vim.snippet` body strings, supporting `$1`/`${1:placeholder}` tabstops, `$0` (final cursor), and LSP variables (`$TM_FILENAME`). Use `<C-.>`/`<C-,>` to jump between tabstops (same keys as blink.cmp snippet navigation). Neovim's default `<Tab>`/`<S-Tab>` snippet jump mappings are disabled.
+
+Helper functions: `esc(s)` escapes literal `$`, `raw(s)` marks a line as containing snippet syntax, `snippet(lines)` joins lines into a snippet body.
 
 ## WGSL / Bevy Shader Highlighting
 
