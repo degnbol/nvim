@@ -85,6 +85,9 @@ return {
                 -- Prevent goto-definition from landing in build/ directories.
                 -- https://docs.basedpyright.com/v1.20.0/configuration/language-server-settings/
                 exclude = { "**/build" },
+                diagnosticSeverityOverrides = {
+                    reportUnusedCallResult = "none",
+                },
             }
         }
     }

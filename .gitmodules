@@ -1,12 +1,15 @@
 [submodule "kittyREPL.nvim"]
-	path = kittyREPL.nvim
+	path = modules/kittyREPL.nvim
 	url = git@github.com:degnbol/kittyREPL.git
 [submodule "nvim-revJ.lua"]
-	path = nvim-revJ.lua
+	path = modules/nvim-revJ.lua
 	url = git@github.com:degnbol/nvim-revJ.lua.git
 [submodule "lsp/pymol-open-source"]
 	path = lsp_ext/pymol-open-source
 	url = https://github.com/schrodinger/pymol-open-source
 [submodule "kitty-conf.nvim"]
-	path = kitty-conf.nvim
+	path = modules/kitty-conf.nvim
 	url = git@github.com:degnbol/kitty-conf.nvim.git
+[submodule "modules/agentic.nvim"]
+	path = modules/agentic.nvim
+	url = git@github.com:degnbol/agentic.nvim.git

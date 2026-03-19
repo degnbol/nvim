@@ -1,0 +1,251 @@
+---@diagnostic disable: undefined-global
+-- Tests for queries/zsh/injections.scm
+
+vim.treesitter.language.register("zsh", "sh.zsh")
+
+--- Parse source as zsh and return a table of injected language names.
+--- Each entry is { lang = "...", text = "..." } for the injected region.
+local function get_injections(src)
+    local buf = vim.api.nvim_create_buf(true, false)
+    vim.api.nvim_set_current_buf(buf)
+    local lines = vim.split(src, "\n", { plain = true })
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+    vim.bo[buf].filetype = "sh.zsh"
+    local parser = vim.treesitter.get_parser(buf)
+    parser:parse(true)
+    local results = {}
+    for lang, child in pairs(parser:children()) do
+        for _, tree in ipairs(child:trees()) do
+            local root = tree:root()
+            results[#results + 1] = {
+                lang = lang,
+                text = vim.treesitter.get_node_text(root, buf),
+            }
+        end
+    end
+    pcall(vim.api.nvim_buf_delete, buf, { force = true })
+    return results
+end
+
+--- Return all injection entries for a specific language.
+local function injections_for(src, lang)
+    local all = get_injections(src)
+    local filtered = {}
+    for _, inj in ipairs(all) do
+        if inj.lang == lang then
+            filtered[#filtered + 1] = inj
+        end
+    end
+    return filtered
+end
+
+--- Assert at least one injection of the given language contains the expected text.
+local function assert_injection(src, expected_lang, expected_text)
+    local inj = injections_for(src, expected_lang)
+    assert.is_true(#inj >= 1,
+        "expected at least 1 " .. expected_lang .. " injection, got 0")
+    local found = false
+    for _, entry in ipairs(inj) do
+        if entry.text == expected_text then
+            found = true
+            break
+        end
+    end
+    assert.is_true(found,
+        "no " .. expected_lang .. " injection with text: " .. expected_text)
+end
+
+local function assert_no_injection(src, lang)
+    local inj = injections_for(src, lang)
+    assert.are.equal(0, #inj,
+        "expected no " .. lang .. " injections, got " .. #inj)
+end
+
+describe("zsh injections", function()
+    describe("miller", function()
+        it("injects miller into single-quoted put string", function()
+            assert_injection(
+                "mlr put '$x = 1'",
+                "miller", "$x = 1"
+            )
+        end)
+
+        it("injects miller into single-quoted filter string", function()
+            assert_injection(
+                "mlr filter '$score > 0.5'",
+                "miller", "$score > 0.5"
+            )
+        end)
+
+        it("does not inject for non-DSL verbs", function()
+            assert_no_injection("mlr head -n 5", "miller")
+        end)
+
+        it("does not inject double-quoted strings", function()
+            -- double-quoted strings have zsh variable expansion
+            assert_no_injection('mlr put "$x = 1"', "miller")
+        end)
+    end)
+
+    describe("python", function()
+        it("injects python into single-quoted python3 -c", function()
+            assert_injection(
+                "python3 -c 'print(1)'",
+                "python", "print(1)"
+            )
+        end)
+
+        it("injects python into double-quoted python3 -c", function()
+            assert_injection(
+                'python3 -c "print(1)"',
+                "python", "print(1)"
+            )
+        end)
+
+        it("injects python into single-quoted python -c", function()
+            assert_injection(
+                "python -c 'import sys; print(sys.argv)'",
+                "python", "import sys; print(sys.argv)"
+            )
+        end)
+
+        it("works with flags before -c", function()
+            assert_injection(
+                "python3 -u -c 'print(1)'",
+                "python", "print(1)"
+            )
+        end)
+
+        it("does not inject without -c flag", function()
+            assert_no_injection("python3 script.py", "python")
+        end)
+
+        it("does not inject for unrelated commands", function()
+            assert_no_injection("echo 'print(1)'", "python")
+        end)
+    end)
+
+    describe("julia", function()
+        it("injects julia into single-quoted julia -e", function()
+            assert_injection("julia -e 'println(1)'", "julia", "println(1)")
+        end)
+
+        it("injects julia into double-quoted julia -e", function()
+            assert_injection('julia -e "println(1)"', "julia", "println(1)")
+        end)
+
+        it("works with flags before -e", function()
+            assert_injection(
+                "julia --threads=4 -e 'println(1)'",
+                "julia", "println(1)"
+            )
+        end)
+
+        it("does not inject without -e flag", function()
+            assert_no_injection("julia script.jl", "julia")
+        end)
+
+        it("does not inject for other commands", function()
+            assert_no_injection("echo -e 'println(1)'", "julia")
+        end)
+    end)
+
+    describe("R", function()
+        it("injects r into single-quoted Rscript -e", function()
+            assert_injection("Rscript -e 'print(1)'", "r", "print(1)")
+        end)
+
+        it("injects r into double-quoted Rscript -e", function()
+            assert_injection('Rscript -e "print(1)"', "r", "print(1)")
+        end)
+
+        it("injects r into R -e", function()
+            assert_injection("R -e 'print(1)'", "r", "print(1)")
+        end)
+
+        it("works with flags before -e", function()
+            assert_injection(
+                "R --no-save -e 'print(1)'", "r", "print(1)"
+            )
+        end)
+
+        it("does not inject without -e flag", function()
+            assert_no_injection("Rscript script.R", "r")
+        end)
+
+        it("does not inject for other commands", function()
+            assert_no_injection("echo -e 'print(1)'", "r")
+        end)
+    end)
+
+    describe("javascript", function()
+        it("injects javascript into single-quoted node -e", function()
+            assert_injection(
+                "node -e 'console.log(1)'",
+                "javascript", "console.log(1)"
+            )
+        end)
+
+        it("injects javascript into double-quoted node -e", function()
+            assert_injection(
+                'node -e "console.log(1)"',
+                "javascript", "console.log(1)"
+            )
+        end)
+
+        it("does not inject without -e flag", function()
+            assert_no_injection("node app.js", "javascript")
+        end)
+
+        it("does not inject for other commands", function()
+            assert_no_injection("echo -e 'console.log(1)'", "javascript")
+        end)
+    end)
+
+    describe("nvim lua", function()
+        it("injects lua into single-quoted nvim -c 'lua ...'", function()
+            assert_injection(
+                "nvim -c 'lua print(1)'",
+                "lua", "print(1)"
+            )
+        end)
+
+        it("injects lua into double-quoted nvim -c", function()
+            assert_injection(
+                'nvim -c "lua print(1)"',
+                "lua", "print(1)"
+            )
+        end)
+
+        it("works with --headless before -c", function()
+            assert_injection(
+                "nvim --headless -c 'lua print(1)'",
+                "lua", "print(1)"
+            )
+        end)
+
+        it("works with vim command name", function()
+            assert_injection(
+                "vim -c 'lua print(1)'",
+                "lua", "print(1)"
+            )
+        end)
+
+        -- Multiline single-quoted lua verified manually via get_string_parser
+        -- (buffer-based test is fragile due to #offset! across line boundaries)
+
+        it("does not inject non-lua -c strings", function()
+            assert_no_injection("nvim -c 'set number'", "lua")
+        end)
+
+        it("only injects the lua -c string, not others", function()
+            local inj = injections_for(
+                "nvim --headless -c 'lua print(1)' -c 'qa'", "lua")
+            -- Should have the lua injection but not inject 'qa'
+            local texts = {}
+            for _, entry in ipairs(inj) do texts[#texts + 1] = entry.text end
+            assert.is_true(vim.tbl_contains(texts, "print(1)"))
+            assert.is_false(vim.tbl_contains(texts, "qa"))
+        end)
+    end)
+end)

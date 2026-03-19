@@ -20,8 +20,8 @@ return {
             -- Parsers require the tree-sitter CLI (>= 0.25.0) for generate + build.
             if vim.fn.executable("tree-sitter") == 1 then
                 local task = nvim_treesitter.install {
-                    -- "bash", -- so broken
-                    "zsh",
+                    "awk",
+                    "zsh", -- also used for bash
                     "c_sharp",
                     "lua",
                     "json",
@@ -81,26 +81,19 @@ return {
                     -- PyMOL selection algebra (local grammar in nvim config)
                     parsers.pymol_select = {
                         install_info = {
-                            path = vim.fn.stdpath('config') .. '/tree-sitter-pymol-select',
+                            path = vim.fn.stdpath('config') .. '/modules/tree-sitter-pymol-select',
                             queries = 'queries',
                         },
                     }
                     -- Miller DSL (local grammar in nvim config)
                     parsers.miller = {
                         install_info = {
-                            path = vim.fn.stdpath('config') .. '/tree-sitter-miller',
+                            path = vim.fn.stdpath('config') .. '/modules/tree-sitter-miller',
                             queries = 'queries',
                         },
                     }
                 end
             })
-
-
-            -- TODO: add
-            -- https://github.com/nvim-treesitter/nvim-treesitter/#adding-parsers
-            -- https://github.com/Beaglefoot/tree-sitter-awk
-            -- then make bash/injections.scm that takes command awk raw_string and captures the raw_string with @awk
-            -- maybe mlr but would probs have to write it or something
         end
     },
     -- Selecting, moving functions etc.
@@ -226,10 +219,15 @@ return {
     -- show the "context" at the top line, i.e. function name when in a function
     {
         "romgrk/nvim-treesitter-context",
+        --- @type TSContext.UserConfig
         opts = {
             max_lines = 1,
             min_window_height = 15, -- Hide on small windows.
             multiwindow = true,     -- Show context in inactive windows.
+            on_attach = function(buf)
+                local ft = vim.bo[buf].filetype
+                return not ft:find("^Agentic")
+            end,
         },
         init = function()
             map.n("g<up>", function()

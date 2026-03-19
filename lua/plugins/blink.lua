@@ -77,6 +77,13 @@ return {
     {
         "folke/lazydev.nvim",
         ft = "lua",
+        opts = {
+            library = {
+                { path = "nvim-treesitter-context", words = { "TSContext" } },
+                { path = "blink.cmp", words = { "blink.cmp" } },
+                { path = "blink-cmp-dictionary", words = { "blink%-cmp%-dictionary" } },
+            },
+        },
     },
     {
         "Kaiser-Yang/blink-cmp-dictionary",

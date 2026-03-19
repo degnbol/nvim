@@ -83,7 +83,7 @@ Files >50MB are handled specially to avoid freezing. See `lua/largefile.lua` and
 
 ## In-process LSP Servers
 
-Neovim can host LSP servers inside its own process — no external binary needed. See `kitty-conf.nvim` for a working example.
+Neovim can host LSP servers inside its own process — no external binary needed. See `modules/kitty-conf.nvim` for a working example.
 
 - **`lsp/*.lua`**: Return `{ cmd = function() ... end, filetypes = {...} }`. The `cmd` function returns `request`, `notify`, `is_closing`, `terminate` handlers.
 - **blink.cmp community sources**: Convention is `lua/<plugin-name>/init.lua`, referenced as `module = "<plugin-name>"` in the provider config.
@@ -103,13 +103,13 @@ The R languageserver doesn't resolve `...` forwarding — functions like `scale_
 
 ## Miller DSL Highlighting
 
-Custom tree-sitter grammar `miller` at `tree-sitter-miller/` provides syntax highlighting for Miller's DSL (the language inside `put`/`filter`/`tee` verbs). Works in `*.mlr` files (nvim filetype `miller`) and is injected into zsh single-quoted strings after `put`/`filter`/`tee` verbs via `queries/zsh/injections.scm`.
+Custom tree-sitter grammar `miller` at `modules/tree-sitter-miller/` provides syntax highlighting for Miller's DSL (the language inside `put`/`filter`/`tee` verbs). Works in `*.mlr` files (nvim filetype `miller`) and is injected into zsh single-quoted strings after `put`/`filter`/`tee` verbs via `queries/zsh/injections.scm`.
 
 Grammar name is `miller` to match nvim's built-in filetype — no `vim.treesitter.language.register()` needed. Registered in `lua/plugins/treesitter.lua` alongside pymol_select.
 
-Queries use canonical flat structure: `tree-sitter-miller/queries/highlights.scm` (not nested in a `miller/` subdir). nvim-treesitter symlinks `site/queries/miller -> tree-sitter-miller/queries/` via `install_info`. Zsh injection query lives at `queries/zsh/injections.scm` (extends base zsh injections) — it's a query for the zsh parser, not the miller grammar, so it stays in the nvim config.
+Queries use canonical flat structure: `modules/tree-sitter-miller/queries/highlights.scm` (not nested in a `miller/` subdir). nvim-treesitter symlinks `site/queries/miller -> modules/tree-sitter-miller/queries/` via `install_info`. Zsh injection query lives at `queries/zsh/injections.scm` (extends base zsh injections) — it's a query for the zsh parser, not the miller grammar, so it stays in the nvim config.
 
-Regenerate after grammar changes: `cd tree-sitter-miller && tree-sitter generate && cc -shared -o ~/.local/share/nvim/site/parser/miller.so -I src src/parser.c -O2`. Restart neovim after recompiling. Run `tree-sitter test` to validate (58 tests).
+Regenerate after grammar changes: `cd modules/tree-sitter-miller && tree-sitter generate && cc -shared -o ~/.local/share/nvim/site/parser/miller.so -I src src/parser.c -O2`. Restart neovim after recompiling. Run `tree-sitter test` to validate (58 tests).
 
 ## Miller DSL Completion
 
@@ -121,9 +121,9 @@ Data generated from `mlr -F` and `mlr -K` by `lua/completion/mlr/miller_function
 
 ## PyMOL Selection Highlighting
 
-Selection keywords (`name`, `chain`, `byres`, etc.) and representation names (`cartoon`, `sticks`, `surface`, etc.) inside Python strings are highlighted via a custom tree-sitter grammar `pymol_select` at `tree-sitter-pymol-select/`. Injected into Python strings dynamically when pymol imports are detected (`ftplugin/python.lua`), scoped to function args and assignments (not docstrings).
+Selection keywords (`name`, `chain`, `byres`, etc.) and representation names (`cartoon`, `sticks`, `surface`, etc.) inside Python strings are highlighted via a custom tree-sitter grammar `pymol_select` at `modules/tree-sitter-pymol-select/`. Injected into Python strings dynamically when pymol imports are detected (`ftplugin/python.lua`), scoped to function args and assignments (not docstrings).
 
-Regenerate after grammar changes: `cd tree-sitter-pymol-select && tree-sitter generate && cc -shared -o ~/.local/share/nvim/site/parser/pymol_select.so -I src src/parser.c -O2`. Restart neovim after recompiling.
+Regenerate after grammar changes: `cd modules/tree-sitter-pymol-select && tree-sitter generate && cc -shared -o ~/.local/share/nvim/site/parser/pymol_select.so -I src src/parser.c -O2`. Restart neovim after recompiling.
 
 **Known limitation:** Multi-part values with `+` (e.g. `chain A+B+C`) work via the `multi_value` token, but single-letter selector keywords (`b`, `q`, `x`, `y`, `z`) may be parsed as selectors instead of chain IDs in edge cases.
 

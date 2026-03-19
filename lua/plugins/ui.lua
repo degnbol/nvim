@@ -9,7 +9,7 @@ return {
     -- :Capture hi to call :hi where you can search etc.
     { "tyru/capture.vim", cmd = "Capture" },
     {
-        dir = vim.opt.runtimepath:get()[1] .. "/kittyREPL.nvim",
+        dir = vim.opt.runtimepath:get()[1] .. "/modules/kittyREPL.nvim",
         dev = true,
         opts = {
             keymap = {
@@ -110,11 +110,11 @@ return {
             vim.opt.laststatus = 0
             -- TODO:
             -- decide if there should be more of standard statusline info (such as "HELP" for help files) that should be added to render.
-            vim.opt.statusline = ("─"):rep(vim.api.nvim_win_get_width(0))
+            vim.opt.statusline = ("▁"):rep(vim.api.nvim_win_get_width(0))
             vim.api.nvim_create_autocmd("WinResized", {
                 group = vim.api.nvim_create_augroup("statusline-update", { clear = true }),
                 callback = function()
-                    vim.opt.statusline = ("─"):rep(vim.api.nvim_win_get_width(0))
+                    vim.opt.statusline = ("▁"):rep(vim.api.nvim_win_get_width(0))
                 end
             })
         end,
