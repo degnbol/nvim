@@ -186,3 +186,25 @@
   (#offset! @injection.content 0 4 0 0)
   (#set! injection.language "lua")
   (#set! injection.include-children))
+
+; Inject lua into `nvim +"lua ..."` / `nvim +'lua ...'`
+; The + form parses as concatenation(word("+"), string/raw_string).
+(command
+  name: (command_name) @_cmd
+  argument: (concatenation (word) @_plus (raw_string) @injection.content)
+  (#any-of? @_cmd "nvim" "vim")
+  (#eq? @_plus "+")
+  (#lua-match? @injection.content "^'lua[%s]")
+  (#offset! @injection.content 0 5 0 -1)
+  (#set! injection.language "lua")
+  (#set! injection.include-children))
+
+(command
+  name: (command_name) @_cmd
+  argument: (concatenation (word) @_plus (string (string_content) @injection.content))
+  (#any-of? @_cmd "nvim" "vim")
+  (#eq? @_plus "+")
+  (#lua-match? @injection.content "^lua[%s]")
+  (#offset! @injection.content 0 4 0 0)
+  (#set! injection.language "lua")
+  (#set! injection.include-children))
