@@ -190,6 +190,8 @@ map.c('<A-delete>', "<S-right><C-w>", "Delete next word")
 -- this ignored if kitty handles it.
 map.c('<D-BS>', "<C-u>", "Delete to beginning of line")
 
+map.x('<D-c>', '"+y', "Copy selection to clipboard")
+
 map.n('<D-v>', 'p<C-=>', "Paste after, auto-indent, place cursor after", { remap = true })
 map.n('<S-D-v>', 'P<C-=>', "Paste before, auto-indent, place cursor after", { remap = true })
 map.i('<D-v>', function()
