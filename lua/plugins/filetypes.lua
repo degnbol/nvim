@@ -117,7 +117,14 @@ return {
         end,
     },
     -- https://quarto.org/
-    { "quarto-dev/quarto-nvim",  ft = "quarto" },
+    {
+        "quarto-dev/quarto-nvim",
+        ft = "quarto",
+        dependencies = {
+            "jmbuhr/otter.nvim",
+            -- "nvim-treesitter/nvim-treesitter", -- needed still?
+        },
+    },
     -- flashing for code blocks
     {
         "lukas-reineke/headlines.nvim",
@@ -128,24 +135,6 @@ return {
     },
     -- "elzr/vim-json", -- json
     { "OmniSharp/omnisharp-vim", ft = "cs" },
-
-    -- autoclose pairs.
-    -- "m4xshen/autoclose.nvim" is too simple.
-    -- "windwp/nvim-autopairs" doesn't delete properly even with the check_ts
-    -- (treesitter) setting on. I also tried pears.nvim. I haven't tried mini.pairs
-    {
-        "tmsvg/pear-tree",
-        enabled = false,
-        config = function()
-            -- vim.g.pear_tree_smart_openers = 1
-            -- vim.g.pear_tree_smart_closers = 1 # bad in lua, type "{}" -> "{}}"
-            vim.g.pear_tree_smart_backspace = 1
-            -- uncomment to not hide the closing bracket on newline at the cost of
-            -- dot-repeat only performing the last part of the edit.
-            -- vim.g.pear_tree_repeatable_expand = 0
-            vim.g.pear_tree_ft_disabled = { "TelescopePrompt", "NvimTree", "qf", "tex", }
-        end
-    },
     {
         "nvim-neorg/neorg",
         -- Seems to throw errors at random times and I don't see pandoc

@@ -31,3 +31,5 @@ aux/
 
 # test dependencies
 rtps/
+
+*.so
