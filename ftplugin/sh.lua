@@ -14,3 +14,9 @@ vim.opt_local.list = false
 
 -- stop continuing comments with o/O
 vim.opt_local.formatoptions:remove('o')
+
+-- shfmt for gq via formatprg (conform.nvim handles grf)
+if vim.fn.executable("shfmt") == 1 then
+    local dialect = vim.bo.filetype:find("zsh") and "zsh" or "auto"
+    vim.opt_local.formatprg = "shfmt -ln " .. dialect .. " -i 4 -bn -ci -sr"
+end

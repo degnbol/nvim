@@ -55,8 +55,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
         map_fzf('<leader>wd', "workspace_diagnostics", "Diagnostics")
 
         map.n('gh', vim.lsp.buf.signature_help, "Signature", opts)
-        -- TODO: maybe have a way to enable auto format on write or make an explicit keybind that does format and write both.
-        map.nx('grf', vim.lsp.buf.format, "Format", opts)
+        -- grf is handled by conform.nvim (lua/plugins/formatting.lua)
+        -- Falls back to vim.lsp.buf.format when no conform formatter is configured.
 
         -- Builtin auto-completion disabled for now since blink.cmp claims to be faster.
         -- Enable auto-completion. Note: Use CTRL-Y to select an item. |complete_CTRL-Y|
