@@ -81,13 +81,16 @@ Files >50MB are handled specially to avoid freezing. See `lua/largefile.lua` and
 4. Double-scheduled callback opens file with `edit`
 5. `BufAdd` in largefile.lua intercepts (for session files, not needed for command line)
 
-## In-process LSP Servers
+## LSP and Completion
 
-Neovim can host LSP servers inside its own process — no external binary needed. See `modules/kitty-conf.nvim` for a working example.
+General LSP knowledge (in-process servers, mason overrides, external config) is
+in `~/.claude/skills/neovim/references/lsp.md`. Completion framework behaviour
+(blink.cmp caching, `filterText`, community sources) is in
+`~/.claude/skills/neovim/references/completion.md`.
 
-- **`lsp/*.lua`**: Return `{ cmd = function() ... end, filetypes = {...} }`. The `cmd` function returns `request`, `notify`, `is_closing`, `terminate` handlers.
-- **blink.cmp community sources**: Convention is `lua/<plugin-name>/init.lua`, referenced as `module = "<plugin-name>"` in the provider config.
-- **blink.cmp CompletionItem fields**: `labelDetails.description` shows inline in the menu (right of label). `labelDetails.detail` appends directly after the label (no gap). `documentation` shows in the hover popup when an item is selected. Top-level `detail` only shows in the documentation popup, not inline in the menu.
+Working examples: `modules/kitty-conf.nvim` (hover + completion),
+`modules/agentic.nvim/lua/agentic/completion/lsp_server.lua` (trigger-character
+completion for `/` and `@`).
 
 ## R Language Server
 
