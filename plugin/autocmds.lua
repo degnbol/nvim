@@ -1,7 +1,6 @@
 require "autocmds/largefile"
 require "autocmds/lastplace"
 require "autocmds/templates"
-require "autocmds/treesitter"
 require "autocmds/chmodx"
 require "autocmds/lsp"
 require "autocmds/kitty"
