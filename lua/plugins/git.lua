@@ -140,6 +140,9 @@ return {
             map.n("<leader>gd", "<Cmd>DiffviewOpen -uno<CR>:DiffviewToggleFiles<CR>", "Diffview open")
             -- pretty cool: works on ranges
             map({ "n", "x" }, "<leader>gh", "<Cmd>DiffviewFileHistory %<CR>", { desc = "History" })
+            vim.cmd [[
+                cnoreabbrev gtd DiffviewOpen -uno
+            ]]
         end,
         config = function()
             local diffview = require "diffview"
@@ -151,9 +154,10 @@ return {
                 hi.link("DiffviewFilePanelRootPath", "Comment")
                 hi.link("DiffviewFilePanelFileName", "Normal")
                 hi.link("DiffviewFilePanelSelected", "CursorLine")
-                hi.link("DiffviewStatusModified", "Changed")
                 hi.link("DiffviewFolderSign", "Normal")
                 hi.link("DiffviewFolderName", "Normal")
+                hi.link("DiffviewStatusModified", "Changed")
+                hi.link("DiffviewStatusUntracked", "Changed")
             end)
 
             -- defaults copied and changed.
