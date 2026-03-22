@@ -155,6 +155,12 @@ return {
                     cterm_color = "67",
                     name = "Typst",
                 },
+                wgsl = {
+                    icon = "󰢮",
+                    color = "#5586A6",
+                    cterm_color = "67",
+                    name = "WGSL",
+                },
             }
         }
     }
