@@ -188,6 +188,7 @@ return {
                     -- Enhance this by adding descriptions for <Leader> mapping groups
                     clue.gen_clues.builtin_completion(),
                     clue.gen_clues.g(),
+                    clue.gen_clues.z(),
                     clue.gen_clues.marks(),
                     clue.gen_clues.registers(),
                     clue.gen_clues.windows {
@@ -196,7 +197,6 @@ return {
                         submode_navigate = true,
                         submode_resize = true,
                     },
-                    clue.gen_clues.z(),
                 },
 
                 window = {
