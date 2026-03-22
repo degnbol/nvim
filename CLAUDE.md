@@ -81,6 +81,12 @@ Files >50MB are handled specially to avoid freezing. See `lua/largefile.lua` and
 4. Double-scheduled callback opens file with `edit`
 5. `BufAdd` in largefile.lua intercepts (for session files, not needed for command line)
 
+## Fzf-lua and Ripgrep Colours
+
+fzf-lua's grep runs ripgrep in a headless neovim subprocess (`nvim -u NONE -l spawn.lua`). This subprocess inherits `RIPGREP_CONFIG_PATH` but in practice the config file's `--colors` flags don't reliably apply — ripgrep falls back to default magenta paths. Fix: pass `--colors` explicitly in `rg_opts` (`lua/plugins/fuzzy.lua`), duplicating the relevant flags from `~/.config/ripgrep/config`.
+
+Highlight groups for fzf-lua UI elements (prompt, header, keybinds, line numbers) are defined in the colorscheme generator (`~/dotfiles/colors/generators/colorscheme.lua`). fzf-lua sets them with `default=true`, so the colorscheme definitions take priority.
+
 ## LSP and Completion
 
 General LSP knowledge (in-process servers, mason overrides, external config) is
