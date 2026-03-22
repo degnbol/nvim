@@ -245,6 +245,14 @@ return {
                     previewer        = "codeaction_native",
                 },
             },
+            -- Match ripgrep config (~/.config/ripgrep/config) colours explicitly
+            -- so headless subprocesses don't rely on RIPGREP_CONFIG_PATH.
+            grep = {
+                rg_opts = "--column --line-number --no-heading --color=always --smart-case "
+                    .. "--max-columns=4096 "
+                    .. "--colors=line:fg:3 --colors=column:fg:3 --colors=match:fg:9 --colors=match:style:bold "
+                    .. "--colors=path:none --colors=path:style:underline -e",
+            },
             files = {
                 -- Same as default but adding build/ for exclusion.
                 find_opts = [[-type f \! -path '*/.git/*' -and \! -path '*/build/*']],
