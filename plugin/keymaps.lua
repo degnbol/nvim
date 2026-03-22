@@ -8,20 +8,21 @@ require "keymaps/surround"
 require "keymaps/blockim"
 require "keymaps/comments"
 
--- Shift+scroll = horizontal scroll
-map({ 'n', 'v', 'o', 'i' }, '<S-ScrollWheelUp>', '3zh')
-map({ 'n', 'v', 'o', 'i' }, '<S-ScrollWheelDown>', '3zl')
--- Shift should have no effect on the rest
-local counts = { "", "2-", "3-", "4-" }
-for _, i in ipairs(counts) do
+-- Horizontal scroll: viewport-based (zh/zl) so it works even on short lines
+for _, i in ipairs({ "", "2-", "3-", "4-" }) do
     for _, d in ipairs({ "Left", "Right" }) do
+        local zh = d == "Left" and "zh" or "zl"
         local k = i .. "ScrollWheel" .. d
-        map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', '<' .. k .. '>', { remap = true })
+        map({ 'n', 'v', 'o', 'i' }, '<' .. k .. '>', '3' .. zh)
+        map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', '3' .. zh)
     end
     for _, d in ipairs({ "Up", "Down" }) do
+        local zh = d == "Up" and "zh" or "zl"
         local k = i .. "ScrollWheel" .. d
-        -- Only neutralise shift for multi-click scroll (2-,3-,4-); single-click is horizontal above
-        if i ~= "" then
+        -- Shift+vertical scroll = horizontal scroll; multi-click variants just pass through
+        if i == "" then
+            map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', '3' .. zh)
+        else
             map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', '<' .. k .. '>', { remap = true })
         end
     end
