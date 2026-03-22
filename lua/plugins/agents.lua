@@ -170,7 +170,7 @@ return {
                 { "<leader>if", agentic("open"), desc = "Focus agent" },
                 { "<leader>iq", agentic("close"), desc = "Close agent" },
                 { "<leader>in", agentic("new_session"), desc = "New session" },
-                { "<leader>ix", agentic("stop_generation"), desc = "Stop generation" },
+                -- stop_generation is now <C-c> in all Agentic* windows (plugin default)
                 { "<leader>ib", agentic("add_file"), desc = "Add current buffer" },
                 { "<leader>is", agentic("add_selection"), mode = "v", desc = "Send selection" },
             }
