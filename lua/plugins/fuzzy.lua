@@ -77,7 +77,6 @@ return {
         init = function()
             hi.def("FzfLuaBorder", "FloatBorder")
             hi.def("FzfLuaTitle", "Title")
-
             -- Simple picker with TAB (by default) for toggling preview, where fzf lua has preview by default.
             require 'mini.pick'.setup {
                 options = {
@@ -194,11 +193,26 @@ return {
             -- menus
         end,
         opts = {
+            -- Use FuzzyMatch colour (colour 9) for fzf match highlighting.
+            -- `true` enables auto-generation from highlight groups (reads FzfLuaFzfMatch).
+            -- hl/hl+ override the treesitter default of "-1:reverse".
+            fzf_colors = {
+                true,
+                ["hl"]  = { "fg", "FuzzyMatch" },
+                ["hl+"] = { "fg", "FuzzyMatch" },
+            },
             winopts = {
                 -- Don't dim other windows.
                 backdrop = 100,
                 -- Fullscreen is actually nice for max focus.
                 fullscreen = true,
+                treesitter = {
+                    -- Override default "-1:reverse" for treesitter pickers.
+                    fzf_colors = {
+                        ["hl"]  = { "fg", "FuzzyMatch" },
+                        ["hl+"] = { "fg", "FuzzyMatch" },
+                    },
+                },
                 preview = {
                     -- Reduce lag from default 20 ms.
                     -- It is there for a purpose relating to fast scrolling.
