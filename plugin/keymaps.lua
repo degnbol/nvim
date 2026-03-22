@@ -8,13 +8,22 @@ require "keymaps/surround"
 require "keymaps/blockim"
 require "keymaps/comments"
 
--- shift should have no effect on scroll
+-- Shift+scroll = horizontal scroll
+map({ 'n', 'v', 'o', 'i' }, '<S-ScrollWheelUp>', '3zh')
+map({ 'n', 'v', 'o', 'i' }, '<S-ScrollWheelDown>', '3zl')
+-- Shift should have no effect on the rest
 local counts = { "", "2-", "3-", "4-" }
-local directions = { "Up", "Down", "Left", "Right" }
 for _, i in ipairs(counts) do
-    for _, d in ipairs(directions) do
+    for _, d in ipairs({ "Left", "Right" }) do
         local k = i .. "ScrollWheel" .. d
         map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', '<' .. k .. '>', { remap = true })
+    end
+    for _, d in ipairs({ "Up", "Down" }) do
+        local k = i .. "ScrollWheel" .. d
+        -- Only neutralise shift for multi-click scroll (2-,3-,4-); single-click is horizontal above
+        if i ~= "" then
+            map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', '<' .. k .. '>', { remap = true })
+        end
     end
 end
 
