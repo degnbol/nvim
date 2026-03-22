@@ -66,7 +66,7 @@ return {
             -- somehow setting colorscheme in way that resets some highlight groups,
             -- so we set them again here:
             local grp = vim.api.nvim_create_augroup("adoc", { clear = true })
-            vim.api.nvim_create_autocmd("Colorscheme", {
+            vim.api.nvim_create_autocmd("ColorScheme", {
                 buffer = 0,
                 group = grp,
                 callback = function()
@@ -177,7 +177,29 @@ return {
     },
     -- "MrPicklePinosaur/typst-conceal.vim",
 
-    "fladson/vim-kitty", -- syntax highlights for kitty conf
+    -- syntax highlights for kitty conf
+    {
+        "fladson/vim-kitty",
+        ft = "kitty",
+        config = function ()
+            local grp = vim.api.nvim_create_augroup("kitty", { clear = true })
+            vim.api.nvim_create_autocmd("ColorScheme", {
+                buffer = 0,
+                group = grp,
+                callback = function()
+                    -- Italic is for the small set of rarely used keywords in most 
+                    -- languages, not for the large amount of "keywords" in some 
+                    -- language like the kitty.conf.
+                    -- There's also kittyKW, why do both exist? They're both from this plugin.
+                    hi.set("kittyKeyword", { italic = false, fg=hi.fg("Keyword") })
+                    -- Maybe fine to leave italic?
+                    -- hi.link("kittyMap", "kittyKeyword")
+                    -- Was linked to Keyword
+                    hi.link("kittyInclude", "Include")
+                end
+            })
+        end,
+    },
 
     -- basic kotlin support
     "udalov/kotlin-vim",

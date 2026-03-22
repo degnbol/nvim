@@ -214,12 +214,16 @@ hi(0, "@lsp.typemod.variable.global.lua", { link = "@module.builtin" })
 hi(0, "@lsp.typemod.variable.defaultLibrary.lua", { link = "Constant" })
 hi(0, "@lsp.type.selfParameter", { link = "@module.builtin" })
 
--- Completion.
-hi(0, "CmpItemAbbrMatch", { bold = true })
-hi(0, "CmpItemAbbrMatchFuzzy", { bold = true })
+-- Fuzzy/search match highlight — colour 9 to match grep/ripgrep.
+-- Plugins define their match groups with default=true, so these take priority.
+hi(0, "FuzzyMatch", { bold = true, fg = "#eb746b" })
+hi(0, "BlinkCmpLabelMatch", { link = "FuzzyMatch" })
+hi(0, "CmpItemAbbrMatch", { link = "FuzzyMatch" })
+hi(0, "CmpItemAbbrMatchFuzzy", { link = "FuzzyMatch" })
+hi(0, "FzfLuaFzfMatch", { link = "FuzzyMatch" })
 
 -- Prompt.
-hi(0, "Prompt", { fg = "#FF6AC1" })
+hi(0, "Prompt", { fg = "#f05af2" })
 hi(0, "vimPrompt", { link = "Prompt" })
 hi(0, "@punctuation.delimiter.vim", { link = "Prompt" })
 hi(0, "NvimPrompt", { link = "Prompt" })
@@ -265,7 +269,7 @@ vim.g.terminal_color_9 = "#eb746b"
 vim.g.terminal_color_10 = "#8eb2af"
 vim.g.terminal_color_11 = "#fdb292"
 vim.g.terminal_color_12 = "#73a3b7"
-vim.g.terminal_color_13 = "#FF6AC1"
+vim.g.terminal_color_13 = "#f05af2"
 vim.g.terminal_color_14 = "#afd4de"
 vim.g.terminal_color_15 = "#eeeeee"
 
