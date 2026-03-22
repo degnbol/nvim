@@ -43,6 +43,7 @@ map.n('<C-;>', 'q:')
 
 -- Typos.
 vim.api.nvim_create_user_command("Q", "q", {})
+vim.api.nvim_create_user_command("Qa", "qa", { bang = true })
 vim.api.nvim_create_user_command("X", "x", {})
 vim.api.nvim_create_user_command("WQ", "wq", {})
 vim.api.nvim_create_user_command("Wq", "wq", {})
