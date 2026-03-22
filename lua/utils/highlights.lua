@@ -81,14 +81,15 @@ function M.hex_sp(name)
     return vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(name)), "sp#")
 end
 
----Intended for adding highlights relevant to specific filetype or plugin after
----a colorscheme is set.
+---Run callback now and again after every colorscheme change.
+---Use for plugin/filetype highlight overrides that must persist.
 ---@param callback function
----@return integer
-function M.afterColorscheme(callback)
-    return vim.api.nvim_create_autocmd("Colorscheme", {
+---@return integer autocmd id
+function M.onColorScheme(callback)
+    callback()
+    return vim.api.nvim_create_autocmd("ColorScheme", {
         pattern = "*",
-        group = vim.api.nvim_create_augroup("afterColorscheme", { clear = false }),
+        group = vim.api.nvim_create_augroup("onColorScheme", { clear = false }),
         callback = callback
     })
 end

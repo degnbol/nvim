@@ -38,7 +38,7 @@ return {
                 progress = "<leader>rp",
                 editPaste = "<leader>re",
             },
-            exclude = { tex = true, text = true, tsv = true, markdown = true },
+            exclude = { tex = true, tsv = true, markdown = true },
             progress = true,
             editpaste = true,
             closepager = true,
@@ -128,7 +128,7 @@ return {
                     buftypes = {},
                     wintypes = {},
                     unlisted_buffers = false,
-                    filetypes = { 'AgenticInput', 'AgenticFiles' },
+                    filetypes = { 'AgenticInput', 'AgenticFiles', 'DiffviewFiles' },
                 },
                 window = {
                     padding = 0,
@@ -155,11 +155,34 @@ return {
                         end
                         return { { label, guifg = props.focused and hi.fg("StatusLine") or "gray" } }
                     end
+                    -- In diffview tabs: show rev info instead of filename
+                    local dv_ok, dv_lib = pcall(require, 'diffview.lib')
+                    if dv_ok then
+                        local view = dv_lib.get_current_view()
+                        if view and view.cur_layout then
+                            for _, key in ipairs({ 'a', 'b', 'c', 'd' }) do
+                                local w = view.cur_layout[key]
+                                if w and w.id == props.win and w.file and w.file.winbar then
+                                    local label = w.file.winbar:gsub("^ ", ""):gsub("^WORKING TREE %- ", "")
+                                    local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
+                                    local ft_icon, ft_color = devicons.get_icon_color(filename, nil, { default = true })
+                                    local color = props.focused and hi.fg("StatusLine") or "gray"
+                                    return {
+                                        ft_icon and { ft_icon, guifg = ft_color } or '',
+                                        ' ',
+                                        { label, guifg = color },
+                                    }
+                                end
+                            end
+                            -- Diffview window but no winbar (e.g. file panel) — hide
+                            return ''
+                        end
+                    end
                     local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
                     if filename == '' then
                         filename = '[No Name]'
                     end
-                    local ft_icon, ft_color = devicons.get_icon_color(filename)
+                    local ft_icon, ft_color = devicons.get_icon_color(filename, nil, { default = true })
                     local modified = vim.bo[props.buf].modified
                     return {
                         ft_icon and { ft_icon, guifg = ft_color } or '',

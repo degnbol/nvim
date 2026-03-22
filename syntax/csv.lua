@@ -2,7 +2,7 @@ local hi = require "utils/highlights"
 
 -- Clear highlights for now.
 -- Might be useful syntax captures.
-hi.afterColorscheme(function()
+hi.onColorScheme(function()
     hi.clear("csvCol1")
     hi.clear("csvCol2")
     hi.link("csvCol3", "csvCol1")

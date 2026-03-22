@@ -234,7 +234,7 @@ return {
                 require("treesitter-context").go_to_context(vim.v.count1)
             end, "Goto TS context", { silent = true })
 
-            hi.afterColorscheme(function()
+            hi.onColorScheme(function()
                 hi.clear("TreesitterContext")
                 local border = { underdashed = true, special = "gray" }
                 hi.set("TreesitterContextBottom", border)

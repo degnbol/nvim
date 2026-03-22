@@ -1,4 +1,5 @@
 local map = require "utils/keymap"
+local hi = require"utils/highlights"
 
 return {
     {
@@ -48,7 +49,8 @@ return {
                 sections = {
                     untracked = {
                         folded = true,
-                    }
+                        hidden = false,
+                    },
                 },
             }
         end,
@@ -67,7 +69,7 @@ return {
         config = function(_, opts)
             require("gitsigns").setup(opts)
             local hi = require "utils/highlights"
-            hi.afterColorscheme(function()
+            hi.onColorScheme(function()
                 local linenr = hi.fg("LineNr")
                 local delete = hi.bg("DiffDelete")
                 local stageddelete = hi.fg("GitSignsDelete")
@@ -142,8 +144,19 @@ return {
         config = function()
             local diffview = require "diffview"
             local actions = require "diffview.actions"
-            -- defaults copied and changed from
-            -- https://github.com/sindrets/diffview.nvim
+
+            hi.onColorScheme(function()
+                hi.hide("DiffviewFilePanelTitle")
+                hi.hide("DiffviewFilePanelCounter")
+                hi.link("DiffviewFilePanelRootPath", "Comment")
+                hi.link("DiffviewFilePanelFileName", "Normal")
+                hi.link("DiffviewFilePanelSelected", "CursorLine")
+                hi.link("DiffviewStatusModified", "Changed")
+                hi.link("DiffviewFolderSign", "Normal")
+                hi.link("DiffviewFolderName", "Normal")
+            end)
+
+            -- defaults copied and changed.
             diffview.setup {
                 -- more subtle coloring knowing the context is git diff between old and new and not just file diff
                 -- See ':h diffview-config-enhanced_diff_hl'
@@ -190,11 +203,12 @@ return {
                         { { "n", "x" }, "3do", actions.diffget("theirs") }, -- Obtain the diff hunk from the THEIRS version of the file
                     },
                     file_panel = {
-                        ["j"]              = actions.next_entry,   -- Bring the cursor to the next file entry
+                        -- Navigation restricted to the filelist, so stopping before empty line, etc.
+                        ["j"]              = actions.next_entry,
                         ["<down>"]         = actions.next_entry,
-                        ["k"]              = actions.prev_entry,   -- Bring the cursor to the previous file entry.
+                        ["k"]              = actions.prev_entry,
                         ["<up>"]           = actions.prev_entry,
-                        ["<cr>"]           = actions.select_entry, -- Open the diff for the selected entry.
+                        ["<CR>"]           = actions.select_entry, -- Open the diff for the selected entry.
                         ["o"]              = actions.select_entry,
                         ["<2-LeftMouse>"]  = actions.select_entry,
                         ["-"]              = actions.toggle_stage_entry, -- Stage / unstage the selected entry.
@@ -232,7 +246,7 @@ return {
                         ["<down>"]         = actions.next_entry,
                         ["k"]              = actions.prev_entry,
                         ["<up>"]           = actions.prev_entry,
-                        ["<cr>"]           = actions.select_entry,
+                        ["<CR>"]           = actions.select_entry,
                         ["o"]              = actions.select_entry,
                         ["<2-LeftMouse>"]  = actions.select_entry,
                         ["<c-b>"]          = actions.scroll_view(-0.25),

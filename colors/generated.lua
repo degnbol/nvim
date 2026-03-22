@@ -42,11 +42,17 @@ hi(0, "Directory", { bold = true, underline = true })
 hi(0, "Cursor", { bg = "#e6eaea", fg = "#152528" })
 hi(0, "TermCursor", { bg = "#e6eaea", fg = "#152528" })
 
--- Diff
+-- Diff: uppercase = inline diff highlighting (bg tints), lowercase = diff file syntax (fg colours)
 hi(0, "DiffAdd", { bg = "#294145" })
 hi(0, "DiffDelete", { bg = "#29383A", fg = "#152528" })
 hi(0, "DiffChange", { bg = "#253C41" })
 hi(0, "DiffText", { bg = "#2F4C52" })
+hi(0, "Added", { fg = "#7aa4a1" })
+hi(0, "Removed", { fg = "#e85c51" })
+hi(0, "Changed", { fg = "#ff8349" })
+hi(0, "diffAdded", { link = "Added" })
+hi(0, "diffRemoved", { link = "Removed" })
+hi(0, "diffChanged", { link = "Changed" })
 
 -- Syntax
 hi(0, "Comment", { fg = "#4e5157", italic = false })
