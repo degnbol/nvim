@@ -19,6 +19,4 @@ map.buf('n', '<localleader>t', tabNew,          "New tab")
 -- map.buf('i', '<BS>',          tabBS,          "Potentially delete tab")
 map.buf('n', '<leader><C-V>',   tabSelect,      "Select all 6 strings in tab", { expr = true })
 
--- TODO: disable completion suggestions inside syntax "Tab"
-vim.api.nvim_set_hl(0, "Tab", {link="String", default=true})
 
