@@ -6,10 +6,8 @@ syn match subscript /\\textsubscript/ conceal cchar=_
 " We can color them as Function to match conceal color. Default is Statement. 
 " We can also go with texCmdStyle which is given to \texttt which links to 
 " Type.
-hi link subscript texTypeStyle
-hi link superscript texTypeStyle
-" underline was also un-highlighted for some reason
-hi link texTypeStyle texCmdStyle
+hi def link subscript texTypeStyle
+hi def link superscript texTypeStyle
 
 syn match textgreek /\\textalpha/ conceal cchar=α
 syn match textgreek /\\textbeta/ conceal cchar=β
@@ -20,9 +18,7 @@ syn match textgreek /\\textpsi/ conceal cchar=ψ
 syn match textgreek /\\texttau/ conceal cchar=τ
 " and so on...
 " same as e.g. \AA angstrom
-hi link textgreek SpecialChar
-
-hi texItalStyle gui=italic
+hi def link textgreek SpecialChar
 
 " redefine to add conceal (and thinrule)
 syntax match texCmdBooktabs "\\\%(top\|mid\|bottom\|thin\)rule\>" conceal cchar=━

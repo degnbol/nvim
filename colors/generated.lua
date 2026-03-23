@@ -42,11 +42,12 @@ hi(0, "Directory", { bold = true, underline = true })
 hi(0, "Cursor", { bg = "#e6eaea", fg = "#152528" })
 hi(0, "TermCursor", { bg = "#e6eaea", fg = "#152528" })
 
--- Diff: uppercase = inline diff highlighting (bg tints), lowercase = diff file syntax (fg colours)
+-- Diff
 hi(0, "DiffAdd", { bg = "#294145" })
 hi(0, "DiffDelete", { bg = "#29383A", fg = "#152528" })
 hi(0, "DiffChange", { bg = "#253C41" })
 hi(0, "DiffText", { bg = "#2F4C52" })
+-- Diff syntax (fg colours for diff file highlighting).
 hi(0, "Added", { fg = "#7aa4a1" })
 hi(0, "Removed", { fg = "#e85c51" })
 hi(0, "Changed", { fg = "#ff8349" })
@@ -260,6 +261,29 @@ hi(0, "ConflictMarkerCommonAncestorsHunk", { link = "ConflictMarkerCommonAncesto
 hi(0, "ConflictMarkerSeparator", { bg = "#152528", fg = "#e6eaea" })
 hi(0, "ConflictMarkerEnd", { bg = "#1B2D32" })
 hi(0, "ConflictMarkerTheirs", { link = "ConflictMarkerEnd" })
+
+-- Filetype-specific.
+hi(0, "htmlItalic", { link = "Italic" })
+hi(0, "htmlBold", { link = "Bold" })
+hi(0, "vim9comment", { link = "Error" })
+hi(0, "vimCmdSep", { link = "Delimiter" })
+hi(0, "texItalStyle", { italic = true })
+hi(0, "texTypeStyle", { link = "texCmdStyle" })
+hi(0, "AsciidoctorCode", { link = "@markup.raw" })
+hi(0, "Tab", { link = "String" })
+hi(0, "shArithRegion", {})
+hi(0, "shCaseError", {})
+hi(0, "shCondError", {})
+hi(0, "shCurlyError", {})
+hi(0, "shDerefOpError", {})
+hi(0, "shDerefWordError", {})
+hi(0, "shDoError", {})
+hi(0, "shEsacError", {})
+hi(0, "shIfError", {})
+hi(0, "shInError", {})
+hi(0, "shParenError", {})
+hi(0, "shTestError", {})
+hi(0, "shDTestError", {})
 
 -- Terminal colours.
 vim.g.terminal_color_0 = "#2f3239"
