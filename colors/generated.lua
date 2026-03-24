@@ -237,7 +237,15 @@ hi(0, "NvimPrompt", { link = "Prompt" })
 hi(0, "MiniPickPrompt", { link = "Prompt" })
 hi(0, "SnacksPickerPrompt", { link = "Prompt" })
 hi(0, "FzfLuaFzfPrompt", { link = "Prompt" })
+hi(0, "FzfLuaLivePrompt", { link = "Prompt" })
 hi(0, "TelescopeSelectionCaret", { link = "Prompt" })
+
+-- Fzf-lua UI.
+hi(0, "FzfLuaFzfHeader", { link = "NonText" })
+hi(0, "FzfLuaHeaderBind", { link = "Label" })
+hi(0, "FzfLuaHeaderText", { link = "Special" })
+hi(0, "FzfLuaPathLineNr", { link = "LineNr" })
+hi(0, "FzfLuaPathColNr", { link = "Number" })
 
 -- Misc.
 hi(0, "Quote", { link = "String" })
