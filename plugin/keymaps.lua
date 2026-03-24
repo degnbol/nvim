@@ -9,19 +9,20 @@ require "keymaps/blockim"
 require "keymaps/comments"
 
 -- Horizontal scroll: viewport-based (zh/zl) so it works even on short lines
+-- Use <Cmd>normal! so the mapping works from insert mode without inserting literal text
 for _, i in ipairs({ "", "2-", "3-", "4-" }) do
     for _, d in ipairs({ "Left", "Right" }) do
-        local zh = d == "Left" and "zh" or "zl"
+        local rhs = '<Cmd>normal! 3' .. (d == "Left" and "zh" or "zl") .. '<CR>'
         local k = i .. "ScrollWheel" .. d
-        map({ 'n', 'v', 'o', 'i' }, '<' .. k .. '>', '3' .. zh)
-        map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', '3' .. zh)
+        map({ 'n', 'v', 'o', 'i' }, '<' .. k .. '>', rhs)
+        map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', rhs)
     end
     for _, d in ipairs({ "Up", "Down" }) do
-        local zh = d == "Up" and "zh" or "zl"
         local k = i .. "ScrollWheel" .. d
         -- Shift+vertical scroll = horizontal scroll; multi-click variants just pass through
         if i == "" then
-            map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', '3' .. zh)
+            local rhs = '<Cmd>normal! 3' .. (d == "Up" and "zh" or "zl") .. '<CR>'
+            map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', rhs)
         else
             map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', '<' .. k .. '>', { remap = true })
         end
