@@ -16,7 +16,7 @@ return {
             Abolish TH{ere,en,e,is} Th{}
             " lazy apostrophe
             Abolish {ca,is,are,do,does,did,has,have,had,was,were,would,should,could,wo}nt {}n't
-            Abolish {let,there,here,who}s {}'s
+            Abolish {let,there,here,who,what}s {}'s
             Abolish itøs it's
             iabbrev THeres There's
             " I by itself is useful in regular text but i can be a variable, and also

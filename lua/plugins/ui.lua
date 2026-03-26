@@ -122,6 +122,11 @@ return {
             local helpers = require 'incline.helpers'
             local devicons = require 'nvim-web-devicons'
             local hi = require 'utils/highlights'
+            -- Refresh incline when agentic.nvim updates header state (context %, mode)
+            vim.api.nvim_create_autocmd("User", {
+                pattern = "AgenticHeadersChanged",
+                callback = function() require('incline').refresh() end,
+            })
             require('incline').setup {
                 ignore = {
                     -- Also display for help etc.
