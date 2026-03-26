@@ -33,12 +33,6 @@ end
 -- ~/.local/bin is location of jedi-language-server
 vim.env.PATH = vim.env.HOME .. '/.local/bin/:/opt/homebrew/Caskroom/miniforge/base/bin:/opt/homebrew/bin:' .. vim.env.PATH
 
--- add lsp/completion for pymol.
--- In .py script, write `from pymol import cmd`
-local rtp = vim.opt.runtimepath:get()[1]
-if vim.env.PYTHONPATH == nil then
-    vim.env.PYTHONPATH = rtp .. "/lsp_ext/pymol-open-source/modules"
-else
-    vim.env.PYTHONPATH = vim.env.PYTHONPATH .. ':' .. rtp .. "/lsp_ext/pymol-open-source/modules"
-end
+-- PyMOL stubs for LSP are in basedpyright extraPaths (lsp/basedpyright.lua),
+-- not PYTHONPATH — global PYTHONPATH breaks the real pymol binary.
 

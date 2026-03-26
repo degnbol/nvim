@@ -82,6 +82,9 @@ return {
                 -- https://detachhead.github.io/basedpyright/#/configuration
                 typeCheckingMode = "standard",
                 stubPath = "~/.config/nvim/lsp_ext/python_stubs/",
+                extraPaths = {
+                    vim.fn.stdpath("config") .. "/lsp_ext/pymol-open-source/modules",
+                },
                 -- Prevent goto-definition from landing in build/ directories.
                 -- https://docs.basedpyright.com/v1.20.0/configuration/language-server-settings/
                 exclude = { "**/build" },
