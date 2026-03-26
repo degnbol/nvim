@@ -128,7 +128,7 @@ return {
                     buftypes = {},
                     wintypes = {},
                     unlisted_buffers = false,
-                    filetypes = { 'AgenticInput', 'AgenticFiles', 'DiffviewFiles' },
+                    filetypes = { 'AgenticInput', 'AgenticFiles', 'AgenticTodos', 'DiffviewFiles' },
                 },
                 window = {
                     padding = 0,
