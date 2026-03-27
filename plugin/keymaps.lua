@@ -32,8 +32,24 @@ end
 map({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 map.n('<leader>cc', function()
-	vim.notify("No compiler for filetype: " .. vim.bo.filetype, vim.log.levels.WARN)
-end, "Compile (no compiler configured)")
+	local file = vim.api.nvim_buf_get_name(0)
+	if file == '' then
+		vim.notify("No file to run", vim.log.levels.WARN)
+		return
+	end
+	local first_line = vim.api.nvim_buf_get_lines(0, 0, 1, false)[1] or ''
+	if not first_line:match('^#!') then
+		vim.notify("No compiler for filetype: " .. vim.bo.filetype, vim.log.levels.WARN)
+		return
+	end
+	vim.cmd.write({ mods = { silent = true } })
+	if vim.fn.executable(file) == 0 then
+		vim.fn.system({ 'chmod', '+x', file })
+	end
+	local dir = vim.fn.fnameescape(vim.fs.dirname(file))
+	local name = vim.fn.fnameescape(vim.fs.basename(file))
+	vim.cmd('!cd ' .. dir .. ' && ./' .. name)
+end, "Run script")
 
 
 -- in the terminal map escape to changing from terminal mode (insert mode) to
