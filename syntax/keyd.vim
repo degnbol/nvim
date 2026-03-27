@@ -5,7 +5,6 @@ syn keyword @title.builtin ids global main containedin=Title
 syn keyword @function.builtin oneshot overload macro command layer swap swapm toggle
 hi def link KeydKey Constant
 hi def link KeydOption Identifier
-hi def @title.builtin gui=underdouble,italic
 syn match Delimiter ','
 syn match Delimiter '\.'
 syn match Delimiter '-'

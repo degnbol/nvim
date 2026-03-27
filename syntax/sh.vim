@@ -10,16 +10,9 @@ syn keyword @function.builtin mkdir sed tr gzip gunzip rm cd cat mv
 " Final \ at end of line for line continuation.
 syn match Comment /\\$/ containedin=shCommandSub,shFunctionTwo
 syn match Wildcard /*/
-" Hi defined in lua/highlights.lua
-
-" flags with either - or + prefix
-syn match @flag / \zs-[A-Za-z_0-9-]\+/
-syn match @flag / \zs+[A-Za-z_0-9+]\+/
-hi def link @flag Function
 
 " paths.
-syn match @path '\~\?[A-Za-z0-9.*_-]*[/.][/A-Za-z0-9.*_-]*' contains=FunctionPath,Wildcard containedin=shIf,shCommandSub
-hi def link @path @text.underline
+syn match @string.special.path '\~\?[A-Za-z0-9.*_-]*[/.][/A-Za-z0-9.*_-]*' contains=FunctionPath,Wildcard containedin=shIf,shCommandSub
 
 " First word on a line or only preceded by an env var assignment (e.g. `LC_ALL=C tr ...`)
 " '+' appears in e.g. `g++`
@@ -38,14 +31,14 @@ syn match Function /\(exec\)\@<= *[A-Za-z_-]\+/
 " We need to have the path as first word on a line to assume it's a called 
 " function so we check for ^\s* before match, however we need to use
 " \@<= to look backwards at start of checking, since we are conditioned on 
-" @path which doesn't match region from start of line.
+" @string.special.path which doesn't match region from start of line.
 " AND to cover cases such as $0:h/path/to/file we also have to look backwards 
 " allowing for $0:h, hence \S* added at the end of the atom.
 " AND to support e.g. $(git root)/path/to/file which has a space I added the 
 " \($(.*)\)\?.
 " There's also backticks e.g. `git root` but it's legacy and we prefer $(...) 
 " so maybe let's not complicate this regex further.
-syn match FunctionPath '\(^\s*\S*\($(.*)\)\?\)\@<=[/A-Za-z0-9._-]*/\zs[A-Za-z._-]\+\ze[ \n]' contained containedin=@path
+syn match FunctionPath '\(^\s*\S*\($(.*)\)\?\)\@<=[/A-Za-z0-9._-]*/\zs[A-Za-z._-]\+\ze[ \n]' contained containedin=@string.special.path
 
 " First word within $(...) is probably a cmd name. Only first word.
 " This was hard to figure out. With contained and containedin we start looking 
