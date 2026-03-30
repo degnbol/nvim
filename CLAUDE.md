@@ -2,6 +2,29 @@
 
 `~/nvim` = `~/.config/nvim` = `~/dotfiles/config/nvim` (symlinks). All the same directory.
 
+## Plugin Management (vim.pack + lz.n)
+
+Plugins are managed by nvim 0.12's built-in `vim.pack` (install/update/lockfile) and
+`lz.n` (lazy-loading). Replaces lazy.nvim (maintenance mode since Dec 2025).
+
+- **`lua/pack_specs.lua`** — `vim.pack.add()` registry, all remote plugins
+- **`lua/pack_hooks.lua`** — `PackChanged` build hooks (mason, treesitter, telescope-fzf-native, etc.)
+- **`lua/plugins/*.lua`** — lz.n specs (27 files), auto-discovered via `require("lz.n").load("plugins")`
+- **Dev plugins** (modules/) — added to rtp manually in init.lua, use `load = function() end` in lz.n specs
+
+### lz.n gotcha: `trigger_load` requires handler registration
+
+`trigger_load("plugin")` only finds plugins registered with a handler (event/cmd/ft/keys/colorscheme). Plugins with `lazy = true` but **no trigger field** are invisible — `trigger_load` silently skips them.
+
+**Fixes for dep-only plugins:**
+- Add a `cmd` trigger if the plugin has commands (e.g., mason.nvim → `cmd = {"Mason", ...}`)
+- Remove `lazy = true` if the plugin can load eagerly (small cost)
+- Inline `vim.cmd.packadd("plugin")` + setup in the parent's `before`/`after`
+
+### blink.compat and nvim-cmp coexistence
+
+blink.compat with `impersonate_nvim_cmp = true` replaces `package.loaded["cmp"]` with a mock. `require("cmp")` returns the mock even after clearing package.loaded (blink.compat has its own `lua/cmp/init.lua`). In `cmp.lua`, check `package.loaded["blink.cmp"]` at runtime and skip cmp setup when blink is active.
+
 ## Keymap Notes
 
 ### Cmd key (`<D-...>`) in Neovim
