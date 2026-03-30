@@ -3,11 +3,10 @@ local map = require "utils/keymap"
 
 return {
     {
-        'nvim-mini/mini.nvim',
-        version = false,
+        'mini.nvim',
         -- higher than default 50 to allow mini parts loaded in other files.
         priority = 100,
-        config = function()
+        after = function()
             local MiniBracketed = require('mini.bracketed')
             MiniBracketed.setup {
                 -- ]i to go to more indented region.

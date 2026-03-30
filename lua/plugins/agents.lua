@@ -68,9 +68,8 @@ return {
     -- Claude Code via WebSocket MCP protocol (same as VS Code extension)
     -- https://github.com/coder/claudecode.nvim
     {
-        "coder/claudecode.nvim",
+        "claudecode.nvim",
         enabled = false,
-        dependencies = { "folke/snacks.nvim" },
         keys = function()
             local function send_operator()
                 vim.opt.operatorfunc = "v:lua.ClaudeCodeSendOperator"
@@ -107,21 +106,21 @@ return {
                 { "<leader>id", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
             }
         end,
-        opts = {
-            terminal_cmd = vim.fn.expand("~/.local/bin/claude"),
-            terminal = {
-                split_side = "right",
-                split_width_percentage = 0.4,
-            },
-        },
+        after = function()
+            require("claudecode").setup {
+                terminal_cmd = vim.fn.expand("~/.local/bin/claude"),
+                terminal = {
+                    split_side = "right",
+                    split_width_percentage = 0.4,
+                },
+            }
+        end,
     },
     -- Local fork of agentic.nvim — native chat UI via Agent Client Protocol
     {
-        dir = vim.fn.stdpath("config") .. "/modules/agentic.nvim",
-        name = "agentic.nvim",
+        "agentic.nvim",
         enabled = true,
-        build = "npm i -g @zed-industries/claude-agent-acp",
-        dependencies = { "nvim-lua/plenary.nvim" },
+        load = function() end,
         keys = {
             { "<D-\\>", "<Plug>(agentic-toggle-tab)", desc = "Agent toggle" },
             { "<M-CR>", "<Plug>(agentic-send)", desc = "Agent send motion" },
@@ -135,12 +134,14 @@ return {
             { "<leader>ib", "<Plug>(agentic-add-file)", desc = "Add current buffer" },
             { "<leader>is", "<Plug>(agentic-send)", mode = "v", desc = "Send selection" },
         },
-        opts = {
-            headers = {
-                chat = { title = "Claude" },
-            },
-        },
-        init = function()
+        after = function()
+            require("agentic").setup {
+                headers = {
+                    chat = { title = "Claude" },
+                },
+            }
+        end,
+        before = function()
             -- Red text like ripgrep's default match colour.
             -- terminal_color_1 (ANSI red) is nil — colorscheme doesn't set it.
             vim.api.nvim_set_hl(0, "AgenticSearchMatch", { link = "DiagnosticError" })

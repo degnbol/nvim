@@ -3,38 +3,41 @@ return {
     -- Adds TS highlights and LSP semantic hls inside the qf, plus edits can be
     -- made in qf, which applies to the files.
     {
-        "stevearc/quicker.nvim",
-        event = "FileType qf",
+        "quicker.nvim",
+        event = { event = "FileType", pattern = "qf" },
         keys = { "<leader>qq", "<leader>qo" },
-        lazy = true,
         ---@module "quicker"
         ---@type quicker.SetupOptions
-        opts = {
-            keys = {
-                {
-                    ">",
-                    function()
-                        require("quicker").expand({ before = 2, after = 2, add_to_existing = true })
-                    end,
-                    desc = "Expand quickfix context",
+        after = function()
+            require("quicker").setup({
+                keys = {
+                    {
+                        ">",
+                        function()
+                            require("quicker").expand({ before = 2, after = 2, add_to_existing = true })
+                        end,
+                        desc = "Expand quickfix context",
+                    },
+                    {
+                        "<",
+                        function()
+                            require("quicker").collapse()
+                        end,
+                        desc = "Collapse quickfix context",
+                    },
                 },
-                {
-                    "<",
-                    function()
-                        require("quicker").collapse()
-                    end,
-                    desc = "Collapse quickfix context",
-                },
-            },
-        },
+            })
+        end,
     },
     -- Adds TS preview to qf (no LSP semantic hls), and zf keymap to fzf.
     -- We can open quickfix with fzf-lua, etc. so not so useful here.
     {
-        'kevinhwang91/nvim-bqf',
+        'nvim-bqf',
         enabled = false,
-        dependencies = { 'junegunn/fzf' },
-        config = function()
+        before = function()
+            require("lz.n").trigger_load("fzf")
+        end,
+        after = function()
             local fn = vim.fn
             local max = math.max
             local min = math.min

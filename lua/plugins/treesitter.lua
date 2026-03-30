@@ -4,18 +4,10 @@ local map = require "utils/keymap"
 return {
     -- Convenience of installing parsers for given languages.
     {
-        'nvim-treesitter/nvim-treesitter',
-        branch = "main", -- master is frozen for backwards compatibility, main will become default in future.
-        build = ':TSUpdate',
-        config = function()
+        'nvim-treesitter',
+        after = function()
             local nvim_treesitter = require 'nvim-treesitter'
             nvim_treesitter.setup {}
-
-            -- Run :TSUpdate after lazy sync to keep parsers in sync with queries
-            vim.api.nvim_create_autocmd('User', {
-                pattern = 'LazySync',
-                callback = function() vim.cmd('TSUpdate') end,
-            })
 
             -- Parsers require the tree-sitter CLI (>= 0.25.0) for generate + build.
             if vim.fn.executable("tree-sitter") == 1 then
@@ -98,33 +90,34 @@ return {
     },
     -- Selecting, moving functions etc.
     {
-        "nvim-treesitter/nvim-treesitter-textobjects",
-        branch = "main",
-        opts = {
-            select = {
-                -- Jump forward to textobj if not already inside it.
-                lookahead = true,
-                -- Other opts.
-                -- selection_modes allows for using a different selection
-                -- mode than v, e.g. V or <C-v>, for specific textobjects.
-            },
-            move = {
-                -- whether to set jumps in the jumplist
-                set_jumps = true,
-            },
-            lsp_interop = {
-                enable = true,
-                border = 'none',
-                peek_definition_code = {
-                    -- similar to hover help so we use similar keymap as hover.
-                    -- Hover currently uses gh for "go hover", similar to gd, gf, etc.
-                    -- gh and gH are used for starting select mode by default which we never use.
-                    ["gH"] = { query = "@function.outer", desc = "Peek function" },
-                    ["g<C-H>"] = { query = "@class.outer", desc = "Peek class" },
-                }
-            },
-        },
-        init = function()
+        "nvim-treesitter-textobjects",
+        after = function()
+            require("nvim-treesitter-textobjects").setup {
+                select = {
+                    -- Jump forward to textobj if not already inside it.
+                    lookahead = true,
+                    -- Other opts.
+                    -- selection_modes allows for using a different selection
+                    -- mode than v, e.g. V or <C-v>, for specific textobjects.
+                },
+                move = {
+                    -- whether to set jumps in the jumplist
+                    set_jumps = true,
+                },
+                lsp_interop = {
+                    enable = true,
+                    border = 'none',
+                    peek_definition_code = {
+                        -- similar to hover help so we use similar keymap as hover.
+                        -- Hover currently uses gh for "go hover", similar to gd, gf, etc.
+                        -- gh and gH are used for starting select mode by default which we never use.
+                        ["gH"] = { query = "@function.outer", desc = "Peek function" },
+                        ["g<C-H>"] = { query = "@class.outer", desc = "Peek class" },
+                    }
+                },
+            }
+        end,
+        before = function()
             local suffixes = {
                 ['function'] = 'f',
                 -- Also an option to use comma as in the non-TS version in
@@ -218,18 +211,20 @@ return {
     },
     -- show the "context" at the top line, i.e. function name when in a function
     {
-        "romgrk/nvim-treesitter-context",
+        "nvim-treesitter-context",
         --- @type TSContext.UserConfig
-        opts = {
-            max_lines = 1,
-            min_window_height = 15, -- Hide on small windows.
-            multiwindow = true,     -- Show context in inactive windows.
-            on_attach = function(buf)
-                local ft = vim.bo[buf].filetype
-                return not ft:find("^Agentic")
-            end,
-        },
-        init = function()
+        after = function()
+            require("treesitter-context").setup {
+                max_lines = 1,
+                min_window_height = 15, -- Hide on small windows.
+                multiwindow = true,     -- Show context in inactive windows.
+                on_attach = function(buf)
+                    local ft = vim.bo[buf].filetype
+                    return not ft:find("^Agentic")
+                end,
+            }
+        end,
+        before = function()
             map.n("g<up>", function()
                 require("treesitter-context").go_to_context(vim.v.count1)
             end, "Goto TS context", { silent = true })

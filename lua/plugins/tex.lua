@@ -5,19 +5,18 @@ local g = vim.g
 return {
     -- more aggressive conceal
     {
-        "KeitaNakamura/tex-conceal.vim",
+        "tex-conceal.vim",
         ft = "tex",
-        config = function()
+        after = function()
             -- https://github.com/gillescastel/latex-snippets
             g.tex_conceal = 'abdmg'
         end,
     },
     {
-        "lervag/vimtex",
+        "vimtex",
         -- :checkhealth suggests pstree for inverse search.
         -- 2>/dev/null in case we don't have brew
-        build = "brew install pstree 2> /dev/null",
-        init = function()
+        before = function()
             -- instead of <localleader>l
             -- We want <leader>l for LSP and double leader (i.e. localleader) for filetype specific mappings.
             g.vimtex_mappings_prefix = "<localleader>"

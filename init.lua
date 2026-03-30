@@ -1,27 +1,26 @@
 -- Check for large files before plugins load
 require("largefile").check_argv()
 
--- map leaders has to be set before running lazy
+-- Leaders must be set before plugin loading
 require "options"
 
--- bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.uv.fs_stat(lazypath) then
-    vim.fn.system { "git", "clone", "--filter=blob:none",
-        "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath, }
+-- Dev/local plugins: add to rtp before anything else
+local cfg = vim.fn.stdpath("config")
+for _, mod in ipairs({ "agentic.nvim", "kitty-conf.nvim", "kittyREPL.nvim", "nvim-revJ.lua" }) do
+    vim.opt.runtimepath:append(cfg .. "/modules/" .. mod)
+    local after_dir = cfg .. "/modules/" .. mod .. "/after"
+    if vim.uv.fs_stat(after_dir) then vim.opt.runtimepath:append(after_dir) end
 end
-local rtp = vim.opt.runtimepath:get()[1]
-vim.opt.runtimepath:prepend(lazypath)
-require 'lazy'.setup('plugins', {
-    -- https://github.com/folke/lazy.nvim
-    change_detection = { notify = false, },
-    dev = {
-        -- Directory with local plugin projects.
-        path = rtp,
-        ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
-        patterns = { "degnbol" },
-        fallback = true,                       -- Fallback to git when local plugin doesn't exist
-    },
-    install = { colorscheme = { "terafox" } }, -- Don't switch colorscheme after startup install
+
+-- Build hooks (register BEFORE vim.pack.add so install hooks fire)
+vim.api.nvim_create_autocmd("PackChanged", {
+    callback = function(ev) require("pack_hooks").on_changed(ev) end,
 })
+
+-- Install all remote plugins (opt/ only, nothing loaded yet)
+require("pack_specs")
+
+-- Bootstrap lz.n (installed by vim.pack, packadd makes it requireable)
+vim.cmd.packadd("lz.n")
+require("lz.n").load("plugins")
 

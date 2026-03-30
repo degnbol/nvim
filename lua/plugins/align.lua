@@ -3,8 +3,8 @@
 return {
     -- the only plugin I could get to work with auto aligning tables in latex.
     {
-        "junegunn/vim-easy-align",
-        config = function()
+        "vim-easy-align",
+        after = function()
             -- ga is normally for seeing info about char under cursor, but I rarely use it.
             -- Just use gA for that instead, set in init.lua for tpope/vim-characterize.
             vim.keymap.set({ "n", "x" }, "ga", "<Plug>(EasyAlign)", { desc = "Align" })
@@ -14,9 +14,9 @@ return {
     -- use which is needed to align entire table env in latex.
     -- "godlygeek/tabular",
     {
-        "Vonr/align.nvim",
+        "align.nvim",
         enabled = false,
-        config = function()
+        after = function()
             -- copy of default config
             -- align_to_char(length, reverse, preview, marks)
             -- align_to_string(is_pattern, reverse, preview, marks)

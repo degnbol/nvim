@@ -11,20 +11,16 @@ return {
     -- comments into comment regions, but I think we will never actually want
     -- to do this.
     {
-        "Wansmer/treesj",
+        "treesj",
         cmd = { "TSJToggle", "TSJJoin", "TSJSplit" },
         keys = { "<leader>J", "<leader>j", "<leader>s" },
-        dependencies = {
-            'nvim-treesitter/nvim-treesitter',
-            -- make sure is loaded for the init to work
-            -- 'AckslD/nvim-trevJ.lua',
-            'AndrewRadev/splitjoin.vim',
-        },
-        opts = {
-            use_default_keymaps = false,
-            langs = { lua = { both = { no_format_with = nil } } },
-        },
-        init = function()
+        after = function()
+            require("treesj").setup {
+                use_default_keymaps = false,
+                langs = { lua = { both = { no_format_with = nil } } },
+            }
+        end,
+        before = function()
             -- but always map toggle since the other plugins doesn't implement it
             -- alt use "<Plug>JoinToggle" if you want to make binding somewhere else
             map.n("<leader>J", "<Cmd>TSJToggle<CR>", "Toggle split/join")
@@ -70,10 +66,9 @@ return {
         end
     },
     {
-        "AckslD/nvim-trevJ.lua",
+        "nvim-trevJ.lua",
         enabled = true, -- not working for main branch treesitter
-        lazy = true,
-        config = function()
+        after = function()
             local make_default_opts = function()
                 return {
                     -- was using "," but it gets added to a final comment as well
@@ -105,9 +100,10 @@ return {
         end
     },
     {
-        "AndrewRadev/splitjoin.vim",
+        "splitjoin.vim",
         lazy = true,
-        init = function()
+        cmd = {"SplitjoinSplit", "SplitjoinJoin"},
+        before = function()
             -- remove default mappings
             vim.g.splitjoin_split_mapping = ''
             vim.g.splitjoin_join_mapping = ''
@@ -115,32 +111,32 @@ return {
     },
     -- unmaintained but using it (my fork fixing linewise visual) since it's the only one with visual and motion
     {
-        dir = vim.opt.runtimepath:get()[1] .. "/modules/nvim-revJ.lua",
-        dev = true,
-        dependencies = { 'kana/vim-textobj-user', 'sgur/vim-textobj-parameter' },
-        opts = {
-            brackets = { first = '([{<', last = ')]}>' }, -- brackets to consider surrounding arguments
-            new_line_before_last_bracket = true,          -- add new line between last argument and last bracket (only if no last seperator)
-            add_seperator_for_last_parameter = true,      -- if a seperator should be added if not present after last parameter
-            enable_default_keymaps = false,
-            keymaps = {
-                operator = 'gS',      -- for operator (+motion)
-                line = 'gSS',         -- for formatting current line
-                -- only works for visual char mode not line, fix it in init keymap
-                visual = '<leader>s', -- for formatting visual selection
-            },
-            parameter_mapping = ',',  -- specifies what text object selects an arguments (ie a, and i, by default)
-            -- if you're using `vim-textobj-parameter` you can also set this to `vim.g.vim_textobj_parameter_mapping`
-        },
+        "nvim-revJ.lua",
+        load = function() end,
+        after = function()
+            require("revj").setup {
+                brackets = { first = '([{<', last = ')]}>' }, -- brackets to consider surrounding arguments
+                new_line_before_last_bracket = true,          -- add new line between last argument and last bracket (only if no last seperator)
+                add_seperator_for_last_parameter = true,      -- if a seperator should be added if not present after last parameter
+                enable_default_keymaps = false,
+                keymaps = {
+                    operator = 'gS',      -- for operator (+motion)
+                    line = 'gSS',         -- for formatting current line
+                    -- only works for visual char mode not line, fix it in init keymap
+                    visual = '<leader>s', -- for formatting visual selection
+                },
+                parameter_mapping = ',',  -- specifies what text object selects an arguments (ie a, and i, by default)
+                -- if you're using `vim-textobj-parameter` you can also set this to `vim.g.vim_textobj_parameter_mapping`
+            }
+        end,
     },
     -- delete continuation characters.
     -- Just like formatoptions+=j will remove leading comment chars, conjoin will remove trailing continuation markers.
     {
-        'flwyd/vim-conjoin',
+        'vim-conjoin',
         -- depend on splitjoin so splitjoin is loaded first, which makes conjoin work with it.
         -- https://www.reddit.com/r/vim/comments/g71wyq/delete_continuation_characters_when_joining_lines/
-        dependencies = { "AndrewRadev/splitjoin.vim" },
-        init = function()
+        before = function()
             -- add custom language support
             vim.g.conjoin_filetypes = {
                 asciidoc = { trailing = '+$' },

@@ -38,19 +38,18 @@ end
 
 return {
     {
-        dir = vim.opt.runtimepath:get()[1] .. "/modules/kitty-conf.nvim",
-        dev = true,
+        "kitty-conf.nvim",
+        load = function() end,
         ft = "kitty",
     },
     -- scala (not yet in Mason)
     {
-        "scalameta/nvim-metals",
+        "nvim-metals",
         ft = "scala",
-        dependencies = { "nvim-lua/plenary.nvim" }
     },
     {
-        "neovim/nvim-lspconfig",
-        config = function()
+        "nvim-lspconfig",
+        after = function()
             -- TODO: understand thefoldingRange capabilities. What are they and where should they be added?
             -- Look at https://github.com/kevinhwang91/nvim-ufo and
             -- https://cmp.saghen.dev/installation.html#merging-lsp-capabilities
@@ -121,20 +120,25 @@ return {
     },
     -- add :LspInstall <language> and :Mason for conveniently installing LSP language specific servers
     {
-        "williamboman/mason.nvim",
-        build = ":MasonUpdate",
-        lazy = true, -- load as mason-lspconfig dep
-        config = true,
+        "mason.nvim",
+        lazy = true,
+        cmd = {"Mason", "MasonUpdate", "MasonInstall", "MasonLog", "MasonUninstall", "MasonUninstallAll"},
+        after = function()
+            require("mason").setup()
+        end,
     },
     {
-        "williamboman/mason-lspconfig.nvim",
+        "mason-lspconfig.nvim",
         -- NOTE: can't be lazy for some lsp servers to work, e.g. lua.
         -- cmd = {"Mason", "MasonUpdate", "MasonInstall", "MasonLog", "MasonUninstall", "MasonUninstallAll"},
-        dependencies = { "neovim/nvim-lspconfig", "williamboman/mason.nvim" },
+        before = function()
+            require("lz.n").trigger_load("nvim-lspconfig")
+            require("lz.n").trigger_load("mason.nvim")
+        end,
         -- naming: https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
         -- config help: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
         -- also see lsp.lua
-        config = function()
+        after = function()
             require("mason-lspconfig").setup({
                 ensure_installed = ensure_installed,
             })
@@ -152,14 +156,12 @@ return {
     -- and running flutter run --flavor dev --debug from the terminal, while
     -- android studio has opened an emulator.
     {
-        "akinsho/flutter-tools.nvim",
+        "flutter-tools.nvim",
         ft = "dart",
-        dependencies = {
-            "neovim/nvim-lspconfig",
-            "nvim-lua/plenary.nvim",
-            'stevearc/dressing.nvim', -- optional for vim.ui.select
-        },
-        config = function()
+        before = function()
+            require("lz.n").trigger_load("nvim-lspconfig")
+        end,
+        after = function()
             -- https://github.com/akinsho/flutter-tools.nvim#full-configuration
             -- Build capabilities same as in nvim-lspconfig config
             local capabilities
@@ -181,9 +183,9 @@ return {
     },
 
     {
-        'saecki/crates.nvim',
+        'crates.nvim',
         event = { "BufRead Cargo.toml" },
-        config = function()
+        after = function()
             local crates = require "crates"
             crates.setup {
                 completion = {

@@ -1,104 +1,108 @@
 return {
     -- popular plugin to take advantage of some exposed UI hooks
     {
-        "stevearc/dressing.nvim",
+        "dressing.nvim",
         -- enabled = false, -- was disabled since rename didn't seem to take effect.
-        event = "VeryLazy",
-        opts = {},
+        event = "DeferredUIEnter",
+        after = function()
+            require("dressing").setup {}
+        end,
     },
     -- :Capture hi to call :hi where you can search etc.
-    { "tyru/capture.vim", cmd = "Capture" },
+    { "capture.vim", cmd = "Capture" },
     {
-        dir = vim.opt.runtimepath:get()[1] .. "/modules/kittyREPL.nvim",
-        dev = true,
-        opts = {
-            keymap = {
-                focus = "<C-CR>",
-                setlast = "<leader>rr",
-                new = "<leader>rs",
-                run = "<CR>",
-                paste = "<S-CR>",
-                help = "<leader>K",
-                runLine = "<CR><CR>",
-                runLineFor = "<leader>ro",
-                runLineForI = "<leader>ri",
-                pasteLine = "<S-CR><S-CR>",
-                runVisual = "<CR>",
-                pasteVisual = "<S-CR>",
-                q = "<leader>rq",
-                cr = "<leader>r<S-CR>",
-                ctrld = "<leader>rd",
-                ctrlc = "<leader>rc",
-                interrupt = "<leader>rk",
-                scrollStart = "[r",
-                scrollUp = "[r",
-                scrollDown = "]r",
-                scrollOutputAbove = "[R",
-                scrollOutputBelow = "]R",
-                progress = "<leader>rp",
-                editPaste = "<leader>re",
-            },
-            exclude = { tex = true, tsv = true, markdown = true },
-            progress = true,
-            editpaste = true,
-            closepager = true,
-        },
+        "kittyREPL.nvim",
+        load = function() end,
+        after = function()
+            require("kittyREPL").setup {
+                keymap = {
+                    focus = "<C-CR>",
+                    setlast = "<leader>rr",
+                    new = "<leader>rs",
+                    run = "<CR>",
+                    paste = "<S-CR>",
+                    help = "<leader>K",
+                    runLine = "<CR><CR>",
+                    runLineFor = "<leader>ro",
+                    runLineForI = "<leader>ri",
+                    pasteLine = "<S-CR><S-CR>",
+                    runVisual = "<CR>",
+                    pasteVisual = "<S-CR>",
+                    q = "<leader>rq",
+                    cr = "<leader>r<S-CR>",
+                    ctrld = "<leader>rd",
+                    ctrlc = "<leader>rc",
+                    interrupt = "<leader>rk",
+                    scrollStart = "[r",
+                    scrollUp = "[r",
+                    scrollDown = "]r",
+                    scrollOutputAbove = "[R",
+                    scrollOutputBelow = "]R",
+                    progress = "<leader>rp",
+                    editPaste = "<leader>re",
+                },
+                exclude = { tex = true, tsv = true, markdown = true },
+                progress = true,
+                editpaste = true,
+                closepager = true,
+            }
+        end,
     },
     -- File explorer as a buffer with manipulation abilities.
     -- Differes from mini.files by only having a single view taking up the whole screen and has different default keymaps and preview behaviour.
     {
-        "stevearc/oil.nvim",
-        lazy = true,
-        dependencies = { "nvim-tree/nvim-web-devicons" },
-        init = function()
-            -- use <leader>e for explore followed by E since e is for mini.files
-            -- vim.keymap.set("n", "<leader>eE", function () require"oil".open() end, { desc = "Oil" })
-            -- similar to the go up one level keymap within oil
-            vim.keymap.set("n", "<leader>-", function() require "oil".open() end, { desc = "Oil" })
-        end,
-        opts = {
-            -- no prompt on rename, including folder change.
-            -- The prompt is a nice list of the performed changes.
-            -- skip_confirm_for_simple_edits = true,
-            keymaps = {
-                -- I regularly /-search for filename and don't need to hl that inside the buffer after opening
-                ["<CR>"] = function()
-                    vim.cmd "nohl"
-                    require "oil".select()
-                end
-            }
+        "oil.nvim",
+        keys = {
+            { "<leader>-", function() require("oil").open() end, desc = "Oil" },
         },
+        after = function()
+            require("oil").setup {
+                -- no prompt on rename, including folder change.
+                -- The prompt is a nice list of the performed changes.
+                -- skip_confirm_for_simple_edits = true,
+                keymaps = {
+                    -- I regularly /-search for filename and don't need to hl that inside the buffer after opening
+                    ["<CR>"] = function()
+                        vim.cmd "nohl"
+                        require "oil".select()
+                    end
+                }
+            }
+        end,
     },
     {
-        "A7Lavinraj/fyler.nvim",
+        "fyler.nvim",
 	lazy = true,
 	cmd = "Fyler",
-        dependencies = { "nvim-tree/nvim-web-devicons" },
-        opts = {
-            icon_provider = "nvim-web-devicons",
-        },
+        after = function()
+            require("fyler").setup {
+                icon_provider = "nvim-web-devicons",
+            }
+        end,
     },
     {
-        "jake-stewart/auto-cmdheight.nvim",
+        "auto-cmdheight.nvim",
         lazy = false,
-        opts = {
-            -- max cmdheight before displaying hit enter prompt.
-            max_lines = 5,
+        after = function()
+            require("auto-cmdheight").setup {
+                -- max cmdheight before displaying hit enter prompt.
+                max_lines = 5,
 
-            -- number of seconds until the cmdheight can restore.
-            duration = 2,
+                -- number of seconds until the cmdheight can restore.
+                duration = 2,
 
-            -- whether key press is required to restore cmdheight.
-            remove_on_key = true,
+                -- whether key press is required to restore cmdheight.
+                remove_on_key = true,
 
-            -- always clear the cmdline after duration and key press.
-            -- by default it will only happen when cmdheight changed.
-            clear_always = false,
-        }
+                -- always clear the cmdline after duration and key press.
+                -- by default it will only happen when cmdheight changed.
+                clear_always = false,
+            }
+        end,
     },
     {
-        'b0o/incline.nvim',
-        init = function()
+        'incline.nvim',
+        before = function()
             -- This plugin only makes sense with global statusline,
             -- or no statusline at all.
             -- The latter is possible with a trick.
@@ -118,7 +122,7 @@ return {
                 end
             })
         end,
-        config = function()
+        after = function()
             local helpers = require 'incline.helpers'
             local devicons = require 'nvim-web-devicons'
             local hi = require 'utils/highlights'
@@ -197,6 +201,6 @@ return {
                 end,
             }
         end,
-        event = 'VeryLazy',
+        event = 'DeferredUIEnter',
     },
 }

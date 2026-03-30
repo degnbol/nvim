@@ -4,9 +4,9 @@ local hi = require"utils/highlights"
 return {
     {
         -- :Git and similar commands
-        "tpope/vim-fugitive",
+        "vim-fugitive",
         cmd = { "Git", "G", "Gedit", "Gsplit", "Gread", "Gwrite", "Ggrep", "GMove", "GDelete", "GRemove" },
-        init = function()
+        before = function()
             -- using same naming that I have in the terminal.
             -- abbrev since a cmd will need to start with uppercase and cannot be modified after expansion.
             -- a "c" keymap is also possible but would expand at any mention and make typing anything with g a bit odd.
@@ -21,18 +21,12 @@ return {
         end,
     },
     {
-        "NeogitOrg/neogit",
+        "neogit",
         cmd = "Neogit",
-        dependencies = {
-            "nvim-lua/plenary.nvim",         -- required
-            "nvim-telescope/telescope.nvim", -- optional
-            "sindrets/diffview.nvim",        -- optional
-            "ibhagwan/fzf-lua",              -- optional
-        },
-        init = function()
+        before = function()
             map.n('<leader>gn', "<Cmd>Neogit<CR>", "Neogit")
         end,
-        config = function()
+        after = function()
             -- it seems NeogitDiffAdd and Delete are set to color fg + no bg version of DiffAdd and DiffDelete (DiffAdd by default is the same but DiffDelete has bg and no fg).
             -- So: no need to do anything to coordinate colors.
             require "neogit".setup {
@@ -41,8 +35,8 @@ return {
                 disable_context_highlighting = true,
                 signs = {
                     -- { CLOSED, OPENED }
-                    section = { "", "" },
-                    item = { "", "" },
+                    section = { "", "" },
+                    item = { "", "" },
                     hunk = { "", "" },
                 },
                 integrations = { diffview = true }, -- adds integration with diffview.nvim
@@ -58,16 +52,30 @@ return {
     -- highlight git conflicts, jump with [x and ]x,
     -- resolve by keeping none (cn), theirs (ct), our (co), both (cb), or both reverse (cB)
     {
-        "rhysd/conflict-marker.vim",
-        event = "VeryLazy",
+        "conflict-marker.vim",
+        event = "DeferredUIEnter",
     },
     -- git decoration to the left
     {
-        "lewis6991/gitsigns.nvim",
-        event = "VeryLazy",
-        dependencies = { 'nvim-lua/plenary.nvim' },
-        config = function(_, opts)
-            require("gitsigns").setup(opts)
+        "gitsigns.nvim",
+        event = "DeferredUIEnter",
+        after = function()
+            require("gitsigns").setup {
+                -- by default they are '~' to indicate that try to be compromise between bar and underscore.
+                -- We can show underline instead as a better compromise. See lua/highlights
+                -- We set delete to nothing, istead of default underscore, and use underline there as well for consistency.
+                signs         = {
+                    changedelete = { text = '┃' },
+                    delete       = { text = ' ' },
+                },
+                signs_staged  = {
+                    changedelete = { text = '┃' },
+                    delete       = { text = ' ' },
+                },
+                numhl         = true, -- highlight line number
+                watch_gitdir  = { interval = 100 },
+                sign_priority = 5,
+            }
             local hi = require "utils/highlights"
             hi.onColorScheme(function()
                 local linenr = hi.fg("LineNr")
@@ -88,7 +96,7 @@ return {
                 hi.set("GitSignsStagedDeleteNr", { fg = linenr, underline = true, special = stageddelete })
             end)
         end,
-        init = function()
+        before = function()
             local gs = require "gitsigns"
 
             map.n("<leader>ga", gs.stage_hunk, "Add/stage hunk")
@@ -109,31 +117,14 @@ return {
             -- Text object
             map.ox('ih', ':<C-U>Gitsigns select_hunk<CR>', "Hunk")
         end,
-        opts = {
-            -- by default they are '~' to indicate that try to be compromise between bar and underscore.
-            -- We can show underline instead as a better compromise. See lua/highlights
-            -- We set delete to nothing, istead of default underscore, and use underline there as well for consistency.
-            signs         = {
-                changedelete = { text = '┃' },
-                delete       = { text = ' ' },
-            },
-            signs_staged  = {
-                changedelete = { text = '┃' },
-                delete       = { text = ' ' },
-            },
-            numhl         = true, -- highlight line number
-            watch_gitdir  = { interval = 100 },
-            sign_priority = 5,
-        },
     },
     -- :DiffviewOpen (<leader>gd) and other commands for seeing git diff and git history for files.
     {
-        'sindrets/diffview.nvim',
-        dependencies = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons' },
+        'diffview.nvim',
         -- cmd = {"DiffviewOpen", "DiffviewClose", "DiffviewFileHistory", "DiffviewFocusFiles", "DiffviewToggleFiles", "DiffviewLog", "DiffviewRefresh"},
         -- only some commands are relevant before first use
         cmd = { "DiffviewOpen", "DiffviewFileHistory" },
-        init = function()
+        before = function()
             -- hide untracked files with -uno.
             -- hide gitsigns' file explorer with DiffviewToggleFiles (unhide with <leader>e like NvimTreeToggle)
             -- Open during merge or rebase should show conflicts nicer automatically.
@@ -144,7 +135,7 @@ return {
                 cnoreabbrev gtd DiffviewOpen -uno
             ]]
         end,
-        config = function()
+        after = function()
             local diffview = require "diffview"
             local actions = require "diffview.actions"
 

@@ -4,15 +4,16 @@ local map = require "utils/keymap"
 return {
     -- Still needs some polishing.
     {
-        "dmtrKovalenko/fff.nvim",
+        "fff.nvim",
         enabled = false,
-        build = "cargo build --release",
         -- Config and opts has no effect.
-        opts = {
-            width = 1.0,
-            height = 1.0,
-            prompt = '',
-        },
+        after = function()
+            require("fff").setup {
+                width = 1.0,
+                height = 1.0,
+                prompt = '',
+            }
+        end,
         keys = {
             {
                 "<leader>fF",
@@ -31,15 +32,16 @@ return {
         },
     },
     {
-        "folke/snacks.nvim",
-        dependencies = { "nvim-tree/nvim-web-devicons" },
+        "snacks.nvim",
         -- priority = 1000,
         ---@type snacks.Config
-        opts = {
-            picker = { enabled = true, layout = { fullscreen = true } },
-            explorer = { enabled = true },
-            quickfile = { enabled = false }, -- doesn't seem to make a difference.
-        },
+        after = function()
+            require("snacks").setup {
+                picker = { enabled = true, layout = { fullscreen = true } },
+                explorer = { enabled = true },
+                quickfile = { enabled = false }, -- doesn't seem to make a difference.
+            }
+        end,
         keys = {
             { "<leader>Fs", function() require "snacks".picker() end,                       desc = "Snacks picker" },
             { "<leader>ff", function() require "snacks".picker.smart() end,                 desc = "Smart Find Files" },
@@ -48,7 +50,7 @@ return {
             { "<leader>fs", function() require "snacks".picker.lsp_symbols() end,           desc = "Symbols" },
             { "<leader>fS", function() require "snacks".picker.lsp_workspace_symbols() end, desc = "Workspace symbols" },
         },
-        init = function()
+        before = function()
             -- Instead of default float.
             hi.def("SnacksPicker", "Normal")
             hi.def("SnacksPickerPreview", "Normal")
@@ -69,12 +71,11 @@ return {
     --   and the relevant col is not indicated.
     -- - There is a bit more builtins from fzf lua.
     {
-        "ibhagwan/fzf-lua",
+        "fzf-lua",
         lazy = true,
         cmd = "FzfLua",
         -- optional for icon support
-        dependencies = { "nvim-tree/nvim-web-devicons" },
-        init = function()
+        before = function()
             hi.def("FzfLuaBorder", "FloatBorder")
             hi.def("FzfLuaTitle", "Title")
             -- Simple picker with TAB (by default) for toggling preview, where fzf lua has preview by default.
@@ -192,81 +193,81 @@ return {
             -- profiles
             -- menus
         end,
-        opts = {
-            -- Use FuzzyMatch colour (colour 9) for fzf match highlighting.
-            -- `true` enables auto-generation from highlight groups (reads FzfLuaFzfMatch).
-            -- hl/hl+ override the treesitter default of "-1:reverse".
-            fzf_colors = {
-                true,
-                ["hl"]  = { "fg", "FuzzyMatch" },
-                ["hl+"] = { "fg", "FuzzyMatch" },
-            },
-            winopts = {
-                -- Don't dim other windows.
-                backdrop = 100,
-                -- Fullscreen is actually nice for max focus.
-                fullscreen = true,
-                treesitter = {
-                    -- Override default "-1:reverse" for treesitter pickers.
-                    fzf_colors = {
-                        ["hl"]  = { "fg", "FuzzyMatch" },
-                        ["hl+"] = { "fg", "FuzzyMatch" },
+        after = function()
+            require("fzf-lua").setup {
+                -- Use FuzzyMatch colour (colour 9) for fzf match highlighting.
+                -- `true` enables auto-generation from highlight groups (reads FzfLuaFzfMatch).
+                -- hl/hl+ override the treesitter default of "-1:reverse".
+                fzf_colors = {
+                    true,
+                    ["hl"]  = { "fg", "FuzzyMatch" },
+                    ["hl+"] = { "fg", "FuzzyMatch" },
+                },
+                winopts = {
+                    -- Don't dim other windows.
+                    backdrop = 100,
+                    -- Fullscreen is actually nice for max focus.
+                    fullscreen = true,
+                    treesitter = {
+                        -- Override default "-1:reverse" for treesitter pickers.
+                        fzf_colors = {
+                            ["hl"]  = { "fg", "FuzzyMatch" },
+                            ["hl+"] = { "fg", "FuzzyMatch" },
+                        },
+                    },
+                    preview = {
+                        -- Reduce lag from default 20 ms.
+                        -- It is there for a purpose relating to fast scrolling.
+                        -- https://github.com/ibhagwan/fzf-lua
+                        -- Reducing it gives noticeable improvement in preview update speed.
+                        delay = 10,
+                        -- Doesn't move with the preview anyways.
+                        scrollbar = false,
+                        -- Preview should only be 50%, by default it makes e.g. filepath listing too small.
+                        horizontal = "right:50%",
+                        vertical = "down:50%",
                     },
                 },
-                preview = {
-                    -- Reduce lag from default 20 ms.
-                    -- It is there for a purpose relating to fast scrolling.
-                    -- https://github.com/ibhagwan/fzf-lua
-                    -- Reducing it gives noticeable improvement in preview update speed.
-                    delay = 10,
-                    -- Doesn't move with the preview anyways.
-                    scrollbar = false,
-                    -- Preview should only be 50%, by default it makes e.g. filepath listing too small.
-                    horizontal = "right:50%",
-                    vertical = "down:50%",
+                keymap = {
+                    builtin = {
+                        ["<C-f>"]   = "preview-page-down",
+                        ["<C-b>"]   = "preview-page-up",
+                        -- Single line movement for finer control.
+                        ["<C-S-f>"] = "preview-down",
+                        ["<C-S-b>"] = "preview-up",
+                    }
                 },
-            },
-            keymap = {
-                builtin = {
-                    ["<C-f>"]   = "preview-page-down",
-                    ["<C-b>"]   = "preview-page-up",
-                    -- Single line movement for finer control.
-                    ["<C-S-f>"] = "preview-down",
-                    ["<C-S-b>"] = "preview-up",
-                }
-            },
-            lsp = {
-                -- if there is a single LSP result only, as is common for goto def,
-                -- use it directly.
-                jump1 = true,
-                code_actions = {
-                    async_or_timeout = 5000,
-                    -- Requires git-delta for prettier code action preview
-                    previewer        = "codeaction_native",
+                lsp = {
+                    -- if there is a single LSP result only, as is common for goto def,
+                    -- use it directly.
+                    jump1 = true,
+                    code_actions = {
+                        async_or_timeout = 5000,
+                        -- Requires git-delta for prettier code action preview
+                        previewer        = "codeaction_native",
+                    },
                 },
-            },
-            -- Match ripgrep config (~/.config/ripgrep/config) colours explicitly
-            -- so headless subprocesses don't rely on RIPGREP_CONFIG_PATH.
-            grep = {
-                rg_opts = "--column --line-number --no-heading --color=always --smart-case "
-                    .. "--max-columns=4096 "
-                    .. "--colors=line:fg:3 --colors=column:fg:3 --colors=match:fg:9 --colors=match:style:bold "
-                    .. "--colors=path:none --colors=path:style:underline -e",
-            },
-            files = {
-                -- Same as default but adding build/ for exclusion.
-                find_opts = [[-type f \! -path '*/.git/*' -and \! -path '*/build/*']],
-                rg_opts   = [[--color=never --hidden --files -g '!.git' -g '!build']],
-                fd_opts   = [[--color=never --hidden --type f --type l --exclude .git --exclude build]],
-            },
-        },
+                -- Match ripgrep config (~/.config/ripgrep/config) colours explicitly
+                -- so headless subprocesses don't rely on RIPGREP_CONFIG_PATH.
+                grep = {
+                    rg_opts = "--column --line-number --no-heading --color=always --smart-case "
+                        .. "--max-columns=4096 "
+                        .. "--colors=line:fg:3 --colors=column:fg:3 --colors=match:fg:9 --colors=match:style:bold "
+                        .. "--colors=path:none --colors=path:style:underline -e",
+                },
+                files = {
+                    -- Same as default but adding build/ for exclusion.
+                    find_opts = [[-type f \! -path '*/.git/*' -and \! -path '*/build/*']],
+                    rg_opts   = [[--color=never --hidden --files -g '!.git' -g '!build']],
+                    fd_opts   = [[--color=never --hidden --type f --type l --exclude .git --exclude build]],
+                },
+            }
+        end,
     },
     -- recommended compiled fuzzy finder for telescope. Cannot be opt=true when needed by tzachar/cmp-fuzzy-path
     {
-        "nvim-telescope/telescope-fzf-native.nvim",
-        build = 'make',
-        lazy = true, -- load as (fake) dependency of telescope
-        config = function()
+        "telescope-fzf-native.nvim",
+        after = function()
             -- load the native fzf as recommended
             -- require'telescope'.load_extension('fzf')
             -- pcall is protected call, i.e. doesn't make a big deal out of errors
@@ -275,56 +276,54 @@ return {
         end
     },
     {
-        "nvim-telescope/telescope.nvim",
+        "telescope.nvim",
         cmd = "Telescope",
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "nvim-telescope/telescope-fzf-native.nvim",
-        },
-        opts = {
-            defaults = {
-                layout_strategy = "vertical",
-                prompt_prefix = '',
-                selection_caret = '',
-                entry_prefix = '',
-                multi_icon = '',
-            },
-            pickers = {
-                colorscheme = {
-                    -- window has to be big enough to show the preview window
-                    enable_preview = true,
-                }
-            },
-            extensions = {
-                dash = {
-                    file_type_keywords = {
-                        python = { "python", "numpy", "scipy", "pandas" }
+        before = function()
+            require("lz.n").trigger_load("telescope-fzf-native.nvim")
+        end,
+        after = function()
+            require("telescope").setup {
+                defaults = {
+                    layout_strategy = "vertical",
+                    prompt_prefix = '',
+                    selection_caret = '',
+                    entry_prefix = '',
+                    multi_icon = '',
+                },
+                pickers = {
+                    colorscheme = {
+                        -- window has to be big enough to show the preview window
+                        enable_preview = true,
+                    }
+                },
+                extensions = {
+                    dash = {
+                        file_type_keywords = {
+                            python = { "python", "numpy", "scipy", "pandas" }
+                        }
                     }
                 }
             }
-        }
+        end,
     },
     {
-        'sudormrfbin/cheatsheet.nvim',
-        init = function()
+        'cheatsheet.nvim',
+        before = function()
             map.n("<leader>f?", "<Cmd>Cheatsheet<CR>", "Cheatsheet")
         end,
         cmd = "Cheatsheet",
-        dependencies = { 'nvim-telescope/telescope.nvim' }
     },
     -- TODO we don't actually use this yet
     -- search stackoverflow quicker
     {
-        "lalitmee/browse.nvim",
+        "browse.nvim",
         enabled = false,
-        dependencies = { "nvim-telescope/telescope.nvim" },
     },
     {
-        "nvim-telescope/telescope-bibtex.nvim",
+        "telescope-bibtex.nvim",
         enabled = false, -- trying out snacks alt
-        dependencies = { 'nvim-telescope/telescope.nvim' },
         ft = "tex",
-        config = function()
+        after = function()
             -- https://github.com/nvim-telescope/telescope-bibtex.nvim
             local telescope = require "telescope"
             telescope.load_extension("bibtex")
@@ -334,15 +333,16 @@ return {
         end
     },
     {
-        "krissen/snacks-bibtex.nvim",
-        dependencies = { "folke/snacks.nvim" },
+        "snacks-bibtex.nvim",
         ft = {"tex", "typst"},
-        opts = {
-            -- see https://github.com/krissen/snacks-bibtex.nvim?tab=readme-ov-file#configuration
-            mappings = {
-                ["<C-p>"] = false, -- disable natbib parenthetical cite since <C-p> is naturally "previous".
+        after = function()
+            require("snacks-bibtex").setup {
+                -- see https://github.com/krissen/snacks-bibtex.nvim?tab=readme-ov-file#configuration
+                mappings = {
+                    ["<C-p>"] = false, -- disable natbib parenthetical cite since <C-p> is naturally "previous".
+                }
             }
-        },
+        end,
         keys = {
             {
                 "<leader>fc",

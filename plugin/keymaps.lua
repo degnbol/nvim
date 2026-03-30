@@ -391,7 +391,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 map.n("gx", function()
     -- Go to github for plugins easily.
     if vim.bo.filetype == "lua" then
-        -- First check if we are editing a file read by lazy.nvim
+        -- First check if we are editing a plugin spec file
         local rtp = vim.opt.runtimepath:get()[1]
         local filepath = vim.api.nvim_buf_get_name(0)
         if filepath:match(rtp .. '/lua/plugins/') then

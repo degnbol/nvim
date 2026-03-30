@@ -2,8 +2,8 @@ local map = require "utils/keymap"
 
 return {
     {
-        "mfussenegger/nvim-dap",
-        init = function ()
+        "nvim-dap",
+        before = function ()
             map.n("<leader>Dn", "<Cmd>DapNew<CR>", "New DAP")
             map.n("<leader>Dr", "<Cmd>DapToggleRepl<CR>", "REPL toggle")
             map.n("<leader>Db", "<Cmd>DapToggleBreakpoint<CR>", "Breakpoint toggle")
@@ -13,32 +13,38 @@ return {
         end,
     },
     {
-        "jay-babu/mason-nvim-dap.nvim",
-        opts = {
-            ensure_installed = {
-                "python"
-            },
-            handlers = {
-                python = function(config)
-                    config.configurations[1].cwd = "/Users/cmadsen/Documents/enxyme-flow/src/"
-                    require('mason-nvim-dap').default_setup(config)
-                end,
-            },
-        },
-        dependencies = {
-            "williamboman/mason.nvim",
-            "mfussenegger/nvim-dap",
-        },
+        "mason-nvim-dap.nvim",
+        before = function()
+            require("lz.n").trigger_load("mason.nvim")
+            require("lz.n").trigger_load("nvim-dap")
+        end,
+        after = function()
+            require("mason-nvim-dap").setup {
+                ensure_installed = {
+                    "python"
+                },
+                handlers = {
+                    python = function(config)
+                        config.configurations[1].cwd = "/Users/cmadsen/Documents/enxyme-flow/src/"
+                        require('mason-nvim-dap').default_setup(config)
+                    end,
+                },
+            }
+        end,
     },
     {
-        "theHamsta/nvim-dap-virtual-text",
-        config = true,
-        init = function ()
+        "nvim-dap-virtual-text",
+        after = function()
+            require("nvim-dap-virtual-text").setup()
+        end,
+        before = function ()
             map.n("<leader>Dv", "<Cmd>DapVirtualTextToggle<CR>", "Virtual text toggle")
         end,
     },
     {
-        "rcarriga/nvim-dap-ui",
-        config = true,
+        "nvim-dap-ui",
+        after = function()
+            require("dapui").setup()
+        end,
     }
 }

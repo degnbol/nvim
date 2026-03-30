@@ -1,15 +1,10 @@
 
 return {
     {
-        "Al0den/notion.nvim",
+        "notion.nvim",
         enabled = false,
-        dependencies = {
-            "nvim-telescope/telescope.nvim",
-            "nvim-lua/plenary.nvim",
-        },
-        config = function()
+        after = function()
             require"notion".setup()
         end,
     },
 }
-

@@ -2,68 +2,34 @@
 -- works if blink is removed with lazy clean
 local using_blink, _ = pcall(require, "blink.cmp")
 
-local cmp_deps
-if using_blink then
-    cmp_deps = {
-        'L3MON4D3/LuaSnip',
-        'saadparwaiz1/cmp_luasnip',
-    }
-else
-    cmp_deps = {
-        -- 'hrsh7th/cmp-nvim-lsp',
-        { "iguanacucumber/mag-nvim-lsp", name = "cmp-nvim-lsp", opts = {} },
-        -- 'hrsh7th/cmp-nvim-lua', -- neovim Lua API
-        { "iguanacucumber/mag-nvim-lua", name = "cmp-nvim-lua" },
-        -- 'degnbol/cmp-buffer',
-        { "iguanacucumber/mag-buffer", name = "cmp-buffer" },
-        { "iguanacucumber/mag-cmdline", name = "cmp-cmdline" },
-        'onsails/lspkind.nvim', -- pretty pictograms
-        -- putting completion sources as dependencies so they only load when cmp is loaded.
-        'L3MON4D3/LuaSnip',
-        -- 'hrsh7th/cmp-path',
-        "https://codeberg.org/FelipeLema/cmp-async-path",
-        'hrsh7th/cmp-nvim-lsp-signature-help',
-        'hrsh7th/cmp-omni',
-        -- 'L3MON4D3/cmp-luasnip-choice', -- show choice node choices
-        'tamago324/cmp-zsh',         -- neovim zsh completion
-        'hrsh7th/cmp-calc',          -- quick math in completion
-        'ray-x/cmp-treesitter',      -- treesitter nodes
-        'jmbuhr/otter.nvim',         -- TODO: use this for code injected in markdown
-        'chrisgrieser/cmp-nerdfont', -- :<search string> to get icons
-        'KadoBOT/cmp-plugins',
-        'uga-rosa/cmp-dictionary',
-        'saadparwaiz1/cmp_luasnip',
-        'honza/vim-snippets',
-        'rafamadriz/friendly-snippets',
-    }
-end
-
 return {
     {
         -- hack solution. I want buffer completed words with either capitalization.
         -- It wasn't easy to get cmp to not change capitalization for buffer
         -- completions, so I made this fork of the repo where regular words are
         -- indexed with either capitalization.
-        "degnbol/cmp-buffer",
+        "cmp-buffer",
         lazy = true, -- loaded as dependency
         enabled = false,
         -- enabled = not using_blink,
         -- branch = "patch-1",
     },
     {
-        'KadoBOT/cmp-plugins',
+        "cmp-plugins",
         -- enabled = cmp_enabled, -- use compat layer with blink
         lazy = true, -- loaded as dependency
         ft = 'lua',
-        opts = { files = { "nvim/lua/plugins/" } },
+        after = function()
+            require("cmp-plugins").setup({ files = { "nvim/lua/plugins/" } })
+        end,
     },
     -- custom dicts and spell check that doesn't require spell and spelllang (f3fora/cmp-spell)
     {
-        'uga-rosa/cmp-dictionary',
+        "cmp-dictionary",
         lazy = true, -- loaded as dependency
         enabled = not using_blink,
         -- lazy = true, -- Doesn't work to lazy load.
-        config = function()
+        after = function()
             local cmpd = require "cmp_dictionary"
             local rtp = vim.opt.runtimepath:get()[1]
 
@@ -110,33 +76,24 @@ return {
         end
     },
     {
-        "hrsh7th/nvim-cmp",
+        "nvim-cmp",
         -- "iguanacucumber/magazine.nvim", name = "nvim-cmp", -- Otherwise highlighting gets messed up
         -- don't disable here so can have separate config for blink.lua
         -- enabled = not using_blink,
         -- event = "InsertEnter" NO, doesn't work, e.g. for query loading luasnip
-        dependencies = cmp_deps,
+        event = "DeferredUIEnter",
         -- inspiration from https://vonheikemen.github.io/devlog/tools/setup-nvim-lspconfig-plus-nvim-cmp/
-        config = function()
-            local cmp = require "cmp"
+        after = function()
+            require("lz.n").trigger_load("LuaSnip")
 
-            if using_blink then
-                cmp.setup {
-                    -- will still complete autosnippets
-                    enabled = false,
-                    -- preselect = cmp.PreselectMode.None,
-                    snippet = {
-                        expand = function(args) require 'luasnip'.lsp_expand(args.body) end,
-                    },
-                    mapping = nil,
-                    sources = cmp.config.sources {
-                        { name = 'luasnip', options = { show_autosnippets = true } },
-                    },
-                    formatting = nil,
-                    sorting = nil,
-                }
+            -- When blink.cmp is active, blink.compat impersonates nvim-cmp
+            -- and we can't get the real module. Autosnippets work through
+            -- blink's luasnip integration, so just skip cmp setup.
+            if package.loaded["blink.cmp"] then
                 return
             end
+
+            local cmp = require "cmp"
 
             -- menu=show completion menu. menuone=also when only one option. noselect=don't select automatically.
             vim.opt.completeopt = { "menu", "menuone", "noselect" }
@@ -266,19 +223,19 @@ return {
                         maxwidth = 50,
                         ellipsis_char = '…',
                         menu = {
-                            buffer        = "",
-                            omni          = "", -- most likely set to syntax keyword completion
+                            buffer        = "",
+                            omni          = "", -- most likely set to syntax keyword completion
                             nvim_lsp      = "", -- minimal
-                            luasnip       = "", -- "", -- <> is also shown as the type, so it is redudant.
-                            nvim_lua      = "",
-                            latex_symbols = "",
+                            luasnip       = "", -- "", -- <> is also shown as the type, so it is redudant.
+                            nvim_lua      = "",
+                            latex_symbols = "",
                             nerdfont      = "󰊪",
-                            calc          = "",
+                            calc          = "",
                             path          = "/",
-                            dictionary    = "",
-                            treesitter    = "",
+                            dictionary    = "",
+                            treesitter    = "",
                             zsh           = "󰞷",
-                            plugins       = "",
+                            plugins       = "",
                         }
                     },
                 },
@@ -390,14 +347,9 @@ return {
         end
     },
     {
-        'saadparwaiz1/cmp_luasnip',
+        "cmp_luasnip",
         -- enabled = not using_blink, -- still needed
-        lazy = true,
-        dependencies = {
-            'L3MON4D3/LuaSnip',
-            -- "hrsh7th/nvim-cmp", -- magazine instead
-        },
-        config = function()
+        after = function()
             local luasnip = require "luasnip"
             local cmp = require "cmp"
             -- works better to put it here than directly with luasnip, since we need to

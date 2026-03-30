@@ -3,23 +3,23 @@ local map = require "utils/keymap"
 return {
     -- Let's search result box show number of matches when there's >99 matches.
     {
-        "google/vim-searchindex",
+        "vim-searchindex",
         -- keys = { "/", "g/", "*", "#", "g*", "g#" }
     },
     -- Show a scrollbar, mostly in order to show search results far away in file.
     -- Requires hlslens to show search results in scrollbar.
     {
-        "petertriho/nvim-scrollbar",
+        "nvim-scrollbar",
         cmd = { "ScrollbarToggle", "ScrollbarShow" },
-        dependencies = { "kevinhwang91/nvim-hlslens" },
-        init = function()
+        before = function()
+            require("lz.n").trigger_load("nvim-hlslens")
             map.n("yoS", function()
                 require "scrollbar.utils".toggle()
                 -- The solution from scrollbar to not auto start hlslens virtual texts doesn't seem to work.
                 require "hlslens".disable()
             end, "Scrollbar")
         end,
-        config = function()
+        after = function()
             require("scrollbar").setup {
                 show = false, -- enable with :ScrollbarToggle etc.
                 handlers = {
@@ -31,8 +31,8 @@ return {
     },
     -- Improvements to nmap *, etc.
     {
-        "haya14busa/vim-asterisk",
-        init = function()
+        "vim-asterisk",
+        before = function()
             -- Option to keep cursor at the same location within searched cword.
             -- Useful for refactoring, e.g. FOO_|BAR.
             vim.g["asterisk#keeppos"] = 1
@@ -76,18 +76,20 @@ return {
     },
     -- Show counter for how many n or N's a search result is away from cursor.
     {
-        "kevinhwang91/nvim-hlslens",
+        "nvim-hlslens",
         lazy = true,
         cmd = { "HlSearchLensEnable", "HlSearchLensToggle" },
-        init = function()
+        before = function()
             map.n("yoH", function() require 'hlslens'.toggle() end, "HlSearchLens", { silent = true })
         end,
-        opts = {
-            auto_enable = false,
-            -- :nohlsearch when moving out of search term.
-            -- cons: disables when scrolling far since cursor moves. Doesn't disable right away on insert, only after a change.
-            -- better solution made manually in ModeChanged and specific keypresses, such as Esc.
-            -- calm_down = true,
-        },
+        after = function()
+            require("hlslens").setup({
+                auto_enable = false,
+                -- :nohlsearch when moving out of search term.
+                -- cons: disables when scrolling far since cursor moves. Doesn't disable right away on insert, only after a change.
+                -- better solution made manually in ModeChanged and specific keypresses, such as Esc.
+                -- calm_down = true,
+            })
+        end,
     },
 }

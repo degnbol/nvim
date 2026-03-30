@@ -4,14 +4,14 @@ local map = require "utils/keymap"
 
 return {
     {
-        "mg979/vim-visual-multi",
+        "vim-visual-multi",
         enabled = false, -- maps C-click which is currently used as cmd-click for URLs
-        init = function()
+        before = function()
             vim.g.VM_mouse_mappings = true
             vim.g.VM_leader = "<leader>m"
             vim.g.VM_theme = "neon"
         end,
-        config = function()
+        after = function()
             -- use alt instead of ctrl since ctrl arrows moves mac os windows.
             -- Other keybindings (e.g. [] and y) cannot be set by multicursor since they are set elsewhere, hence startup warnings.
             -- Ignore for now since we can live without them.
@@ -20,20 +20,18 @@ return {
         end,
     },
     {
-        "smoka7/multicursors.nvim",
+        "multicursors.nvim",
         enabled = false, -- doesn't insert text correctly, e.g. try ""<S-space>hello
-        event = "VeryLazy",
-        dependencies = {
-            'nvim-treesitter/nvim-treesitter',
-            'smoka7/hydra.nvim',
-        },
-        opts = {
-            generate_hints = {
-                normal = true,
-                insert = true,
-                extend = true,
-            },
-        },
+        event = "DeferredUIEnter",
+        after = function()
+            require("multicursors").setup({
+                generate_hints = {
+                    normal = true,
+                    insert = true,
+                    extend = true,
+                },
+            })
+        end,
         cmd = { 'MCstart', 'MCvisual', 'MCclear', 'MCpattern', 'MCvisualPattern', 'MCunderCursor' },
         keys = {
             {
@@ -51,10 +49,10 @@ return {
         },
     },
     {
-        "jake-stewart/multicursor.nvim",
+        "multicursor.nvim",
         enabled = false, -- not copying well enough what is inserted at main cursor
         -- copied default config, then modified
-        config = function()
+        after = function()
             local mc = require("multicursor-nvim")
 
             mc.setup()

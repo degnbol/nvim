@@ -6,8 +6,8 @@ local map = require "utils/keymap"
 return {
     -- add substitution functions to e.g. replace a word with clipboard content by writing siw
     {
-        "svermeulen/vim-subversive",
-        init = function()
+        "vim-subversive",
+        before = function()
             map({ "n", "x" }, "s", "<Plug>(SubversiveSubstitute)", { desc = "Substitute" })
             map("n", "ss", "<Plug>(SubversiveSubstituteLine)", { desc = "Substitute line" })
             map("n", "S", "<Plug>(SubversiveSubstituteToEndOfLine)", { desc = "Substitute to EOL" })
@@ -27,8 +27,8 @@ return {
     },
     -- yank history that you can cycle. I chose non-default [p (and ]p)
     {
-        "svermeulen/vim-yoink",
-        config = function()
+        "vim-yoink",
+        after = function()
             -- yoink integration with cutlass
             vim.g.yoinkIncludeDeleteOperations = 1
             -- add yanks to numbered register
@@ -60,53 +60,57 @@ return {
     -- c(hange), d(elete) no longer copies, remapped in keymapping file so x will cut.
     -- Since we have added backspace and delete button support in normal mode there is no need for default x behavior
     {
-        "gbprod/cutlass.nvim",
-        opts = {
-            cut_key = 'x',
-            override_del = true, -- true -> del key will put in blackhole register}
-            -- Instead of blackhole register "_ ,
-            -- select, delete and change will use named registers:
-            registers = {
-                select = "s",
-                delete = "d",
-                change = "c",
-            },
-        }
+        "cutlass.nvim",
+        after = function()
+            require("cutlass").setup({
+                cut_key = 'x',
+                override_del = true, -- true -> del key will put in blackhole register}
+                -- Instead of blackhole register "_ ,
+                -- select, delete and change will use named registers:
+                registers = {
+                    select = "s",
+                    delete = "d",
+                    change = "c",
+                },
+            })
+        end
     },
     -- yank in tmux and over ssh
     {
-        'ibhagwan/smartyank.nvim',
+        'smartyank.nvim',
         enabled = false, -- breaks blockwise paste
-        opts = {
-            -- same as
-            -- api.nvim_create_autocmd({"TextYankPost"}, { callback=function() vim.highlight.on_yank{on_visual=false} end })
-            highlight = {
-                -- enabled = true,         -- highlight yanked text
-                -- higroup = "IncSearch",  -- highlight group of yanked text
-                timeout = 100, -- timeout for clearing the highlight
-            },
-            -- clipboard = {
-            --   enabled = true
-            -- },
-            -- tmux = {
-            --   enabled = true,
-            --   -- remove `-w` to disable copy to host client's clipboard
-            --   cmd = { 'tmux', 'set-buffer', '-w' }
-            -- },
-            -- osc52 = {
-            --   enabled = true,
-            --   ssh_only = true,        -- false to OSC52 yank also in local sessions
-            --   silent = false,         -- true to disable the "n chars copied" echo
-            --   echo_hl = "Directory",  -- highlight group of the OSC52 echo message
-            -- }
-        }
+        after = function()
+            require("smartyank").setup({
+                -- same as
+                -- api.nvim_create_autocmd({"TextYankPost"}, { callback=function() vim.highlight.on_yank{on_visual=false} end })
+                highlight = {
+                    -- enabled = true,         -- highlight yanked text
+                    -- higroup = "IncSearch",  -- highlight group of yanked text
+                    timeout = 100, -- timeout for clearing the highlight
+                },
+                -- clipboard = {
+                --   enabled = true
+                -- },
+                -- tmux = {
+                --   enabled = true,
+                --   -- remove `-w` to disable copy to host client's clipboard
+                --   cmd = { 'tmux', 'set-buffer', '-w' }
+                -- },
+                -- osc52 = {
+                --   enabled = true,
+                --   ssh_only = true,        -- false to OSC52 yank also in local sessions
+                --   silent = false,         -- true to disable the "n chars copied" echo
+                --   echo_hl = "Directory",  -- highlight group of the OSC52 echo message
+                -- }
+            })
+        end
     },
     -- lots of ways to paste
     {
-        "inkarkat/vim-UnconditionalPaste",
-        event = "VeryLazy",
-        dependencies = { 'inkarkat/vim-ingo-library' },
-        init = function()
+        "vim-UnconditionalPaste",
+        event = "DeferredUIEnter",
+        before = function()
+            require("lz.n").trigger_load("vim-ingo-library")
             -- use <leader>p ... and <leader>P ... instead of the harder to remember gbp etc.
             vim.g.UnconditionalPaste_no_mappings = true
             function mapp(char, desc)
@@ -146,8 +150,8 @@ return {
     },
     -- paste with multiple empty lines around contents reduced to single empty lines.
     {
-        "AndrewRadev/whitespaste.vim",
-        init = function()
+        "whitespaste.vim",
+        before = function()
             -- normally gp is p where cursor is moved at end. Since we do that by default, we can use it for whitepaste.
             -- the plugin uses ,p and ,P by default but that slows down using , for ,; moving between f/t searching.
             vim.g.whitespaste_before_mapping = 'gP'
