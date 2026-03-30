@@ -139,6 +139,9 @@ return {
                 headers = {
                     chat = { title = "Claude" },
                 },
+                notifications = {
+                    bell = true,
+                },
             }
         end,
         before = function()
