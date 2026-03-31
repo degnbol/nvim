@@ -145,6 +145,20 @@ vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,t:ver25-TermCurso
 -- only show error for virtual_text since it is often incorrect and is distracting.
 vim.diagnostic.config {
     -- virtual_text = {severity = vim.diagnostic.severity.ERROR}
+    signs = {
+        text = {
+            [vim.diagnostic.severity.ERROR] = "",
+            [vim.diagnostic.severity.WARN]  = "",
+            [vim.diagnostic.severity.INFO]  = "",
+            [vim.diagnostic.severity.HINT]  = "",
+        },
+        numhl = {
+            [vim.diagnostic.severity.ERROR] = "DiagnosticError",
+            [vim.diagnostic.severity.WARN]  = "DiagnosticWarn",
+            [vim.diagnostic.severity.INFO]  = "DiagnosticInfo",
+            [vim.diagnostic.severity.HINT]  = "DiagnosticHint",
+        },
+    },
 }
 
 -- custom foldtext function that shows <first line> … <lines hidden> … <last line>
@@ -166,12 +180,6 @@ vim.opt.diffopt:append("linematch:60")
 -- disable coding ligatures for some filetypes that aren't code, e.g. we don't want == ligature when it is used for heading levels.
 local kitty = require "utils/kitty"
 kitty.ligatures_pattern(false, { "*.typ", "*.adoc" })
-
--- replace the default lsp diagnostic letters with prettier symbols
-vim.fn.sign_define("DiagnosticSignError", { text = "", numhl = "DiagnosticError" })
-vim.fn.sign_define("DiagnosticSignWarn", { text = "", numhl = "DiagnosticWarn" })
-vim.fn.sign_define("DiagnosticSignInfo", { text = "", numhl = "DiagnosticInfo" })
-vim.fn.sign_define("DiagnosticSignHint", { text = "", numhl = "DiagnosticHint" })
 
 -- Enable experimental cmdline with syntax hl.
 -- Disabled: treesitter query error with "tab" node after nvim update

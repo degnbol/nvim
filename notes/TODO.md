@@ -280,3 +280,8 @@ https://github.com/afonsofrancof/OSC11.nvim/
 Decrease the intensity of hl-cursorline and thus the linked quickfix line hl group.
 Do this after making a more dynamic setter of hl groups with color mixing, intensity setting etc.
 
+After migrating from Lazy the following are no longer lazy-loaded:
+LuaSnip, telescope-fzf-native, nvim-trev J, `cmp_luasnip`
+We should do profiling on these to see what can be improved for startup time.
+LuaSnip could e.g. be loaded on first switch to insert mode.
+

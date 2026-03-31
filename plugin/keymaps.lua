@@ -443,3 +443,7 @@ end, "Smart URL opener")
 -- We always just use C-] for explicit tag lookup and C-leftmouse is mapped from Cmd-leftmouse in arch.
 map.n("<C-leftmouse>", "")
 
+
+vim.api.nvim_create_user_command('MessagesCopy', function()
+    vim.fn.setreg('+', vim.fn.execute('messages'))
+end, {})
