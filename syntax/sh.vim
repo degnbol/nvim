@@ -12,7 +12,12 @@ syn match Comment /\\$/ containedin=shCommandSub,shFunctionTwo
 syn match Wildcard /*/
 
 " paths.
-syn match @string.special.path '\~\?[A-Za-z0-9.*_-]*[/.][/A-Za-z0-9.*_-]*' contains=FunctionPath,Wildcard containedin=shIf,shCommandSub
+" Paths: must contain / (avoids matching bare decimals like 0.5).
+syn match @string.special.path '\~\?[A-Za-z0-9.*_$-]*/[/A-Za-z0-9.*_-]*' contains=FunctionPath,Wildcard containedin=shIf,shCommandSub
+" Filenames with extensions: word.ext (letter before dot, letter after).
+syn match @string.special.path '[A-Za-z0-9_*-]\+\.[A-Za-z][A-Za-z0-9._-]*' contains=Wildcard containedin=shIf,shCommandSub
+" Dotfiles: .gitignore, .bashrc, etc.
+syn match @string.special.path '\.[A-Za-z_][A-Za-z0-9._-]*' contains=Wildcard containedin=shIf,shCommandSub
 
 " First word on a line or only preceded by an env var assignment (e.g. `LC_ALL=C tr ...`)
 " '+' appears in e.g. `g++`
