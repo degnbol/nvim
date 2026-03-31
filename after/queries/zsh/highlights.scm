@@ -1,5 +1,11 @@
 ;extends
 
+; --- numbers ---
+
+; The base query only matches integers. Capture decimals like 0.5, 3.14, .5
+((word) @number
+  (#lua-match? @number "^[0-9]*%.[0-9]+$"))
+
 ; --- paths ---
 
 ; Command names that are paths: $ROOT/src/script.py, ./run.sh
@@ -44,6 +50,16 @@
 (command
   argument: (word) @string.special.path
   (#lua-match? @string.special.path "^%.[a-zA-Z_]"))
+
+; Override base (concatenation (word) @string) when the word has a file extension
+; or starts with / (path component). Covers ${fname:r}_pocket.tsv, $ROOT/src/...
+(concatenation
+  (word) @string.special.path
+  (#lua-match? @string.special.path "%.[a-zA-Z][a-zA-Z0-9._-]*$"))
+
+(concatenation
+  (word) @string.special.path
+  (#lua-match? @string.special.path "/"))
 
 ; Paths in variable assignments: ROOT=./path or VAR=/some/path
 (variable_assignment
