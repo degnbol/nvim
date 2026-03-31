@@ -21,10 +21,18 @@ local hooks = {
         vim.fn["mkdp#util#install"]()
     end,
     ["blink-cmp-dictionary"] = function()
-        vim.system({ "brew", "install", "wordnet" }):wait()
+        if vim.fn.executable("brew") == 1 then
+            vim.system({ "brew", "install", "wordnet" }):wait()
+        else
+            vim.notify("brew not found, skipping wordnet install for blink-cmp-dictionary", vim.log.levels.WARN)
+        end
     end,
     ["vimtex"] = function()
-        vim.system({ "brew", "install", "pstree" })
+        if vim.fn.executable("brew") == 1 then
+            vim.system({ "brew", "install", "pstree" })
+        else
+            vim.notify("brew not found, skipping pstree install for vimtex", vim.log.levels.WARN)
+        end
     end,
     ["math-conceal.nvim"] = function(ev)
         vim.system({ "make", "lua51" }, { cwd = ev.data.path }):wait()
