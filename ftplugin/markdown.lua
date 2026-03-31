@@ -23,3 +23,8 @@ opt.sidescrolloff = 0
 opt.conceallevel = 1
 
 opt.list = false
+
+-- Disable strikethrough highlight — upstream parser bug pairs unrelated
+-- single tildes (e.g. ~14 vs ~7 vs ~55) as strikethrough delimiters.
+-- https://github.com/tree-sitter-grammars/tree-sitter-markdown/issues/236
+vim.api.nvim_set_hl(0, "@markup.strikethrough.markdown_inline", {})
