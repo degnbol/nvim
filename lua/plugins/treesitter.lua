@@ -116,6 +116,17 @@ return {
                     }
                 },
             }
+
+            -- Repeat movement with ; and ,
+            local ts_repeat_move = require "nvim-treesitter-textobjects.repeatable_move"
+            -- vim way: ; goes to the direction you were moving.
+            map.nox(";", ts_repeat_move.repeat_last_move)
+            map.nox(",", ts_repeat_move.repeat_last_move_opposite)
+            -- Also, make builtin f, F, t, T also repeatable with ; and ,
+            map.nox("f", ts_repeat_move.builtin_f_expr, nil, { expr = true })
+            map.nox("F", ts_repeat_move.builtin_F_expr, nil, { expr = true })
+            map.nox("t", ts_repeat_move.builtin_t_expr, nil, { expr = true })
+            map.nox("T", ts_repeat_move.builtin_T_expr, nil, { expr = true })
         end,
         before = function()
             local suffixes = {
@@ -196,18 +207,7 @@ return {
             map_move("parameter", "inner")
             map_move("function", "outer")
             map_move("loop", "outer")
-
-            -- Repeat movement with ; and ,
-            local ts_repeat_move = require "nvim-treesitter-textobjects.repeatable_move"
-            -- vim way: ; goes to the direction you were moving.
-            map.nox(";", ts_repeat_move.repeat_last_move)
-            map.nox(",", ts_repeat_move.repeat_last_move_opposite)
-            -- Also, make builtin f, F, t, T also repeatable with ; and ,
-            map.nox("f", ts_repeat_move.builtin_f_expr, nil, { expr = true })
-            map.nox("F", ts_repeat_move.builtin_F_expr, nil, { expr = true })
-            map.nox("t", ts_repeat_move.builtin_t_expr, nil, { expr = true })
-            map.nox("T", ts_repeat_move.builtin_T_expr, nil, { expr = true })
-        end
+        end,
     },
     -- show the "context" at the top line, i.e. function name when in a function
     {

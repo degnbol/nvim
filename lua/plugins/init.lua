@@ -136,7 +136,7 @@ return {
     -- { "monkoose/matchparen.nvim", config = true, },
     -- We use the popular vim-matchup, even though the author monkoose once said it is really slow.
     -- I'm not seeing the slowness, and it has matching for quotation marks around strings.
-    { "vim-matchup" },
+    { "vim-matchup", event = "DeferredUIEnter" },
     {
         "vim-unimpaired",
         after = function()
@@ -193,7 +193,7 @@ return {
     {
         "vim-textobj-comment",
         before = function()
-            require("lz.n").trigger_load("vim-textobj-user")
+            vim.cmd.packadd("vim-textobj-user")
         end,
     },
     -- nvim version of the kana plugin
@@ -211,8 +211,7 @@ return {
     -- increment and decrement numbers, dates, color hex, even bool
     {
         "dial.nvim",
-        -- Lazy-loading seems to work immediately but stops working after something else loads.
-        -- keys = { "<C-a>", "<C-x>", "g<C-a>", "g<C-x>" },
+        keys = { "<C-a>", "<C-x>", "g<C-a>", "g<C-x>" },
         after = function()
             local augend = require("dial.augend")
             require("dial.config").augends:register_group {

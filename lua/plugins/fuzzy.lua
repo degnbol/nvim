@@ -272,7 +272,8 @@ return {
             -- require'telescope'.load_extension('fzf')
             -- pcall is protected call, i.e. doesn't make a big deal out of errors
             -- taken from https://github.com/nvim-lua/kickstart.nvim/blob/master/init.lua
-            pcall(require('telescope').load_extension, 'fzf')
+            local ok, telescope = pcall(require, 'telescope')
+            if ok then telescope.load_extension('fzf') end
         end
     },
     {
