@@ -158,35 +158,16 @@ vim.pack.add({
     gh("jake-stewart/auto-cmdheight.nvim"),
     gh("b0o/incline.nvim"),
 
-    -- Completion (nvim-cmp ecosystem)
-    gh("hrsh7th/nvim-cmp"),
+    -- Completion (blink.cmp + compat sources)
+    { src = gh("saghen/blink.cmp"), version = vim.version.range("1") },
     gh("saghen/blink.compat"),
     gh("folke/lazydev.nvim"),
     gh("Kaiser-Yang/blink-cmp-dictionary"),
-    { src = gh("saghen/blink.cmp"), version = vim.version.range("1") },
-    gh("saadparwaiz1/cmp_luasnip"),
-    gh("iguanacucumber/mag-nvim-lsp"),
-    gh("iguanacucumber/mag-nvim-lua"),
-    gh("iguanacucumber/mag-buffer"),
-    gh("iguanacucumber/mag-cmdline"),
-    gh("onsails/lspkind.nvim"),
-    "https://codeberg.org/FelipeLema/cmp-async-path",
-    gh("hrsh7th/cmp-nvim-lsp-signature-help"),
-    gh("hrsh7th/cmp-omni"),
-    gh("tamago324/cmp-zsh"),
-    gh("hrsh7th/cmp-calc"),
-    gh("ray-x/cmp-treesitter"),
-    gh("chrisgrieser/cmp-nerdfont"),
-    gh("KadoBOT/cmp-plugins"),
-    gh("uga-rosa/cmp-dictionary"),
+    gh("hrsh7th/cmp-nvim-lua"),       -- blink.compat source
+    gh("tamago324/cmp-zsh"),           -- blink.compat source
+    gh("davidmh/cmp-nerdfonts"),       -- blink.compat source
     gh("honza/vim-snippets"),
     gh("rafamadriz/friendly-snippets"),
-    gh("degnbol/cmp-buffer"),
-    gh("hrsh7th/cmp-nvim-lua"),
-    gh("davidmh/cmp-nerdfonts"),
-
-    -- Agents
-    gh("coder/claudecode.nvim"),
 
     -- Shared dependencies
     gh("nvim-lua/plenary.nvim"),

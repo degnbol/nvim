@@ -6,6 +6,8 @@
 
 Plugins are managed by nvim 0.12's built-in `vim.pack` (install/update/lockfile) and
 `lz.n` (lazy-loading). Replaces lazy.nvim (maintenance mode since Dec 2025).
+For the vim.pack/lz.n interaction model and startup overhead implications, see
+`~/.claude/skills/neovim/references/package-management.md`.
 
 - **`lua/pack_specs.lua`** — `vim.pack.add()` registry, all remote plugins
 - **`lua/pack_hooks.lua`** — `PackChanged` build hooks (mason, treesitter, telescope-fzf-native, etc.)
@@ -37,8 +39,6 @@ Neovim can read the cmd key directly via `<D-...>` notation (e.g., `<D-v>`, `<D-
 - `<D-\>` — Toggle agent window
 
 ### AI/Agent keymaps (`<leader>i` = intelligence)
-Shared keymaps work with whichever plugin is enabled (claudecode.nvim or agentic.nvim).
-Toggle `enabled` in `lua/plugins/agents.lua` to switch.
 
 | Key | Action |
 |-----|--------|
@@ -49,13 +49,6 @@ Toggle `enabled` in `lua/plugins/agents.lua` to switch.
 | `<leader>ix` | Stop generation |
 | `<leader>ib` | Add current buffer |
 | `<leader>is` | Send selection (visual) |
-
-**claudecode.nvim only:**
-| `<leader>ir` | Resume session |
-| `<leader>ic` | Continue session |
-| `<leader>im` | Select model |
-| `<leader>ia` | Accept diff |
-| `<leader>id` | Deny diff |
 
 ## Treesitter Commands
 

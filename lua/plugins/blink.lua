@@ -94,6 +94,7 @@ return {
     {
         'blink.cmp',
         enabled = true,
+        event = "DeferredUIEnter",
         before = function()
             -- Also jump between snippets with same mappings in normal mode.
             map.n('<C-,>', function() require "blink.cmp".snippet_backward() end, "snippet_backward")
