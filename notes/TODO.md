@@ -37,13 +37,13 @@ Simplify config.
 Ideas:
 - we currently have mini.files, nvim-tree (or nvim-neo-tree?), and now fyler getting set up. We should probably aim to only use tree explorer.
   - There's also oil.nvim with a similar role.
-- fzf-lua, telescope are both installed. See if we can use only fzf-lua, or mini.pick or snacks.picker.
+- Telescope removed. fzf-lua and snacks.picker toggled via `picker` flag in fuzzy.lua. mini.pick kept for path explorer only.
 - colorscheme stuff is complex and messy. Lots is loaded globally that's only relevant to some filetypes. Also, I think nvim loads twice because of some colorscheme config. That's not ideal. There's some plugins that may be of use, if we don't mind adding another plugin.
 - There is git diffing with Gitsigns diffthis and Diffview. We use Gitsigns for hunk navigation and previews I think, which is useful. Can we get rid of diffview, and just have one diffing tool?
 
-Try out snacks.picker in place of fzf-lua.
-Why? fzf lua was supposed to be fast but doesn't always seem that fast, plus things like oldfiles/recent doesn't give me the buffer I literally just closed, then what is the point.
-https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
+Evaluate snacks.picker vs fzf-lua. Toggle via `picker` flag in fuzzy.lua.
+fzf-lua oldfiles fixed with `include_current_session = true`.
+snacks.picker keymaps now mirror fzf-lua where equivalents exist.
 
 Highlight final \ in python at EOL
 
@@ -80,8 +80,7 @@ are getting applied, things in after/syntax are not. We don't want options to
 be ignored, maybe by the double setting of the colorscheme.
 NOTE: it sometimes helps to use `hi! default` instead of `hi`
 
-Could browse files with
-https://github.com/nvim-telescope/telescope-file-browser.nvim
+Could browse files with snacks.picker.explorer or mini.pick path explorer (already configured).
 
 splitjoin shouldn't have issue splitting when there is a comment in a lua block for instance.
 
@@ -280,8 +279,7 @@ https://github.com/afonsofrancof/OSC11.nvim/
 Decrease the intensity of hl-cursorline and thus the linked quickfix line hl group.
 Do this after making a more dynamic setter of hl groups with color mixing, intensity setting etc.
 
-After migrating from Lazy the following are no longer lazy-loaded:
-LuaSnip, telescope-fzf-native, nvim-trev J, `cmp_luasnip`
-We should do profiling on these to see what can be improved for startup time.
-LuaSnip could e.g. be loaded on first switch to insert mode.
+Shouldn't `:e <TAB>` use ctrl+n and ctrl+p and ctrl+space like blink configured completion instead of tab or instead of only tab?
+
+
 

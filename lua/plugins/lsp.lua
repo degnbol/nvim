@@ -60,7 +60,7 @@ return {
                     textDocument = { completion = { completionItem = { snippetSupport = true } } },
                 })
             else
-                capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+                capabilities = vim.lsp.protocol.make_client_capabilities()
             end
 
             -- added for https://github.com/kevinhwang91/nvim-ufo see ufo-conf etc
@@ -90,15 +90,17 @@ return {
 
             -- scala. Linked as minimal setup from on nvim-metals git:
             -- https://github.com/scalameta/nvim-metals/discussions/39
-            local metals_config = require "metals".bare_config()
-            metals_config.capabilities = capabilities
-            -- Autocmd that will actually be in charging of starting the whole thing.
-            -- Create a .sc file, then reopen it. There should be a MetalsInstall warning.
-            -- Run MetalsInstall, wait patiently until it gives a new message and restart.
+            -- Deferred into the autocmd — nvim-metals is lazy-loaded on ft=scala.
+            local metals_config
             local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
             vim.api.nvim_create_autocmd("FileType", {
                 pattern = { "scala", "sbt" },
                 callback = function()
+                    if not metals_config then
+                        vim.cmd.packadd("nvim-metals")
+                        metals_config = require("metals").bare_config()
+                        metals_config.capabilities = capabilities
+                    end
                     require("metals").initialize_or_attach(metals_config)
                 end,
                 group = nvim_metals_group,
@@ -171,7 +173,7 @@ return {
                     textDocument = { completion = { completionItem = { snippetSupport = true } } },
                 })
             else
-                capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+                capabilities = vim.lsp.protocol.make_client_capabilities()
             end
             require "flutter-tools".setup {
                 -- there are other fields under lsp than capabilities and

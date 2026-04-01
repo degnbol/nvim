@@ -2,9 +2,13 @@
 -- Dev plugins (modules/) are on rtp manually, not managed here.
 local gh = function(x) return "https://github.com/" .. x end
 
+-- lz.n is bootstrapped via packadd in init.lua, so let vim.pack load it normally.
+vim.pack.add({ gh("BirdeeHub/lz.n") })
+
+-- All other plugins: prevent vim.pack from calling :packadd! — otherwise all
+-- opt/ plugins end up on rtp and their plugin/ files get sourced during startup,
+-- defeating lz.n lazy loading. lz.n calls packadd itself when triggers fire.
 vim.pack.add({
-    -- lz.n (lazy-loader, bootstrapped via packadd before lz.n.load)
-    gh("BirdeeHub/lz.n"),
 
     -- Core behaviour (init.lua)
     gh("tpope/vim-repeat"),
@@ -82,11 +86,8 @@ vim.pack.add({
     -- Fuzzy finders
     gh("folke/snacks.nvim"),
     gh("ibhagwan/fzf-lua"),
-    gh("nvim-telescope/telescope-fzf-native.nvim"),
-    gh("nvim-telescope/telescope.nvim"),
     gh("sudormrfbin/cheatsheet.nvim"),
     gh("lalitmee/browse.nvim"),
-    gh("nvim-telescope/telescope-bibtex.nvim"),
     gh("krissen/snacks-bibtex.nvim"),
 
     -- Git
@@ -157,36 +158,19 @@ vim.pack.add({
     gh("jake-stewart/auto-cmdheight.nvim"),
     gh("b0o/incline.nvim"),
 
-    -- Completion (nvim-cmp ecosystem)
-    gh("hrsh7th/nvim-cmp"),
+    -- Completion (blink.cmp + compat sources)
+    { src = gh("saghen/blink.cmp"), version = vim.version.range("1") },
     gh("saghen/blink.compat"),
     gh("folke/lazydev.nvim"),
     gh("Kaiser-Yang/blink-cmp-dictionary"),
-    { src = gh("saghen/blink.cmp"), version = vim.version.range("1") },
-    gh("saadparwaiz1/cmp_luasnip"),
-    gh("iguanacucumber/mag-nvim-lsp"),
-    gh("iguanacucumber/mag-nvim-lua"),
-    gh("iguanacucumber/mag-buffer"),
-    gh("iguanacucumber/mag-cmdline"),
-    gh("onsails/lspkind.nvim"),
-    "https://codeberg.org/FelipeLema/cmp-async-path",
-    gh("hrsh7th/cmp-nvim-lsp-signature-help"),
-    gh("hrsh7th/cmp-omni"),
-    gh("tamago324/cmp-zsh"),
-    gh("hrsh7th/cmp-calc"),
-    gh("ray-x/cmp-treesitter"),
-    gh("chrisgrieser/cmp-nerdfont"),
-    gh("KadoBOT/cmp-plugins"),
-    gh("uga-rosa/cmp-dictionary"),
+    gh("hrsh7th/cmp-nvim-lua"),       -- blink.compat source
+    gh("tamago324/cmp-zsh"),           -- blink.compat source
+    gh("davidmh/cmp-nerdfonts"),       -- blink.compat source
     gh("honza/vim-snippets"),
     gh("rafamadriz/friendly-snippets"),
-    gh("degnbol/cmp-buffer"),
-    gh("hrsh7th/cmp-nvim-lua"),
-    gh("davidmh/cmp-nerdfonts"),
-
-    -- Agents
-    gh("coder/claudecode.nvim"),
 
     -- Shared dependencies
     gh("nvim-lua/plenary.nvim"),
+}, {
+    load = function() end,
 })

@@ -1,24 +1,23 @@
 local map = require "utils/keymap"
 local hi = require"utils/highlights"
 
+-- using same naming that I have in the terminal.
+-- abbrev since a cmd will need to start with uppercase and cannot be modified after expansion.
+-- a "c" keymap is also possible but would expand at any mention and make typing anything with g a bit odd.
+-- There's no abbrev lua function yet.
+vim.cmd [[
+    cnoreabbrev gts Git status -uno
+    cnoreabbrev gtl Git pull
+    cnoreabbrev gtp Git push
+    cnoreabbrev gta Git add %
+    cnoreabbrev gtc Git commit -m
+]]
+
 return {
     {
         -- :Git and similar commands
         "vim-fugitive",
         cmd = { "Git", "G", "Gedit", "Gsplit", "Gread", "Gwrite", "Ggrep", "GMove", "GDelete", "GRemove" },
-        before = function()
-            -- using same naming that I have in the terminal.
-            -- abbrev since a cmd will need to start with uppercase and cannot be modified after expansion.
-            -- a "c" keymap is also possible but would expand at any mention and make typing anything with g a bit odd.
-            -- There's no abbrev lua function yet.
-            vim.cmd [[
-                cnoreabbrev gts Git status -uno
-                cnoreabbrev gtl Git pull
-                cnoreabbrev gtp Git push
-                cnoreabbrev gta Git add %
-                cnoreabbrev gtc Git commit -m
-            ]]
-        end,
     },
     {
         "neogit",
@@ -97,23 +96,23 @@ return {
             end)
         end,
         before = function()
-            local gs = require "gitsigns"
+            local function gs() return require "gitsigns" end
 
-            map.n("<leader>ga", gs.stage_hunk, "Add/stage hunk")
-            map.n("<leader>gA", gs.stage_buffer, "Add/stage buffer")
-            map.n("<leader>gu", gs.undo_stage_hunk, "Unstage hunk")
-            map.n("<leader>gb", gs.blame_line, "Blame line")
-            map.n("<leader>gp", gs.preview_hunk, "Preview hunk")
-            map.n("<leader>gi", gs.preview_hunk_inline, "Preview hunk inline")
-            map.n("<leader>gr", gs.reset_hunk, "Reset hunk")
-            map.n("<leader>gR", gs.reset_buffer, "Reset buffer")
+            map.n("<leader>ga", function() gs().stage_hunk() end, "Add/stage hunk")
+            map.n("<leader>gA", function() gs().stage_buffer() end, "Add/stage buffer")
+            map.n("<leader>gu", function() gs().undo_stage_hunk() end, "Unstage hunk")
+            map.n("<leader>gb", function() gs().blame_line() end, "Blame line")
+            map.n("<leader>gp", function() gs().preview_hunk() end, "Preview hunk")
+            map.n("<leader>gi", function() gs().preview_hunk_inline() end, "Preview hunk inline")
+            map.n("<leader>gr", function() gs().reset_hunk() end, "Reset hunk")
+            map.n("<leader>gR", function() gs().reset_buffer() end, "Reset buffer")
             -- not as good as diffview
-            -- map.n("<leader>gd", gs.diffthis       , "Diff buffer")
-            map.n("<leader>gt", gs.toggle_deleted, "Toggle deleted")
-            map.n("[h", function() gs.nav_hunk('prev') end, "Previous hunk")
-            map.n("]h", function() gs.nav_hunk('next') end, "Next hunk")
-            map.x("<leader>gs", function() gs.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end, "Stage hunks")
-            map.x("<leader>gr", function() gs.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end, "Reset hunks")
+            -- map.n("<leader>gd", gs().diffthis       , "Diff buffer")
+            map.n("<leader>gt", function() gs().toggle_deleted() end, "Toggle deleted")
+            map.n("[h", function() gs().nav_hunk('prev') end, "Previous hunk")
+            map.n("]h", function() gs().nav_hunk('next') end, "Next hunk")
+            map.x("<leader>gs", function() gs().stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end, "Stage hunks")
+            map.x("<leader>gr", function() gs().reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end, "Reset hunks")
             -- Text object
             map.ox('ih', ':<C-U>Gitsigns select_hunk<CR>', "Hunk")
         end,

@@ -16,7 +16,7 @@ return {
         "mason-nvim-dap.nvim",
         before = function()
             require("lz.n").trigger_load("mason.nvim")
-            require("lz.n").trigger_load("nvim-dap")
+            vim.cmd.packadd("nvim-dap")
         end,
         after = function()
             require("mason-nvim-dap").setup {
@@ -35,6 +35,7 @@ return {
     {
         "nvim-dap-virtual-text",
         after = function()
+            vim.cmd.packadd("nvim-dap")
             require("nvim-dap-virtual-text").setup()
         end,
         before = function ()
@@ -44,6 +45,8 @@ return {
     {
         "nvim-dap-ui",
         after = function()
+            vim.cmd.packadd("nvim-nio")
+            vim.cmd.packadd("nvim-dap")
             require("dapui").setup()
         end,
     }

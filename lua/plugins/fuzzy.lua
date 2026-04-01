@@ -1,197 +1,177 @@
 local hi = require "utils/highlights"
 local map = require "utils/keymap"
 
+-- Toggle between pickers by changing this flag and restarting nvim.
+-- Options: "fzf-lua", "snacks"
+local picker = "fzf-lua"
+
+-- Shared keymap definitions. Each entry: { keys, fzf_func, snacks_func, desc, opts }
+-- opts is picker-specific and passed through.
+-- snacks_func can be a string (Snacks.picker method name) or nil (no snacks equivalent).
+local keymaps = {
+    -- General
+    { "Fl",  "builtin",      "pickers",          "All pickers" },
+    { "f<leader>", "resume", "resume",            "Resume" },
+
+    -- Buffers and Files
+    { "fP",  "files",         "files",            "PWD files" },
+    { "fD",  "files",         "files",            "~/dotfiles/",       fzf = { cwd = "~/dotfiles/" }, snacks = { dirs = { "~/dotfiles/" } } },
+    { "fN",  "files",         "files",            "~/nvim/",           fzf = { cwd = "~/nvim/" },     snacks = { dirs = { "~/nvim/" } } },
+    { "fb",  "buffers",       "buffers",          "Open buffers" },
+    { "fo",  "oldfiles",      "recent",           "Opened files history" },
+    { "fq",  "quickfix",      "qflist",           "Quickfix list" },
+    { "fQ",  "quickfix_stack", nil,               "Quickfix stack" },
+    { "fl",  "loclist",       "loclist",          "Location list" },
+    { "fL",  "loclist_stack", nil,                "Location stack" },
+    { "f$",  "args",          nil,                "Argument list" },
+    { "f_",  "grep_curbuf",   "lines",           "Grep current buffer lines" },
+    { "f-",  "grep_project",  "grep",            "Grep project" },
+    { "fx",  "tmux_buffers",  nil,                "List tmux paste buffers" },
+
+    { "ts",  "treesitter",    "treesitter",       "Symbols" },
+
+    -- Grep
+    { "fg",  "grep",          "grep",             "Grep" },
+    { "fG",  "grep_last",     nil,                "Grep last" },
+    { "fw",  "grep_cword",    "grep_word",        "Grep cword" },
+    { "fW",  "grep_cWORD",    "grep_word",        "Grep cWORD",
+        snacks = { search = function() return vim.fn.expand("<cWORD>") end } },
+
+    -- Tags
+    { "]]",  "btags",         "tags",             "Tags in buffer" },
+    { "f]",  "tags",          "tags",             "Tags" },
+    { "]g",  "tags_grep",     nil,                "Tags regex" },
+    { "]w",  "tags_grep_cword", nil,              "Tag grep cword" },
+    { "]W",  "tags_grep_cWORD", nil,              "Tag grep cWORD" },
+
+    -- Git
+    { "gf",  "git_files",     "git_files",        "Files" },
+    { "gc",  "git_bcommits",  "git_log_file",     "Commits (current buf)" },
+    { "gC",  "git_commits",   "git_log",          "Commits" },
+    { "gB",  "git_branches",  "git_branches",     "Branches" },
+    { "gs",  "git_status",    "git_status",       "Status" },
+
+    -- Misc
+    { "fh",  "highlights",    "highlights",       "Highlight groups" },
+    { "fK",  "helptags",      "help",             "Help tags" },
+    { "fm",  "marks",         "marks",            ":marks" },
+    { "fM",  "manpages",      "man",              "Manual pages" },
+    { "fj",  "jumps",         "jumps",            ":jumps" },
+    { "fc",  "colorschemes",  "colorschemes",     "Colorschemes" },
+    { "fC",  "awesome_colorschemes", nil,          "Awesome colorschemes" },
+    { "f:",  "commands",      "commands",          "Ex commands" },
+    { "f;",  "command_history", "command_history", "Ex command history" },
+    { "f/",  "search_history", "search_history",  "Search history" },
+    { "fr",  "registers",    "registers",         ":registers" },
+    { "fa",  "autocmds",     "autocmds",          ":autocmd" },
+    { "fk",  "keymaps",      "keymaps",           "Key mappings" },
+    { ":t",  "filetypes",    nil,                 "Set filetype" },
+    { ":]",  "tagstack",     nil,                 ":tags" },
+    { ":c",  "changes",      nil,                 ":changes" },
+    { ":p",  "packadd",      nil,                 ":packadd" },
+
+    -- Editing
+    { "xs",  "spell_suggest", "spelling",         "Spelling suggestions" },
+    { "xf",  "complete_file", nil,                "Complete file under cursor (excl dirs)" },
+    { "xF",  "complete_path", nil,                "Complete path under cursor (incl dirs)" },
+    { "x_",  "complete_bline", nil,               "Complete line (current buffer only)" },
+}
+
+--- Ensure the active picker plugin is loaded (packadd + lz.n before/after).
+local function load_picker()
+    if picker == "fzf-lua" then
+        require("lz.n").trigger_load("fzf-lua")
+    elseif picker == "snacks" then
+        require("lz.n").trigger_load("snacks.nvim")
+    end
+end
+
+--- Register all shared keymaps for the active picker.
+local function register_keymaps()
+    for _, km in ipairs(keymaps) do
+        local keys, fzf_func, snacks_func, desc = km[1], km[2], km[3], km[4]
+
+        if picker == "fzf-lua" then
+            map.n("<leader>" .. keys, function()
+                load_picker()
+                require("fzf-lua")[fzf_func](km.fzf or {})
+            end, desc)
+        elseif picker == "snacks" and snacks_func then
+            map.n("<leader>" .. keys, function()
+                load_picker()
+                require("snacks").picker[snacks_func](km.snacks or {})
+            end, desc)
+        end
+    end
+
+    -- Visual grep (not expressible in the shared table)
+    if picker == "fzf-lua" then
+        map.x("<leader>fg", function()
+            load_picker()
+            require("fzf-lua").grep_visual {}
+        end, "Grep")
+    elseif picker == "snacks" then
+        map.x("<leader>fg", function()
+            load_picker()
+            require("snacks").picker.grep_word()
+        end, "Grep")
+    end
+end
+
+-- Register keymaps and mini.pick eagerly (before any picker loads).
+-- The keymap callbacks require("fzf-lua")/require("snacks") lazily on invocation.
+register_keymaps()
+
+-- mini.pick path explorer (independent of picker choice).
+-- Setup deferred to first invocation since mini.pick is an opt package.
+local mini_pick_ready = false
+map.n("<leader>fp", function()
+    if not mini_pick_ready then
+        vim.cmd.packadd("mini.nvim")
+        require("mini.pick").setup {
+            options = { content_from_bottom = true, use_cache = true },
+            window = { config = { width = 100 } },
+        }
+        require("mini.extra").setup()
+        mini_pick_ready = true
+    end
+    require("mini.extra").pickers.explorer { cwd = vim.fn.expand("%:h") }
+end, "Path explorer")
+
 return {
-    -- Still needs some polishing.
-    {
-        "fff.nvim",
-        enabled = false,
-        -- Config and opts has no effect.
-        after = function()
-            require("fff").setup {
-                width = 1.0,
-                height = 1.0,
-                prompt = '',
-            }
-        end,
-        keys = {
-            {
-                "<leader>fF",
-                function()
-                    require("fff").toggle()
-                end,
-                desc = "FFF cwd files",
-            },
-            {
-                "<leader>fg",
-                function()
-                    require "fff".find_in_git_root()
-                end,
-                desc = "FFF git files",
-            },
-        },
-    },
     {
         "snacks.nvim",
-        -- priority = 1000,
         ---@type snacks.Config
         after = function()
             require("snacks").setup {
-                picker = { enabled = true, layout = { fullscreen = true } },
+                picker = {
+                    enabled = true,
+                    layout = { fullscreen = true },
+                    win = {
+                        preview = {
+                            wo = { scrollbar = false },
+                        },
+                    },
+                },
                 explorer = { enabled = true },
-                quickfile = { enabled = false }, -- doesn't seem to make a difference.
             }
         end,
-        keys = {
-            { "<leader>Fs", function() require "snacks".picker() end,                       desc = "Snacks picker" },
-            { "<leader>ff", function() require "snacks".picker.smart() end,                 desc = "Smart Find Files" },
-            { "<leader>fh", function() require "snacks".picker.highlights() end,            desc = "Highlights" },
-            { "<leader>fb", function() require "snacks".picker.buffers() end,               desc = "Buffers" },
-            { "<leader>fs", function() require "snacks".picker.lsp_symbols() end,           desc = "Symbols" },
-            { "<leader>fS", function() require "snacks".picker.lsp_workspace_symbols() end, desc = "Workspace symbols" },
-        },
         before = function()
-            -- Instead of default float.
             hi.def("SnacksPicker", "Normal")
             hi.def("SnacksPickerPreview", "Normal")
-            -- Instead of to special.
             hi.def("SnacksPickerMatch", "IncSearch")
-            -- To dim the dir part of a filename. Default is link to NonText.
             hi.def("SnacksPickerDir", "Directory")
             hi.def("SnacksPickerPrompt", "Prompt")
         end,
     },
-    -- We prefer fzf-lua over telescope for the following reasons:
-    -- - There are claims that it is faster.
-    -- - Telescope is not as actively developed/maintained.
-    -- - Telescope (at least by default) needs double ESC to exit.
-    --   This is to allow for normal mode editing of search but the idea of fzf
-    --   searching is quick and messy search so we prefer single ESC exit.
-    -- - The preview is worse (at least by default), i.e. the line highlight doesn't span the whole pane,
-    --   and the relevant col is not indicated.
-    -- - There is a bit more builtins from fzf lua.
     {
         "fzf-lua",
+        enabled = picker == "fzf-lua",
         lazy = true,
         cmd = "FzfLua",
-        -- optional for icon support
         before = function()
             hi.def("FzfLuaBorder", "FloatBorder")
             hi.def("FzfLuaTitle", "Title")
-            -- Simple picker with TAB (by default) for toggling preview, where fzf lua has preview by default.
-            require 'mini.pick'.setup {
-                options = {
-                    -- Whether to show content from bottom to top
-                    content_from_bottom = true,
-                    -- Whether to cache matches (more speed and memory on repeated prompts)
-                    use_cache = true,
-                },
-                window = {
-                    config = { width = 100 },
-                }
-            }
-            -- contains the explorer picker that allows moving through folders.
-            local MiniExtra = require 'mini.extra'
-            MiniExtra.setup()
-
-            local function map_fzf(keys, func, desc, args)
-                map.n("<leader>" .. keys, function()
-                    require 'fzf-lua'[func](args or {})
-                end, desc)
-            end
-
-            -- General starting point
-            map_fzf("Fl", "builtin", "FzfLua")
-            -- Not that useful? Doesn't seem to save state much, so it's just repeating the keybind last used essentially.
-            -- Then it doesn't save any time, and is just less explicit.
-            map_fzf("f<leader>", "resume", "Resume")
-
-            -- Buffers and Files
-
-            -- starts in folder of current buffer (like Oil)
-            map.n("<leader>fp", function() MiniExtra.pickers.explorer { cwd = vim.fn.expand("%:h") } end, "Path explorer")
-            -- differs by starting in CWD, which may be different from dir for current buffer
-            map_fzf("fP", "files", "PWD files")
-            map_fzf("fD", "files", "~/dotfiles/", { cwd = "~/dotfiles/" })
-            map_fzf("fN", "files", "~/nvim/", { cwd = "~/nvim/" })
-            -- map_fzf("fb", "buffers", "Open buffers")
-            map_fzf("fo", "oldfiles", "Opened files history")
-            -- map("ft", "tabs", "Tabs")
-            map_fzf("fq", "quickfix", "Quickfix list")
-            map_fzf("fQ", "quickfix_stack", "Quickfix stack")
-            -- location list is window local quickfix list, see :h location-list
-            map_fzf("fl", "loclist", "Location list")
-            map_fzf("fL", "loclist_stack", "Location stack")
-            map_fzf("f$", "args", "Argument list")
-            map_fzf("f_", "grep_curbuf", "Grep current buffer lines")
-            -- map("f_", "lines", "Lines") -- redudant with the grep_curbuf
-            map_fzf("f-", "grep_project", "Grep project")
-            map_fzf("fx", "tmux_buffers", "List tmux paste buffers")
-
-            map_fzf("ts", "treesitter", "Symbols", { prompt = "Symbols❯ " })
-
-            -- Regex pattern search and file content grep refinement
-
-            map_fzf("fg", "grep", "Grep", { input_prompt = "Grep❯ " })
-            -- we already have resume with <leader>ff so not so important:
-            map_fzf("fG", "grep_last", "Grep last")
-            map_fzf("fw", "grep_cword", "Grep cword")
-            map_fzf("fW", "grep_cWORD", "Grep cWORD")
-            map.x('<leader>fg', function() require "fzf-lua".grep_visual {} end, "Grep")
-            -- seems redundant:
-            -- map("/?", "blines", "Current buffer lines")
-            -- Won't map grep_quickfix and lgrep_quickfix
-            -- since they didn't work in latex
-
-            -- Tags
-
-            map_fzf("]]", "btags", "Tags in buffer")
-            map_fzf("f]", "tags", "Tags")
-            map_fzf("]g", "tags_grep", "Tags regex")
-            map_fzf("]w", "tags_grep_cword", "Tag grep cword")
-            map_fzf("]W", "tags_grep_cWORD", "Tag grep cWORD")
-
-            -- Git
-            map_fzf("gf", "git_files", "Files")
-            map_fzf("gc", "git_bcommits", "Commits (current buf)")
-            map_fzf("gC", "git_commits", "Commits")
-            map_fzf("gB", "git_branches", "Branches")
-            map_fzf("gs", "git_status", "Status")
-
-            -- Misc
-
-            -- The preview from snacks is better.
-            -- This one previews other hl groups that are basically unrelated.
-            -- map_fzf("fh", "highlights", "highlight groups")
-            map_fzf("fK", "helptags", "Help tags")
-            map_fzf("fm", "marks", ":marks")
-            map_fzf("fM", "manpages", "Manual pages")
-            map_fzf("fj", "jumps", ":jumps")
-            map_fzf("fc", "colorschemes", "Colorschemes")
-            map_fzf("fC", "awesome_colorschemes", "Awesome colorschemes")
-            map_fzf("f:", "commands", "Ex commands")
-            map_fzf("f;", "command_history", "Ex command history")
-            map_fzf("f/", "search_history", "Search history")
-            map_fzf("fr", "registers", ":registers")
-            map_fzf("fa", "autocmds", ":autocmd")
-            map_fzf("fk", "keymaps", "key mappings")
-            map_fzf(":t", "filetypes", "Set filetype")
-            map_fzf(":]", "tagstack", ":tags")
-            map_fzf(":c", "changes", ":changes")
-            map_fzf(":p", "packadd", ":packadd")
-
-            -- Editing. Prefix with x like builtin completion with ctrl-x ctrl-s etc.
-            map_fzf("xs", "spell_suggest", "Spelling suggestions")
-            map_fzf("xf", "complete_file", "Complete file under cursor (excl dirs)")
-            map_fzf("xF", "complete_path", "Complete path under cursor (incl dirs)")
-            map_fzf("x_", "complete_bline", "Complete line (current buffer only)")
-
-
-            -- LSP in LSP.lua
-
-            -- Rare. access from builtins instead:
-            -- profiles
-            -- menus
         end,
         after = function()
             require("fzf-lua").setup {
@@ -204,26 +184,17 @@ return {
                     ["hl+"] = { "fg", "FuzzyMatch" },
                 },
                 winopts = {
-                    -- Don't dim other windows.
                     backdrop = 100,
-                    -- Fullscreen is actually nice for max focus.
                     fullscreen = true,
                     treesitter = {
-                        -- Override default "-1:reverse" for treesitter pickers.
                         fzf_colors = {
                             ["hl"]  = { "fg", "FuzzyMatch" },
                             ["hl+"] = { "fg", "FuzzyMatch" },
                         },
                     },
                     preview = {
-                        -- Reduce lag from default 20 ms.
-                        -- It is there for a purpose relating to fast scrolling.
-                        -- https://github.com/ibhagwan/fzf-lua
-                        -- Reducing it gives noticeable improvement in preview update speed.
                         delay = 10,
-                        -- Doesn't move with the preview anyways.
                         scrollbar = false,
-                        -- Preview should only be 50%, by default it makes e.g. filepath listing too small.
                         horizontal = "right:50%",
                         vertical = "down:50%",
                     },
@@ -232,18 +203,14 @@ return {
                     builtin = {
                         ["<C-f>"]   = "preview-page-down",
                         ["<C-b>"]   = "preview-page-up",
-                        -- Single line movement for finer control.
                         ["<C-S-f>"] = "preview-down",
                         ["<C-S-b>"] = "preview-up",
-                    }
+                    },
                 },
                 lsp = {
-                    -- if there is a single LSP result only, as is common for goto def,
-                    -- use it directly.
                     jump1 = true,
                     code_actions = {
                         async_or_timeout = 5000,
-                        -- Requires git-delta for prettier code action preview
                         previewer        = "codeaction_native",
                     },
                 },
@@ -256,91 +223,31 @@ return {
                         .. "--colors=path:none --colors=path:style:underline -e",
                 },
                 files = {
-                    -- Same as default but adding build/ for exclusion.
                     find_opts = [[-type f \! -path '*/.git/*' -and \! -path '*/build/*']],
                     rg_opts   = [[--color=never --hidden --files -g '!.git' -g '!build']],
                     fd_opts   = [[--color=never --hidden --type f --type l --exclude .git --exclude build]],
                 },
-            }
-        end,
-    },
-    -- recommended compiled fuzzy finder for telescope. Cannot be opt=true when needed by tzachar/cmp-fuzzy-path
-    {
-        "telescope-fzf-native.nvim",
-        after = function()
-            -- load the native fzf as recommended
-            -- require'telescope'.load_extension('fzf')
-            -- pcall is protected call, i.e. doesn't make a big deal out of errors
-            -- taken from https://github.com/nvim-lua/kickstart.nvim/blob/master/init.lua
-            pcall(require('telescope').load_extension, 'fzf')
-        end
-    },
-    {
-        "telescope.nvim",
-        cmd = "Telescope",
-        before = function()
-            require("lz.n").trigger_load("telescope-fzf-native.nvim")
-        end,
-        after = function()
-            require("telescope").setup {
-                defaults = {
-                    layout_strategy = "vertical",
-                    prompt_prefix = '',
-                    selection_caret = '',
-                    entry_prefix = '',
-                    multi_icon = '',
+                oldfiles = {
+                    include_current_session = true,
                 },
-                pickers = {
-                    colorscheme = {
-                        -- window has to be big enough to show the preview window
-                        enable_preview = true,
-                    }
-                },
-                extensions = {
-                    dash = {
-                        file_type_keywords = {
-                            python = { "python", "numpy", "scipy", "pandas" }
-                        }
-                    }
-                }
             }
         end,
     },
     {
-        'cheatsheet.nvim',
+        "cheatsheet.nvim",
         before = function()
             map.n("<leader>f?", "<Cmd>Cheatsheet<CR>", "Cheatsheet")
         end,
         cmd = "Cheatsheet",
     },
-    -- TODO we don't actually use this yet
-    -- search stackoverflow quicker
-    {
-        "browse.nvim",
-        enabled = false,
-    },
-    {
-        "telescope-bibtex.nvim",
-        enabled = false, -- trying out snacks alt
-        ft = "tex",
-        after = function()
-            -- https://github.com/nvim-telescope/telescope-bibtex.nvim
-            local telescope = require "telescope"
-            telescope.load_extension("bibtex")
-            -- the following is used to detect *.bib file used
-            -- by looking for \bibliography and \addbibresource.
-            telescope.setup { context = true, }
-        end
-    },
     {
         "snacks-bibtex.nvim",
-        ft = {"tex", "typst"},
+        ft = { "tex", "typst" },
         after = function()
             require("snacks-bibtex").setup {
-                -- see https://github.com/krissen/snacks-bibtex.nvim?tab=readme-ov-file#configuration
                 mappings = {
-                    ["<C-p>"] = false, -- disable natbib parenthetical cite since <C-p> is naturally "previous".
-                }
+                    ["<C-p>"] = false,
+                },
             }
         end,
         keys = {
@@ -351,10 +258,4 @@ return {
             },
         },
     },
-    -- consider papis as well.
-    -- bibliography references, mostly relevant for citations in .tex documents.
-    -- { "jghauser/papis.nvim",
-    --     dependencies = { "kkharji/sqlite.lua", "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim", "nvim-treesitter/nvim-treesitter", "nvim-telescope/telescope.nvim", "hrsh7th/nvim-cmp" },
-    --     rocks="lyaml", config = function() require("papis").setup() end,
-    -- },
 }

@@ -13,9 +13,6 @@ local hooks = {
     ["LuaSnip"] = function(ev)
         vim.system({ "make", "install_jsregexp" }, { cwd = ev.data.path }):wait()
     end,
-    ["telescope-fzf-native.nvim"] = function(ev)
-        vim.system({ "make" }, { cwd = ev.data.path }):wait()
-    end,
     ["markdown-preview.nvim"] = function(ev)
         if not ev.data.active then vim.cmd.packadd("markdown-preview.nvim") end
         vim.fn["mkdp#util#install"]()

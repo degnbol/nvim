@@ -1,5 +1,4 @@
 -- AI coding agent integrations
--- Toggle `enabled` to switch between plugins (only one should be active)
 
 -- Extract cwd from the first few lines of a JSONL session file.
 -- Returns the cwd string or nil.
@@ -49,78 +48,13 @@ local function resolve_session_prefix(prefix)
     return nil
 end
 
--- Open agentic and resume an ACP session by UUID prefix.
--- Usage: `nvim -c 'lua AgenticResume("8583a113")'`
-function AgenticResume(prefix)
-    local full_id, cwd = resolve_session_prefix(prefix)
-    if not full_id then
-        vim.notify("No session found matching: " .. prefix, vim.log.levels.ERROR)
-        return
-    end
-
-    require("agentic").toggle_tab()
-    -- Call immediately — load_acp_session defers internally if the agent
-    -- isn't ready yet, avoiding the race where new_session() fires first.
-    require("agentic").load_acp_session(full_id, cwd)
-end
-
 return {
-    -- Claude Code via WebSocket MCP protocol (same as VS Code extension)
-    -- https://github.com/coder/claudecode.nvim
-    {
-        "claudecode.nvim",
-        enabled = false,
-        keys = function()
-            local function send_operator()
-                vim.opt.operatorfunc = "v:lua.ClaudeCodeSendOperator"
-                return "g@"
-            end
-            local function send_line()
-                vim.opt.operatorfunc = "v:lua.ClaudeCodeSendOperator"
-                return "g@_"
-            end
-            _G.ClaudeCodeSendOperator = function(type)
-                if type == "char" then
-                    vim.cmd('silent normal! `[v`]')
-                else
-                    vim.cmd('silent normal! `[V`]')
-                end
-                vim.cmd('ClaudeCodeSend')
-            end
-            return {
-                { "<D-\\>", "<cmd>ClaudeCode<cr>", desc = "Agent toggle" },
-                { "<M-CR>", send_operator, desc = "Agent send motion", expr = true },
-                { "<M-CR><M-CR>", send_line, desc = "Agent send line", expr = true },
-                { "<M-CR>", "<cmd>ClaudeCodeSend<cr>", desc = "Agent send selection", mode = "v" },
-                { "<leader>i", nil, desc = "Intelligence/AI" },
-                { "<leader>ii", "<cmd>ClaudeCode<cr>", desc = "Toggle agent" },
-                { "<leader>if", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus agent" },
-                { "<leader>iq", "<cmd>ClaudeCodeClose<cr>", desc = "Close agent" },
-                { "<leader>in", "<cmd>ClaudeCode<cr>", desc = "New session" },
-                { "<leader>ib", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
-                { "<leader>is", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send selection" },
-                { "<leader>ir", "<cmd>ClaudeCode --resume<cr>", desc = "Resume session" },
-                { "<leader>ic", "<cmd>ClaudeCode --continue<cr>", desc = "Continue session" },
-                { "<leader>im", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select model" },
-                { "<leader>ia", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
-                { "<leader>id", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
-            }
-        end,
-        after = function()
-            require("claudecode").setup {
-                terminal_cmd = vim.fn.expand("~/.local/bin/claude"),
-                terminal = {
-                    split_side = "right",
-                    split_width_percentage = 0.4,
-                },
-            }
-        end,
-    },
     -- Local fork of agentic.nvim — native chat UI via Agent Client Protocol
     {
         "agentic.nvim",
         enabled = true,
         load = function() end,
+        cmd = { "Agentic", "AgenticResume" },
         keys = {
             { "<D-\\>", "<Plug>(agentic-toggle-tab)", desc = "Agent toggle" },
             { "<M-CR>", "<Plug>(agentic-send)", desc = "Agent send motion" },
@@ -134,20 +68,35 @@ return {
             { "<leader>ib", "<Plug>(agentic-add-file)", desc = "Add current buffer" },
             { "<leader>is", "<Plug>(agentic-send)", mode = "v", desc = "Send selection" },
         },
+        before = function()
+            vim.api.nvim_set_hl(0, "AgenticSearchMatch", { link = "DiagnosticError" })
+        end,
         after = function()
             require("agentic").setup {
                 headers = {
                     chat = { title = "Claude" },
                 },
+                auto_scroll = {
+                    enabled = true,
+                },
                 notifications = {
                     bell = true,
                 },
             }
-        end,
-        before = function()
-            -- Red text like ripgrep's default match colour.
-            -- terminal_color_1 (ANSI red) is nil — colorscheme doesn't set it.
-            vim.api.nvim_set_hl(0, "AgenticSearchMatch", { link = "DiagnosticError" })
+
+            vim.api.nvim_create_user_command("Agentic", function()
+                require("agentic").toggle_tab()
+            end, { desc = "Open agentic agent tab" })
+
+            vim.api.nvim_create_user_command("AgenticResume", function(args)
+                local full_id, cwd = resolve_session_prefix(args.args)
+                if not full_id then
+                    vim.notify("No session found matching: " .. args.args, vim.log.levels.ERROR)
+                    return
+                end
+                require("agentic").toggle_tab()
+                require("agentic").load_acp_session(full_id, cwd)
+            end, { nargs = 1, desc = "Resume agentic session by UUID prefix" })
         end,
     },
 }
