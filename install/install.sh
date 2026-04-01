@@ -34,6 +34,9 @@ nvim --headless +"lua require('nvim-treesitter')._install_task:wait()" +qa
 
 ../tex/unicode/install.sh
 
+# Blender Python stubs for LSP completion in .blend.py files
+uv pip install --target ../lsp_ext/blender-stubs fake-bpy-module-latest
+
 # julia LSP
 # julia LSP doesn't load info about packages, maybe because it takes too long 
 # and a timeout is reached somewhere.

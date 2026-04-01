@@ -33,3 +33,6 @@ aux/
 rtps/
 
 *.so
+
+# installed stubs (regenerate with: uv pip install --target lsp_ext/blender-stubs fake-bpy-module-latest)
+lsp_ext/blender-stubs/
