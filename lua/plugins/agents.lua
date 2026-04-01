@@ -48,27 +48,13 @@ local function resolve_session_prefix(prefix)
     return nil
 end
 
--- Open agentic and resume an ACP session by UUID prefix.
--- Usage: `nvim -c 'lua AgenticResume("8583a113")'`
-function AgenticResume(prefix)
-    local full_id, cwd = resolve_session_prefix(prefix)
-    if not full_id then
-        vim.notify("No session found matching: " .. prefix, vim.log.levels.ERROR)
-        return
-    end
-
-    require("agentic").toggle_tab()
-    -- Call immediately — load_acp_session defers internally if the agent
-    -- isn't ready yet, avoiding the race where new_session() fires first.
-    require("agentic").load_acp_session(full_id, cwd)
-end
-
 return {
     -- Local fork of agentic.nvim — native chat UI via Agent Client Protocol
     {
         "agentic.nvim",
         enabled = true,
         load = function() end,
+        cmd = { "Agentic", "AgenticResume" },
         keys = {
             { "<D-\\>", "<Plug>(agentic-toggle-tab)", desc = "Agent toggle" },
             { "<M-CR>", "<Plug>(agentic-send)", desc = "Agent send motion" },
@@ -83,8 +69,6 @@ return {
             { "<leader>is", "<Plug>(agentic-send)", mode = "v", desc = "Send selection" },
         },
         before = function()
-            -- Red text like ripgrep's default match colour.
-            -- terminal_color_1 (ANSI red) is nil — colorscheme doesn't set it.
             vim.api.nvim_set_hl(0, "AgenticSearchMatch", { link = "DiagnosticError" })
         end,
         after = function()
@@ -99,6 +83,20 @@ return {
                     bell = true,
                 },
             }
+
+            vim.api.nvim_create_user_command("Agentic", function()
+                require("agentic").toggle_tab()
+            end, { desc = "Open agentic agent tab" })
+
+            vim.api.nvim_create_user_command("AgenticResume", function(args)
+                local full_id, cwd = resolve_session_prefix(args.args)
+                if not full_id then
+                    vim.notify("No session found matching: " .. args.args, vim.log.levels.ERROR)
+                    return
+                end
+                require("agentic").toggle_tab()
+                require("agentic").load_acp_session(full_id, cwd)
+            end, { nargs = 1, desc = "Resume agentic session by UUID prefix" })
         end,
     },
 }
