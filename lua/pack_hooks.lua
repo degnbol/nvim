@@ -37,9 +37,6 @@ local hooks = {
     ["math-conceal.nvim"] = function(ev)
         vim.system({ "make", "lua51" }, { cwd = ev.data.path }):wait()
     end,
-    ["fff.nvim"] = function(ev)
-        vim.system({ "cargo", "build", "--release" }, { cwd = ev.data.path }):wait()
-    end,
 }
 
 function M.on_changed(ev)

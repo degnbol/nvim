@@ -80,7 +80,6 @@ vim.pack.add({
     gh("stevearc/conform.nvim"),
 
     -- Fuzzy finders
-    gh("dmtrKovalenko/fff.nvim"),
     gh("folke/snacks.nvim"),
     gh("ibhagwan/fzf-lua"),
     gh("nvim-telescope/telescope-fzf-native.nvim"),
