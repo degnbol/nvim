@@ -81,6 +81,12 @@ The TSV ftplugin's column hiding (`zc`/`zo`/`za`) works by actually removing tex
 - Tab alignment breaks because tabs expand based on buffer position, not visual position
 - Would require reimplementing entire tab/column system with virtual text
 
+### Compound filetype gotchas
+
+Compound filetypes like `"python.blender"` or `"sh.zsh"` split on `.` for runtime file loading. For `"a.b"`, neovim loads `ftplugin/a.lua` then `ftplugin/b.lua` — NOT `ftplugin/a.b.lua`. Name ftplugin files after the second component.
+
+`vim.filetype.add` pattern functions need `{ priority = 10 }` (or higher) to override built-in extension detection. Without explicit priority, extension matches (`py → python`) win. Format: `[".*%.py"] = { function(path, bufnr) ... end, { priority = 10 } }`.
+
 ### Zsh filetype setup
 
 Zsh files use compound filetype `"sh.zsh"` for vim regex syntax (loads sh patterns first, then zsh overrides). `vim.treesitter.language.register("zsh", "sh.zsh")` in `lua/autocmds/treesitter.lua` overrides the default first-component behaviour so treesitter uses the dedicated zsh parser.
@@ -124,7 +130,7 @@ The R languageserver doesn't resolve `...` forwarding — functions like `scale_
 
 **Config:** `lsp/r_language_server.lua` sets a custom `cmd` that sources the patch before `languageserver::run()`.
 
-**Mason-lspconfig override:** Mason's `automatic_enable` calls `vim.lsp.config()` with `cmd = { "r-languageserver" }` (Mason's wrapper), overriding the custom cmd from `lsp/*.lua`. Fix: in `lua/plugins/lsp.lua`, the mason-lspconfig config function calls `vim.lsp.config('r_language_server', { cmd = ... })` after `setup()` to re-apply our custom cmd.
+**Mason-lspconfig override:** Mason's `automatic_enable` calls `vim.lsp.config()` which overrides fields from `lsp/*.lua` — not just `cmd` but also `filetypes` and other fields. Fix: in `lua/plugins/lsp.lua`, re-apply custom config after `setup()`. Already done for: `r_language_server` (custom cmd), `basedpyright` and `ruff` (compound filetypes).
 
 ## Miller DSL Highlighting
 
