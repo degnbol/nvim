@@ -58,12 +58,21 @@ local templates = {
     },
     py = function(filepath)
         if filepath:match("%.pml%.py$") then return nil end
+        if filepath:match("%.blend%.py$") then return nil end
         return snippet {
             shebang .. "python3",
             "import numpy as np",
             "",
         }
     end,
+    ["blend.py"] = snippet {
+        "#!/bin/sh",
+        [[''''exec blender --background --python "$0" -- "$@" # ''']],
+        "import bpy",
+        "",
+        raw "$0",
+        "",
+    },
     ["pml.py"] = snippet {
         "#!/bin/sh",
         [[''''exec pymol -cxpqk "$0" -- "$@" # ''']],
