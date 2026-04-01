@@ -151,6 +151,9 @@ return {
             vim.lsp.config('r_language_server', {
                 cmd = { "R", "--no-echo", "-e", "source('" .. patch .. "'); languageserver::run()" },
             })
+            -- Mason overrides filetypes to {"python"}, re-add compound filetype.
+            vim.lsp.config('basedpyright', { filetypes = { "python", "python.blender" } })
+            vim.lsp.config('ruff', { filetypes = { "python", "python.blender" } })
         end
     },
     -- flutter tools contains LSP for dart.

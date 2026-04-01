@@ -2,6 +2,7 @@
 -- Complements basedpyright (types) with linting (ruff).
 -- https://docs.astral.sh/ruff/editors/setup/#neovim
 return {
+    filetypes = { "python", "python.blender" },
     init_options = {
         settings = {
             lineLength = 120,

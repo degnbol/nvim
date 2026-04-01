@@ -71,6 +71,7 @@ if vim.env.CONDA_PREFIX ~= nil then
 end
 
 return {
+    filetypes = { "python", "python.blender" },
     settings = {
         python = {
             pythonPath = pythonPath

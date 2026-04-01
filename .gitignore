@@ -34,5 +34,7 @@ rtps/
 
 *.so
 
-# installed stubs (regenerate with: uv pip install --target lsp_ext/blender-stubs fake-bpy-module-latest)
+# blender stubs (regenerate with: uv pip install --target lsp_ext/blender-stubs fake-bpy-module-latest)
+# symlinks into python_stubs/ are created by ftplugin/blender.lua
 lsp_ext/blender-stubs/
+lsp_ext/python_stubs/*-stubs
