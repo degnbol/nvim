@@ -72,6 +72,7 @@ return {
                     delete       = { text = ' ' },
                 },
                 numhl         = true, -- highlight line number
+                linehl        = true, -- highlight whole line
                 watch_gitdir  = { interval = 100 },
                 sign_priority = 5,
             }
