@@ -91,6 +91,7 @@ return {
                 exclude = { "**/build" },
                 diagnosticSeverityOverrides = {
                     reportUnusedCallResult = "none",
+                    reportMissingModuleSource = "none",
                 },
             }
         }
