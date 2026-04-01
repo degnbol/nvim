@@ -77,7 +77,7 @@ return {
                     chat = { title = "Claude" },
                 },
                 auto_scroll = {
-                    enabled = false,
+                    enabled = true,
                 },
                 notifications = {
                     bell = true,

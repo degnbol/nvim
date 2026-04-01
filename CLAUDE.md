@@ -10,7 +10,7 @@ For the vim.pack/lz.n interaction model and startup overhead implications, see
 `~/.claude/skills/neovim/references/package-management.md`.
 
 - **`lua/pack_specs.lua`** — `vim.pack.add()` registry, all remote plugins
-- **`lua/pack_hooks.lua`** — `PackChanged` build hooks (mason, treesitter, telescope-fzf-native, etc.)
+- **`lua/pack_hooks.lua`** — `PackChanged` build hooks (mason, treesitter, etc.)
 - **`lua/plugins/*.lua`** — lz.n specs (27 files), auto-discovered via `require("lz.n").load("plugins")`
 - **Dev plugins** (modules/) — added to rtp manually in init.lua, use `load = function() end` in lz.n specs
 

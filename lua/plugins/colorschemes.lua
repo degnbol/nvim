@@ -1,7 +1,3 @@
-vim.keymap.set("n", "<leader>cs", function()
-    require("telescope.builtin").colorscheme()
-end, { desc = "Colorscheme" })
-
 return {
     {
         "nightfox.nvim",

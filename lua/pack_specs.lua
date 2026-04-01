@@ -2,9 +2,13 @@
 -- Dev plugins (modules/) are on rtp manually, not managed here.
 local gh = function(x) return "https://github.com/" .. x end
 
+-- lz.n is bootstrapped via packadd in init.lua, so let vim.pack load it normally.
+vim.pack.add({ gh("BirdeeHub/lz.n") })
+
+-- All other plugins: prevent vim.pack from calling :packadd! — otherwise all
+-- opt/ plugins end up on rtp and their plugin/ files get sourced during startup,
+-- defeating lz.n lazy loading. lz.n calls packadd itself when triggers fire.
 vim.pack.add({
-    -- lz.n (lazy-loader, bootstrapped via packadd before lz.n.load)
-    gh("BirdeeHub/lz.n"),
 
     -- Core behaviour (init.lua)
     gh("tpope/vim-repeat"),
@@ -80,14 +84,10 @@ vim.pack.add({
     gh("stevearc/conform.nvim"),
 
     -- Fuzzy finders
-    gh("dmtrKovalenko/fff.nvim"),
     gh("folke/snacks.nvim"),
     gh("ibhagwan/fzf-lua"),
-    gh("nvim-telescope/telescope-fzf-native.nvim"),
-    gh("nvim-telescope/telescope.nvim"),
     gh("sudormrfbin/cheatsheet.nvim"),
     gh("lalitmee/browse.nvim"),
-    gh("nvim-telescope/telescope-bibtex.nvim"),
     gh("krissen/snacks-bibtex.nvim"),
 
     -- Git
@@ -171,4 +171,6 @@ vim.pack.add({
 
     -- Shared dependencies
     gh("nvim-lua/plenary.nvim"),
+}, {
+    load = function() end,
 })
