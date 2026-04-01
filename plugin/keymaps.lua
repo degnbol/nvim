@@ -445,5 +445,12 @@ map.n("<C-leftmouse>", "")
 
 
 vim.api.nvim_create_user_command('MessagesCopy', function()
-    vim.fn.setreg('+', vim.fn.execute('messages'))
+    local output = vim.api.nvim_exec2('messages', { output = true }).output
+    output = vim.trim(output)
+    if output == '' then
+        vim.notify('No messages to copy', vim.log.levels.WARN)
+        return
+    end
+    vim.fn.setreg('+', output)
+    vim.notify('Messages copied (' .. #vim.split(output, '\n') .. ' lines)')
 end, {})
