@@ -3,7 +3,8 @@ local map = require "utils/keymap"
 
 -- Toggle between pickers by changing this flag and restarting nvim.
 -- Options: "fzf-lua", "snacks"
-local picker = "fzf-lua"
+-- local picker = "fzf-lua"
+local picker = "snacks"
 
 -- Shared keymap definitions. Each entry: { keys, fzf_func, snacks_func, desc, opts }
 -- opts is picker-specific and passed through.
@@ -147,21 +148,27 @@ return {
                 picker = {
                     enabled = true,
                     layout = { fullscreen = true },
-                    win = {
-                        preview = {
-                            wo = { scrollbar = false },
-                        },
-                    },
                 },
                 explorer = { enabled = true },
             }
-        end,
-        before = function()
-            hi.def("SnacksPicker", "Normal")
-            hi.def("SnacksPickerPreview", "Normal")
-            hi.def("SnacksPickerMatch", "IncSearch")
-            hi.def("SnacksPickerDir", "Directory")
-            hi.def("SnacksPickerPrompt", "Prompt")
+            -- Persist overrides across colorscheme changes. Snacks has a
+            -- managed ColorScheme autocmd that re-applies its defaults after
+            -- :highlight clear — onColorScheme fires after it, so our force
+            -- links win.
+            hi.onColorScheme(function()
+                hi.link("SnacksPicker", "Normal")
+                hi.link("SnacksPickerPreview", "Normal")
+                hi.link("SnacksPickerMatch", "IncSearch")
+                hi.link("SnacksPickerFile", "@string.special.path")
+                hi.link("SnacksPickerDir", "@string.special.path")
+                hi.link("SnacksPickerLink", "NonText")
+                hi.link("SnacksPickerBorder", "FloatBorder")
+                hi.link("SnacksPickerInputBorder", "FloatBorder")
+                hi.link("SnacksPickerPreviewBorder", "FloatBorder")
+                hi.link("SnacksPickerListBorder", "FloatBorder")
+                hi.link("SnacksPickerTitle", "Title")
+                hi.link("SnacksPickerInputTitle", "Title")
+            end)
         end,
     },
     {
@@ -170,8 +177,15 @@ return {
         lazy = true,
         cmd = "FzfLua",
         before = function()
-            hi.def("FzfLuaBorder", "FloatBorder")
-            hi.def("FzfLuaTitle", "Title")
+            -- hi.def runs before packadd, so these win over fzf-lua's own
+            -- default=true in setup_highlights(). fzf-lua has no ColorScheme
+            -- autocmd, so onColorScheme re-applies after :highlight clear.
+            hi.onColorScheme(function()
+                hi.link("FzfLuaBorder", "FloatBorder")
+                hi.link("FzfLuaTitle", "Title")
+                hi.link("FzfLuaDirPart", "@string.special.path")
+                hi.link("FzfLuaFilePart", "@string.special.path")
+            end)
         end,
         after = function()
             require("fzf-lua").setup {

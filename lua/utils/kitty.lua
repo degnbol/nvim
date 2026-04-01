@@ -3,7 +3,7 @@ local M = {}
 
 ---Is this terminal kitty?
 function M.term()
-    return os.execute("kitty @ ls 2> /dev/null > /dev/null")
+    return vim.env.KITTY_PID ~= nil
 end
 
 ---Enable/diable ligatures for the current kitty window.
