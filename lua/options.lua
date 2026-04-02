@@ -181,7 +181,6 @@ vim.opt.diffopt:append("linematch:60")
 local kitty = require "utils/kitty"
 kitty.ligatures_pattern(false, { "*.typ", "*.adoc" })
 
--- Enable experimental cmdline with syntax hl.
--- Disabled: treesitter query error with "tab" node after nvim update
--- require('vim._extui').enable {}
+-- Enable experimental cmdline with syntax hl (eliminates "Press ENTER" prompts).
+require('vim._core.ui2').enable()
 
