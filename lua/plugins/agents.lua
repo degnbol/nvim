@@ -73,6 +73,7 @@ return {
         end,
         after = function()
             require("agentic").setup {
+                winbar = false,
                 headers = {
                     chat = { title = "Claude" },
                 },
