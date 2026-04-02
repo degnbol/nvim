@@ -88,6 +88,7 @@ return {
                 triggers = {
                     { mode = 'n', keys = '<Leader>' },
                     { mode = 'x', keys = '<Leader>' },
+                    { mode = 'n', keys = '<LocalLeader>' },
                     { mode = 'n', keys = 'g' },
                     { mode = 'x', keys = 'g' },
                     { mode = 'n', keys = 'y' },
@@ -202,6 +203,16 @@ return {
                     width = "auto",
                 },
             }
+
+            -- Ensure triggers on unlisted Agentic buffers (mini.clue skips
+            -- buflisted=false buffers on BufWinEnter; only AgenticInput gets
+            -- triggers via LspAttach from the completion server)
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = "Agentic*",
+                callback = function(ev)
+                    clue.ensure_buf_triggers(ev.buf)
+                end,
+            })
 
             vim.schedule(function()
                 map.desc('n', 'gc', "Comment")

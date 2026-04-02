@@ -8,8 +8,7 @@ local rtp = vim.opt.runtimepath:get()[1]
 opt.path:append("./src")
 
 g.mapleader = ' '
--- could also use default \ for single key more conveniently allowing for sub categories
-g.maplocalleader = '  '
+g.maplocalleader = '\\'
 
 opt.expandtab = true
 opt.tabstop = 4        -- how many spaces does a tab correspond to?
