@@ -10,30 +10,6 @@ return {
         ---@type quicker.SetupOptions
         after = function()
             require("quicker").setup({
-                on_qf = function(bufnr)
-                    if not vim.b[bufnr].agentic_picker then
-                        return
-                    end
-                    -- agentic.nvim session picker owns this buffer's rendering.
-                    -- quicker defers extmarks via vim.schedule, so clear after.
-                    local ns_ids = {}
-                    for _, name in ipairs({
-                        "quicker_highlights",
-                        "quicker_filenames",
-                        "quicker_locations",
-                        "quicker_headers",
-                    }) do
-                        ns_ids[#ns_ids + 1] = vim.api.nvim_create_namespace(name)
-                    end
-                    vim.schedule(function()
-                        if not vim.api.nvim_buf_is_valid(bufnr) then
-                            return
-                        end
-                        for _, ns in ipairs(ns_ids) do
-                            vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-                        end
-                    end)
-                end,
                 keys = {
                     {
                         ">",
