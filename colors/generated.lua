@@ -46,7 +46,7 @@ hi(0, "TermCursor", { bg = "#e6eaea", fg = "#152528" })
 hi(0, "DiffAdd", { bg = "#1D3B3B" })
 hi(0, "DiffDelete", { bg = "#372E2A", fg = "#152528" })
 hi(0, "DiffChange", { bg = "#472E00" })
-hi(0, "DiffText", { bg = "#08343F" })
+hi(0, "DiffText", { bg = "#472E00" })
 -- Diff syntax (fg colours for diff file highlighting).
 hi(0, "Added", { fg = "#7aa4a1" })
 hi(0, "Removed", { fg = "#e85c51" })
@@ -54,6 +54,10 @@ hi(0, "Changed", { fg = "#ff8349" })
 hi(0, "diffAdded", { link = "Added" })
 hi(0, "diffRemoved", { link = "Removed" })
 hi(0, "diffChanged", { link = "Changed" })
+-- Gitsigns line highlights: subtle tints for linehl mode.
+hi(0, "GitSignsAddLn", { bg = "#192B2E" })
+hi(0, "GitSignsChangeLn", { bg = "#1A2B2D" })
+hi(0, "GitSignsDeleteLn", { bg = "#19292C" })
 
 -- Syntax
 hi(0, "Comment", { fg = "#4e5157", italic = false })
