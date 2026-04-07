@@ -15,8 +15,7 @@ local function readjson(filename)
     return content
 end
 
-local rtp = vim.opt.runtimepath:get()[1]
-local chordchart = readjson(rtp .. "/lua/guitar/chordchart.json")
+local chordchart = readjson(vim.fn.stdpath("config") .. "/lua/guitar/chordchart.json")
 local name2strings = {}
 for _, chord in ipairs(chordchart) do
     name2strings[chord.name] = {chord.strings, chord.fret}

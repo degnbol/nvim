@@ -139,8 +139,11 @@ fmta([[<>
             { i(1, "<leader>"), i(2), i(3) }),
         { condition = conds.line_begin }),
 
-    s({ trig = "rtp", dscr = "Get neovim config root", condition = conds.line_begin, snippetType = 'autosnippet' },
-        { t "local rtp = vim.opt.runtimepath:get()[1]" }),
+    s({ trig = "rtp", dscr = "Get rtp table", condition = conds.line_begin, snippetType = 'autosnippet' },
+        { t "local rtp = vim.opt.runtimepath:get()" }),
+
+    s({ trig = "root", dscr = "Get nvim config root", condition = conds.line_begin, snippetType = 'autosnippet' },
+        { t 'local config = vim.fn.stdpath("config")' }),
 
     s({ trig = "setlocal", dscr = "Set local option.", condition = conds.line_begin * lsu.line_end },
         { t "vim.opt_local." }),

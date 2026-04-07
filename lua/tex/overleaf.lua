@@ -1,5 +1,5 @@
 
-local rtp = vim.opt.runtimepath:get()[1]
+local config = vim.fn.stdpath("config")
 
 -- async overleaf sync on save and load
 local overleaf = vim.api.nvim_create_augroup("overleaf", {clear=true})
@@ -16,7 +16,7 @@ if vim.startswith(remote, "https://git.overleaf.com/") then
         group = overleaf,
         buffer = 0, -- only for current buffer. Mutually exclusive with pattern arg.
         callback = function ()
-            vim.fn.jobstart({rtp .. "/tex/overleaf/gitsync.sh", vim.api.nvim_buf_get_name(0)})
+            vim.fn.jobstart({config .. "/tex/overleaf/gitsync.sh", vim.api.nvim_buf_get_name(0)})
         end
     })
 end

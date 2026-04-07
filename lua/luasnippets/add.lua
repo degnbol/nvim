@@ -6,12 +6,12 @@ local ls = require("luasnip")
 
 local M = {}
 
-local rtp = vim.opt.runtimepath:get()[1]
+local config = vim.fn.stdpath("config")
 
 ---@param ft string
 ---@return string
 local function snippets_file(ft)
-    return rtp .. "/luasnippets/" .. ft .. ".lua"
+    return config .. "/luasnippets/" .. ft .. ".lua"
 end
 
 ---Escape for Lua double-quoted string context.

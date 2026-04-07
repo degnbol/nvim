@@ -3,7 +3,7 @@ local opt = vim.opt
 local g   = vim.g
 local api = vim.api
 
-local rtp = vim.opt.runtimepath:get()[1]
+local config = vim.fn.stdpath("config")
 
 opt.path:append("./src")
 
@@ -115,13 +115,13 @@ vim.opt.spellcapcheck = ""
 -- look for spelling in a camelCase word as multiple distinct words
 vim.opt.spelloptions = "camel"
 -- synonyms <C-xt>
-vim.opt.thesaurus = rtp .. "/thesaurus/english.txt"
+vim.opt.thesaurus = config .. "/thesaurus/english.txt"
 -- complete word spelling <C-xk>
-vim.opt.dictionary = rtp .. "/spell/en.dic"
+vim.opt.dictionary = config .. "/spell/en.dic"
 -- custom words. add under cursor: zg, remove: zw. temp: z{G,W}. undo: zu{g,w,G,W}
 -- visual mode also works.
 -- It's possible to have multiple spellfiles and use a preceding count.
-vim.opt.spellfile = rtp .. "/spell/custom.utf8.add"
+vim.opt.spellfile = config .. "/spell/custom.utf8.add"
 -- set a default commentstring
 vim.opt.commentstring = "#%s"
 

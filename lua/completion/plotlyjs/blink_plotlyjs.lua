@@ -60,8 +60,7 @@ local function blink_format(obj)
 end
 
 function M:_load()
-    local rtp = vim.opt.runtimepath:get()[1]
-    local fh = io.open(rtp .. "/lua/completion/plotlyjs/plotlyjs.json")
+    local fh = io.open(vim.fn.stdpath("config") .. "/lua/completion/plotlyjs/plotlyjs.json")
     if fh == nil then
         print("Error loading plotlyjs.json")
         return

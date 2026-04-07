@@ -41,8 +41,8 @@ function M.new(user_config)
 end
 
 function M:_load()
-    local rtp = vim.opt.runtimepath:get()[1]
-    local fh = io.open(rtp .. "/lua/completion/pymol/pymol_settings.txt")
+    local config = vim.fn.stdpath("config")
+    local fh = io.open(config .. "/lua/completion/pymol/pymol_settings.txt")
     if fh == nil then
         print("pymol settings file not found")
         return
@@ -59,7 +59,7 @@ function M:_load()
 
     -- add descriptions if available
     for _, item in ipairs(self.cached_items) do
-        local filepath = rtp .. "/lua/completion/pymol/pymol_settings_descriptions/" .. item.label .. ".md"
+        local filepath = config .. "/lua/completion/pymol/pymol_settings_descriptions/" .. item.label .. ".md"
         fh = io.open(filepath)
         if fh ~= nil then
             local content = fh:read("*a")

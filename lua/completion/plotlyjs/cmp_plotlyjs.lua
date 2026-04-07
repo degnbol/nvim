@@ -6,8 +6,7 @@ local M = {}
 
 local registered = false
 
-local rtp = vim.opt.runtimepath:get()[1]
-local fh = io.open(rtp .. "/lua/completion/plotlyjs/plotlyjs.json")
+local fh = io.open(vim.fn.stdpath("config") .. "/lua/completion/plotlyjs/plotlyjs.json")
 local tree = vim.json.decode(fh:read("*a"))
 fh:close()
 -- extend with shortcut entries such as marker_color=... instead of marker=attr(color=...).

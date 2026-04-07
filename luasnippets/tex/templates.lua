@@ -3,7 +3,7 @@ local lsu = require "utils/luasnip"
 local s, t, i, c, f, d, sn, fmta, conds, rep, ms = lsu.s, lsu.t, lsu.i, lsu.c, lsu.f, lsu.d, lsu.sn, lsu.fmta, lsu.conds, lsu.rep, lsu.ms
 local util = require "utils/init"
 
-local rtp = vim.opt.runtimepath:get()[1]
+local rtp = vim.fn.stdpath("config")
 
 --- Functionnode function to put text from file(s) at a node location
 ---:h luasnip-functionnode

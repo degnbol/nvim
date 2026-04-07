@@ -392,9 +392,9 @@ map.n("gx", function()
     -- Go to github for plugins easily.
     if vim.bo.filetype == "lua" then
         -- First check if we are editing a plugin spec file
-        local rtp = vim.opt.runtimepath:get()[1]
+        local config = vim.fn.stdpath("config")
         local filepath = vim.api.nvim_buf_get_name(0)
-        if filepath:match(rtp .. '/lua/plugins/') then
+        if filepath:match(config .. '/lua/plugins/') then
             -- get first string on the line, assumes we don't list multiple plugins on one line.
             local line = vim.api.nvim_get_current_line()
             local repo = line:match([["([%w%p]+/[%w%p]+)"]])

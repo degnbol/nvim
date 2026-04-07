@@ -39,8 +39,8 @@ M.setup = function()
     local has_cmp, cmp = pcall(require, 'cmp')
     if not has_cmp then return end
 
-    local rtp = vim.opt.runtimepath:get()[1]
-    local fh = io.open(rtp .. "/lua/completion/pymol/pymol_settings.txt")
+    local config = vim.fn.stdpath("config")
+    local fh = io.open(config .. "/lua/completion/pymol/pymol_settings.txt")
     local items = {}
     for line in fh:lines() do
         table.insert(items, {label=line})
@@ -55,7 +55,7 @@ M.setup = function()
 
     -- add descriptions if available
     for _, item in ipairs(items) do
-        local filepath = rtp .. "/lua/completion/pymol/pymol_settings_descriptions/" .. item.label .. ".md"
+        local filepath = config .. "/lua/completion/pymol/pymol_settings_descriptions/" .. item.label .. ".md"
         local fh = io.open(filepath)
         if fh ~= nil then
             local content = fh:read("*a")
