@@ -9,6 +9,10 @@ return {
         ---@module "quicker"
         ---@type quicker.SetupOptions
         after = function()
+            local hi = require "utils/highlights"
+            hi.onColorScheme(function()
+                hi.link("QuickFixFilename", "@string.special.path")
+            end)
             require("quicker").setup({
                 keys = {
                     {
