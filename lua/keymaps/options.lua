@@ -17,8 +17,8 @@ local toggle_conceal = function()
     end
 end
 local toggle_colcealcursor = function()
-    if vim.opt.concealcursor:get():match('n') then
-        vim.cmd 'setlocal concealcursor-=n' -- lua version not simple
+    if vim.opt_local.concealcursor:get():match('n') then
+        vim.opt_local.concealcursor = vim.opt_local.concealcursor:get():gsub('n', '')
     else
         vim.opt.concealcursor:append('n')
     end

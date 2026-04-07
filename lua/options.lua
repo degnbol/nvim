@@ -13,7 +13,6 @@ g.maplocalleader = '\\'
 opt.expandtab = true
 opt.tabstop = 4        -- how many spaces does a tab correspond to?
 opt.shiftwidth = 0     -- use tabstop number of spaces for indentation
-opt.smartindent = true
 opt.breakindent = true -- when wrapping line, match indent on the wrapped line.
 -- opt.breakindentopt = "shift:2" -- indent to show line was wrapped.
 -- OR show "> "
@@ -27,7 +26,7 @@ opt.showbreak = " "
 -- opt.showbreak = "▉"
 opt.copyindent = true
 -- indent after words in cinwords (^for,^while,...) and stuff with {}. Should def not be active for normal text docs.
-opt.smartindent = false -- has to be set to false explicitly even though it is default probs because some plugin changes it.
+opt.smartindent = false -- set explicitly because some plugin changes it
 -- note vimscript indentexpr
 -- https://github.com/JuliaEditorSupport/julia-vim/blob/master/indent/julia.vim
 -- is terrible for julia, so definitely use
@@ -59,13 +58,10 @@ opt.smoothscroll = true               -- if we wrap lines, then show partial sta
 -- a linebreak has been forced.
 -- opt.linebreak = true
 opt.numberwidth = 2 -- reduce default numbering from starting as 3 characters wide to 2
--- Mouse click navigation even in cmdline mode. Default is not in cmdline mode but otherwise.
-opt.mouse = "a"
 -- Touchpad on Mac should scroll slower.
 if util.is_mac() then
     opt.mousescroll = "ver:1,hor:1"
 end
-opt.termguicolors = true
 opt.cursorline = true        -- highlight current line
 opt.cursorlineopt = "number" -- only highlight cursorline number
 -- show a column that can be used to add signs to lines showing git changes and LSP diagnostics.
@@ -73,10 +69,11 @@ opt.cursorlineopt = "number" -- only highlight cursorline number
 opt.signcolumn = "no" -- "number"
 -- opt.cmdheight = 0 -- hide cmdline when not in use. Messes with search currently, by asking for confirm after a search.
 -- when regaining focus, check if files changed on disk and reload silently.
--- Uses checktime (native file-timestamp check) instead of the old :! hack
--- which spawns a shell subprocess on every BufEnter — catastrophic with
--- plugins that do programmatic buffer switches (agentic, fzf, etc.).
-api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, { command = 'silent! checktime' })
+-- Only on FocusGained (returning from another app), not BufEnter — checktime
+-- on BufEnter causes recursive autocmd cascades with plugins that do
+-- programmatic buffer switches (agentic, fzf, etc.): checktime → reload →
+-- BufReadPost → buffer switch → BufEnter → checktime, bouncing between buffers.
+api.nvim_create_autocmd("FocusGained", { command = 'silent! checktime' })
 opt.showmode = false
 opt.showcmd = false
 -- t=use textwidth for formatting. a=auto format. w=respect explicit newline. r=continue comment leader with newline in insert mode.
@@ -127,9 +124,9 @@ vim.opt.spellfile = config .. "/spell/custom.utf8.add"
 -- set a default commentstring
 vim.opt.commentstring = "#%s"
 
-vim.wo.foldlevel = 99 -- so we don't fold from the start
-vim.wo.foldmethod = 'expr'
-vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+opt.foldlevel = 99 -- so we don't fold from the start
+opt.foldmethod = 'expr'
+opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 
 -- Setting it to "screen" reduces content jumping when splitting and unsplitting screens.
 -- Seems cleaner when doing e.g. goto-ref, then close qf.
@@ -162,11 +159,10 @@ vim.diagnostic.config {
     },
 }
 
--- custom foldtext function that shows <first line> … <lines hidden> … <last line>
--- FIXME: when we scroll and are not seeing the beginning of the line the text moves
+-- <first line> … <lines hidden> … <last line>
 function FoldText()
-    local linestart = vim.fn.getline(vim.v.foldstart)
-    local lineend = vim.fn.getline(vim.v.foldend)
+    local linestart = vim.api.nvim_buf_get_lines(0, vim.v.foldstart - 1, vim.v.foldstart, false)[1]
+    local lineend = vim.api.nvim_buf_get_lines(0, vim.v.foldend - 1, vim.v.foldend, false)[1]
     local line_count = vim.v.foldend - vim.v.foldstart + 1
     return linestart .. " … " .. line_count .. " … " .. lineend:match("%s*(.*)%s*")
 end
