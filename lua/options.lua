@@ -72,9 +72,11 @@ opt.cursorlineopt = "number" -- only highlight cursorline number
 -- "number" means it replaces line numbering rather than e.g. "yes" where it is a column left of numbering.
 opt.signcolumn = "no" -- "number"
 -- opt.cmdheight = 0 -- hide cmdline when not in use. Messes with search currently, by asking for confirm after a search.
--- http://stackoverflow.com/questions/2490227/how-does-vims-autoread-work#20418591
--- when regaining focus, reload file if it was changed somewhere else
-api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, { command = ':silent! !' })
+-- when regaining focus, check if files changed on disk and reload silently.
+-- Uses checktime (native file-timestamp check) instead of the old :! hack
+-- which spawns a shell subprocess on every BufEnter — catastrophic with
+-- plugins that do programmatic buffer switches (agentic, fzf, etc.).
+api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, { command = 'silent! checktime' })
 opt.showmode = false
 opt.showcmd = false
 -- t=use textwidth for formatting. a=auto format. w=respect explicit newline. r=continue comment leader with newline in insert mode.
