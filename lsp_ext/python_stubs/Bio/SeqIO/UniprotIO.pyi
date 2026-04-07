@@ -1,5 +1,5 @@
 from .Interfaces import SequenceIterator as SequenceIterator, _BytesIOSource
-from Bio import BiopythonDeprecationWarning as BiopythonDeprecationWarning, SeqFeature as SeqFeature
+from Bio import SeqFeature as SeqFeature
 from Bio.Seq import Seq as Seq
 from Bio.SeqRecord import SeqRecord as SeqRecord
 from _typeshed import Incomplete

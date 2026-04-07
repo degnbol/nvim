@@ -1,0 +1,6 @@
+from _typeshed import Incomplete
+from gudhi.simplex_tree import SimplexTree as SimplexTree
+
+class WeightedRipsComplex:
+    def __init__(self, distance_matrix, weights: Incomplete | None = ..., max_filtration: float = ...) -> None: ...
+    def create_simplex_tree(self, max_dimension): ...

@@ -1,3 +1,4 @@
+from Bio import BiopythonParserWarning as BiopythonParserWarning
 from Bio.Align import MultipleSeqAlignment as MultipleSeqAlignment
 from Bio.Seq import Seq as Seq
 from Bio.SeqRecord import SeqRecord as SeqRecord

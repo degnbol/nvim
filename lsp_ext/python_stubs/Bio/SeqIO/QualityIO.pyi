@@ -1,14 +1,13 @@
 import abc
 from .Interfaces import SequenceIterator as SequenceIterator, SequenceWriter as SequenceWriter, _TextIOSource
-from Bio import BiopythonParserWarning as BiopythonParserWarning, BiopythonWarning as BiopythonWarning, StreamModeError as StreamModeError
+from Bio import BiopythonDeprecationWarning as BiopythonDeprecationWarning, BiopythonParserWarning as BiopythonParserWarning, BiopythonWarning as BiopythonWarning, StreamModeError as StreamModeError
 from Bio.File import as_handle as as_handle
 from Bio.Seq import Seq as Seq
 from Bio.SeqRecord import SeqRecord as SeqRecord
 from _typeshed import Incomplete
 from abc import abstractmethod
-from collections.abc import Iterator
+from collections.abc import Callable as Callable, Iterator
 from dataclasses import dataclass
-from typing import Callable
 
 SANGER_SCORE_OFFSET: int
 SOLEXA_SCORE_OFFSET: int
@@ -53,6 +52,8 @@ class QualPhredIterator(SequenceIterator):
 
 class FastqPhredWriter(SequenceWriter):
     modes: str
+    @classmethod
+    def to_string(cls, record): ...
     def write_record(self, record: SeqRecord) -> None: ...
 
 def as_fastq(record: SeqRecord) -> str: ...
@@ -62,18 +63,24 @@ class QualPhredWriter(SequenceWriter):
     wrap: int | None
     record2title: Incomplete
     def __init__(self, handle: _TextIOSource, wrap: int = 60, record2title: Callable[[SeqRecord], str] | None = None) -> None: ...
+    @classmethod
+    def to_string(cls, record: SeqRecord) -> str: ...
     def write_record(self, record: SeqRecord) -> None: ...
 
 def as_qual(record: SeqRecord) -> str: ...
 
 class FastqSolexaWriter(SequenceWriter):
     modes: str
+    @classmethod
+    def to_string(cls, record: SeqRecord) -> str: ...
     def write_record(self, record: SeqRecord) -> None: ...
 
 def as_fastq_solexa(record: SeqRecord) -> str: ...
 
 class FastqIlluminaWriter(SequenceWriter):
     modes: str
+    @classmethod
+    def to_string(cls, record: SeqRecord) -> str: ...
     def write_record(self, record: SeqRecord) -> None: ...
 
 def as_fastq_illumina(record: SeqRecord) -> str: ...

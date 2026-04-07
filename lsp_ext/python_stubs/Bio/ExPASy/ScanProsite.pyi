@@ -2,6 +2,8 @@ from _typeshed import Incomplete
 from xml.sax import handler
 from xml.sax.expatreader import ExpatParser
 
+PROSITE_URL: str
+
 class Record(list):
     n_match: Incomplete
     n_seq: Incomplete
@@ -9,7 +11,7 @@ class Record(list):
     warning: Incomplete
     def __init__(self) -> None: ...
 
-def scan(seq: str = '', mirror: str = 'https://prosite.expasy.org', output: str = 'xml', **keywords): ...
+def scan(seq: str = '', mirror=..., output: str = 'xml', **keywords): ...
 def read(handle): ...
 
 class Parser(ExpatParser):

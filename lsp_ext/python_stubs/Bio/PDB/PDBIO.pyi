@@ -1,6 +1,5 @@
-from Bio import BiopythonWarning as BiopythonWarning
 from Bio.Data.IUPACData import atom_weights as atom_weights
-from Bio.PDB.PDBExceptions import PDBIOException as PDBIOException
+from Bio.PDB.PDBExceptions import PDBIOException as PDBIOException, PDBIOWarning as PDBIOWarning
 from Bio.PDB.StructureBuilder import StructureBuilder as StructureBuilder
 from _typeshed import Incomplete
 

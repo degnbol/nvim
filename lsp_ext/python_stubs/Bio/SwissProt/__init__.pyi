@@ -4,7 +4,7 @@ from collections.abc import Generator
 
 class SwissProtParserError(ValueError):
     line: Incomplete
-    def __init__(self, *args, line: Incomplete | None = None) -> None: ...
+    def __init__(self, *args, line=None) -> None: ...
 
 class Record:
     entry_name: Incomplete

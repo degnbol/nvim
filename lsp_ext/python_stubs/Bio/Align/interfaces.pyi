@@ -1,4 +1,5 @@
 import abc
+import types
 from Bio import StreamModeError as StreamModeError
 from Bio.Align import Alignments as Alignments, AlignmentsAbstractBaseClass as AlignmentsAbstractBaseClass
 from _typeshed import Incomplete

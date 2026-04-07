@@ -1,4 +1,5 @@
 from .Interfaces import SequenceIterator as SequenceIterator, SequenceWriter as SequenceWriter
+from Bio import BiopythonDeprecationWarning as BiopythonDeprecationWarning
 from Bio.Seq import Seq as Seq
 from Bio.SeqRecord import SeqRecord as SeqRecord
 
@@ -9,6 +10,8 @@ class TabIterator(SequenceIterator):
 
 class TabWriter(SequenceWriter):
     modes: str
+    @classmethod
+    def to_string(cls, record): ...
     def write_record(self, record) -> None: ...
 
 def as_tab(record): ...

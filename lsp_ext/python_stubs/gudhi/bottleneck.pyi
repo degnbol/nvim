@@ -1,0 +1,3 @@
+import gudhi._bottleneck_ext as t
+
+def bottleneck_distance(diagram_1, diagram_2, e: float = ...) -> float: ...

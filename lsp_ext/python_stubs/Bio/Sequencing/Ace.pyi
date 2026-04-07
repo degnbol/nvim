@@ -14,7 +14,7 @@ class qa:
     qual_clipping_end: Incomplete
     align_clipping_start: Incomplete
     align_clipping_end: Incomplete
-    def __init__(self, line: Incomplete | None = None) -> None: ...
+    def __init__(self, line=None) -> None: ...
 
 class ds:
     chromat_file: str
@@ -24,19 +24,19 @@ class ds:
     dye: str
     template: str
     direction: str
-    def __init__(self, line: Incomplete | None = None) -> None: ...
+    def __init__(self, line=None) -> None: ...
 
 class af:
     name: str
     coru: Incomplete
     padded_start: Incomplete
-    def __init__(self, line: Incomplete | None = None) -> None: ...
+    def __init__(self, line=None) -> None: ...
 
 class bs:
     name: str
     padded_start: Incomplete
     padded_end: Incomplete
-    def __init__(self, line: Incomplete | None = None) -> None: ...
+    def __init__(self, line=None) -> None: ...
 
 class rt:
     name: str
@@ -46,7 +46,7 @@ class rt:
     padded_end: Incomplete
     date: str
     comment: Incomplete
-    def __init__(self, line: Incomplete | None = None) -> None: ...
+    def __init__(self, line=None) -> None: ...
 
 class ct:
     name: str
@@ -58,21 +58,21 @@ class ct:
     notrans: str
     info: Incomplete
     comment: Incomplete
-    def __init__(self, line: Incomplete | None = None) -> None: ...
+    def __init__(self, line=None) -> None: ...
 
 class wa:
     tag_type: str
     program: str
     date: str
     info: Incomplete
-    def __init__(self, line: Incomplete | None = None) -> None: ...
+    def __init__(self, line=None) -> None: ...
 
 class wr:
     name: str
     aligned: str
     program: str
     date: Incomplete
-    def __init__(self, line: Incomplete | None = None) -> None: ...
+    def __init__(self, line=None) -> None: ...
 
 class Reads:
     rd: Incomplete
@@ -80,7 +80,7 @@ class Reads:
     ds: Incomplete
     rt: Incomplete
     wr: Incomplete
-    def __init__(self, line: Incomplete | None = None) -> None: ...
+    def __init__(self, line=None) -> None: ...
 
 class Contig:
     name: str
@@ -95,7 +95,7 @@ class Contig:
     reads: Incomplete
     ct: Incomplete
     wa: Incomplete
-    def __init__(self, line: Incomplete | None = None) -> None: ...
+    def __init__(self, line=None) -> None: ...
 
 def parse(source) -> Generator[Incomplete, Incomplete]: ...
 

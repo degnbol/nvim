@@ -1,0 +1,16 @@
+from ._base import _BaseInfernalParser
+from Bio.SearchIO._index import SearchIndexer
+from _typeshed import Incomplete
+
+__all__ = ['InfernalTextParser', 'InfernalTextIndexer']
+
+class InfernalTextParser(_BaseInfernalParser):
+    handle: Incomplete
+    line: Incomplete
+    def __init__(self, handle) -> None: ...
+    def __iter__(self): ...
+
+class InfernalTextIndexer(SearchIndexer):
+    def __init__(self, *args, **kwargs) -> None: ...
+    def __iter__(self): ...
+    def get_raw(self, offset): ...

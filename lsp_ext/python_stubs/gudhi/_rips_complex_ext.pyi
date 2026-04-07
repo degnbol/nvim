@@ -1,0 +1,6 @@
+import collections.abc
+import gudhi._simplex_tree_ext
+
+class Rips_complex_interface:
+    def __init__(self, arg0: collections.abc.Sequence[collections.abc.Sequence[float]], arg1: float, arg2: bool) -> None: ...
+    def create_simplex_tree(self, arg0: gudhi._simplex_tree_ext._Simplex_tree_python_interface, arg1: int) -> None: ...

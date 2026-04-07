@@ -14,7 +14,7 @@ class SequenceLine:
     seqtype: str
     trace: str
     text: Incomplete
-    def __init__(self, text: Incomplete | None = None) -> None: ...
+    def __init__(self, text=None) -> None: ...
 
 class ProtsimLine:
     org: str
@@ -23,13 +23,13 @@ class ProtsimLine:
     pct: str
     aln: str
     text: Incomplete
-    def __init__(self, text: Incomplete | None = None) -> None: ...
+    def __init__(self, text=None) -> None: ...
 
 class STSLine:
     acc: str
     unists: str
     text: Incomplete
-    def __init__(self, text: Incomplete | None = None) -> None: ...
+    def __init__(self, text=None) -> None: ...
 
 class Record:
     ID: str
