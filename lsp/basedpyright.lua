@@ -86,6 +86,7 @@ return {
                 extraPaths = {
                     "src",
                     vim.fn.stdpath("config") .. "/lsp_ext/pymol-open-source/modules",
+                    vim.fn.stdpath("config") .. "/lsp_ext/kitty-source",
                 },
                 -- Prevent goto-definition from landing in build/ directories.
                 -- https://docs.basedpyright.com/v1.20.0/configuration/language-server-settings/

@@ -13,3 +13,6 @@
 [submodule "modules/agentic.nvim"]
 	path = modules/agentic.nvim
 	url = git@github.com:degnbol/agentic.nvim.git
+[submodule "lsp_ext/kitty-source"]
+	path = lsp_ext/kitty-source
+	url = https://github.com/kovidgoyal/kitty.git
