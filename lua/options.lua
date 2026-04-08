@@ -77,7 +77,7 @@ opt.signcolumn = "no" -- "number"
 -- from within this handler. Without nested, neovim's autocmd anti-nesting
 -- guard (autocmd_busy && !autocmd_nested) silently skips FileChangedShell,
 -- causing W12 to display instead of silent reload. With ui2, the W12 prompt
--- crashes neovim when concurrent async events fire.
+-- crashed neovim when concurrent async events fired (fixed in 0.12.1).
 api.nvim_create_autocmd("FocusGained", { nested = true, command = 'silent! checktime' })
 -- Force-reload buffers when files change on disk (e.g. agent edits).
 -- Suppresses W12 prompt so modified buffers reload silently.
