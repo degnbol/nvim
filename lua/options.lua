@@ -73,7 +73,20 @@ opt.signcolumn = "no" -- "number"
 -- on BufEnter causes recursive autocmd cascades with plugins that do
 -- programmatic buffer switches (agentic, fzf, etc.): checktime → reload →
 -- BufReadPost → buffer switch → BufEnter → checktime, bouncing between buffers.
-api.nvim_create_autocmd("FocusGained", { command = 'silent! checktime' })
+-- nested = true: checktime triggers FileChangedShell, which needs to fire
+-- from within this handler. Without nested, neovim's autocmd anti-nesting
+-- guard (autocmd_busy && !autocmd_nested) silently skips FileChangedShell,
+-- causing W12 to display instead of silent reload. With ui2, the W12 prompt
+-- crashes neovim when concurrent async events fire.
+api.nvim_create_autocmd("FocusGained", { nested = true, command = 'silent! checktime' })
+-- Force-reload buffers when files change on disk (e.g. agent edits).
+-- Suppresses W12 prompt so modified buffers reload silently.
+api.nvim_create_autocmd("FileChangedShell", {
+    pattern = "*",
+    callback = function()
+        vim.v.fcs_choice = "reload"
+    end,
+})
 opt.showmode = false
 opt.showcmd = false
 -- t=use textwidth for formatting. a=auto format. w=respect explicit newline. r=continue comment leader with newline in insert mode.
