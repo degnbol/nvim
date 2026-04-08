@@ -120,6 +120,24 @@ Working examples: `modules/kitty-conf.nvim` (hover + completion),
 `modules/agentic.nvim/lua/agentic/completion/lsp_server.lua` (trigger-character
 completion for `/` and `@`).
 
+### `lsp_ext/` — External Sources and Stubs
+
+Extra type information for basedpyright, shared between neovim and the Claude lint hook.
+
+```
+lsp_ext/
+├── extraPaths/             # Source directories added to pyright's extraPaths
+│   ├── kitty-source/       # Kitty source (git submodule) — provides kitty.* types
+│   └── pymol_modules/      # Symlink → ../pymol-open-source/modules/
+├── python_stubs/           # .pyi stub files (pyright stubPath)
+├── pymol-open-source/      # Full pymol source repo (git submodule)
+└── r_lsp_dots.R            # R languageserver monkey-patch (see R Language Server section)
+```
+
+**How it works:** `lsp/basedpyright.lua` globs `lsp_ext/extraPaths/*/` for import resolution paths. The Claude `lint.sh` hook uses the same glob when generating a fallback pyright config for projects without their own `pyrightconfig.json`.
+
+**Adding a new source:** Drop the directory in `extraPaths/` (or symlink it there). Both neovim and the lint hook pick it up automatically — no config changes needed.
+
 ## R Language Server
 
 The R languageserver doesn't resolve `...` forwarding — functions like `scale_y_log10(...)` that delegate to `scale_y_continuous(...)` only show `...` as a parameter, with no completion for the actual arguments.
