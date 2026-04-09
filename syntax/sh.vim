@@ -8,7 +8,7 @@ syn keyword Keyword in
 syn keyword @function.builtin mkdir sed tr gzip gunzip rm cd cat mv
 
 " Final \ at end of line for line continuation.
-syn match Comment /\\$/ containedin=shCommandSub,shFunctionTwo
+syn match Comment /\\$/ containedin=shCommandSub,shFunctionTwo,shParen,ExpandAlts,shDblBrace,shArithmetic,shSubSh,shExpr,shTest,shDo,shFor,shIf
 syn match Wildcard /*/
 
 " First word on a line or only preceded by an env var assignment (e.g. `LC_ALL=C tr ...`)
@@ -39,3 +39,6 @@ syn region ExpandAlts matchgroup=Delimiter start=/{/ end=/}/
 syn match ExpandAltsComma /,/ contained containedin=ExpandAlts
 hi def link ExpandAltsComma Delimiter
 
+" Over-eager, links to Special so stands out. Used many places e.g. final \ on 
+" a line and for everything in (( ... ))
+hi def link shParen @none
