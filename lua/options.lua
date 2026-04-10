@@ -192,5 +192,5 @@ local kitty = require "utils/kitty"
 kitty.ligatures_pattern(false, { "*.typ", "*.adoc" })
 
 -- Enable experimental cmdline with syntax hl (eliminates "Press ENTER" prompts).
-require('vim._core.ui2').enable({})
+require('vim._core.ui2').enable({ cmd = { height = 1 } })
 
