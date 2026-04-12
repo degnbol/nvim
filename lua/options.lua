@@ -192,7 +192,5 @@ local kitty = require "utils/kitty"
 kitty.ligatures_pattern(false, { "*.typ", "*.adoc" })
 
 -- Enable experimental cmdline with syntax hl (eliminates "Press ENTER" prompts).
--- height=1: without this, multi-line output (e.g. :Inspect) grows the cmdline
--- and it never shrinks back. :<Esc> and <C-l> don't fix it either.
-require('vim._core.ui2').enable({ cmd = { height = 1 } })
+require('vim._core.ui2').enable {}
 

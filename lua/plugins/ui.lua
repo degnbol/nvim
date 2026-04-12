@@ -80,8 +80,13 @@ return {
             }
         end,
     },
+    -- https://github.com/jake-stewart/auto-cmdheight.nvim
+    -- Auto-sizes the cmdline height to fit content, avoiding many "Hit Enter" prompts.
+    -- Redudant when using the new ui2, and in fact interferes and breaks the UI when both are active.
+    -- With both active, :Inspect and other multi-line messages show blank.
     {
         "auto-cmdheight.nvim",
+        enabled = false,
         lazy = false,
         after = function()
             require("auto-cmdheight").setup {
