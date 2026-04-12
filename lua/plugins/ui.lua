@@ -86,7 +86,7 @@ return {
     -- With both active, :Inspect and other multi-line messages show blank.
     {
         "auto-cmdheight.nvim",
-        enabled = false,
+        enabled = not package.loaded["vim._core.ui2"],
         lazy = false,
         after = function()
             require("auto-cmdheight").setup {
