@@ -14,6 +14,8 @@ For the vim.pack/lz.n interaction model and startup overhead implications, see
 - **`lua/plugins/*.lua`** — lz.n specs (27 files), auto-discovered via `require("lz.n").load("plugins")`
 - **Dev plugins** (modules/) — added to rtp manually in init.lua, use `load = function() end` in lz.n specs
 
+**Disabling plugins:** Use `enabled = false` in the lz.n spec. Keep the full spec (setup config, keymaps, etc.) intact so the plugin can be re-enabled later by removing the flag. Never delete the spec body when disabling.
+
 ### lz.n gotcha: `trigger_load` requires handler registration
 
 `trigger_load("plugin")` only finds plugins registered with a handler (event/cmd/ft/keys/colorscheme). Plugins with `lazy = true` but **no trigger field** are invisible — `trigger_load` silently skips them.
