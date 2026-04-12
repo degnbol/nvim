@@ -2,6 +2,10 @@
 
 `~/nvim` = `~/.config/nvim` = `~/dotfiles/config/nvim` (symlinks). All the same directory.
 
+## Debugging: plugins first, core last
+
+Do not conclude that a bug is in neovim core until confirmed with `nvim --clean` - it is usually a plugin problem.
+
 ## Plugin Management (vim.pack + lz.n)
 
 Plugins are managed by nvim 0.12's built-in `vim.pack` (install/update/lockfile) and
