@@ -6,10 +6,15 @@ require "options"
 
 -- Dev/local plugins: add to rtp before anything else
 local cfg = vim.fn.stdpath("config")
-for _, mod in ipairs({ "agentic.nvim", "kitty-conf.nvim", "kittyREPL.nvim", "nvim-revJ.lua" }) do
-    vim.opt.runtimepath:append(cfg .. "/modules/" .. mod)
-    local after_dir = cfg .. "/modules/" .. mod .. "/after"
-    if vim.uv.fs_stat(after_dir) then vim.opt.runtimepath:append(after_dir) end
+for mod, kind in vim.fs.dir(cfg .. "/modules") do
+    if kind == "directory" then
+        local base = cfg .. "/modules/" .. mod
+        vim.opt.runtimepath:append(base)
+        local after_dir = base .. "/after"
+        if vim.uv.fs_stat(after_dir) then vim.opt.runtimepath:append(after_dir) end
+        local doc_dir = base .. "/doc"
+        if vim.uv.fs_stat(doc_dir) then vim.cmd.helptags(doc_dir) end
+    end
 end
 
 -- Build hooks (register BEFORE vim.pack.add so install hooks fire)
