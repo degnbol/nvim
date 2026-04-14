@@ -86,6 +86,7 @@ return {
             Abolish embarass{,ing,ingly} embarrass{,ing,ingly}
             Abolish corespond{,s,ing} correspond{,s,ing}
             Abolish discernable discernible
+            Abolish rudamentary rudimentary
             Abolish wildtype wild type
             Abolish occurence occurrence
             Abolish occur{,r}ance occurrence

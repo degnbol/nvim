@@ -11,13 +11,33 @@ map.buf('n', '<leader>cc', '<Cmd>!python %<CR>', "Run this script")
 
 local hi = require "utils/highlights"
 
+map.n("<LocalLeader>u", function ()
+    local line = vim.api.nvim_get_current_line()
+    local dep = line:match('^import (%w+)')
+    if dep == nil then
+        dep = vim.fn.expand("<cword>")
+    end
+    if dep == nil then
+        print("No dependency detected at cursorline")
+        return 1
+    end
+    local filepath = vim.api.nvim_buf_get_name(0)
+
+    -- The `uv add` call edits the file so we first have to save.
+    vim.cmd.write()
+    local obj = vim.system({'uv', 'add', '--script', filepath, dep}, {text=true}):wait()
+    -- Refresh buffer to see the changes.
+    vim.cmd.edit()
+    return obj.code
+end, "Add script-local uv dep (PEP 723)")
+
 local function set_pymol_hl()
     -- Off-white fg from Normal, so pymol keywords show through green @string
     hi.set("@variable.builtin.pymol_select", { fg = hi.fg("Normal"), italic = true })
 end
 
 local grp = vim.api.nvim_create_augroup("colorscheme", { clear = true })
-vim.api.nvim_create_autocmd("Colorscheme", {
+vim.api.nvim_create_autocmd("ColorScheme", {
     buffer = 0,
     group = grp,
     callback = function()

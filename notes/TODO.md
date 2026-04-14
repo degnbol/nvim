@@ -259,11 +259,6 @@ https://sw.kovidgoyal.net/kitty/mapping/#conditional-mappings-depending-on-the-s
 It can also set kitty env vars from neovim.
 We could make cmd+enter faster at toggling between REPL and editor by setting env var and not having to search for the other window each time.
 
-
-Completion for kitty conf would be cool, e.g. parse
-https://sw.kovidgoyal.net/kitty/actions/
-
-
 tex:
 align & in math align env and cases.
 copy paste table content and reformat to/from tsv.
@@ -276,10 +271,9 @@ https://old.reddit.com/r/neovim/comments/1j9fy2w/diffviewnvim_is_so_underrated/
 If you start using ghostty or if you want a more "correct" approach to dark/light switching in the future then consider
 https://github.com/afonsofrancof/OSC11.nvim/
 
-Decrease the intensity of hl-cursorline and thus the linked quickfix line hl group.
-Do this after making a more dynamic setter of hl groups with color mixing, intensity setting etc.
-
 Shouldn't `:e <TAB>` use ctrl+n and ctrl+p and ctrl+space like blink configured completion instead of tab or instead of only tab?
 
+`grr` seems insanely slow, is there some timeout we wait for or other issue? The LSP didn't used to be this slow.
 
 
+Builtin LSP completion vs blink? And what about luasnip
