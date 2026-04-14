@@ -178,11 +178,12 @@ return {
                     if vim.bo[props.buf].filetype == 'AgenticChat' then
                         local headers = vim.t.agentic_headers
                         local chat = headers and headers.chat
-                        local label = chat and chat.session_name
-                            and ('󰻞 ' .. chat.session_name)
-                            or '󰻞 Claude'
+                        local label = '󰻞'
+                        if chat and chat.session_name then
+                            label = label .. ' ' .. chat.session_name
+                        end
                         if chat and chat.context then
-                            label = label .. ' ' .. chat.context:gsub("^Mode: ", ""):gsub(" Mode$", "")
+                            label = label .. ' ' .. chat.context
                         end
                         return { { label, guifg = props.focused and hi.fg("StatusLine") or "gray" } }
                     end
