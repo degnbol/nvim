@@ -5,7 +5,9 @@ return {
 --
 
 s({trig="#!", dscr="Python shebang", snippetType="autosnippet", condition=conds.line_begin},
-{t{"#!/usr/bin/env python3", ""}}),
+{
+    t"#!/usr/bin/env ", c(1, {t"-S uv run --script", t"python3"})
+}),
 
 s({
     trig='""""',
