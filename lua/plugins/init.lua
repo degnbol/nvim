@@ -26,6 +26,7 @@ return {
             iabbrev Im I'm
             iabbrev IM I'm
             " Abolish ive I've " keeps annoying me when writing five
+            iabbrev Ive I've
             iabbrev Ill I'll
             iabbrev youll you'll
             " id is a word but I would never spell it Id by itself
