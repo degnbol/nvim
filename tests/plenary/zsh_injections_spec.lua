@@ -202,6 +202,49 @@ describe("zsh injections", function()
         end)
     end)
 
+    describe("shell -c", function()
+        it("injects zsh into single-quoted zsh -c", function()
+            assert_injection(
+                "zsh -c 'echo hello'",
+                "zsh", "echo hello"
+            )
+        end)
+
+        it("injects zsh into double-quoted zsh -c", function()
+            assert_injection(
+                'zsh -c "echo hello"',
+                "zsh", "echo hello"
+            )
+        end)
+
+        it("injects zsh for bash -c", function()
+            assert_injection("bash -c 'echo x'", "zsh", "echo x")
+        end)
+
+        it("injects zsh for sh -c", function()
+            assert_injection("sh -c 'echo x'", "zsh", "echo x")
+        end)
+
+        it("injects zsh into each fragment of concatenated raw_strings", function()
+            -- nvim's injection processor trims leading whitespace from
+            -- injected content, so use content without leading spaces.
+            local inj = injections_for(
+                "zsh -c 'prefix='$ROOT';suffix'", "zsh")
+            local texts = {}
+            for _, entry in ipairs(inj) do texts[#texts + 1] = entry.text end
+            assert.is_true(vim.tbl_contains(texts, "prefix="))
+            assert.is_true(vim.tbl_contains(texts, ";suffix"))
+        end)
+
+        it("does not inject without -c flag", function()
+            assert_no_injection("zsh script.sh", "zsh")
+        end)
+
+        it("does not inject for unrelated commands", function()
+            assert_no_injection("echo -c 'hi'", "zsh")
+        end)
+    end)
+
     describe("nvim lua", function()
         it("injects lua into single-quoted nvim -c 'lua ...'", function()
             assert_injection(

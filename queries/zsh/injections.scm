@@ -62,6 +62,55 @@
   (#set! injection.language "python")
   (#set! injection.include-children))
 
+; Inject zsh into `zsh -c '...'` / `zsh -c "..."` / `bash -c ...` / `sh -c ...`
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_flag
+  .
+  argument: (raw_string) @injection.content
+  (#any-of? @_cmd "zsh" "bash" "sh")
+  (#eq? @_flag "-c")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "zsh")
+  (#set! injection.include-children))
+
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_flag
+  .
+  argument: (string (string_content) @injection.content)
+  (#any-of? @_cmd "zsh" "bash" "sh")
+  (#eq? @_flag "-c")
+  (#set! injection.language "zsh")
+  (#set! injection.include-children))
+
+; Concatenation form: `zsh -c 'prefix'$var'suffix'`. Each raw_string fragment
+; is injected independently; variable_ref siblings are highlighted by the
+; outer zsh parser. Fragments may not parse as complete zsh, but most
+; highlighting still comes through via error recovery.
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_flag
+  .
+  argument: (concatenation
+    (raw_string) @injection.content)
+  (#any-of? @_cmd "zsh" "bash" "sh")
+  (#eq? @_flag "-c")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "zsh")
+  (#set! injection.include-children))
+
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_flag
+  .
+  argument: (concatenation
+    (string (string_content) @injection.content))
+  (#any-of? @_cmd "zsh" "bash" "sh")
+  (#eq? @_flag "-c")
+  (#set! injection.language "zsh")
+  (#set! injection.include-children))
+
 ; Inject julia into `julia -e '...'`
 (command
   name: (command_name) @_cmd
