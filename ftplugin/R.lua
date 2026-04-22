@@ -1,3 +1,5 @@
+vim.cmd([[syntax region @variable matchgroup=Operator start=/`/ end=/`/]])
+
 local map = require "utils/keymap"
 
 -- Errors.
