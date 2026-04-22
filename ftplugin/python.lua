@@ -1,3 +1,8 @@
+-- Typo corrections.
+vim.cmd.iabbrev("reutrn", "return")
+vim.cmd.iabbrev("Ture", "True")
+vim.cmd.iabbrev("Flase", "False")
+
 local map = require "utils/keymap"
 
 -- remove o, we want to continue comments while editing them only (r).

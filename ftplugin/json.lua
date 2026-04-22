@@ -1,3 +1,6 @@
+-- Conceal quotation marks around entry labels and strings.
+vim.opt_local.conceallevel = 1
+
 local map = require "utils/keymap"
 
 -- Compile/build keymap for JSON files

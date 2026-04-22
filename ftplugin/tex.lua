@@ -1,3 +1,83 @@
+-- Most of the time _ is for math and does not belong within a keyword.
+-- Other times it appears in e.g. links it has to be escaped, so wouldn't work
+-- as a keyword anyways.
+vim.opt_local.iskeyword:remove("_")
+
+-- insert real tab by default
+vim.opt_local.expandtab = false
+-- there was some annoying issue with indents inserted in regular text
+vim.opt_local.smartindent = false
+-- lists doesn't start with number on first column but uses \item
+vim.opt_local.formatoptions:remove("n")
+-- we will often be writing prose that wraps at textwidth columns but not
+-- code. Let's try with sidescrolloff so the window doesn't scroll when we
+-- get close to the edge.
+vim.opt_local.sidescrolloff = 0
+
+-- vimtex has a lot of nice default conceals, e.g. greek in maths, \textbf,
+-- etc. but it moves the text too much and hides \vspace etc.
+vim.opt_local.conceallevel = 0
+
+vim.opt_local.wrap = true
+
+-- in_mathzone and others call stack under the hood:
+-- https://github.com/lervag/vimtex/blob/c2f38c25375e6fb06654c3de945995c925b286e6/autoload/vimtex/syntax.vim
+-- It is kinda vimtex's version of treesitter I think.
+-- Empty when we are not in any environment. Also empty for text in Itemize
+-- environment.
+vim.cmd([[
+function! IsText() abort
+    if vimtex#syntax#in_mathzone()
+        return 0
+    endif
+    let l:env = vimtex#delim#get_surrounding('env_tex')[1]
+    if empty(l:env)
+        return 1
+    endif
+    let l:name = l:env['name']
+    if l:name == 'document'
+        return 1
+    endif
+    let l:cmd = vimtex#cmd#get_current()
+    if empty(l:cmd)
+        return 0
+    endif
+    return l:cmd['name'] == "\\caption"
+endfunction
+]])
+
+local unicode_sh = vim.fn.expand("$XDG_CONFIG_HOME/nvim/tex/unicode")
+vim.keymap.set("n", "<plug>Latex2Unicode",
+    "v<plug>(vimtex-a$):!" .. unicode_sh .. "/latex2unicode.sh<CR>",
+    { buffer = true, remap = true })
+vim.keymap.set("n", "<plug>Unicode2Latex",
+    "v<plug>(vimtex-a$):!" .. unicode_sh .. "/unicode2latex.sh<CR>",
+    { buffer = true, remap = true })
+vim.keymap.set("x", "<plug>Latex2Unicode_visual",
+    ":!" .. unicode_sh .. "/latex2unicode.sh<CR>",
+    { buffer = true, remap = true })
+vim.keymap.set("x", "<plug>Unicode2Latex_visual",
+    ":!" .. unicode_sh .. "/unicode2latex.sh<CR>",
+    { buffer = true, remap = true })
+-- convenient macros stored to registers u and l that goes to next math then
+-- converts. Can be repeated with a count, and recalled quickly with @@ to
+-- quickly convert each math env in a file.
+-- ']4' and '<leader>lu' are defined in whichkey.lua
+vim.fn.setreg("u", "]4 lu")
+vim.fn.setreg("l", "]4 lU")
+
+-- We aren't using em-dashes much at all in latex due to style guide
+-- suggesting spaced en-dash
+-- https://www.stylemanual.gov.au/grammar-punctuation-and-conventions/punctuation/dashes
+-- abbrev correction is also very nice in that I have to add a space
+-- afterwards so if I really want --- then I can still get it.
+-- The unicode em-dash can then be mapped with the newunicodechar package
+vim.cmd.iabbrev("---", "⎯")
+
+-- local to window. Some window I'm switching to sometimes must be setting it
+-- so I disable it here.
+vim.opt_local.signcolumn = "no"
+
 -- NOTE: only currently attached to the first tex file opened (since require runs things once).
 require "tex.overleaf"
 local tbl = require "tex.tables"

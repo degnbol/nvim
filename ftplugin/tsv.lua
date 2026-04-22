@@ -1,3 +1,9 @@
+vim.opt_local.expandtab = false
+vim.opt_local.wrap = false
+vim.opt_local.conceallevel = 1
+vim.opt_local.concealcursor = "nvc"
+vim.opt_local.commentstring = "#%s"
+
 local util = require "utils/init"
 
 -- NOTE Limitations:
