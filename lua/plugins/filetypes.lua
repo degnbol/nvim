@@ -61,57 +61,34 @@ return {
             -- directory. Default is some themes folder buried in the
             -- installation for asciidoctor.
             vim.g.asciidoctor_pdf_themes_path = '.'
-            -- somehow setting colorscheme in way that resets some highlight groups,
-            -- so we set them again here:
-            local grp = vim.api.nvim_create_augroup("adoc", { clear = true })
-            vim.api.nvim_create_autocmd("ColorScheme", {
-                buffer = 0,
-                group = grp,
-                callback = function()
-                    hi.set("asciidoctorBold", { bold = true })
-                    hi.set("asciidoctorItalic", { italic = true })
-                    hi.set("asciidoctorBoldItalic", { bold = true, italic = true })
-                    hi.set("asciidoctorBoldComment", { bold = true, fg = hi.get("Comment")['fg'] })
-                    hi.set("asciidoctorItalicComment", { italic = true, fg = hi.get("Comment")['fg'] })
-                    hi.set("asciidoctorBoldItalicComment", { bold = true, italic = true, fg = hi.get("Comment")['fg'] })
-                    hi.link("asciidoctorTitleDelimiter", "Comment")
-                    hi.link("asciidocPassthrough", "Constant") -- same as asciidoctorCode
-                    hi.rev("asciidocHighlight")
-                    hi.set("asciidocUnderline", { underline = true })
-                    hi.set("asciidocBoldUnderline", { underline = true, bold = true })
-                    hi.set("asciidocItalicUnderline", { underline = true, italic = true })
-                    hi.set("asciidocStrikethrough", { strikethrough = true })
-                    hi.set("asciidocBoldStrikethrough", { strikethrough = true, bold = true })
-                    hi.set("asciidocItalicStrikethrough", { strikethrough = true, italic = true })
-                    for i = 1, 6 do
-                        hi.link("asciidoctorH" .. i .. "Delimiter", "Comment")
-                    end
-                    -- there are more hi groups that might be unset
-                    -- ...
-                    -- hide comment delim (hl group set in syntax file).
-                    hi.setfg("commentDelimiter", hi.get("Normal")["bg"])
-                    hi.link("filenameCommentNoSpell", "Comment")
-                    hi.link("UrlCommentNoSpell", "Comment")
-                    hi.link("linebreak", "Comment")
-                    hi.set("Geo", { underline = true })
-                    hi.set("Chord", { underline = true })
+            -- Colorscheme resets the plugin's syntax-file highlight groups;
+            -- re-apply on every ColorScheme + once now.
+            hi.onColorScheme(function()
+                hi.set("asciidoctorBold", { bold = true })
+                hi.set("asciidoctorItalic", { italic = true })
+                hi.set("asciidoctorBoldItalic", { bold = true, italic = true })
+                hi.set("asciidoctorBoldComment", { bold = true, fg = hi.get("Comment")['fg'] })
+                hi.set("asciidoctorItalicComment", { italic = true, fg = hi.get("Comment")['fg'] })
+                hi.set("asciidoctorBoldItalicComment", { bold = true, italic = true, fg = hi.get("Comment")['fg'] })
+                hi.link("asciidoctorTitleDelimiter", "Comment")
+                hi.link("asciidocPassthrough", "Constant") -- same as asciidoctorCode
+                hi.rev("asciidocHighlight")
+                hi.set("asciidocUnderline", { underline = true })
+                hi.set("asciidocBoldUnderline", { underline = true, bold = true })
+                hi.set("asciidocItalicUnderline", { underline = true, italic = true })
+                hi.set("asciidocStrikethrough", { strikethrough = true })
+                hi.set("asciidocBoldStrikethrough", { strikethrough = true, bold = true })
+                hi.set("asciidocItalicStrikethrough", { strikethrough = true, italic = true })
+                for i = 1, 6 do
+                    hi.link("asciidoctorH" .. i .. "Delimiter", "Comment")
                 end
-            })
-            -- use conversion to PDF as default for :make
-            vim.cmd [[compiler asciidoctor2pdf]]
-            -- double <CR> to auto-close after successful compilation.
-            -- If this is not desired then use :make.
-            vim.keymap.set('n', '<leader>cc', "<Cmd>Asciidoctor2PDF<CR><CR>", { buffer = true, desc = "Compile to PDF" })
-            vim.keymap.set('n', '<leader>oo', "<Cmd>AsciidoctorOpenPDF<CR><CR>",
-                { buffer = true, desc = "Open compiled PDF" })
-            -- start autocompiling on save
-            vim.keymap.set('n', '<leader>cC', function()
-                vim.api.nvim_create_autocmd("BufWritePost", {
-                    buffer = 0,
-                    group = vim.api.nvim_create_augroup("asciidocCompile", { clear = true }),
-                    command = "silent Asciidoctor2PDF"
-                })
-            end, { buffer = true, desc = "Compile on save" })
+                hi.setfg("commentDelimiter", hi.get("Normal")["bg"])
+                hi.link("filenameCommentNoSpell", "Comment")
+                hi.link("UrlCommentNoSpell", "Comment")
+                hi.link("linebreak", "Comment")
+                hi.set("Geo", { underline = true })
+                hi.set("Chord", { underline = true })
+            end)
         end,
     },
     -- https://quarto.org/
@@ -179,22 +156,17 @@ return {
         "vim-kitty",
         ft = "kitty",
         after = function ()
-            local grp = vim.api.nvim_create_augroup("kitty", { clear = true })
-            vim.api.nvim_create_autocmd("ColorScheme", {
-                buffer = 0,
-                group = grp,
-                callback = function()
-                    -- Italic is for the small set of rarely used keywords in most
-                    -- languages, not for the large amount of "keywords" in some
-                    -- language like the kitty.conf.
-                    -- There's also kittyKW, why do both exist? They're both from this plugin.
-                    hi.set("kittyKeyword", { italic = false, fg=hi.fg("Keyword") })
-                    -- Maybe fine to leave italic?
-                    -- hi.link("kittyMap", "kittyKeyword")
-                    -- Was linked to Keyword
-                    hi.link("kittyInclude", "Include")
-                end
-            })
+            hi.onColorScheme(function()
+                -- Italic is for the small set of rarely used keywords in most
+                -- languages, not for the large amount of "keywords" in some
+                -- language like the kitty.conf.
+                -- There's also kittyKW, why do both exist? They're both from this plugin.
+                hi.set("kittyKeyword", { italic = false, fg=hi.fg("Keyword") })
+                -- Maybe fine to leave italic?
+                -- hi.link("kittyMap", "kittyKeyword")
+                -- Was linked to Keyword
+                hi.link("kittyInclude", "Include")
+            end)
         end,
     },
 

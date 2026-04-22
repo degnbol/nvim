@@ -419,64 +419,60 @@ map.n('<LocalLeader>-', function()
     end
 end, "Go up in latex structure", {buffer=true})
 
--- colorscheme aucmd to fix missing or inconsistent hl links
-vim.api.nvim_create_autocmd("ColorScheme", {
-    buffer = 0,
-    group = vim.api.nvim_create_augroup("Tex", { clear = true }),
-    callback = function()
-        -- Pick a reduced colour for removing emphasis on things like \cite{...} where the body's color and underline gives it emphasis by itself.
-        -- We want to differentiate from comment and nontext, and nontext is bold so the fg with italic should be enough differentiation, plus we would write comments more that using nontext.
-        local gray = hi.fg("NonText")
-        hi.link("texCmd", "@function.call")
-        hi.link("texCmdEnv", "@keyword.function") -- italic instead of bold for begin end
-        hi.link("texCmdRef", "@function.builtin") -- italic
-        -- italic \section{...}, bold etc. Gray a bit since the "..." shows aesthetic
-        hi.set("texCmdPart", { fg = gray, italic = true })
-        hi.set("texCmdStyleBold", { fg = gray, italic = true })
-        hi.set("texCmdStyleItal", { fg = gray, italic = true })
-        hi.set("texTypeStyle", { fg = gray, italic = true })       -- e.g. \underline
-        hi.set("texItalStyle", { italic = true })                  -- contents of \emph{...}
-        hi.set("texCmdRefConcealed", { fg = gray, italic = true }) -- italic \cite
-        hi.set("texCmdRef", { fg = gray, italic = true })
-        hi.set("texCmdCRef", { fg = gray, italic = true })
-        hi.set("texCmdAcro", { fg = gray })           -- custom cmd defined in after/syntax/tex.vim
-        hi.link("texCmdPackage", "@function.builtin") -- italic \package
-        hi.link("texCmdInput", "@function.builtin")   -- italic \inputgraphics
-        hi.link("texCmdTitle", "@function.builtin")   -- italic \title
-        hi.link("texCmdAuthor", "@function.builtin")  -- italic \author
-        hi.link("texCmdLet", "@function.builtin")     -- italic \let
-        hi.link("texStatement", "@function.builtin")  -- only seen for \mathrm so far
-        hi.mod("texMatcher", { underline = true })    -- matched parenthesis, \underline body, etc.
-        hi.link("texEnvArgName", "@method")           -- bold and shine instead of nothing
-        hi.link("texCmdBeamer", "@function")
-        hi.link("texOpt", "@parameter")
-        hi.link("texBeamerOpt", "@parameter")
-        hi.link("texOptEqual", "@operator")
-        hi.link("texArg", "@parameter")
-        hi.link("texFileArg", "@string")
-        hi.link("texFilesArg", "@string")
-        hi.link("texFileOpt", "@parameter")
-        hi.link("TexBeamerDelim", "Delimiter")
-        hi.link("superscript", "Type")                                               -- like \huge, \normalsize etc
-        hi.link("subscript", "Type")                                                 -- like \huge, \normalsize etc
-        hi.set("texRefConcealedArg", { fg = hi.fg("TexFileArg"), underline = true }) -- body of \cite{...}
-        hi.link("texTitleArg", "Title")
-        hi.link("texPartArgTitle", "Title")
-        hi.link("texRefArg", "@tag")                                    -- body of \label
-        hi.link("texSpecialChar", "@comment")                           -- unbreakable space ~, and \&
-        hi.link("texMathZone", "@number")                               -- Most of tex math zone that isn't captured by anything else (such as math functions) is numbers and we don't use numbers much elsewhere.
-        hi.set("texMathCmdText", { fg = gray, italic = true })          -- italic \text in math mode
-        hi.set("texMathSymbol", { fg = hi.fg("@type"), italic = true }) -- type is similar colour to number
-        hi.set("texMathSymbol", { fg = hi.fg("@type"), italic = true }) --
-        hi.link("texSICmd", "@number")                                  -- not bold SI. Color like math mode
-        hi.set("texLigature", { bold = true })                          -- bold instead of strong color to only give subtle focus to ``'', --, and the ' in don't
-        hi.link("texCmdLigature", "@function.call")
-        hi.mod("texCmdLigature", { italic = true })
-        hi.link("texTabularChar", "Operator") -- & and \\ in tables. Could also use Delimiter but this makes them bold.
-        hi.mod("texCmdClass", { italic = true, bold = true })
-        hi.link("texOptSep", "Delimiter")
-        hi.mod("texCmdDef", { bold = true, italic = true })    -- an actual function definition. \def. TeX primitive.
-        hi.mod("texCmdNewcmd", { bold = true, italic = true }) -- an actual function definition. \newcommand. LaTeX wrapper on def.
-        hi.link("texNewcmdArgName", "@parameter")
-    end
-})
+-- fix missing or inconsistent hl links on every ColorScheme + now
+hi.onColorScheme(function()
+    -- Pick a reduced colour for removing emphasis on things like \cite{...} where the body's color and underline gives it emphasis by itself.
+    -- We want to differentiate from comment and nontext, and nontext is bold so the fg with italic should be enough differentiation, plus we would write comments more that using nontext.
+    local gray = hi.fg("NonText")
+    hi.link("texCmd", "@function.call")
+    hi.link("texCmdEnv", "@keyword.function") -- italic instead of bold for begin end
+    hi.link("texCmdRef", "@function.builtin") -- italic
+    -- italic \section{...}, bold etc. Gray a bit since the "..." shows aesthetic
+    hi.set("texCmdPart", { fg = gray, italic = true })
+    hi.set("texCmdStyleBold", { fg = gray, italic = true })
+    hi.set("texCmdStyleItal", { fg = gray, italic = true })
+    hi.set("texTypeStyle", { fg = gray, italic = true })       -- e.g. \underline
+    hi.set("texItalStyle", { italic = true })                  -- contents of \emph{...}
+    hi.set("texCmdRefConcealed", { fg = gray, italic = true }) -- italic \cite
+    hi.set("texCmdRef", { fg = gray, italic = true })
+    hi.set("texCmdCRef", { fg = gray, italic = true })
+    hi.set("texCmdAcro", { fg = gray })           -- custom cmd defined in after/syntax/tex.vim
+    hi.link("texCmdPackage", "@function.builtin") -- italic \package
+    hi.link("texCmdInput", "@function.builtin")   -- italic \inputgraphics
+    hi.link("texCmdTitle", "@function.builtin")   -- italic \title
+    hi.link("texCmdAuthor", "@function.builtin")  -- italic \author
+    hi.link("texCmdLet", "@function.builtin")     -- italic \let
+    hi.link("texStatement", "@function.builtin")  -- only seen for \mathrm so far
+    hi.mod("texMatcher", { underline = true })    -- matched parenthesis, \underline body, etc.
+    hi.link("texEnvArgName", "@method")           -- bold and shine instead of nothing
+    hi.link("texCmdBeamer", "@function")
+    hi.link("texOpt", "@parameter")
+    hi.link("texBeamerOpt", "@parameter")
+    hi.link("texOptEqual", "@operator")
+    hi.link("texArg", "@parameter")
+    hi.link("texFileArg", "@string")
+    hi.link("texFilesArg", "@string")
+    hi.link("texFileOpt", "@parameter")
+    hi.link("TexBeamerDelim", "Delimiter")
+    hi.link("superscript", "Type")                                               -- like \huge, \normalsize etc
+    hi.link("subscript", "Type")                                                 -- like \huge, \normalsize etc
+    hi.set("texRefConcealedArg", { fg = hi.fg("TexFileArg"), underline = true }) -- body of \cite{...}
+    hi.link("texTitleArg", "Title")
+    hi.link("texPartArgTitle", "Title")
+    hi.link("texRefArg", "@tag")                                    -- body of \label
+    hi.link("texSpecialChar", "@comment")                           -- unbreakable space ~, and \&
+    hi.link("texMathZone", "@number")                               -- Most of tex math zone that isn't captured by anything else (such as math functions) is numbers and we don't use numbers much elsewhere.
+    hi.set("texMathCmdText", { fg = gray, italic = true })          -- italic \text in math mode
+    hi.set("texMathSymbol", { fg = hi.fg("@type"), italic = true }) -- type is similar colour to number
+    hi.set("texMathSymbol", { fg = hi.fg("@type"), italic = true }) --
+    hi.link("texSICmd", "@number")                                  -- not bold SI. Color like math mode
+    hi.set("texLigature", { bold = true })                          -- bold instead of strong color to only give subtle focus to ``'', --, and the ' in don't
+    hi.link("texCmdLigature", "@function.call")
+    hi.mod("texCmdLigature", { italic = true })
+    hi.link("texTabularChar", "Operator") -- & and \\ in tables. Could also use Delimiter but this makes them bold.
+    hi.mod("texCmdClass", { italic = true, bold = true })
+    hi.link("texOptSep", "Delimiter")
+    hi.mod("texCmdDef", { bold = true, italic = true })    -- an actual function definition. \def. TeX primitive.
+    hi.mod("texCmdNewcmd", { bold = true, italic = true }) -- an actual function definition. \newcommand. LaTeX wrapper on def.
+    hi.link("texNewcmdArgName", "@parameter")
+end)

@@ -41,15 +41,10 @@ local function set_pymol_hl()
     hi.set("@variable.builtin.pymol_select", { fg = hi.fg("Normal"), italic = true })
 end
 
-local grp = vim.api.nvim_create_augroup("colorscheme", { clear = true })
-vim.api.nvim_create_autocmd("ColorScheme", {
-    buffer = 0,
-    group = grp,
-    callback = function()
-        hi.set("@cell", { reverse = true })
-        if vim.g.loaded_pymol then set_pymol_hl() end
-    end
-})
+hi.onColorScheme(function()
+    hi.set("@cell", { reverse = true })
+    if vim.g.loaded_pymol then set_pymol_hl() end
+end)
 
 local function load_pymol()
     -- Set up treesitter injection for pymol_select in Python strings.

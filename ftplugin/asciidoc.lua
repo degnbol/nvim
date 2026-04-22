@@ -2,6 +2,9 @@ vim.opt_local.conceallevel = 1
 -- adoc is for typing prose. But the autowrap works poorly for lists and most
 -- syntax beyond basic prose.
 vim.opt_local.wrap = true
+-- NOTE: things that depend on vim-asciidoc being loaded (compiler, 'comments'
+-- override, buffer keymaps, plugin-specific highlight groups) live in
+-- after/ftplugin/asciidoc.lua so they run once the plugin's own ftplugin has.
 
 local function get_xref_id()
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
