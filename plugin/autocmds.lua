@@ -4,6 +4,7 @@ require "autocmds/templates"
 require "autocmds/chmodx"
 require "autocmds/lsp"
 require "autocmds/kitty"
+require "autocmds/ftoverrides"
 
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "*",
