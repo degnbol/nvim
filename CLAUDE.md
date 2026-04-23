@@ -4,7 +4,7 @@
 
 ## Shared utilities (`lua/utils/`)
 
-Before reaching for `vim.api.nvim_replace_termcodes`, visual-range extraction, keymap wrappers, etc., check `lua/utils/init.lua` and `lua/utils/keymap.lua` — most common patterns are already wrapped (e.g. `nvim_code(s)` for `<Esc>`/`<CR>` termcode conversion, `last_visual_range()`, `get_cursor`/`set_cursor`, `press(keys)`). When you write a helper that's reusable across files, add it to `utils/` rather than duplicating inline.
+Before reaching for `vim.api.nvim_replace_termcodes`, visual-range extraction, keymap wrappers, ColorScheme hooks, etc., check `lua/utils/init.lua`, `lua/utils/keymap.lua`, and `lua/utils/highlights.lua` — most common patterns are already wrapped (e.g. `nvim_code(s)` for `<Esc>`/`<CR>` termcode conversion, `last_visual_range()`, `get_cursor`/`set_cursor`, `press(keys)`, `hi.onColorScheme(fn)` to register a ColorScheme autocmd that also fires once on load). When you write a helper that's reusable across files, add it to `utils/` rather than duplicating inline.
 
 ## Debugging: plugins first, core last
 
