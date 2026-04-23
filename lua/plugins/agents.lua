@@ -52,7 +52,6 @@ return {
     -- Local fork of agentic.nvim — native chat UI via Agent Client Protocol
     {
         "agentic.nvim",
-        enabled = true,
         load = function() end,
         cmd = { "Agentic", "AgenticResume" },
         keys = {
@@ -82,6 +81,15 @@ return {
                 },
                 notifications = {
                     bell = true,
+                },
+                acp_providers = {
+                    ["opencode-acp"] = {
+                        env = {
+                            OPENAI_BASE_URL = "https://litellm.dev.xyme.cloud/v1",
+                            -- set in untracked .env and available in apple Passwords
+                            OPENAI_API_KEY = os.getenv("LITELLM_KEY"),
+                        },
+                    },
                 },
             }
 
