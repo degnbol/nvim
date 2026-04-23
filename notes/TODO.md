@@ -220,12 +220,7 @@ if they are using env variables defined in the same script or if using e.g.
 
 FIXME: horixontal scroll lag, e.g. ~/Documents/phd/Chromatin/Pub/Su_2020/hicVsImg.jl
 
-Low priority. Forward and reverse search in typst inspired by vimtex.
-
-vimscript (at least neovim vimscript 8) is a lot slower than lua so migrate as 
-much as possible of .vim files to lua. This will also make the repo a bit 
-cleaner since you often have two files that are essentially filling the same 
-role, e.g. ftplugin/<lang>.{vim,lua}
+Low priority: Forward and reverse search in typst inspired by vimtex.
 
 Cool: make completion in latex for acronyms/glossaries e.g. for \ac{} from acro
 
