@@ -31,6 +31,20 @@ end
 
 map({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
+-- Visual za: close all folds in selection if any are open, else open all.
+-- Plain zo/zc are built-in in visual mode but neither handles the mixed case.
+map.x('za', function()
+    local s, _, e, _ = util.get_visual_range()
+    local any_open = false
+    for lnum = s, e do
+        if vim.fn.foldlevel(lnum) > 0 and vim.fn.foldclosed(lnum) == -1 then
+            any_open = true
+            break
+        end
+    end
+    vim.cmd(("%d,%dfold%s!"):format(s, e, any_open and "close" or "open"))
+end, "Toggle folds in selection")
+
 map.n('<leader>cc', function()
 	local file = vim.api.nvim_buf_get_name(0)
 	if file == '' then
