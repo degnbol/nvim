@@ -1,0 +1,16 @@
+% The standard way is the xr package (or xr-hyper if you're using hyperref). It lets one document read the .aux file of another and resolve labels defined there.
+%
+% In the document that needs to reference labels from the other, add this to the preamble:
+
+% \usepackage{xr}
+% \externaldocument{other-file}
+% Here other-file is the filename (without the .tex extension) of the document whose labels you want to use. After this, \ref{somelabel} and \pageref{somelabel} will work for any label defined in other-file.tex, exactly as if it were in the current document.
+
+If you're using hyperref and want the cross-references to be clickable hyperlinks, use xr-hyper instead, and load it before hyperref:
+
+\usepackage{xr-hyper}
+\usepackage{hyperref}
+\externaldocument{other-file}
+% A few practical notes. You have to compile other-file.tex first so that its .aux file exists, then compile your main file; otherwise the references come out as ??. If both files define labels with the same name, you can add a prefix to avoid clashes: \externaldocument[A-]{other-file} means a label called intro in the other file is referenced here as \ref{A-intro}. If the other file lives in a different directory, give a relative path like \externaldocument{../partI/other-file}.
+%
+% For a document that is genuinely one work split across parts (say, a thesis with chapters as separate files compiled independently), xr is the usual solution. If instead you want the parts to share a single bibliography, table of contents, and label namespace naturally, \include or the subfiles package may suit you better, as each gives you labels across the whole project without needing xr at all.
