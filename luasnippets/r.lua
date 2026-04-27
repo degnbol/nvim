@@ -106,4 +106,12 @@ return {
         })
     ),
 
+    s({trig="inside", dscr="Legend inside figure"},
+    {
+        t'theme(legend.position="inside", legend.position.inside=c(',
+        i(1, "0.85"),
+        t', ',
+        i(2, "0.85"),
+        t'))'
+    }),
 }
