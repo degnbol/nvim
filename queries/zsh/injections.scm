@@ -24,7 +24,7 @@
   .
   argument: (raw_string) @injection.content
   (#any-of? @_cmd "python3" "python")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "python")
   (#set! injection.include-children))
@@ -35,7 +35,7 @@
   .
   argument: (string (string_content) @injection.content)
   (#any-of? @_cmd "python3" "python")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#set! injection.language "python")
   (#set! injection.include-children))
 
@@ -46,7 +46,7 @@
   .
   argument: (raw_string) @injection.content
   (#any-of? @_py "python3" "python")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "python")
   (#set! injection.include-children))
@@ -58,7 +58,7 @@
   .
   argument: (string (string_content) @injection.content)
   (#any-of? @_py "python3" "python")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#set! injection.language "python")
   (#set! injection.include-children))
 
@@ -69,7 +69,7 @@
   .
   argument: (raw_string) @injection.content
   (#any-of? @_cmd "zsh" "bash" "sh")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "zsh")
   (#set! injection.include-children))
@@ -80,7 +80,7 @@
   .
   argument: (string (string_content) @injection.content)
   (#any-of? @_cmd "zsh" "bash" "sh")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#set! injection.language "zsh")
   (#set! injection.include-children))
 
@@ -95,7 +95,7 @@
   argument: (concatenation
     (raw_string) @injection.content)
   (#any-of? @_cmd "zsh" "bash" "sh")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "zsh")
   (#set! injection.include-children))
@@ -107,7 +107,7 @@
   argument: (concatenation
     (string (string_content) @injection.content))
   (#any-of? @_cmd "zsh" "bash" "sh")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#set! injection.language "zsh")
   (#set! injection.include-children))
 
@@ -208,22 +208,23 @@
   (#set! injection.language "awk")
   (#set! injection.include-children))
 
-; Inject vim (vimscript) into `nvim -c '...'` / `nvim -c "..."` and
-; `nvim +'...'` / `nvim +"..."`. The vim parser's own injections.scm handles
-; nested lua/python/ruby for `:lua print(1)`, `:python << EOF ... EOF`, etc.
+; Inject vim (vimscript) into `nvim -c '...'`, `nvim --cmd '...'`, and
+; `nvim +'...'` (and the double-quoted equivalents). The vim parser's own
+; injections.scm handles nested lua/python/ruby for `:lua print(1)`,
+; `:python << EOF ... EOF`, etc.
 ;
 ; Special case: multi-line `nvim -c 'lua\nCODE\n'` is NOT valid vim syntax
 ; (vim's heredoc form is `:lua << EOF\n...\nEOF`), but it's a common shell
 ; shorthand. A separate pattern below injects lua directly for that form.
 
-; -c '...'  → vim
+; -c / --cmd '...'  → vim
 (command
   name: (command_name) @_cmd
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
   (#any-of? @_cmd "nvim" "vim")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#not-lua-match? @injection.content "^'lua\n")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "vim"))
@@ -234,7 +235,7 @@
   .
   argument: (string (string_content) @injection.content)
   (#any-of? @_cmd "nvim" "vim")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#not-lua-match? @injection.content "^lua\n")
   (#set! injection.language "vim"))
 
@@ -270,7 +271,7 @@
   .
   argument: (raw_string) @injection.content
   (#any-of? @_cmd "nvim" "vim")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#lua-match? @injection.content "^'lua\n")
   (#trim! @injection.content 5 1)
   (#set! injection.language "lua"))
@@ -287,7 +288,7 @@
   .
   argument: (string) @injection.content
   (#any-of? @_cmd "nvim" "vim")
-  (#eq? @_flag "-c")
+  (#any-of? @_flag "-c" "--cmd")
   (#lua-match? @injection.content "^\"lua\n")
   (#trim! @injection.content 5 1)
   (#set! injection.language "lua")

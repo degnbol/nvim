@@ -317,6 +317,14 @@ describe("zsh injections", function()
             assert_injection("nvim +'set number'", "vim", "set number")
         end)
 
+        it("injects vim for --cmd form", function()
+            assert_injection("nvim --cmd 'set number'", "vim", "set number")
+        end)
+
+        it("injects lua for multi-line --cmd 'lua\\n...\\n'", function()
+            assert_injection("nvim --cmd 'lua\nprint(1)\n'", "lua", "print(1)")
+        end)
+
         it("injects lua directly for multi-line raw_string -c 'lua\\n...\\n'",
             function()
                 local src = "nvim -c 'lua\nprint(1)\n'"
