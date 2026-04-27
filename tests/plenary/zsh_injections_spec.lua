@@ -2,9 +2,17 @@
 -- Tests for queries/zsh/injections.scm
 
 vim.treesitter.language.register("zsh", "sh.zsh")
+-- Mirror plugin/treesitter.lua: bash/sh injections resolve to zsh parser
+-- (only zsh.so is installed; bash.so is not). Also load the `#trim!` query
+-- directive from plugin/treesitter.lua. plugin/* isn't reliably sourced
+-- before PlenaryBustedFile runs, so source it explicitly.
+vim.treesitter.language.register("zsh", "bash")
+vim.treesitter.language.register("zsh", "sh")
+vim.cmd.source(vim.fn.getcwd() .. "/plugin/treesitter.lua")
 
 --- Parse source as zsh and return a table of injected language names.
 --- Each entry is { lang = "...", text = "..." } for the injected region.
+--- Recurses into nested injections (e.g. zsh → vim → lua).
 local function get_injections(src)
     local buf = vim.api.nvim_create_buf(true, false)
     vim.api.nvim_set_current_buf(buf)
@@ -14,15 +22,19 @@ local function get_injections(src)
     local parser = vim.treesitter.get_parser(buf)
     parser:parse(true)
     local results = {}
-    for lang, child in pairs(parser:children()) do
-        for _, tree in ipairs(child:trees()) do
-            local root = tree:root()
-            results[#results + 1] = {
-                lang = lang,
-                text = vim.treesitter.get_node_text(root, buf),
-            }
+    local function collect(p)
+        for lang, child in pairs(p:children()) do
+            for _, tree in ipairs(child:trees()) do
+                local root = tree:root()
+                results[#results + 1] = {
+                    lang = lang,
+                    text = vim.treesitter.get_node_text(root, buf),
+                }
+            end
+            collect(child)
         end
     end
+    collect(parser)
     pcall(vim.api.nvim_buf_delete, buf, { force = true })
     return results
 end
@@ -44,15 +56,15 @@ local function assert_injection(src, expected_lang, expected_text)
     local inj = injections_for(src, expected_lang)
     assert.is_true(#inj >= 1,
         "expected at least 1 " .. expected_lang .. " injection, got 0")
-    local found = false
     for _, entry in ipairs(inj) do
-        if entry.text == expected_text then
-            found = true
-            break
-        end
+        if entry.text == expected_text then return end
     end
-    assert.is_true(found,
-        "no " .. expected_lang .. " injection with text: " .. expected_text)
+    local got = {}
+    for _, e in ipairs(inj) do got[#got + 1] = vim.inspect(e.text) end
+    assert.is_true(false,
+        "no " .. expected_lang .. " injection with text "
+        .. vim.inspect(expected_text)
+        .. ". Got: " .. table.concat(got, ", "))
 end
 
 local function assert_no_injection(src, lang)
@@ -289,6 +301,126 @@ describe("zsh injections", function()
             for _, entry in ipairs(inj) do texts[#texts + 1] = entry.text end
             assert.is_true(vim.tbl_contains(texts, "print(1)"))
             assert.is_false(vim.tbl_contains(texts, "qa"))
+        end)
+
+        it("injects vim into non-lua -c args", function()
+            -- The vim parser gets the whole arg; vim's own injections
+            -- handle :lua / :python / etc. inside.
+            assert_injection("nvim -c 'set number'", "vim", "set number")
+        end)
+
+        it("injects vim for double-quoted -c args", function()
+            assert_injection('nvim -c "set number"', "vim", "set number")
+        end)
+
+        it("injects vim for + form", function()
+            assert_injection("nvim +'set number'", "vim", "set number")
+        end)
+
+        it("injects lua directly for multi-line raw_string -c 'lua\\n...\\n'",
+            function()
+                local src = "nvim -c 'lua\nprint(1)\n'"
+                assert_injection(src, "lua", "print(1)")
+            end)
+
+        it("injects lua directly for multi-line double-quoted -c \"lua\\n...\\n\"",
+            function()
+                local src = 'nvim -c "lua\nprint(1)\n"'
+                assert_injection(src, "lua", "print(1)")
+            end)
+
+        it("injects lua directly for multi-line + form +'lua\\n...\\n'",
+            function()
+                local src = "nvim +'lua\nprint(1)\n'"
+                assert_injection(src, "lua", "print(1)")
+            end)
+    end)
+
+    describe("heredoc by file-redirect extension", function()
+        local function heredoc(dest, tag, body)
+            tag = tag or "EOF"
+            local close = tag:gsub("['\"]", "")
+            return table.concat({
+                "cat > " .. dest .. " <<" .. tag,
+                body,
+                close,
+            }, "\n")
+        end
+
+        it("injects lua for .lua redirect target", function()
+            assert_injection(heredoc("/tmp/a.lua", "'EOF'", "local x = 1"),
+                "lua", "local x = 1")
+        end)
+
+        it("injects python for .py redirect target", function()
+            assert_injection(heredoc("/tmp/a.py", "'EOF'", "print(1)"),
+                "python", "print(1)")
+        end)
+
+        it("injects julia for .jl redirect target", function()
+            assert_injection(heredoc("/tmp/a.jl", "EOF", "println(1)"),
+                "julia", "println(1)")
+        end)
+
+        it("injects r for .R redirect target", function()
+            assert_injection(heredoc("/tmp/a.R", "'EOF'", "x <- 1"),
+                "r", "x <- 1")
+        end)
+
+        it("injects javascript for .js redirect target", function()
+            assert_injection(heredoc("/tmp/a.js", "'EOF'", "const x = 1;"),
+                "javascript", "const x = 1;")
+        end)
+
+        it("injects zsh (via bash alias) for .sh redirect target", function()
+            assert_injection(heredoc("/tmp/a.sh", "'EOF'", "echo hi"),
+                "zsh", "echo hi")
+        end)
+
+        it("injects zsh for .zsh redirect target", function()
+            assert_injection(heredoc("/tmp/a.zsh", "'EOF'",
+                    "typeset -A map"),
+                "zsh", "typeset -A map")
+        end)
+
+        it("handles quoted redirect destinations", function()
+            assert_injection(
+                'cat > "/tmp/a.lua" <<EOF\nlocal x = 1\nEOF',
+                "lua", "local x = 1")
+            assert_injection(
+                "cat > '/tmp/a.lua' <<EOF\nlocal x = 1\nEOF",
+                "lua", "local x = 1")
+        end)
+
+        it("handles heredoc before file-redirect", function()
+            assert_injection(
+                "cat <<EOF > /tmp/a.lua\nlocal x = 1\nEOF",
+                "lua", "local x = 1")
+        end)
+
+        it("still supports heredoc-tag-as-language (base query)", function()
+            assert_injection(
+                "cat <<LUA\nlocal x = 1\nLUA",
+                "lua", "local x = 1")
+        end)
+
+        it("does not inject for unknown extension", function()
+            assert_no_injection(
+                "cat > /tmp/a.xyz <<EOF\nblah\nEOF",
+                "lua")
+        end)
+
+        it(".bash maps to bash (zsh alias), not sh", function()
+            -- .bash uses the bash/zsh parser, not anything else
+            assert_injection(heredoc("/tmp/a.bash", "'EOF'", "echo hi"),
+                "zsh", "echo hi")
+        end)
+
+        it(".mjs and .cjs also inject javascript", function()
+            assert_injection(heredoc("/tmp/a.mjs", "'EOF'", "export const x = 1;"),
+                "javascript", "export const x = 1;")
+            assert_injection(heredoc("/tmp/a.cjs", "'EOF'", "module.exports = 1;"),
+                "javascript", "module.exports = 1;")
         end)
     end)
 end)

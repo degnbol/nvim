@@ -208,10 +208,15 @@
   (#set! injection.language "awk")
   (#set! injection.include-children))
 
-; Inject lua into `nvim -c "lua ..."` / `nvim -c 'lua ...'`
-; The -c flag can appear anywhere in the arg list (after --headless, etc.),
-; so no `.` anchor between command name and -c. The `lua ` prefix is skipped
-; via #offset! so only the actual Lua code is injected.
+; Inject vim (vimscript) into `nvim -c '...'` / `nvim -c "..."` and
+; `nvim +'...'` / `nvim +"..."`. The vim parser's own injections.scm handles
+; nested lua/python/ruby for `:lua print(1)`, `:python << EOF ... EOF`, etc.
+;
+; Special case: multi-line `nvim -c 'lua\nCODE\n'` is NOT valid vim syntax
+; (vim's heredoc form is `:lua << EOF\n...\nEOF`), but it's a common shell
+; shorthand. A separate pattern below injects lua directly for that form.
+
+; -c '...'  → vim
 (command
   name: (command_name) @_cmd
   argument: (word) @_flag
@@ -219,10 +224,9 @@
   argument: (raw_string) @injection.content
   (#any-of? @_cmd "nvim" "vim")
   (#eq? @_flag "-c")
-  (#lua-match? @injection.content "^'lua[%s]")
-  (#offset! @injection.content 0 5 0 -1)
-  (#set! injection.language "lua")
-  (#set! injection.include-children))
+  (#not-lua-match? @injection.content "^'lua\n")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "vim"))
 
 (command
   name: (command_name) @_cmd
@@ -231,29 +235,195 @@
   argument: (string (string_content) @injection.content)
   (#any-of? @_cmd "nvim" "vim")
   (#eq? @_flag "-c")
-  (#lua-match? @injection.content "^lua[%s]")
-  (#offset! @injection.content 0 4 0 0)
-  (#set! injection.language "lua")
-  (#set! injection.include-children))
+  (#not-lua-match? @injection.content "^lua\n")
+  (#set! injection.language "vim"))
 
-; Inject lua into `nvim +"lua ..."` / `nvim +'lua ...'`
-; The + form parses as concatenation(word("+"), string/raw_string).
+; +'...' / +"..." form: concatenation(word("+"), string/raw_string).
 (command
   name: (command_name) @_cmd
   argument: (concatenation (word) @_plus (raw_string) @injection.content)
   (#any-of? @_cmd "nvim" "vim")
   (#eq? @_plus "+")
-  (#lua-match? @injection.content "^'lua[%s]")
-  (#offset! @injection.content 0 5 0 -1)
-  (#set! injection.language "lua")
-  (#set! injection.include-children))
+  (#not-lua-match? @injection.content "^'lua\n")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "vim"))
 
 (command
   name: (command_name) @_cmd
   argument: (concatenation (word) @_plus (string (string_content) @injection.content))
   (#any-of? @_cmd "nvim" "vim")
   (#eq? @_plus "+")
-  (#lua-match? @injection.content "^lua[%s]")
-  (#offset! @injection.content 0 4 0 0)
+  (#not-lua-match? @injection.content "^lua\n")
+  (#set! injection.language "vim"))
+
+; Multi-line lua: `nvim -c 'lua\nCODE\n'` and `nvim +"lua\nCODE\n"` etc.
+; #trim! is a custom directive (see plugin/treesitter.lua) that skips a
+; byte-prefix and byte-suffix from the captured node, computing a (row, col,
+; byte) range with all three coordinates consistent. `#offset!` can't do this
+; because it does naive (row+drow, col+dcol) arithmetic and the col delta
+; needed to reach column 0 of the next line varies with the surrounding text.
+;
+; raw_string `'lua\n...\n'` — skip 5 bytes (`'lua\n`), strip 1 byte (`'`).
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_flag
+  .
+  argument: (raw_string) @injection.content
+  (#any-of? @_cmd "nvim" "vim")
+  (#eq? @_flag "-c")
+  (#lua-match? @injection.content "^'lua\n")
+  (#trim! @injection.content 5 1)
+  (#set! injection.language "lua"))
+
+; double-quoted `"lua\n...\n"` — tree-sitter-zsh splits this into multiple
+; `string_content` nodes with `"`s as siblings, so capturing string_content
+; directly only sees one line at a time. Match the whole `string` node and
+; trim 5 bytes (`"lua\n`) from start, 1 byte (`"`) from end.
+; `include-children` keeps the metadata.range from #trim! intact (otherwise
+; the range gets masked by the inner string_content/`"` children).
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_flag
+  .
+  argument: (string) @injection.content
+  (#any-of? @_cmd "nvim" "vim")
+  (#eq? @_flag "-c")
+  (#lua-match? @injection.content "^\"lua\n")
+  (#trim! @injection.content 5 1)
   (#set! injection.language "lua")
   (#set! injection.include-children))
+
+; +'lua\n...\n' concatenation form
+(command
+  name: (command_name) @_cmd
+  argument: (concatenation (word) @_plus (raw_string) @injection.content)
+  (#any-of? @_cmd "nvim" "vim")
+  (#eq? @_plus "+")
+  (#lua-match? @injection.content "^'lua\n")
+  (#trim! @injection.content 5 1)
+  (#set! injection.language "lua"))
+
+(command
+  name: (command_name) @_cmd
+  argument: (concatenation (word) @_plus (string) @injection.content)
+  (#any-of? @_cmd "nvim" "vim")
+  (#eq? @_plus "+")
+  (#lua-match? @injection.content "^\"lua\n")
+  (#trim! @injection.content 5 1)
+  (#set! injection.language "lua")
+  (#set! injection.include-children))
+
+; -----------------------------------------------------------------------------
+; Heredoc body injection based on file-redirect extension
+;
+; `cat > foo.lua <<EOF ... EOF` — file_redirect sibling of heredoc_redirect.
+; `cat <<EOF > foo.lua ... EOF` — file_redirect nested inside heredoc_redirect.
+; Destination may be a bare word, double-quoted string, or raw_string — match
+; any node type via `(_)` and let the regex handle trailing quotes.
+; The base zsh query already uses `heredoc_end` as the language, so
+; `<<LUA ... LUA` still works without an extension hint.
+; -----------------------------------------------------------------------------
+
+; lua
+(redirected_statement
+  (file_redirect destination: (_) @_dest)
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#lua-match? @_dest "%.lua[\"']?$")
+  (#set! injection.language "lua"))
+
+(heredoc_redirect
+  (file_redirect destination: (_) @_dest)
+  (heredoc_body) @injection.content
+  (#lua-match? @_dest "%.lua[\"']?$")
+  (#set! injection.language "lua"))
+
+; python
+(redirected_statement
+  (file_redirect destination: (_) @_dest)
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#lua-match? @_dest "%.py[\"']?$")
+  (#set! injection.language "python"))
+
+(heredoc_redirect
+  (file_redirect destination: (_) @_dest)
+  (heredoc_body) @injection.content
+  (#lua-match? @_dest "%.py[\"']?$")
+  (#set! injection.language "python"))
+
+; julia
+(redirected_statement
+  (file_redirect destination: (_) @_dest)
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#lua-match? @_dest "%.jl[\"']?$")
+  (#set! injection.language "julia"))
+
+(heredoc_redirect
+  (file_redirect destination: (_) @_dest)
+  (heredoc_body) @injection.content
+  (#lua-match? @_dest "%.jl[\"']?$")
+  (#set! injection.language "julia"))
+
+; R
+(redirected_statement
+  (file_redirect destination: (_) @_dest)
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#lua-match? @_dest "%.[rR][\"']?$")
+  (#set! injection.language "r"))
+
+(heredoc_redirect
+  (file_redirect destination: (_) @_dest)
+  (heredoc_body) @injection.content
+  (#lua-match? @_dest "%.[rR][\"']?$")
+  (#set! injection.language "r"))
+
+; javascript (.js, .mjs, .cjs)
+(redirected_statement
+  (file_redirect destination: (_) @_dest)
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#lua-match? @_dest "%.[cm]?js[\"']?$")
+  (#set! injection.language "javascript"))
+
+(heredoc_redirect
+  (file_redirect destination: (_) @_dest)
+  (heredoc_body) @injection.content
+  (#lua-match? @_dest "%.[cm]?js[\"']?$")
+  (#set! injection.language "javascript"))
+
+; zsh
+(redirected_statement
+  (file_redirect destination: (_) @_dest)
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#lua-match? @_dest "%.zsh[\"']?$")
+  (#set! injection.language "zsh"))
+
+(heredoc_redirect
+  (file_redirect destination: (_) @_dest)
+  (heredoc_body) @injection.content
+  (#lua-match? @_dest "%.zsh[\"']?$")
+  (#set! injection.language "zsh"))
+
+; bash
+(redirected_statement
+  (file_redirect destination: (_) @_dest)
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#lua-match? @_dest "%.bash[\"']?$")
+  (#set! injection.language "bash"))
+
+(heredoc_redirect
+  (file_redirect destination: (_) @_dest)
+  (heredoc_body) @injection.content
+  (#lua-match? @_dest "%.bash[\"']?$")
+  (#set! injection.language "bash"))
+
+; sh (.sh → bash parser; literal `.` prevents matching .zsh / .bash)
+(redirected_statement
+  (file_redirect destination: (_) @_dest)
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#lua-match? @_dest "%.sh[\"']?$")
+  (#set! injection.language "bash"))
+
+(heredoc_redirect
+  (file_redirect destination: (_) @_dest)
+  (heredoc_body) @injection.content
+  (#lua-match? @_dest "%.sh[\"']?$")
+  (#set! injection.language "bash"))
