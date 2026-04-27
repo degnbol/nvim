@@ -13,8 +13,6 @@ vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("start_treesitter", { clear = false }),
     callback = function(args)
         local disabled = {
-            -- not perfect
-            "vim",
             -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$,
             "latex", "plaintex", "tex",
         }
