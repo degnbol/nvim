@@ -208,6 +208,25 @@
   (#set! injection.language "awk")
   (#set! injection.include-children))
 
+; Inject jq into every raw_string / string argument of jq / gojq. The filter
+; is whichever quoted arg(s) the user passes; arg-bearing flags like `--arg`,
+; `--argjson` also take quoted values, but those parse as jq string literals
+; without breaking, so highlighting them as jq is harmless.
+(command
+  name: (command_name) @_cmd
+  argument: (raw_string) @injection.content
+  (#any-of? @_cmd "jq" "gojq")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "jq")
+  (#set! injection.include-children))
+
+(command
+  name: (command_name) @_cmd
+  argument: (string (string_content) @injection.content)
+  (#any-of? @_cmd "jq" "gojq")
+  (#set! injection.language "jq")
+  (#set! injection.include-children))
+
 ; Inject vim (vimscript) into `nvim -c '...'`, `nvim --cmd '...'`, and
 ; `nvim +'...'` (and the double-quoted equivalents). The vim parser's own
 ; injections.scm handles nested lua/python/ruby for `:lua print(1)`,

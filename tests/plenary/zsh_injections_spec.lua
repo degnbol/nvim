@@ -257,6 +257,40 @@ describe("zsh injections", function()
         end)
     end)
 
+    describe("jq", function()
+        it("injects jq into single-quoted jq filter", function()
+            assert_injection("jq '.a'", "jq", ".a")
+        end)
+
+        it("injects jq into double-quoted jq filter", function()
+            assert_injection('jq ".a"', "jq", ".a")
+        end)
+
+        it("injects jq with flags before filter", function()
+            assert_injection("jq -r '.items[]'", "jq", ".items[]")
+        end)
+
+        it("injects jq for gojq", function()
+            assert_injection("gojq '.foo // \"x\"'", "jq", ".foo // \"x\"")
+        end)
+
+        it("injects the filter even when --arg is also passed", function()
+            -- `jq --arg name "Alice" '.user = $name'`: the trailing filter
+            -- must be highlighted. The `Alice` value is also injected (it
+            -- parses as a harmless jq string literal); not worth the query
+            -- complexity to suppress it.
+            local inj = injections_for(
+                "jq --arg name \"Alice\" '.user = $name'", "jq")
+            local texts = {}
+            for _, e in ipairs(inj) do texts[#texts + 1] = e.text end
+            assert.is_true(vim.tbl_contains(texts, ".user = $name"))
+        end)
+
+        it("does not inject for unrelated commands", function()
+            assert_no_injection("echo '.a'", "jq")
+        end)
+    end)
+
     describe("nvim lua", function()
         it("injects lua into single-quoted nvim -c 'lua ...'", function()
             assert_injection(
