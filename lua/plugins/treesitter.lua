@@ -12,6 +12,7 @@ return {
             -- Parsers require the tree-sitter CLI (>= 0.25.0) for generate + build.
             if vim.fn.executable("tree-sitter") == 1 then
                 local task = nvim_treesitter.install {
+                    "jq",
                     "awk",
                     "zsh", -- also used for bash
                     "c_sharp",
