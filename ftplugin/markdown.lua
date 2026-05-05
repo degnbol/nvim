@@ -36,7 +36,7 @@ vim.api.nvim_set_hl(0, "@markup.strikethrough.double", { strikethrough = true })
 
 vim.keymap.set("n", "<localleader>a", function()
     local row = vim.api.nvim_win_get_cursor(0)[1] - 1
-    if not md_table.align_at(0, row, { max_width = 30 }) then
+    if not md_table.align_at(0, row, { max_width = 30, align_cells = true }) then
         vim.notify("not on a markdown table", vim.log.levels.INFO)
     end
 end, { buffer = true, desc = "Align markdown table" })

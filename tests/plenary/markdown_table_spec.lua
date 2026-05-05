@@ -89,6 +89,44 @@ describe("markdown_table.format_block", function()
             "long cell content preserved")
     end)
 
+    it("respects alignment markers when align_cells = true", function()
+        local out = md.format_block({
+            "| L | C | R |",
+            "|:---|:---:|---:|",
+            "| a | b | cc |",
+        }, { align_cells = true })
+        -- Strip the wrapping `| ` and ` |` to inspect cell padding directly.
+        --- @param line string
+        --- @return string[]
+        local function inner_cells(line)
+            local body = line:gsub("^| ", ""):gsub(" |$", "")
+            local cs = {}
+            for c in body:gmatch("[^|]+") do
+                cs[#cs + 1] = c:gsub("^%s+(.-)%s+$", "%1") and c
+            end
+            local raw = {}
+            for c in body:gmatch("([^|]+)") do
+                raw[#raw + 1] = c:gsub("^ ", ""):gsub(" $", "")
+            end
+            return raw
+        end
+        local cells = inner_cells(out[3])
+        -- Header column widths: L=3 (sep min), C=3 (sep min), R=3 (`cc`+min).
+        assert.are.equal("a  ", cells[1]) -- left: trailing pad
+        assert.are.equal(" b ", cells[2]) -- centre: split pad
+        assert.are.equal(" cc", cells[3]) -- right: leading pad
+    end)
+
+    it("default leaves all cells left-padded regardless of markers", function()
+        local out = md.format_block({
+            "| L | C | R |",
+            "|:---|:---:|---:|",
+            "| a | b | cc |",
+        }) -- no align_cells
+        assert.is_truthy(out[3]:find("| a   | b   | cc"),
+            "all cells should be left-padded by default: " .. out[3])
+    end)
+
     it("handles escaped pipes inside cells", function()
         local out = md.format_block({
             "| Cmd | Note |",

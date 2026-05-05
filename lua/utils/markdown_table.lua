@@ -15,6 +15,10 @@ local M = {}
 --- @field max_width? integer Cap on per-cell measured width. Cells longer
 ---   than this don't expand the column; their content overflows past the
 ---   trailing space and the row's later cells shift right. nil = no cap.
+--- @field align_cells? boolean If true, pad cells per the separator-row
+---   alignment markers: `:---` left (trailing spaces, default), `---:` right
+---   (leading spaces), `:---:` centre (split, leftover space goes right).
+---   Default false — pads everything left-aligned regardless of marker.
 
 --- Check if a line is a markdown table row (starts with optional whitespace then `|`).
 --- @param line string
@@ -137,6 +141,7 @@ end
 function M.format_block(table_lines, opts)
     opts = opts or {}
     local max_width = opts.max_width
+    local align_cells = opts.align_cells == true
 
     local rows = {}
     for _, line in ipairs(table_lines) do
@@ -158,6 +163,28 @@ function M.format_block(table_lines, opts)
         if is_separator_row(row) then
             sep_idx = i
             break
+        end
+    end
+
+    --- Per-column alignment, derived from the separator row when
+    --- `align_cells` is enabled. `"left"` is the default for missing
+    --- markers and for tables with no separator row.
+    --- @type ("left"|"centre"|"right")[]
+    local col_align = {}
+    for c = 1, num_cols do
+        col_align[c] = "left"
+    end
+    if align_cells and sep_idx then
+        for c, cell in ipairs(rows[sep_idx]) do
+            local left = cell:match("^:") ~= nil
+            local right = cell:match(":$") ~= nil
+            if left and right then
+                col_align[c] = "centre"
+            elseif right then
+                col_align[c] = "right"
+            else
+                col_align[c] = "left"
+            end
         end
     end
 
@@ -200,7 +227,17 @@ function M.format_block(table_lines, opts)
                 if pad < 0 then
                     pad = 0 -- overflow: cell wider than capped column
                 end
-                parts[#parts + 1] = cell .. string.rep(" ", pad)
+                local align = col_align[c]
+                if align == "right" then
+                    parts[#parts + 1] = string.rep(" ", pad) .. cell
+                elseif align == "centre" then
+                    local left_pad = math.floor(pad / 2)
+                    local right_pad = pad - left_pad
+                    parts[#parts + 1] = string.rep(" ", left_pad) .. cell
+                        .. string.rep(" ", right_pad)
+                else
+                    parts[#parts + 1] = cell .. string.rep(" ", pad)
+                end
             end
         end
         result[#result + 1] = "| " .. table.concat(parts, " | ") .. " |"
