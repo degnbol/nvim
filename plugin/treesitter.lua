@@ -7,8 +7,13 @@ vim.treesitter.language.register("zsh", "sh.zsh")
 -- ```scm fenced code blocks in markdown should use the query parser
 vim.treesitter.language.register("query", "scm")
 
+local ts_utils = require("utils.treesitter")
 vim.treesitter.query.add_directive(
-    "trim!", require("utils.treesitter").trim_directive, { force = true })
+    "trim!", ts_utils.trim_directive, { force = true })
+vim.treesitter.query.add_directive(
+    "head!", ts_utils.head_directive, { force = true })
+vim.treesitter.query.add_directive(
+    "tail!", ts_utils.tail_directive, { force = true })
 
 -- start treesitter for each new filetype
 vim.api.nvim_create_autocmd("FileType", {

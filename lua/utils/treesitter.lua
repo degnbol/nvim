@@ -53,4 +53,38 @@ function M.trim_directive(match, _, source, pred, metadata)
     }
 end
 
+---Query directive `(#head! @cap N)` — narrow @cap to its first N bytes.
+---Assumes the first N bytes do not span a newline.
+---@param match table<integer, TSNode[]>
+---@param _ integer pattern index (unused)
+---@param _source integer|string buffer or string (unused)
+---@param pred any[]
+---@param metadata vim.treesitter.query.TSMetadata
+function M.head_directive(match, _, _source, pred, metadata)
+    local capture_id = pred[2]
+    local n = tonumber(pred[3]) or 1
+    local nodes = match[capture_id]
+    if not nodes or #nodes == 0 then return end
+    local sr, sc, sb = nodes[1]:range(true)
+    if not metadata[capture_id] then metadata[capture_id] = {} end
+    metadata[capture_id].range = { sr, sc, sb, sr, sc + n, sb + n }
+end
+
+---Query directive `(#tail! @cap N)` — narrow @cap to its last N bytes.
+---Assumes the last N bytes do not span a newline.
+---@param match table<integer, TSNode[]>
+---@param _ integer pattern index (unused)
+---@param _source integer|string buffer or string (unused)
+---@param pred any[]
+---@param metadata vim.treesitter.query.TSMetadata
+function M.tail_directive(match, _, _source, pred, metadata)
+    local capture_id = pred[2]
+    local n = tonumber(pred[3]) or 1
+    local nodes = match[capture_id]
+    if not nodes or #nodes == 0 then return end
+    local _, _, _, er, ec, eb = nodes[1]:range(true)
+    if not metadata[capture_id] then metadata[capture_id] = {} end
+    metadata[capture_id].range = { er, ec - n, eb - n, er, ec, eb }
+end
+
 return M
