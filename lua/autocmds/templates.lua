@@ -50,12 +50,21 @@ local templates = {
         ";extends",
         raw "$0",
     },
-    R = snippet {
-        shebang .. "Rscript",
-        [[if (!require("pacman", quiet=TRUE)) install.packages("pacman")]],
-        [[pacman::p_load(data.table, ggplot2, cowplot, ggh4x, svglite)]],
-        "",
-    },
+    R = function(filepath)
+        local lines = {
+            shebang .. "Rscript",
+            [[if (!require("pacman", quiet=TRUE)) install.packages("pacman")]],
+            [[pacman::p_load(data.table, ggplot2, cowplot, ggh4x, svglite)]],
+        }
+        local git_root = vim.fs.root(filepath, ".git")
+        local rel = git_root and vim.fs.relpath(git_root, vim.fn.fnamemodify(filepath, ":h"))
+        if rel and rel ~= "" then
+            table.insert(lines, [[root = system("git root", intern=TRUE)]])
+            table.insert(lines, [[setwd(file.path(root, "]] .. rel .. [["))]])
+        end
+        table.insert(lines, "")
+        return snippet(lines)
+    end,
     py = function(filepath)
         if filepath:match("%.pml%.py$") then return nil end
         if filepath:match("%.blend%.py$") then return nil end
