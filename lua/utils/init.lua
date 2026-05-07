@@ -124,6 +124,102 @@ function M.set_col(c)
     vim.api.nvim_win_set_cursor(0, { r, c })
 end
 
+---Set the view of a window. Wraps `winrestview()`; fields not listed
+---below pass through unchanged.
+---
+---When `topline` is set but `lnum` is not, the cursor is placed at the
+---closest line within scrolloff of the new viewport — vim would
+---otherwise drift `topline` forward to satisfy its margin constraints,
+---silently overriding the requested topline. The cursor row stays as
+---close as possible to its current value.
+---
+---Omitted fields keep their current values: cursor column (`col`),
+---horizontal offset (`leftcol`/`skipcol`), diff filler (`topfill`),
+---etc. Set them explicitly to override.
+---
+---All line/column fields use winrestview's convention: lines are
+---1-indexed, columns are 0-indexed byte offsets.
+---
+---Field descriptions:
+---  winid: window (0 or nil = current).
+---  topline: 1-indexed buffer line to place at viewport top.
+---  lnum: cursor line (1-indexed). When set, suppresses auto-clamping.
+---  col: cursor byte column (0-indexed).
+---  coladd: 'virtualedit' offset past end of line.
+---  curswant: preferred column for vertical motion.
+---  leftcol: leftmost visible column when 'wrap' is off.
+---  skipcol: columns skipped on a wrapped long line.
+---  topfill: diff filler line count.
+---  silent: skip autocmds (WinScrolled, CursorMoved, ...).
+---@param opts {
+---  winid: integer?,
+---  topline: integer?,
+---  lnum: integer?,
+---  col: integer?,
+---  coladd: integer?,
+---  curswant: integer?,
+---  leftcol: integer?,
+---  skipcol: integer?,
+---  topfill: integer?,
+---  silent: boolean?,
+---}
+function M.set_view(opts)
+    opts = opts or {}
+    local winid = opts.winid
+    if not winid or winid == 0 then
+        winid = vim.api.nvim_get_current_win()
+    end
+    if not vim.api.nvim_win_is_valid(winid) then
+        return
+    end
+
+    local view = {
+        topline = opts.topline,
+        lnum = opts.lnum,
+        col = opts.col,
+        coladd = opts.coladd,
+        curswant = opts.curswant,
+        leftcol = opts.leftcol,
+        skipcol = opts.skipcol,
+        topfill = opts.topfill,
+    }
+
+    if opts.topline and not opts.lnum then
+        local scrolloff = math.max(
+            0,
+            vim.api.nvim_get_option_value("scrolloff", { win = winid })
+        )
+        local height = vim.api.nvim_win_get_height(winid)
+        local last = vim.api.nvim_buf_line_count(
+            vim.api.nvim_win_get_buf(winid)
+        )
+        local current = vim.api.nvim_win_get_cursor(winid)[1]
+        local lo = math.min(opts.topline + scrolloff, last)
+        local hi = math.min(opts.topline + height - 1 - scrolloff, last)
+        -- Pathological: window height < 2 * scrolloff + 1 (no valid range).
+        if hi < lo then
+            hi = lo
+        end
+        view.lnum = math.max(lo, math.min(current, hi))
+    end
+
+    local function apply()
+        vim.fn.winrestview(view)
+    end
+
+    if opts.silent then
+        local saved = vim.o.eventignore
+        vim.o.eventignore = "all"
+        local ok, err = pcall(vim.api.nvim_win_call, winid, apply)
+        vim.o.eventignore = saved
+        if not ok then
+            error(err)
+        end
+    else
+        vim.api.nvim_win_call(winid, apply)
+    end
+end
+
 ---Add current cursor position to the jumplist.
 ---Useful for setting cursor and having the change function as a jump.
 function M.jumplist_add()
