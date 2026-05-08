@@ -72,6 +72,8 @@ return {
         end,
         after = function()
             require("agentic").setup {
+                debug = false,
+                log = true,
                 winbar = false,
                 headers = {
                     chat = { title = "Claude" },
