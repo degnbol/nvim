@@ -474,6 +474,37 @@ return {
 
             require('blink.cmp').setup(opts)
 
+            -- Patch path source: show hidden files when cursor is right after a
+            -- '.' with no keyword chars after (e.g. "~/nvim/.|"). Upstream's
+            -- include_hidden check only fires when length > 0 OR the dot is at
+            -- start_col (cursor before a dot), missing the explicit-dot case.
+            local path_module = require('blink.cmp.sources.path')
+            local path_lib = require('blink.cmp.sources.path.lib')
+            function path_module:get_completions(context, callback)
+                callback = vim.schedule_wrap(callback)
+                local dirname = path_lib.dirname(self.opts, context)
+                if not dirname then
+                    return callback({
+                        is_incomplete_forward = false,
+                        is_incomplete_backward = false,
+                        items = {},
+                    })
+                end
+                local sc = context.bounds.start_col
+                local include_hidden = self.opts.show_hidden_files_by_default
+                    or context.line:sub(sc, sc) == '.'
+                    or context.line:sub(sc - 1, sc - 1) == '.'
+                path_lib.candidates(context, dirname, include_hidden, self.opts)
+                    :map(function(items)
+                        callback({
+                            is_incomplete_forward = false,
+                            is_incomplete_backward = false,
+                            items = items,
+                        })
+                    end)
+                    :catch(function() callback() end)
+            end
+
             -- In typst, treat ':' as part of keywords so completion stays open
             -- for @fig:label, @sec:name references. Blink's keyword chars are
             -- hardcoded (letters, digits, underscore, hyphen) in both the Rust
