@@ -62,6 +62,11 @@ return {
             -- highlight hex colors and todos, notes etc
             -- consider this or https://github.com/folke/paint.nvim if you want to highlight custom things.
             local hipatterns = require 'mini.hipatterns'
+            -- Neutral mid-grey for swatch outline bars. Re-applied on
+            -- ColorScheme since `:hi clear` wipes user-defined groups.
+            hi.onColorScheme(function()
+                hi.set('HexSwatchOutline', { fg = '#808080' })
+            end)
             hipatterns.setup {
                 highlighters = {
                     -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
@@ -71,8 +76,28 @@ return {
                     todo      = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
                     note      = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
 
-                    -- Highlight hex color strings (`#rrggbb`) using that color
-                    hex_color = hipatterns.gen_highlighter.hex_color(),
+                    -- Highlight hex color strings (`#rrggbb`) using that color.
+                    -- `virt_text_pos = 'eol'` so the block survives gitsigns'
+                    -- `linehl` bg, which clobbers any in-line `hl_group` bg.
+                    hex_color = {
+                        pattern = '#%x%x%x%x%x%x%f[%X]',
+                        group   = function(_, match) return hipatterns.compute_hex_color_group(match, 'fg') end,
+                        extmark_opts = function(_, _, data)
+                            return {
+                                -- `▕…▏` bars in `HexSwatchOutline` (neutral
+                                -- grey) give an always-visible outline so
+                                -- swatches don't vanish when the hex matches
+                                -- the editor bg.
+                                virt_text     = {
+                                    { '▕',  'HexSwatchOutline' },
+                                    { '██', data.hl_group },
+                                    { '▏',  'HexSwatchOutline' },
+                                },
+                                virt_text_pos = 'eol',
+                                priority      = 200,
+                            }
+                        end,
+                    },
                     -- Highlight hex color in latex \definecolor{...}{HTML}{...}
                     tex       = { pattern = [[\definecolor{[%w_-]+}{HTML}{()%w+()}]], group = function(_, match)
                         if #match ~= 6 then return nil end
@@ -80,6 +105,16 @@ return {
                     end },
                 }
             }
+
+            -- On config reload, `enable()` short-circuits buffers already in
+            -- the cache, so stale extmarks from the previous highlighter shape
+            -- survive. Disable + re-enable each loaded buffer to wipe them.
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+                if vim.api.nvim_buf_is_loaded(buf) then
+                    pcall(hipatterns.disable, buf)
+                    pcall(hipatterns.enable, buf)
+                end
+            end
 
 
             local clue = require 'mini.clue'

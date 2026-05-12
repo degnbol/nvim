@@ -77,6 +77,39 @@ return {
 				-- on_attach = on_attach
 			})
 
+			-- LSP document colour with end-of-line swatch. The built-in
+			-- 'virtual' style is hardcoded to virt_text_pos='inline' (see
+			-- runtime/lua/vim/lsp/document_color.lua), so we pass a function
+			-- and manage our own namespace. `fresh_pass` debounces clearing:
+			-- the LSP loop calls the style function once per hex per refresh,
+			-- so we clear once per buffer-edit cycle and accumulate marks
+			-- within it.
+			local doccolor_ns = vim.api.nvim_create_namespace("lsp_doccolor_eol")
+			local fresh_pass = {}
+			vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufEnter" }, {
+				callback = function(ev) fresh_pass[ev.buf] = nil end,
+			})
+			-- Disabled: mini.hipatterns covers all filetypes, this only LSP-supported ones.
+			-- Flip to `true` to re-enable.
+			vim.lsp.document_color.enable(false, nil, {
+				style = function(bufnr, range, hex)
+					if not fresh_pass[bufnr] then
+						vim.api.nvim_buf_clear_namespace(bufnr, doccolor_ns, 0, -1)
+						fresh_pass[bufnr] = true
+					end
+					local hl = "LspDocColorEol_" .. hex:sub(2)
+					vim.api.nvim_set_hl(0, hl, { fg = hex })
+					vim.api.nvim_buf_set_extmark(bufnr, doccolor_ns, range.start_row, range.start_col, {
+						virt_text = {
+							{ "▕", "HexSwatchOutline" },
+							{ "██", hl },
+							{ "▏", "HexSwatchOutline" },
+						},
+						virt_text_pos = "eol",
+					})
+				end,
+			})
+
 			-- Doesn't work as well as tinymist, e.g. for multiple files and goto def.
 			-- vim.lsp.config('typst_lsp', {
 			--     settings = {
