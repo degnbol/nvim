@@ -266,10 +266,16 @@ return {
             })
             -- Access notifications
             vim.api.nvim_create_user_command("Messages", function ()
-                -- Find a window without winfixbuf to avoid E151 in plugin windows
-                if vim.wo.winfixbuf then
+                -- show_history() replaces the current window's buffer. If the
+                -- current window has winfixbuf (plugin panels), or is a float
+                -- (e.g. an active notification float — small, 1-line),
+                -- find a regular non-float, non-winfixbuf window first.
+                local cur = vim.api.nvim_get_current_win()
+                local cur_is_float = vim.api.nvim_win_get_config(cur).relative ~= ""
+                if vim.wo.winfixbuf or cur_is_float then
                     for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-                        if not vim.wo[win].winfixbuf then
+                        local is_float = vim.api.nvim_win_get_config(win).relative ~= ""
+                        if not is_float and not vim.wo[win].winfixbuf then
                             vim.api.nvim_set_current_win(win)
                             break
                         end
