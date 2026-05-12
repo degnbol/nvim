@@ -337,6 +337,21 @@ return {
                             end,
                         },
                     },
+                    documentation = {
+                        auto_show = true,
+                        auto_show_delay_ms = 0,
+                        window = {
+                            -- Don't disqualify side directions when little vertical room — we'd rather
+                            -- have a short side preview than fall through to placing above the menu.
+                            desired_min_height = 1,
+                            max_height = 18,
+                            -- Fall through to 's' (below menu) before 'n' (above), so the menu stays unobscured.
+                            direction_priority = {
+                                menu_north = { 'e', 'w', 's', 'n' },
+                                menu_south = { 'e', 'w', 's', 'n' },
+                            },
+                        },
+                    },
                     accept = {
                         auto_brackets = {
                             override_brackets_for_filetypes = {
@@ -412,10 +427,6 @@ return {
                         -- After matching with regex, any characters matching this regex at the prefix will be excluded
                         -- exclude_from_prefix_regex = '[\\-]',
                     },
-                    documentation = {
-                        auto_show = true,
-                        auto_show_delay_ms = 0,
-                    },
                 },
                 -- Experimental signature help support.
                 -- https://cmp.saghen.dev/configuration/reference.html#signature
@@ -473,6 +484,19 @@ return {
             }
 
             require('blink.cmp').setup(opts)
+
+            -- Lower the documentation window's zindex below the menu's. Both default to
+            -- 1001 (hardcoded in blink.cmp.lib.window.open), and ties resolve to draw
+            -- order — the docs window opens after the menu, so it covers the menu when
+            -- they collide. Setting docs to 1000 keeps the menu visually on top.
+            local docs_win = require('blink.cmp.completion.windows.documentation').win
+            local orig_open = docs_win.open
+            function docs_win:open()
+                orig_open(self)
+                if self.id then
+                    pcall(vim.api.nvim_win_set_config, self.id, { zindex = 1000 })
+                end
+            end
 
             -- Patch path source: show hidden files when cursor is right after a
             -- '.' with no keyword chars after (e.g. "~/nvim/.|"). Upstream's
