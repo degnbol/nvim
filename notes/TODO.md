@@ -1,3 +1,5 @@
+FIXME: editing a folder is currently a mess.
+
 typst:
 gx on e.g. `#import "@preview/glossarium:0.5.9": make-glossary, register-glossary, print-glossary, gls, glspl`
 to go to https://typst.app/universe/package/glossarium
@@ -238,6 +240,12 @@ https://github.com/danielfalk/smart-open.nvim
 
 replace yoink with nvim version:
 https://github.com/gbprod/yanky.nvim
+
+Drop vim-repeat once its consumers are gone. Currently relied on by:
+vim-matchup, vim-unimpaired, vim-easy-align, splitjoin.vim, conflict-marker.vim,
+vim-UnconditionalPaste, vim-conjoin, vim-ingo-library, and LuaSnip (optional).
+Without callers it's a no-op — its `.`/`u`/`U`/`<C-R>` overrides fall through to
+native behaviour. Modern Lua plugins implement dot-repeat themselves.
 
 It might be possible to get completion in pml files (pymol language).
 https://pymol.org/pymol-command-ref.html
