@@ -128,4 +128,149 @@ describe("iabbrev.iabbrev (side effects)", function()
         local lower = vim.api.nvim_exec2("iabbrev zzim", { output = true }).output
         assert.is_truthy(lower:find("No abbreviation") or lower == "")
     end)
+
+    it("with predicate, dispatch returns rhs when predicate passes", function()
+        clear("zzpred")
+        ab.iabbrev("zzpred", "passed", false, true, function() return true end)
+        assert.are.equal("passed", ab._dispatch_lookup("zzpred"))
+    end)
+
+    it("with predicate, dispatch returns lhs when predicate fails", function()
+        clear("zzpred2")
+        ab.iabbrev("zzpred2", "passed", false, true, function() return false end)
+        assert.are.equal("zzpred2", ab._dispatch_lookup("zzpred2"))
+    end)
+end)
+
+describe("tex prose predicate (via plugin/abbreviations.lua)", function()
+    -- vimtex isn't loaded under minimal_init, so we mock the three functions
+    -- the predicate calls. Each test installs its own mock state.
+    local plugin_loaded = false
+    local function ensure_loaded()
+        if plugin_loaded then return end
+        dofile(vim.fn.expand("~/dotfiles/config/nvim/plugin/abbreviations.lua"))
+        plugin_loaded = true
+    end
+
+    --- @param state { math?: boolean, in_doc?: boolean, env?: string, cmd?: string }
+    local function mock(state)
+        vim.fn["vimtex#syntax#in_mathzone"] = function() return state.math and 1 or 0 end
+        vim.fn["vimtex#env#is_inside"] = function(_)
+            return state.in_doc and { 1, 1 } or { 0, 0 }
+        end
+        vim.fn["vimtex#env#get_inner"] = function()
+            return state.env and { name = state.env } or {}
+        end
+        vim.fn["vimtex#cmd#get_current"] = function()
+            return state.cmd and { name = state.cmd } or {}
+        end
+    end
+
+    -- After mocking, re-fire the tex FileType autocmd to register iabbrevs.
+    -- We dispatch on a known lhs (`algo`) through _dispatch_lookup, which
+    -- triggers the predicate.
+    local function dispatch(state)
+        ensure_loaded()
+        mock(state)
+        local buf = vim.api.nvim_create_buf(false, true)
+        vim.api.nvim_set_current_buf(buf)
+        pcall(function() vim.bo[buf].filetype = "tex" end)
+        return ab._dispatch_lookup("algo")
+    end
+
+    it("body prose expands (in document, no env, no cmd)", function()
+        assert.are_not.equal("algo", dispatch({ in_doc = true }))
+    end)
+    it("preamble skips (not in document)", function()
+        assert.are.equal("algo", dispatch({ in_doc = false }))
+    end)
+    it("math skips", function()
+        assert.are.equal("algo", dispatch({ in_doc = true, math = true }))
+    end)
+    it("verbatim env skips (not in prose env list)", function()
+        assert.are.equal("algo", dispatch({ in_doc = true, env = "verbatim" }))
+    end)
+    it("itemize env expands", function()
+        assert.are_not.equal("algo", dispatch({ in_doc = true, env = "itemize" }))
+    end)
+    it("figure env + caption cmd expands", function()
+        assert.are_not.equal("algo",
+            dispatch({ in_doc = true, env = "figure", cmd = "caption" }))
+    end)
+    it("figure env + includegraphics cmd skips", function()
+        assert.are.equal("algo",
+            dispatch({ in_doc = true, env = "figure", cmd = "includegraphics" }))
+    end)
+    it("label cmd skips", function()
+        assert.are.equal("algo", dispatch({ in_doc = true, cmd = "label" }))
+    end)
+    it("section cmd expands", function()
+        assert.are_not.equal("algo", dispatch({ in_doc = true, cmd = "section" }))
+    end)
+    it("starred section* cmd expands", function()
+        assert.are_not.equal("algo", dispatch({ in_doc = true, cmd = "section*" }))
+    end)
+    it("starred figure* env + caption expands", function()
+        assert.are_not.equal("algo",
+            dispatch({ in_doc = true, env = "figure*", cmd = "caption" }))
+    end)
+end)
+
+describe("typst prose predicate (via plugin/abbreviations.lua)", function()
+    -- These tests load the abbreviations plugin so the FileType autocmd fires.
+    -- The typst predicate uses treesitter to detect markup vs code mode.
+    local plugin_loaded = false
+    local function ensure_loaded()
+        if plugin_loaded then return end
+        dofile(vim.fn.expand("~/dotfiles/config/nvim/plugin/abbreviations.lua"))
+        plugin_loaded = true
+    end
+
+    local function dispatch_at(lines, lhs, row, col)
+        ensure_loaded()
+        local buf = vim.api.nvim_create_buf(false, true)
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+        vim.api.nvim_set_current_buf(buf)
+        pcall(function() vim.bo[buf].filetype = "typst" end)
+        vim.treesitter.get_parser(buf, "typst"):parse(true)
+        vim.api.nvim_win_set_cursor(0, { row + 1, col })
+        return ab._dispatch_lookup(lhs)
+    end
+
+    -- Find the cursor column just after `lhs` in the first matching line.
+    local function find_after(lines, lhs)
+        for i, line in ipairs(lines) do
+            local idx = line:find(lhs, 1, true)
+            if idx then return i - 1, idx - 1 + #lhs end
+        end
+    end
+
+    local function expand_check(label, lines, lhs)
+        it(label .. " — expands", function()
+            local row, col = find_after(lines, lhs)
+            local got = dispatch_at(lines, lhs, row, col)
+            assert.are_not.equal(lhs, got)
+        end)
+    end
+
+    local function skip_check(label, lines, lhs)
+        it(label .. " — skips", function()
+            local row, col = find_after(lines, lhs)
+            assert.are.equal(lhs, dispatch_at(lines, lhs, row, col))
+        end)
+    end
+
+    expand_check("plain markup",       { "Prose with algo here" }, "algo")
+    expand_check("content arg [...]",  { "#text(size: 12pt)[Prose algo here]" }, "algo")
+    expand_check("nested content arg", { "#text[Body algo more]" }, "algo")
+
+    skip_check("inline math $...$",    { "Math: $algo$ done" }, "algo")
+    skip_check("raw block ``` ```",    { "```", "algo = 1", "```" }, "algo")
+    skip_check("raw span `...`",       { "Inline `algo` raw" }, "algo")
+    skip_check("#let binding",         { "#let algo = 1" }, "algo")
+    skip_check("#import path",         { '#import "algo.typ"' }, "algo")
+    skip_check("#show expression",     { "#show heading: algo" }, "algo")
+    skip_check("#set arg value",       { "#set page(margin: algo)" }, "algo")
+    skip_check("function call name",   { "#algo(x, y)" }, "algo")
+    skip_check("code arg in call",     { "#text(weight: algo)[Body]" }, "algo")
 end)

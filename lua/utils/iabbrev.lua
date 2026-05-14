@@ -94,19 +94,51 @@ function M.case_variants(lhs, rhs)
     return out
 end
 
+-- Per-buffer registry of (expanded) lhs → {rhs, predicate} entries used by
+-- the `<expr>` form. Keyed by bufnr; entries are stale when a buf is wiped
+-- but they're only reachable through that buffer's iabbrevs, which are
+-- cleared at the same time, so the leak is harmless.
+M._dispatch = {}
+
+--- Called from `<expr>` iabbrevs registered by `iabbrev(..., predicate)`.
+--- Returns the rhs when the predicate passes, else the lhs (no expansion).
+--- @param lhs string
+--- @return string
+function M._dispatch_lookup(lhs)
+    local entry = (M._dispatch[vim.api.nvim_get_current_buf()] or {})[lhs]
+    if not entry then return lhs end
+    if entry.predicate and not entry.predicate() then return lhs end
+    return entry.rhs
+end
+
 --- Define insert-mode abbreviation(s). With `cases` (default true), also
 --- expands {a,b} braces and emits lower/Title/UPPER variants — i.e. the
 --- :Abolish behaviour. With `cases = false`, emits a single literal iabbrev.
+--- With `buf_local = true`, registers as `<buffer>` (current buffer only).
+--- With `predicate`, emits an `<expr>` iabbrev that only expands when the
+--- predicate returns truthy (called at expansion time, no args).
 --- @param lhs string
 --- @param rhs string
 --- @param cases? boolean default true
-function M.iabbrev(lhs, rhs, cases)
+--- @param buf_local? boolean default false
+--- @param predicate? fun(): boolean called at expansion time
+function M.iabbrev(lhs, rhs, cases, buf_local, predicate)
     if cases == nil then cases = true end
+    local buf_tag = buf_local and "<buffer> " or ""
     for _, pair in ipairs(M.expand_braces(lhs, rhs)) do
         local l, r = pair[1], pair[2]
         local entries = cases and M.case_variants(l, r) or { [l] = r }
         for k, v in pairs(entries) do
-            vim.cmd("iabbrev " .. k .. " " .. v)
+            if predicate then
+                local buf = vim.api.nvim_get_current_buf()
+                M._dispatch[buf] = M._dispatch[buf] or {}
+                M._dispatch[buf][k] = { rhs = v, predicate = predicate }
+                vim.cmd(string.format(
+                    "iabbrev <expr> %s%s v:lua.require'utils.iabbrev'._dispatch_lookup(%q)",
+                    buf_tag, k, k))
+            else
+                vim.cmd("iabbrev " .. buf_tag .. k .. " " .. v)
+            end
         end
     end
 end
