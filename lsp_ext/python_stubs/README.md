@@ -7,3 +7,7 @@ Run `./RUNME.sh` to regenerate all stubs.
 basedpyright finds these via the `stubPath` setting in `lsp/basedpyright.lua`.
 Note: `stubPath` is ignored if `[tool.basedpyright]` exists in pyproject.toml
 (basedpyright defaults to `typings/` instead). Keep settings in the LSP config.
+
+For libraries with community-maintained PEP 561 stubs on PyPI (scipy-stubs,
+pandas-stubs, ...), use `../python_stubs_pypi/` instead — those are curated
+and richer than stubgen output.

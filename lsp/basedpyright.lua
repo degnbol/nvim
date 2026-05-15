@@ -83,10 +83,21 @@ return {
                 -- https://detachhead.github.io/basedpyright/#/configuration
                 typeCheckingMode = "standard",
                 stubPath = vim.fn.stdpath("config") .. "/lsp_ext/python_stubs/",
-                extraPaths = vim.list_extend(
-                    { "src" },
-                    vim.fn.glob(vim.fn.stdpath("config") .. "/lsp_ext/extraPaths/*/", false, true)
-                ),
+                extraPaths = (function()
+                    local paths = { "src" }
+                    vim.list_extend(paths, vim.fn.glob(
+                        vim.fn.stdpath("config") .. "/lsp_ext/extraPaths/*/", false, true))
+                    -- PEP 561 stub packages (scipy-stubs, pandas-stubs, ...)
+                    -- installed via lsp_ext/python_stubs_pypi/RUNME.sh.
+                    local pypi_lib = vim.fn.expand("~/.local/share/python-stubs/lib")
+                    for _, py in ipairs(vim.fs.find(
+                        function(name) return name:match("^python%d+%.%d+$") end,
+                        { path = pypi_lib, type = "directory", limit = math.huge })
+                    ) do
+                        table.insert(paths, py .. "/site-packages")
+                    end
+                    return paths
+                end)(),
                 -- Prevent goto-definition from landing in build/ directories.
                 -- https://docs.basedpyright.com/v1.20.0/configuration/language-server-settings/
                 exclude = { "**/build" },
