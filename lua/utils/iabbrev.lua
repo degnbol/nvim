@@ -111,12 +111,48 @@ function M._dispatch_lookup(lhs)
     return entry.rhs
 end
 
+--- Check that `lhs` matches one of vim's three accepted abbreviation shapes
+--- (`:help abbreviations`): full-id (all keyword chars), end-id (last char
+--- keyword, others non-keyword), or non-id (last char non-keyword, others
+--- any non-whitespace). Returns `true` on success, or `false, msg`.
+--- @param lhs string
+--- @return boolean, string?
+function M.validate_lhs(lhs)
+    if lhs == "" then return false, "empty lhs" end
+    if vim.fn.match(lhs, "[ \t]") >= 0 then
+        return false, ("lhs %q contains space or tab"):format(lhs)
+    end
+    local chars = vim.fn.split(lhs, "\\zs")
+    local kwd = {}
+    for i, c in ipairs(chars) do
+        kwd[i] = vim.fn.match(c, "\\k") == 0
+    end
+    local n = #chars
+    if not kwd[n] then return true end  -- non-id
+    local has_kwd, has_non_kwd = false, false
+    for i = 1, n - 1 do
+        if kwd[i] then has_kwd = true else has_non_kwd = true end
+    end
+    if not (has_kwd and has_non_kwd) then return true end  -- full-id or end-id
+    return false, ("lhs %q is not full-id, end-id, or non-id "
+        .. "(see :help abbreviations) — keyword chars before a final keyword "
+        .. "char must be all-keyword or all-non-keyword"):format(lhs)
+end
+
 --- Define insert-mode abbreviation(s). With `cases` (default true), also
 --- expands {a,b} braces and emits lower/Title/UPPER variants — i.e. the
 --- :Abolish behaviour. With `cases = false`, emits a single literal iabbrev.
 --- With `buf_local = true`, registers as `<buffer>` (current buffer only).
 --- With `predicate`, emits an `<expr>` iabbrev that only expands when the
 --- predicate returns truthy (called at expansion time, no args).
+---
+--- Each generated lhs variant must satisfy vim's abbreviation rules
+--- (`:help abbreviations`):
+---   - full-id: all keyword chars (e.g. "foo", "bar123")
+---   - end-id:  last char keyword, all others non-keyword (e.g. "'s", "#i")
+---   - non-id:  last char non-keyword, others any non-whitespace (e.g. "def#")
+--- Mixed keyword/non-keyword chars before a final keyword char (e.g. "it;s")
+--- match none of the three and raise an error at registration.
 --- @param lhs string
 --- @param rhs string
 --- @param cases? boolean default true
@@ -129,6 +165,10 @@ function M.iabbrev(lhs, rhs, cases, buf_local, predicate)
         local l, r = pair[1], pair[2]
         local entries = cases and M.case_variants(l, r) or { [l] = r }
         for k, v in pairs(entries) do
+            local ok, err = M.validate_lhs(k)
+            if not ok then
+                error(("iabbrev(%q, %q): %s"):format(lhs, rhs, err), 2)
+            end
             if predicate then
                 local buf = vim.api.nvim_get_current_buf()
                 M._dispatch[buf] = M._dispatch[buf] or {}

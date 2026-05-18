@@ -141,6 +141,14 @@ abc("rudamentary", "rudimentary")
 abc("occurence", "occurrence")
 abc("occur{,r}ance", "occurrence")
 abc("hi{,e}ra{,r}ch{y,ical}", "hi{e}{r}arch{}")
+-- ;-for-' (adjacent keys on QWERTY). Generic suffix abbrevs: don;t → don't,
+-- it;s → it's, I;m → I'm, etc. `;X` is end-id (non-kwd then kwd), so it's a
+-- valid iabbrev lhs; `it;s` itself isn't. Limited to single-letter suffixes —
+-- `;ll`/`;ve`/`;re` can't be expressed (kwd before final kwd).
+abc(";s", "'s")
+abc(";t", "'t")
+abc(";m", "'m")
+abc(";d", "'d")
 
 -- ── Shortcuts ────────────────────────────────────────────────────────────
 abc("aa{,s}", "amino acid{,s}")
