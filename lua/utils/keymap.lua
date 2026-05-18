@@ -154,12 +154,28 @@ function M.buf(mode, lhs, rhs, desc, opts)
     vim.keymap.set(mode, lhs, rhs, opts)
 end
 
----Add desc(ription) to an already defined keymap.
+---Add desc(ription) to an already-defined keymap, so a plugin's `after`
+---callback can annotate its own keymaps without having to set them up
+---inside mini.clue's main config. Returns false when the mapping doesn't
+---exist for at least one of the given modes.
 ---@param mode string|table
 ---@param lhs string
 ---@param desc string
+---@return boolean ok true iff `desc` was applied for every mode
 function M.desc(mode, lhs, desc)
-    pcall(require "mini.clue".set_keymap_desc, mode, lhs, desc)
+    --- @type string[]
+    local modes = type(mode) == "table" and mode or { mode }
+    local all_ok = true
+    for _, m in ipairs(modes) do
+        local map_data = vim.fn.maparg(lhs, m, false, true)
+        if vim.tbl_count(map_data) > 0 then
+            map_data.desc = desc
+            vim.fn.mapset(m, false, map_data)
+        else
+            all_ok = false
+        end
+    end
+    return all_ok
 end
 
 ---Return whether an item from with the dict format described by

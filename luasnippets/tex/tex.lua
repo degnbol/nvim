@@ -7,12 +7,13 @@
 local lsu = require "utils/luasnip"
 local s, t, i, c, f, d, sn, fmta, conds, rep, ms = lsu.s, lsu.t, lsu.i, lsu.c, lsu.f, lsu.d, lsu.sn, lsu.fmta, lsu.conds, lsu.rep, lsu.ms
 local vtu = require "utils/vimtex"
+local make_condition = require("luasnip.extras.conditions").make_condition
 local get_visual = lsu.get_visual
 local virt = lsu.virt
 local re = lsu.re
 local in_text = vtu.in_text
-local cond_itemize = vtu.cond_itemize
-local cond_description = vtu.cond_description
+local cond_itemize = make_condition(vtu.in_itemize)
+local cond_description = make_condition(vtu.in_description)
 
 ---For use with f(acro, {})
 ---@param _ table args, unused

@@ -50,7 +50,6 @@ local tex_prose_cmds = {
 }
 
 local function tex_prose()
-    if vim.fn.exists("*vimtex#syntax#in_mathzone") == 0 then return true end
     if vim.fn["vimtex#syntax#in_mathzone"]() == 1 then return false end
     -- Preamble (outside \begin{document}) is never prose.
     local doc_pos = vim.fn["vimtex#env#is_inside"]("document")
