@@ -176,7 +176,8 @@ return {
                 },
                 render = function(props)
                     if vim.bo[props.buf].filetype == 'AgenticChat' then
-                        local headers = vim.t.agentic_headers
+                        local tab = vim.api.nvim_win_get_tabpage(props.win)
+                        local headers = vim.t[tab].agentic_headers
                         local chat = headers and headers.chat
                         local label = '󰻞'
                         if chat and chat.session_name then
