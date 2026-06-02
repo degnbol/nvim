@@ -274,3 +274,48 @@ describe("typst prose predicate (via plugin/abbreviations.lua)", function()
     skip_check("function call name",   { "#algo(x, y)" }, "algo")
     skip_check("code arg in call",     { "#text(weight: algo)[Body]" }, "algo")
 end)
+
+describe("prose filetype detection (via plugin/abbreviations.lua)", function()
+    -- The FileType autocmd registers buffer-local prose abbrevs (e.g.
+    -- avail → available) on prose filetypes. Detection spans the explicit
+    -- allowlist, compound (dotted) filetypes, and any filetype registered to
+    -- the markdown treesitter parser — the last covers custom filetypes like
+    -- agentic.nvim's AgenticInput without listing each by name.
+    local plugin_loaded = false
+    local function ensure_loaded()
+        if plugin_loaded then return end
+        dofile(vim.fn.expand("~/dotfiles/config/nvim/plugin/abbreviations.lua"))
+        plugin_loaded = true
+    end
+
+    -- Whether `avail → available` is live in a fresh buffer of filetype `ft`.
+    -- avail is registered buffer-local only, so an empty result means the
+    -- buffer was not treated as prose.
+    local function registers_prose_abbrev(ft)
+        ensure_loaded()
+        local buf = vim.api.nvim_create_buf(false, true)
+        vim.api.nvim_set_current_buf(buf)
+        pcall(function() vim.bo[buf].filetype = ft end)
+        local out = vim.api.nvim_exec2("iabbrev avail", { output = true }).output
+        return out:find("available") ~= nil
+    end
+
+    it("registers for plain markdown", function()
+        assert.is_true(registers_prose_abbrev("markdown"))
+    end)
+    it("registers for an allowlisted non-markdown-parser ft (quarto)", function()
+        assert.is_true(registers_prose_abbrev("quarto"))
+    end)
+    it("registers for a compound markdown filetype", function()
+        assert.is_true(registers_prose_abbrev("markdown.mdx"))
+    end)
+    it("registers for a custom ft registered to the markdown parser", function()
+        -- Mirrors agentic.nvim registering AgenticInput → markdown.
+        vim.treesitter.language.register("markdown", "ProseTestMd")
+        assert.is_true(registers_prose_abbrev("ProseTestMd"))
+    end)
+    it("does not register for code filetypes", function()
+        assert.is_false(registers_prose_abbrev("lua"))
+        assert.is_false(registers_prose_abbrev("python"))
+    end)
+end)

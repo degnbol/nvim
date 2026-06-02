@@ -191,15 +191,43 @@ local function setup_prose_abbrevs(pred)
     pabc("prios", "priorities", pred)
 end
 
+-- Explicit prose filetypes. Most don't parse as markdown (tex, rst, …) so can't
+-- be inferred from the treesitter language. `quarto` is here too: nothing
+-- registers it to the markdown parser in this config, so get_lang("quarto")
+-- stays "quarto".
+local prose_fts = {
+    markdown = true, asciidoc = true, tex = true, typst = true, text = true,
+    gitcommit = true, mail = true, rst = true, org = true, neorg = true,
+    quarto = true,
+}
 local ft_predicate = { tex = tex_prose, typst = typst_prose }
 
+--- A filetype is prose if it's in the allowlist or parses as markdown. The
+--- get_lang fallback catches custom filetypes registered to the markdown parser
+--- (e.g. agentic.nvim's `AgenticInput`) with no per-filetype maintenance here.
+--- @param ft string single (non-compound) filetype
+--- @return boolean
+local function is_prose_ft(ft)
+    return prose_fts[ft] or vim.treesitter.language.get_lang(ft) == "markdown"
+end
+
+-- Decide prose-ness per dot-component rather than by exact name. Compound
+-- filetypes that inherit from markdown (`markdown.mdx`, `vimwiki.markdown`, …)
+-- load markdown's syntax and ftplugin via neovim's dotted runtime loading, but a
+-- bare-name autocmd pattern never matches them, because pattern matching treats
+-- the filetype as one opaque string. A buffer is prose when any of its
+-- components is. The math-gating predicate comes from whichever component
+-- defines one (tex/typst).
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = {
-        "markdown", "asciidoc", "tex", "typst", "text",
-        "gitcommit", "mail", "rst", "org", "neorg", "quarto",
-    },
     group = vim.api.nvim_create_augroup("ProseAbbrevs", { clear = true }),
-    callback = function(ev) setup_prose_abbrevs(ft_predicate[ev.match]) end,
+    callback = function(ev)
+        local is_prose, pred = false, nil
+        for _, part in ipairs(vim.split(ev.match, ".", { plain = true })) do
+            if is_prose_ft(part) then is_prose = true end
+            if ft_predicate[part] then pred = ft_predicate[part] end
+        end
+        if is_prose then setup_prose_abbrevs(pred) end
+    end,
 })
 
 -- TODO: make this a bit more convenient, for autocorrecting language-specific
