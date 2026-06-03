@@ -20,33 +20,6 @@ return {
     -- I'm not seeing the slowness, and it has matching for quotation marks around strings.
     { "vim-matchup", event = "DeferredUIEnter" },
     {
-        "vim-unimpaired",
-        after = function()
-            -- next/prev file in the same dir. Not that useful so we replace it
-            -- with function by treesitter (which defaults to m but we want
-            -- that for math in latex)
-            map.desc('n', '[f', "File prev")
-            map.desc('n', ']f', "File next")
-            map.desc('n', '[e', "Exchange line before")
-            map.desc('n', ']e', "Exchange line after")
-            map.desc('n', '[n', "Conflict")
-            map.desc('n', ']n', "Conflict")
-            -- TODO: move escape motions to more useful keymap. [y and ]y is used by yoink to swap yanks.
-            -- map.desc('n', '[y', "C style escape motion")
-            -- map.desc('n', ']y', "C style unescape motion")
-            map.desc('n', '[p', "Put above, same indent")
-            map.desc('n', '[P', "Put above, same indent")
-            map.desc('n', ']p', "Put below, same indent")
-            map.desc('n', ']P', "Put below, same indent")
-            map.desc('n', '>P', "Put above, incr indent")
-            map.desc('n', '>p', "Put below, incr indent")
-            map.desc('n', '<P', "Put above, decr indent")
-            map.desc('n', '<p', "Put below, decr indent")
-            map.desc('n', '=P', "Put above, reindent")
-            map.desc('n', '=p', "Put below, reindent")
-        end,
-    },
-    {
         -- unicode shown for ga, we have go-align on that so have to use gA
         "vim-characterize",
         lazy = true,

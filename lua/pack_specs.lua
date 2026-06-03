@@ -14,7 +14,6 @@ vim.pack.add({
     gh("tpope/vim-repeat"),
     gh("tpope/vim-abolish"),
     gh("andymass/vim-matchup"),
-    gh("tpope/vim-unimpaired"),
     gh("tpope/vim-characterize"),
     gh("lewis6991/fileline.nvim"),
     gh("kana/vim-textobj-user"),

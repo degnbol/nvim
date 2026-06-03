@@ -13,6 +13,20 @@ return {
                 indent = { suffix = 'i', options = { change_type = "diff" } },
                 -- compliment with using [[, ]], [], ][ to jump to less indented region and to next region
             }
+
+            -- `yo<x>` option toggles. Skips LHS already mapped, so the
+            -- custom overrides in keymaps/options.lua win.
+            require('mini.basics').setup {
+                options = { basic = false, extra_ui = false, win_borders = 'auto' },
+                mappings = {
+                    basic = false,
+                    option_toggle_prefix = 'yo',
+                    windows = false,
+                    move_with_alt = false,
+                },
+                autocommands = { basic = false, relnum_in_visual_mode = false },
+                silent = true,
+            }
             map.n(']>', function() MiniBracketed.indent('forward', { change_type = "more" }) end, "More indented")
             map.n('[>', function() MiniBracketed.indent('backward', { change_type = "more" }) end, "More indented")
             map.n(']<', function() MiniBracketed.indent('forward', { change_type = "less" }) end, "Less indented")
@@ -184,9 +198,10 @@ return {
                     { mode = 'n', keys = '<leader>x',     desc = "Completion|Snippet" },
                     { mode = 'n', keys = ']s',            desc = "Spell" },
                     { mode = 'n', keys = '[s',            desc = "Spell" },
-                    -- vim unimpaired
+                    -- mini.basics option toggles (yo + suffix)
                     { mode = 'n', keys = 'yo',            desc = "Option toggle" },
                     { mode = 'n', keys = 'yob',           desc = "background" },
+                    { mode = 'n', keys = 'yoC',           desc = "cursorcolumn" },
                     { mode = 'n', keys = 'yoh',           desc = "hlsearch" },
                     { mode = 'n', keys = 'yoi',           desc = "ignorecase" },
                     { mode = 'n', keys = 'yol',           desc = "list" },
@@ -194,9 +209,6 @@ return {
                     { mode = 'n', keys = 'yor',           desc = "relativenumber" },
                     { mode = 'n', keys = 'yos',           desc = "spell" },
                     { mode = 'n', keys = 'yow',           desc = "wrap" },
-                    { mode = 'n', keys = 'yo-',           desc = "cursorline" },
-                    { mode = 'n', keys = 'yo_',           desc = "cursorline" },
-                    { mode = 'n', keys = 'yox',           desc = "cursorcolumn" },
                     { mode = 'n', keys = '=s',            desc = "Setting toggle | Substitute+reindent" },
                     { mode = 'n', keys = '=sh',           desc = "hlsearch" },
                     { mode = 'n', keys = '=si',           desc = "ignorecase" },

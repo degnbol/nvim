@@ -96,6 +96,16 @@ vim.cmd [[cnoreabbrev qq q]]
 -- whitespace under cursor.
 map.n("di ", "ciw <Esc>", "Delete excess whitespace")
 
+map.n('[e', "<Cmd>move -2<CR>==", "Exchange line up", { silent = true })
+map.n(']e', "<Cmd>move +1<CR>==", "Exchange line down", { silent = true })
+
+map.n('>p', "p'[V']>", "Put below + incr indent")
+map.n('>P', "P'[V']>", "Put above + incr indent")
+map.n('<p', "p'[V']<", "Put below + decr indent")
+map.n('<P', "P'[V']<", "Put above + decr indent")
+map.n('=p', "p'[V']=", "Put below + reindent")
+map.n('=P', "P'[V']=", "Put above + reindent")
+
 -- like =p but for substitution
 map.n('=ss', 'ss=`]', "Substitute+reindent", { remap = true, silent = true })
 map.n("<leader>Sr", "<cmd>source $XDG_CONFIG_HOME/nvim/after/plugin/luasnip.lua<CR>", "Reload snippets")

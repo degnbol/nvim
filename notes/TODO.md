@@ -242,7 +242,7 @@ replace yoink with nvim version:
 https://github.com/gbprod/yanky.nvim
 
 Drop vim-repeat once its consumers are gone. Currently relied on by:
-vim-matchup, vim-unimpaired, vim-easy-align, splitjoin.vim, conflict-marker.vim,
+vim-matchup, vim-easy-align, splitjoin.vim, conflict-marker.vim,
 vim-UnconditionalPaste, vim-conjoin, vim-ingo-library, and LuaSnip (optional).
 Without callers it's a no-op — its `.`/`u`/`U`/`<C-R>` overrides fall through to
 native behaviour. Modern Lua plugins implement dot-repeat themselves.
@@ -276,7 +276,6 @@ https://github.com/afonsofrancof/OSC11.nvim/
 
 Shouldn't `:e <TAB>` use ctrl+n and ctrl+p and ctrl+space like blink configured completion instead of tab or instead of only tab?
 
-`grr` seems insanely slow, is there some timeout we wait for or other issue? The LSP didn't used to be this slow.
-
-
 Builtin LSP completion vs blink? And what about luasnip
+
+Consider if we should add buffer names for qf, e.g. showing refs with grr has name like "quickfix-10", but could be "References (qf)" or "Refs: `_edge_min_radius_at`"
