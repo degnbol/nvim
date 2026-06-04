@@ -447,3 +447,33 @@
   (heredoc_body) @injection.content
   (#lua-match? @_dest "%.sh[\"']?$")
   (#set! injection.language "bash"))
+
+; -----------------------------------------------------------------------------
+; Inject SQL into the query argument of `sqlite3 <db> '<sql>'`.
+;
+; sqlite3's invocation is `sqlite3 [flags...] <database> <sql>` — the SQL is
+; always the LAST argument, preceded by the database path (e.g.
+; `"file:zotero.sqlite?immutable=1"`). Matching the last argument (trailing `.`)
+; that is itself preceded by another argument injects only the SQL and never the
+; db path or a lone `sqlite3 <db>` (interactive) invocation. The preceding
+; `argument: (_)` must NOT be anchored adjacent — an anchor binds it to the
+; first argument and fails when flags (`-readonly`, `-json`, …) precede the db.
+; -----------------------------------------------------------------------------
+(command
+  name: (command_name) @_cmd
+  argument: (_)
+  argument: (raw_string) @injection.content
+  .
+  (#eq? @_cmd "sqlite3")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "sql")
+  (#set! injection.include-children))
+
+(command
+  name: (command_name) @_cmd
+  argument: (_)
+  argument: (string (string_content) @injection.content)
+  .
+  (#eq? @_cmd "sqlite3")
+  (#set! injection.language "sql")
+  (#set! injection.include-children))
