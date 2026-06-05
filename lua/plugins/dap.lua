@@ -25,7 +25,7 @@ return {
                 },
                 handlers = {
                     python = function(config)
-                        config.configurations[1].cwd = "/Users/cmadsen/Documents/enxyme-flow/src/"
+                        config.configurations[1].cwd = vim.fn.expand("~/Documents/enxyme-flow/src/")
                         require('mason-nvim-dap').default_setup(config)
                     end,
                 },
