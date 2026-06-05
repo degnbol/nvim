@@ -425,6 +425,12 @@ describe("zsh injections", function()
                 "zsh", "typeset -A map")
         end)
 
+        it("injects typst for .typ redirect target", function()
+            assert_injection(heredoc('"$UTILS/_smoke.typ"', "'EOF'",
+                    "#set page(width: auto)"),
+                "typst", "#set page(width: auto)")
+        end)
+
         it("handles quoted redirect destinations", function()
             assert_injection(
                 'cat > "/tmp/a.lua" <<EOF\nlocal x = 1\nEOF',

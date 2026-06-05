@@ -334,119 +334,27 @@
   (#set! injection.include-children))
 
 ; -----------------------------------------------------------------------------
-; Heredoc body injection based on file-redirect extension
+; Heredoc body injection by file-redirect extension. #inject-by-ext! (see
+; lua/utils/treesitter.lua) maps the destination's extension → filetype →
+; parser language at runtime, so any filetype neovim recognises with an
+; installed parser works (lua, python, typst, json, …) — no per-language rule.
 ;
 ; `cat > foo.lua <<EOF ... EOF` — file_redirect sibling of heredoc_redirect.
 ; `cat <<EOF > foo.lua ... EOF` — file_redirect nested inside heredoc_redirect.
 ; Destination may be a bare word, double-quoted string, or raw_string — match
-; any node type via `(_)` and let the regex handle trailing quotes.
-; The base zsh query already uses `heredoc_end` as the language, so
-; `<<LUA ... LUA` still works without an extension hint.
+; any node type via `(_)`; the directive strips trailing quotes. Unknown
+; extensions leave the language unset, so the base zsh query's heredoc_end-tag
+; injection (`<<LUA ... LUA`) still applies.
 ; -----------------------------------------------------------------------------
-
-; lua
 (redirected_statement
   (file_redirect destination: (_) @_dest)
   (heredoc_redirect (heredoc_body) @injection.content)
-  (#lua-match? @_dest "%.lua[\"']?$")
-  (#set! injection.language "lua"))
+  (#inject-by-ext! @_dest))
 
 (heredoc_redirect
   (file_redirect destination: (_) @_dest)
   (heredoc_body) @injection.content
-  (#lua-match? @_dest "%.lua[\"']?$")
-  (#set! injection.language "lua"))
-
-; python
-(redirected_statement
-  (file_redirect destination: (_) @_dest)
-  (heredoc_redirect (heredoc_body) @injection.content)
-  (#lua-match? @_dest "%.py[\"']?$")
-  (#set! injection.language "python"))
-
-(heredoc_redirect
-  (file_redirect destination: (_) @_dest)
-  (heredoc_body) @injection.content
-  (#lua-match? @_dest "%.py[\"']?$")
-  (#set! injection.language "python"))
-
-; julia
-(redirected_statement
-  (file_redirect destination: (_) @_dest)
-  (heredoc_redirect (heredoc_body) @injection.content)
-  (#lua-match? @_dest "%.jl[\"']?$")
-  (#set! injection.language "julia"))
-
-(heredoc_redirect
-  (file_redirect destination: (_) @_dest)
-  (heredoc_body) @injection.content
-  (#lua-match? @_dest "%.jl[\"']?$")
-  (#set! injection.language "julia"))
-
-; R
-(redirected_statement
-  (file_redirect destination: (_) @_dest)
-  (heredoc_redirect (heredoc_body) @injection.content)
-  (#lua-match? @_dest "%.[rR][\"']?$")
-  (#set! injection.language "r"))
-
-(heredoc_redirect
-  (file_redirect destination: (_) @_dest)
-  (heredoc_body) @injection.content
-  (#lua-match? @_dest "%.[rR][\"']?$")
-  (#set! injection.language "r"))
-
-; javascript (.js, .mjs, .cjs)
-(redirected_statement
-  (file_redirect destination: (_) @_dest)
-  (heredoc_redirect (heredoc_body) @injection.content)
-  (#lua-match? @_dest "%.[cm]?js[\"']?$")
-  (#set! injection.language "javascript"))
-
-(heredoc_redirect
-  (file_redirect destination: (_) @_dest)
-  (heredoc_body) @injection.content
-  (#lua-match? @_dest "%.[cm]?js[\"']?$")
-  (#set! injection.language "javascript"))
-
-; zsh
-(redirected_statement
-  (file_redirect destination: (_) @_dest)
-  (heredoc_redirect (heredoc_body) @injection.content)
-  (#lua-match? @_dest "%.zsh[\"']?$")
-  (#set! injection.language "zsh"))
-
-(heredoc_redirect
-  (file_redirect destination: (_) @_dest)
-  (heredoc_body) @injection.content
-  (#lua-match? @_dest "%.zsh[\"']?$")
-  (#set! injection.language "zsh"))
-
-; bash
-(redirected_statement
-  (file_redirect destination: (_) @_dest)
-  (heredoc_redirect (heredoc_body) @injection.content)
-  (#lua-match? @_dest "%.bash[\"']?$")
-  (#set! injection.language "bash"))
-
-(heredoc_redirect
-  (file_redirect destination: (_) @_dest)
-  (heredoc_body) @injection.content
-  (#lua-match? @_dest "%.bash[\"']?$")
-  (#set! injection.language "bash"))
-
-; sh (.sh → bash parser; literal `.` prevents matching .zsh / .bash)
-(redirected_statement
-  (file_redirect destination: (_) @_dest)
-  (heredoc_redirect (heredoc_body) @injection.content)
-  (#lua-match? @_dest "%.sh[\"']?$")
-  (#set! injection.language "bash"))
-
-(heredoc_redirect
-  (file_redirect destination: (_) @_dest)
-  (heredoc_body) @injection.content
-  (#lua-match? @_dest "%.sh[\"']?$")
-  (#set! injection.language "bash"))
+  (#inject-by-ext! @_dest))
 
 ; -----------------------------------------------------------------------------
 ; Inject SQL into the query argument of `sqlite3 <db> '<sql>'`.

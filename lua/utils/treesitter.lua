@@ -53,6 +53,29 @@ function M.trim_directive(match, _, source, pred, metadata)
     }
 end
 
+---Query directive `(#inject-by-ext! @dest)` — set `injection.language` from the
+---file extension of @dest (a heredoc redirect destination). Resolves extension
+---→ filetype (`vim.filetype.match`) → parser language
+---(`vim.treesitter.language.get_lang`, which honours the sh/bash → zsh
+---registrations). Surrounding quotes on the destination are stripped first.
+---Unknown extensions leave `injection.language` unset, so the capture is
+---ignored and the base heredoc-tag injection (`<<LUA ... LUA`) still applies.
+---@param match table<integer, TSNode[]>
+---@param _ integer pattern index (unused)
+---@param source integer|string buffer or string
+---@param pred any[]
+---@param metadata vim.treesitter.query.TSMetadata
+function M.inject_by_ext_directive(match, _, source, pred, metadata)
+    local capture_id = pred[2]
+    local nodes = match[capture_id]
+    if not nodes or #nodes == 0 then return end
+    local dest = vim.treesitter.get_node_text(nodes[1], source)
+    dest = dest:gsub("^['\"]", ""):gsub("['\"]$", "")
+    local ft = vim.filetype.match({ filename = dest })
+    if not ft then return end
+    metadata["injection.language"] = vim.treesitter.language.get_lang(ft) or ft
+end
+
 ---Query directive `(#head! @cap N)` — narrow @cap to its first N bytes.
 ---Assumes the first N bytes do not span a newline.
 ---@param match table<integer, TSNode[]>
