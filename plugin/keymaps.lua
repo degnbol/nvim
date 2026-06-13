@@ -421,14 +421,20 @@ map.n("gx", function()
         if filepath:match(config .. '/lua/plugins/') then
             -- get first string on the line, assumes we don't list multiple plugins on one line.
             local line = vim.api.nvim_get_current_line()
-            local repo = line:match([["([%w%p]+/[%w%p]+)"]])
-            repo = repo or line:match([['([%w%p]+/[%w%p]+)']])
+            local repo = line:match([["([%w._-]+)"]]) or line:match([['([%w._-]+)']])
             if repo then
                 if repo:match("http") then
                     return vim.ui.open(repo)
-                else
+                elseif repo:match("/") then
+                    -- already an account/repo slug
                     return vim.ui.open("https://github.com/" .. repo)
                 end
+                -- Post vim.pack migration lz.n specs carry only the bare repo
+                -- name. Resolve the source from pack_specs.lua.
+                local specs = vim.fn.readfile(config .. "/lua/pack_specs.lua")
+                local url = require("utils.pluginspec").resolve(repo, specs)
+                if url then return vim.ui.open(url) end
+                -- unresolved: fall through to the general URL resolvers below
             end
         end
     end
