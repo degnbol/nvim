@@ -1,0 +1,23 @@
+---
+# Busted/luassert test globals (plenary specs use the busted DSL).
+# No `base:` — chained after `vim` (which carries the lua51 base) via
+# `std = "busted+vim"` in selene.toml. Listed first in the chain so this
+# `assert` (field-bearing) wins over lua51's plain `assert` function.
+name: busted
+globals:
+  describe:
+    any: true
+  it:
+    any: true
+  before_each:
+    any: true
+  after_each:
+    any: true
+  setup:
+    any: true
+  teardown:
+    any: true
+  pending:
+    any: true
+  assert:
+    any: true
