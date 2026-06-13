@@ -6,6 +6,8 @@ description: >
   or discussing snippet nodes (insert, text, choice, function, dynamic, fmt/fmta).
 ---
 
+Read lua/utils/luasnip.lua before writing snippets.
+
 # Snippets in Neovim
 
 Two snippet systems are active:
@@ -20,7 +22,7 @@ luasnippets/<ft>.lua              # Per-filetype snippet definitions (LuaSnip au
 lua/luasnippets/add.lua           # Create snippets from visual selection
 lua/luasnippets/lazy.lua          # Conditional: lazy.nvim plugin spec snippets
 lua/luasnippets/python_pymol.lua  # Conditional: pymol snippets
-lua/utils/luasnip.lua             # Re-exports + custom utilities
+lua/utils/luasnip.lua             # Re-exports + utilities
 ```
 
 ## Snippet file boilerplate
