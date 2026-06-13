@@ -4,30 +4,6 @@ typst:
 gx on e.g. `#import "@preview/glossarium:0.5.9": make-glossary, register-glossary, print-glossary, gls, glspl`
 to go to https://typst.app/universe/package/glossarium
 
-
-Colorscheme overhaul. Functional and simpler.
-E.g. values such as numbers are currently coloured similar to types.
-Should instead be similar to strings, which are also simple dataformats, and things like `None` in python which are builtin simple values.
-Docstrings should also be coloured similar to strings, e.g. somewhere between string and comment. Also, keywords and statements are currently red while function calls are blue. This is two very different colours, however what is function and what is statement is not very different and gets overlapping by language. Also there's `repeat` which is almost the same colour, and the import or include keywords as well.
-All of these could probably be more similar in colour, which would work ok because the keywords are still distinguished by being italic.
-character.special could also be more similar to character and character could also be in between string and the color for numbers/boolean/"None"/etc.
-We also have to think about the colour wheel. E.g. if we want function to be some kind of blue and string to be some kind of green, then they are right next to each other in terms of hue. Then if we want numbers to be a colour between string and statement/keyword, which e.g. is purple, then the number will become blue and clash with function. For this reason it might make sense to make some choice along the hue about which concepts should be next to each other. With parameters, which are bit like variables but also flags, and import statements which are keywords, and types are a bit like variables or sometimes can be called like functions, and filenames and directory names which should have same colour outside in term, and are a bit like strings but also relate to Include and @import, I think if you draw a diagram of all the concepts and how they relate to each other there will be almost just one way to place them along hue, with lightness+saturation being a matter of indicating important, e.g. the torch in torch. should be dim.
-Delimiters doesn't have to have same color as keyword/statement. keyword operator probably don't need to be bold.
-Executable files in term could be highlighted blue like functions inside nvim.
-What about types being called? E.g. str(...) or a class or class instance. Any meaningful way to indicate calling vs. type/function/class with hue, saturation, lightness, bold, italic, underline, etc..
-There's so many edge cases to think about, e.g. in python `@string.regexp`, `@string.escape`, `@operator.regex`, `@punctuation.bracket.regex`. How these should convey the operator, etc. role and how similar and different they should be to just regular string.
-```python
-    re_xyz = re.compile(r"(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)")
-```
-Type is sometimes almost a comment, e.g. in untyped languages like python. Maybe that's a relation for the graph of concepts?
-Type is often used as function.
-Should there be a difference between bracket and delimiter? maybe a subtle one, which is a compromise step in the direction of using rainbow brackets.
-I think often the brackets are not interesting to read, e.g. boring function calls with no args or in python where the parenthesis are used to spread an expression across multiple lines.
-So Maybe they should not be bold etc. but just be a slightly dimmed version of the delimiter?
-An argument for having bold operator is dot is both an operator and delimiter in julia, so this way we can distinguish and highlight broadcasting which makes an important subtle difference.
-An argument for Keyword and function being similar colour is if operator is the same colour to function, then a line like `if x or y` will have `if` and `or` in similar colour which makes sense.
-However having `if` the exact same colour as functions is bad, they should just be neighbours.
-
 Evaluate ty (Astral) as basedpyright replacement (2026-02-16)
 Currently beta, stable release planned for 2026. 10–100x faster than pyright, full LSP features.
 Not ready yet: type inference less mature (noisy false positives), no plugin system (Pydantic/Django),
@@ -40,7 +16,6 @@ Ideas:
 - we currently have mini.files, nvim-tree (or nvim-neo-tree?), and now fyler getting set up. We should probably aim to only use tree explorer.
   - There's also oil.nvim with a similar role.
 - Telescope removed. fzf-lua and snacks.picker toggled via `picker` flag in fuzzy.lua. mini.pick kept for path explorer only.
-- colorscheme stuff is complex and messy. Lots is loaded globally that's only relevant to some filetypes. Also, I think nvim loads twice because of some colorscheme config. That's not ideal. There's some plugins that may be of use, if we don't mind adding another plugin.
 - There is git diffing with Gitsigns diffthis and Diffview. We use Gitsigns for hunk navigation and previews I think, which is useful. Can we get rid of diffview, and just have one diffing tool?
 
 Evaluate snacks.picker vs fzf-lua. Toggle via `picker` flag in fuzzy.lua.
@@ -69,8 +44,6 @@ lr in latex makes left right even in table header. Shouls only be in math.
 
 COOL: when pasting tsv, maybe add dummy column alignment rules or infer them from datatype (text = left, number = right, long cell=X)
 Number includes ± char
-
-FIXME: fix .sh icon yet again.
 
 When opening a new ipython REPL with leader tT it doesn't activate the right 
 env. Possibly because it doesn't understand autoenv.
