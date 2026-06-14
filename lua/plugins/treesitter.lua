@@ -22,6 +22,7 @@ return {
                     "julia",
                     "matlab",
                     "latex",
+                    "typst",
                     -- "java",
                     -- "kotlin",
                     "vimdoc",
