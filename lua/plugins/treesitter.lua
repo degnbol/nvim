@@ -9,6 +9,36 @@ return {
             local nvim_treesitter = require 'nvim-treesitter'
             nvim_treesitter.setup {}
 
+            -- Register custom parsers (not in the default registry) BEFORE
+            -- nvim_treesitter.install() so install() can resolve their names.
+            -- nvim-treesitter fires `User TSUpdate` from reload_parsers() at
+            -- the start of install/update.
+            vim.api.nvim_create_autocmd('User', {
+                pattern = 'TSUpdate',
+                callback = function()
+                    local parsers = require('nvim-treesitter.parsers')
+                    parsers.openscad = {
+                        install_info = {
+                            url = 'https://github.com/bollian/tree-sitter-openscad',
+                            branch = 'master',
+                            queries = 'queries',
+                        },
+                    }
+                    parsers.pymol_select = {
+                        install_info = {
+                            path = vim.fn.stdpath('config') .. '/modules/tree-sitter-pymol-select',
+                            queries = 'queries',
+                        },
+                    }
+                    parsers.miller = {
+                        install_info = {
+                            path = vim.fn.stdpath('config') .. '/modules/tree-sitter-miller',
+                            queries = 'queries',
+                        },
+                    }
+                end
+            })
+
             -- Parsers require the tree-sitter CLI (>= 0.25.0) for generate + build.
             if vim.fn.executable("tree-sitter") == 1 then
                 local task = nvim_treesitter.install {
@@ -53,41 +83,13 @@ return {
                     "yaml",
                     "ini",
                     "css",
+                    "pymol_select", -- local grammar registered above
+                    "miller",       -- local grammar registered above
                 }
                 -- Expose task so headless scripts can wait on it:
                 -- nvim --headless +"lua require('nvim-treesitter')._install_task:wait()" +qa
                 nvim_treesitter._install_task = task
             end
-
-
-            -- Add custom parsers (not in default list)
-            vim.api.nvim_create_autocmd('User', {
-                pattern = 'TSUpdate',
-                callback = function()
-                    local parsers = require('nvim-treesitter.parsers')
-                    parsers.openscad = {
-                        install_info = {
-                            url = 'https://github.com/bollian/tree-sitter-openscad',
-                            branch = 'master',
-                            queries = 'queries',
-                        },
-                    }
-                    -- PyMOL selection algebra (local grammar in nvim config)
-                    parsers.pymol_select = {
-                        install_info = {
-                            path = vim.fn.stdpath('config') .. '/modules/tree-sitter-pymol-select',
-                            queries = 'queries',
-                        },
-                    }
-                    -- Miller DSL (local grammar in nvim config)
-                    parsers.miller = {
-                        install_info = {
-                            path = vim.fn.stdpath('config') .. '/modules/tree-sitter-miller',
-                            queries = 'queries',
-                        },
-                    }
-                end
-            })
         end
     },
     -- Selecting, moving functions etc.
