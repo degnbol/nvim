@@ -378,6 +378,58 @@ describe("zsh injections", function()
             end)
     end)
 
+    describe("nvim -l heredoc", function()
+        local function heredoc(cmd, body)
+            return table.concat({
+                cmd .. " <<'EOF'",
+                body,
+                "EOF",
+            }, "\n")
+        end
+
+        it("injects lua into nvim --headless -l /dev/stdin heredoc", function()
+            assert_injection(
+                heredoc("nvim --headless -l /dev/stdin", "print(1)"),
+                "lua", "print(1)")
+        end)
+
+        it("injects lua with stderr redirect after heredoc tag", function()
+            assert_injection(
+                "nvim --headless -l /dev/stdin <<'EOF' 2>&1\nprint(1)\nEOF",
+                "lua", "print(1)")
+        end)
+
+        it("injects lua for -l - (dash) form", function()
+            assert_injection(
+                heredoc("nvim --headless -l -", "print(1)"),
+                "lua", "print(1)")
+        end)
+
+        it("injects lua without --headless", function()
+            assert_injection(
+                heredoc("nvim -l /dev/stdin", "print(1)"),
+                "lua", "print(1)")
+        end)
+
+        it("injects lua for vim command name", function()
+            assert_injection(
+                heredoc("vim -l /dev/stdin", "print(1)"),
+                "lua", "print(1)")
+        end)
+
+        it("does not inject when -l points at a real file", function()
+            assert_no_injection(
+                heredoc("nvim -l /tmp/script.lua", "print(1)"),
+                "lua")
+        end)
+
+        it("does not inject for unrelated commands", function()
+            assert_no_injection(
+                heredoc("cat -l /dev/stdin", "print(1)"),
+                "lua")
+        end)
+    end)
+
     describe("heredoc by file-redirect extension", function()
         local function heredoc(dest, tag, body)
             tag = tag or "EOF"

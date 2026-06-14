@@ -357,6 +357,27 @@
   (#inject-by-ext! @_dest))
 
 ; -----------------------------------------------------------------------------
+; `nvim --headless -l /dev/stdin <<EOF ... EOF` — inject lua into the heredoc
+; body. `nvim -l <file>` executes <file> as a lua script; with `/dev/stdin`
+; (or `-`) the heredoc body is what runs. Anchor `-l` adjacent to its value
+; only — preceding args (`--headless`, `-u NONE`, …) are unconstrained.
+; A trailing `2>&1` parses as a file_redirect nested inside heredoc_redirect;
+; its destination is a (number), which `vim.filetype.match` can't resolve, so
+; the earlier `#inject-by-ext!` rule is a no-op on it.
+; -----------------------------------------------------------------------------
+(redirected_statement
+  body: (command
+    name: (command_name) @_cmd
+    argument: (word) @_lflag
+    .
+    argument: (word) @_stdin)
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#any-of? @_cmd "nvim" "vim")
+  (#eq? @_lflag "-l")
+  (#any-of? @_stdin "/dev/stdin" "-")
+  (#set! injection.language "lua"))
+
+; -----------------------------------------------------------------------------
 ; Inject SQL into the query argument of `sqlite3 <db> '<sql>'`.
 ;
 ; sqlite3's invocation is `sqlite3 [flags...] <database> <sql>` — the SQL is
