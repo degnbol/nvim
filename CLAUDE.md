@@ -15,7 +15,8 @@ Do not conclude that a bug is in neovim core until confirmed with `nvim --clean`
 Plugins are managed by nvim 0.12's built-in `vim.pack` (install/update/lockfile) and
 `lz.n` (lazy-loading). Replaces lazy.nvim (maintenance mode since Dec 2025).
 For the vim.pack/lz.n interaction model and startup overhead implications, see
-`~/.claude/skills/neovim/references/package-management.md`.
+the `plugins` skill (`.claude/skills/plugins/`), which auto-loads when editing
+plugin specs.
 
 - **`lua/pack_specs.lua`** — `vim.pack.add()` registry, all remote plugins
 - **`lua/pack_hooks.lua`** — `PackChanged` build hooks (mason, treesitter, etc.)
