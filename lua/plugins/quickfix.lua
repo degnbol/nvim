@@ -48,7 +48,9 @@ return {
 
             -- Explicit attributes instead of link - linked FloatTitle→Title shows red underlines for unknown reason
             local hi = require "utils/highlights"
-            vim.api.nvim_set_hl(0, "BqfPreviewTitle", { bold = true, underdouble = true, fg = hi.fg("Normal"), sp = hi.fg("Normal") })
+            hi.onColorScheme(function()
+                hi.set("BqfPreviewTitle", { bold = true, underdouble = true, fg = hi.fg("Normal"), sp = hi.fg("Normal") })
+            end)
 
             function _G.qftf(info)
                 local items
