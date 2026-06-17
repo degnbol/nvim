@@ -1,4 +1,13 @@
 -- Large file handling for both command line and session
+
+-- ## Event sequence when opening command line files
+--
+-- 1. `init.lua` runs — detect large file, clear argv, wipe buffer, set eventignore
+-- 2. Plugins load (events blocked)
+-- 3. `UIEnter` fires
+-- 4. Double-scheduled callback opens file with `edit`
+-- 5. `BufAdd` in largefile.lua intercepts (for session files, not needed for command line)
+
 local M = {}
 
 M.threshold = 1024 * 1024              -- 1 MB: disable features after load

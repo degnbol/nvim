@@ -6,14 +6,13 @@
 
 Before reaching for `vim.api.nvim_replace_termcodes`, visual-range extraction, keymap wrappers, ColorScheme hooks, etc., check `lua/utils/init.lua`, `lua/utils/keymap.lua`, and `lua/utils/highlights.lua` — most common patterns are already wrapped (e.g. `nvim_code(s)` for `<Esc>`/`<CR>` termcode conversion, `last_visual_range()`, `get_cursor`/`set_cursor`, `press(keys)`, `hi.onColorScheme(fn)` to register a ColorScheme autocmd that also fires once on load). When you write a helper that's reusable across files, add it to `utils/` rather than duplicating inline.
 
-## Debugging: plugins first, core last
+## Debugging
 
 Do not conclude that a bug is in neovim core until confirmed with `nvim --clean` - it is usually a plugin problem.
 
 ## Plugin Management (vim.pack + lz.n)
 
-Plugins are managed by nvim 0.12's built-in `vim.pack` (install/update/lockfile) and
-`lz.n` (lazy-loading). Replaces lazy.nvim (maintenance mode since Dec 2025).
+Plugins are managed by nvim built-in `vim.pack` (install/update/lockfile) and `lz.n` (lazy-loading).
 For the vim.pack/lz.n interaction model and startup overhead implications, see
 `~/.claude/skills/neovim/references/package-management.md`.
 
@@ -37,81 +36,25 @@ For the vim.pack/lz.n interaction model and startup overhead implications, see
 
 blink.compat with `impersonate_nvim_cmp = true` replaces `package.loaded["cmp"]` with a mock. `require("cmp")` returns the mock even after clearing package.loaded (blink.compat has its own `lua/cmp/init.lua`). In `cmp.lua`, check `package.loaded["blink.cmp"]` at runtime and skip cmp setup when blink is active.
 
-## Keymap Notes
+## Keymaps
 
-### Cmd key (`<D-...>`) in Neovim
 Neovim can read the cmd key directly via `<D-...>` notation (e.g., `<D-v>`, `<D-\>`), as long as the terminal (kitty) isn't capturing it first. No `send_text` workaround needed.
 
-### Key patterns
-- `<CR>` / `<S-CR>` — REPL run/paste (with motion or visual)
-- `<M-CR>` — Agent send (with motion or visual)
-- `<D-]>` / `<D-[>` — Switch to REPL window (kitty level)
-- `<D-\>` — Toggle agent window
+## Zsh tree-sitter parser
 
-### AI/Agent keymaps (`<leader>i` = intelligence)
+A dedicated Zsh parser (`georgeharker/tree-sitter-zsh`) is now tier 1 in nvim-treesitter. It's better than the bash parser, which we don't use.
 
-| Key | Action |
-|-----|--------|
-| `<leader>ii` | Toggle agent |
-| `<leader>if` | Focus agent |
-| `<leader>iq` | Close agent |
-| `<leader>in` | New session |
-| `<leader>ix` | Stop generation |
-| `<leader>ib` | Add current buffer |
-| `<leader>is` | Send selection (visual) |
+**Limitations:** No `indents.scm` (no auto-indent). `~` inside `[[ ]]` misparsed as bitwise negation ([#16](https://github.com/georgeharker/tree-sitter-zsh/issues/16)). Glob qualifier delimiters for `s::`, `n::`, `b::` must use `:`. Zsh builtins (`zparseopts`, `zstyle`, `autoload`) parse as generic commands. Still young, edge cases in complex `${(flags)name}` expansions may remain.
 
-## Treesitter Commands
-
-nvim-treesitter removed `TSBufToggle`, `TSToggle`, `TSInstallInfo`, and other `TS*` commands. Treesitter highlighting is now built into neovim core — use `vim.treesitter.start()`/`vim.treesitter.stop()` to control it. For install info, use `:checkhealth nvim-treesitter`.
-
-### Zsh tree-sitter parser (2025-02)
-
-A dedicated Zsh parser (`georgeharker/tree-sitter-zsh`) is now tier 1 in nvim-treesitter. Install with `:TSInstall zsh` — no more `vim.treesitter.language.register("bash", "zsh")` hack. Actively maintained, handles most Zsh-specific syntax (parameter expansion flags, glob qualifiers, short-form loops, anonymous functions).
-
-**Limitations:** No `indents.scm` (no auto-indent). `~` inside `[[ ]]` misparsed as bitwise negation ([#16](https://github.com/georgeharker/tree-sitter-zsh/issues/16)). Glob qualifier delimiters for `s::`, `n::`, `b::` must use `:`. Zsh builtins (`zparseopts`, `zstyle`, `autoload`) parse as generic commands. Still young (~5 months), edge cases in complex `${(flags)name}` expansions may remain.
-
-## Known Issues
-
-### Terminal cursor shape
+## Terminal cursor shape
 `guicursor` with `t:ver25` doesn't affect cursor shape when actively typing in terminal buffers. The terminal process controls the cursor via escape sequences. This is a neovim limitation.
 
-### Experimental cmdline (ui2)
+## Experimental cmdline (ui2)
 Enabled in options.lua via `require('vim._core.ui2').enable()`. Eliminates "Press ENTER" prompts, highlights cmdline as you type, provides pager as a buffer. Still experimental — if issues arise, comment out the line in options.lua.
-
-### Markdown treesitter crash (nvim 0.12)
-The bundled markdown parser in nvim 0.12-dev crashes when `vim.treesitter.start()` is called during initial buffer load with `foldmethod=expr` and treesitter foldexpr. Workaround in `lua/autocmds/treesitter.lua` uses `vim.schedule()` to delay treesitter start for markdown files. Remove workaround when fixed upstream.
-
-### TSV column hiding and undo
-The TSV ftplugin's column hiding (`zc`/`zo`/`za`) works by actually removing text from the buffer and storing it in `vim.b`. The `modified` flag is preserved so hiding doesn't mark clean buffers as dirty.
-
-**Undo behaviour**: Hide operations are in the undo tree. When undo restores hidden text, a `TextChanged` autocmd clears the stale hidden state to keep `vim.b.tsv_hidden` in sync. Press `zc` to re-hide after undo if needed.
-
-**Why not use concealment?** Concealment (`conceal` extmark option) was attempted but has fundamental issues:
-- Cursor still navigates through concealed text (confusing)
-- Tab alignment breaks because tabs expand based on buffer position, not visual position
-- Would require reimplementing entire tab/column system with virtual text
-
-### Compound filetype gotchas
-
-Compound filetypes like `"python.blender"` or `"sh.zsh"` split on `.` for runtime file loading. For `"a.b"`, neovim loads `ftplugin/a.lua` then `ftplugin/b.lua` — NOT `ftplugin/a.b.lua`. Name ftplugin files after the second component.
-
-`vim.filetype.add` pattern functions need `{ priority = 10 }` (or higher) to override built-in extension detection. Without explicit priority, extension matches (`py → python`) win. Format: `[".*%.py"] = { function(path, bufnr) ... end, { priority = 10 } }`.
 
 ### Zsh filetype setup
 
 Zsh files use compound filetype `"sh.zsh"` for vim regex syntax (loads sh patterns first, then zsh overrides). `vim.treesitter.language.register("zsh", "sh.zsh")` in `lua/autocmds/treesitter.lua` overrides the default first-component behaviour so treesitter uses the dedicated zsh parser.
-
-## Large File Handling
-
-Files >50MB are handled specially to avoid freezing. See `lua/largefile.lua` and `lua/autocmds/largefile.lua`.
-
-### Event sequence for command line files
-
-1. `init.lua` runs — detect large file, clear argv, wipe buffer, set eventignore
-2. Plugins load (events blocked)
-3. `UIEnter` fires
-4. Double-scheduled callback opens file with `edit`
-5. `BufAdd` in largefile.lua intercepts (for session files, not needed for command line)
 
 ## Fzf-lua and Ripgrep Colours
 
@@ -144,7 +87,7 @@ lsp_ext/
 └── r_lsp_dots.R            # R languageserver monkey-patch (see R Language Server section)
 ```
 
-**How it works:** `lsp/basedpyright.lua` globs `lsp_ext/extraPaths/*/` for import resolution paths. The Claude `lint.sh` hook uses the same glob when generating a fallback pyright config for projects without their own `pyrightconfig.json`.
+**How it works:** `lsp/basedpyright.lua` globs `lsp_ext/extraPaths/*/` for import resolution paths. The Claude `lib/lint-tier.sh` library uses the same glob when generating a fallback pyright config for projects without their own `pyrightconfig.json`.
 
 **Adding a new source:** Drop the directory in `extraPaths/` (or symlink it there). Both neovim and the lint hook pick it up automatically — no config changes needed.
 
@@ -168,7 +111,7 @@ Grammar name is `miller` to match nvim's built-in filetype — no `vim.treesitte
 
 Queries use canonical flat structure: `modules/tree-sitter-miller/queries/highlights.scm` (not nested in a `miller/` subdir). nvim-treesitter symlinks `site/queries/miller -> modules/tree-sitter-miller/queries/` via `install_info`. Zsh injection query lives at `queries/zsh/injections.scm` (extends base zsh injections) — it's a query for the zsh parser, not the miller grammar, so it stays in the nvim config.
 
-Regenerate after grammar changes: `cd modules/tree-sitter-miller && tree-sitter generate && cc -shared -o ~/.local/share/nvim/site/parser/miller.so -I src src/parser.c -O2`. Restart neovim after recompiling. Run `tree-sitter test` to validate (58 tests).
+Regenerate after grammar changes: `cd modules/tree-sitter-miller && tree-sitter generate && cc -shared -o ~/.local/share/nvim/site/parser/miller.so -I src src/parser.c -O2`. Run `tree-sitter test` to validate.
 
 ## Miller DSL Completion
 
@@ -198,11 +141,9 @@ Three independent data sources, not derivations of each other:
 
 Loading is conditional: `ftplugin/python.lua` scans the first 10 lines for `import.*pymol`, or use `<localleader>+` manually. Sets `vim.g.loaded_pymol` which gates the blink providers.
 
-## File Templates (`lua/autocmds/templates.lua`)
+## File Templates
 
-New files get default content via `BufNewFile` autocmds. Templates are `vim.snippet` body strings, supporting `$1`/`${1:placeholder}` tabstops, `$0` (final cursor), and LSP variables (`$TM_FILENAME`). Use `<C-.>`/`<C-,>` to jump between tabstops (same keys as blink.cmp snippet navigation). Neovim's default `<Tab>`/`<S-Tab>` snippet jump mappings are disabled.
-
-Helper functions: `esc(s)` escapes literal `$`, `raw(s)` marks a line as containing snippet syntax, `snippet(lines)` joins lines into a snippet body.
+A new files get initial text from templates in `lua/autocmds/templates.lua` based on filetype.
 
 ## WGSL / Bevy Shader Highlighting
 
@@ -210,6 +151,5 @@ See [notes/wgsl.md](notes/wgsl.md).
 
 ## Testing
 
-Unit tests use plenary.nvim. See `tests/README.md`.
+Read `tests/README.md`.
 
-**Before writing scratch test files (`/tmp/foo.zsh`, ad-hoc nvim sessions), check `tests/plenary/` for an existing spec covering the area.** New treesitter injections go in `tests/plenary/zsh_injections_spec.lua` (helpers `assert_injection`, `injections_for`); new colorscheme/highlight cases in `colors_spec.lua`; etc. Extend the existing `describe` blocks rather than starting parallel infrastructure.

@@ -252,3 +252,8 @@ Shouldn't `:e <TAB>` use ctrl+n and ctrl+p and ctrl+space like blink configured 
 Builtin LSP completion vs blink? And what about luasnip
 
 Consider if we should add buffer names for qf, e.g. showing refs with grr has name like "quickfix-10", but could be "References (qf)" or "Refs: `_edge_min_radius_at`"
+
+Markdown treesitter crash (nvim 0.12)
+The bundled markdown parser in nvim 0.12-dev crashes when `vim.treesitter.start()` is called during initial buffer load with `foldmethod=expr` and treesitter foldexpr. Workaround in `lua/autocmds/treesitter.lua` uses `vim.schedule()` to delay treesitter start for markdown files. Remove workaround when fixed upstream.
+
+

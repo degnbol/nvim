@@ -6,6 +6,16 @@ vim.opt_local.commentstring = "#%s"
 
 local util = require "utils/init"
 
+-- # For agents
+-- The TSV ftplugin's column hiding (`zc`/`zo`/`za`) works by actually removing text from the buffer and storing it in `vim.b`. The `modified` flag is preserved so hiding doesn't mark clean buffers as dirty.
+--
+-- **Undo behaviour**: Hide operations are in the undo tree. When undo restores hidden text, a `TextChanged` autocmd clears the stale hidden state to keep `vim.b.tsv_hidden` in sync. Press `zc` to re-hide after undo if needed.
+--
+-- **Why not use concealment?** Concealment (`conceal` extmark option) was attempted but has fundamental issues:
+-- - Cursor still navigates through concealed text (confusing)
+-- - Tab alignment breaks because tabs expand based on buffer position, not visual position
+-- - Would require reimplementing entire tab/column system with virtual text
+
 -- NOTE Limitations:
 -- - Assumes tab is field sep and newline is record sep, no multiline cells.
 -- - Hiding cuts through multi-byte chars like €, might be a TODO.

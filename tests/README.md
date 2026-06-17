@@ -2,6 +2,9 @@
 
 Unit tests using [plenary.nvim](https://github.com/nvim-lua/plenary.nvim).
 
+**Before writing scratch test files (`/tmp/foo.zsh`, ad-hoc nvim sessions), check `tests/plenary/` for an existing spec covering the area.** New treesitter injections go in `tests/plenary/zsh_injections_spec.lua` (helpers `assert_injection`, `injections_for`); new colorscheme/highlight cases in `colors_spec.lua`; etc. Extend the existing `describe` blocks rather than starting parallel infrastructure.
+
+
 ## Running tests
 
 Run all tests:
