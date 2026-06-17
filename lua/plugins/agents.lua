@@ -1,3 +1,4 @@
+local hi = require "utils/highlights"
 -- AI coding agent integrations
 
 return {
@@ -20,7 +21,10 @@ return {
             { "<leader>is", "<Plug>(agentic-send)", mode = "v", desc = "Send selection" },
         },
         before = function()
-            vim.api.nvim_set_hl(0, "AgenticSearchMatch", { link = "DiagnosticError" })
+            hi.onColorScheme(function()
+                hi.link("AgenticSearchMatch", "DiagnosticError")
+                hi.setbg("AgenticUnapprovedCommand", hi.bg("DiffDelete"))
+            end)
         end,
         after = function()
             require("agentic").setup {

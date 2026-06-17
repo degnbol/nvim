@@ -110,9 +110,9 @@ return {
             -- Also toggling is inconsistent so just use it and look at the message.
 
             -- Since we use function as bold func def and function.call as unbold, we relink:
-            vim.defer_fn(function()
+            require("utils/highlights").onColorScheme(function()
                 vim.api.nvim_set_hl(0, "texCmd", { link = "@function.call", force = true })
-            end, 1000)
+            end)
 
             local grp = vim.api.nvim_create_augroup("vimtex", { clear = true })
 
