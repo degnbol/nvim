@@ -19,6 +19,7 @@ return {
             { "<leader>in", "<Plug>(agentic-new-session)", desc = "New session" },
             { "<leader>ib", "<Plug>(agentic-add-file)", desc = "Add current buffer" },
             { "<leader>is", "<Plug>(agentic-send)", mode = "v", desc = "Send selection" },
+            { "<localleader>y", function() require("agentic").send_prompt("Go ahead.") end, desc = "Agent: yes" },
         },
         before = function()
             hi.onColorScheme(function()
