@@ -150,6 +150,15 @@ return {
                     layout = { fullscreen = true },
                 },
                 explorer = { enabled = true },
+                image = {
+                    enabled = true,
+                    math = {
+                        latex = {
+                            -- Default is Large
+                            font_size = "normalsize",
+                        }
+                    }
+                },
             }
             -- Persist overrides across colorscheme changes. Snacks has a
             -- managed ColorScheme autocmd that re-applies its defaults after
@@ -168,6 +177,10 @@ return {
                 hi.link("SnacksPickerListBorder", "FloatBorder")
                 hi.link("SnacksPickerTitle", "Title")
                 hi.link("SnacksPickerInputTitle", "Title")
+                -- Don't color math at all, it's clear from the symbols it's 
+                -- different from regular text and normal colors makes it blend 
+                -- better into the flow of reading.
+                hi.link("SnacksImageMath", "Normal")
             end)
         end,
     },
