@@ -204,25 +204,57 @@ return {
                 return latex(img, ctx)
             end
 
-            -- Make collapsed inline math occupy exactly its source width.
-            -- placement.lua:489 sizes the image by pixel aspect + 2 padding
-            -- cells, but it conceals the source `$...$` and replaces it inline —
-            -- so any mismatch reflows the line. Width = source display width keeps
-            -- the glyph where the LaTeX was (left-aligned, no shift when conceal
-            -- toggles under the cursor). At conceallevel 1 the concealed `$...$`
-            -- leaves one residual space cell after the image (level 2 hides it
-            -- fully), so drop a cell there to land back on the source width.
+            -- conceallevel 0 shows the literal `$...$`, so don't render inline
+            -- math there. Filter math matches out of find_visible when the
+            -- buffer's window is at conceallevel 0; the inline manager's
+            -- reconcile then :close()s any existing math placement (revealing the
+            -- source). Non-math doc images (which conceallevel doesn't hide) pass
+            -- through untouched.
+            local find_visible = doc.find_visible
+            doc.find_visible = function(buf, cb)
+                return find_visible(buf, function(imgs)
+                    local win = vim.fn.bufwinid(buf)
+                    if win ~= -1 and vim.wo[win].conceallevel == 0 then
+                        imgs = vim.tbl_filter(function(i)
+                            return i.type ~= "math"
+                        end, imgs)
+                    end
+                    cb(imgs)
+                end)
+            end
+
+            -- Size collapsed inline math by how hard the source is concealed.
+            -- The image stretch-fills loc.width × 1 cells, so the right width
+            -- depends on whether the source footprint is still on screen:
+            --   1: `$...$` collapses to one residual space cell — match source
+            --      width minus that cell so surrounding text doesn't move.
+            --   2+: `$...$` fully hidden — size to the glyph's true width (pixel
+            --      aspect at one cell tall, rounded to whole cells) so every
+            --      glyph renders at a consistent size with no surrounding
+            --      whitespace. snacks' own ceil(w/h)+2 (placement.lua:490) can't
+            --      be reused: pixels_to_cells already ceils both axes, so the
+            --      ratio double-rounds and squashes wider expressions (`$k_{cat}$`
+            --      lands at 2 cells when its true width is ~2.8).
+            -- (conceallevel 0 never reaches here; find_visible filters it out.)
             local placement = require("snacks").image.placement
             local state = placement.state
             placement.state = function(self)
                 local st = state(self)
                 local r = self.opts.range
                 if self.opts.type == "math" and st.loc.height == 1 and r and r[1] == r[3] then
-                    local src = vim.api.nvim_buf_get_text(self.buf, r[1] - 1, r[2], r[3] - 1, r[4], {})[1]
                     local win = st.wins[1]
-                    if src and win then
-                        local residual = vim.wo[win].conceallevel == 1 and 1 or 0
-                        st.loc.width = math.max(1, vim.api.nvim_strwidth(src) - residual)
+                    if win and vim.wo[win].conceallevel == 1 then
+                        local src = vim.api.nvim_buf_get_text(self.buf, r[1] - 1, r[2], r[3] - 1, r[4], {})[1]
+                        if src then
+                            st.loc.width = math.max(1, vim.api.nvim_strwidth(src) - 1)
+                        end
+                    else
+                        local sz = self.img.info and self.img.info.size
+                        if sz then
+                            local cell = require("snacks").image.terminal.size()
+                            local native = sz.width / sz.height * (cell.cell_height / cell.cell_width)
+                            st.loc.width = math.max(1, math.floor(native + 0.5))
+                        end
                     end
                 end
                 return st
