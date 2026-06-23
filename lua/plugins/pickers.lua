@@ -228,6 +228,23 @@ return {
                 return st
             end
 
+            -- Inline-math width depends on conceallevel (see above), but snacks
+            -- only recomputes placements on scroll/edit/enter. Re-fire the inline
+            -- manager's own BufWinEnter handler (scoped to its augroup, so no
+            -- other BufWinEnter autocmds run) when conceallevel changes.
+            vim.api.nvim_create_autocmd("OptionSet", {
+                pattern = "conceallevel",
+                callback = function()
+                    local buf = vim.api.nvim_get_current_buf()
+                    if vim.b[buf].snacks_image_attached then
+                        pcall(vim.api.nvim_exec_autocmds, "BufWinEnter", {
+                            buffer = buf,
+                            group = "snacks.image.inline." .. buf,
+                        })
+                    end
+                end,
+            })
+
             -- Persist overrides across colorscheme changes. Snacks has a
             -- managed ColorScheme autocmd that re-applies its defaults after
             -- :highlight clear — onColorScheme fires after it, so our force
