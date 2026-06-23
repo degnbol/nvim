@@ -1,7 +1,7 @@
 local hi = require "utils/highlights"
 local map = require "utils/keymap"
 
--- Toggle between pickers by changing this flag and restarting nvim.
+-- Toggle between pickers by changing this flag.
 -- Options: "fzf-lua", "snacks"
 -- local picker = "fzf-lua"
 local picker = "snacks"
