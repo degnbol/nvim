@@ -152,14 +152,82 @@ return {
                 explorer = { enabled = true },
                 image = {
                     enabled = true,
+                    -- Keep struts visible: the inline-math override below wraps
+                    -- expressions in a transparent \strut, which snacks' default
+                    -- `-trim` would crop straight back off.
+                    convert = {
+                        magick = {
+                            math = { "-density", 192, "{src}[{page}]" }, -- snacks default appends "-trim"
+                        },
+                    },
                     math = {
                         latex = {
-                            -- Default is Large
-                            font_size = "normalsize",
+                            font_size = "normalsize", -- default Large
                         }
                     }
                 },
             }
+
+            -- Render inline `$...$` (and `\(...\)`) math flowing within the line,
+            -- while `$$...$$` / `\[...\]` stay display blocks. snacks discards the
+            -- delimiter and wraps every expression as display `\[...\]`, whose
+            -- vertical glue makes even a single glyph ~3 cells tall — over
+            -- placement.lua's `height<=2` inline-collapse threshold, so any inline
+            -- expression followed by text renders below the line with an icon. We
+            -- rewrite inline math to `\begin{math}<strut>...\end{math}` before
+            -- snacks' transform: math mode drops the glue, and the strut floors
+            -- every expression to one line-height box (uniform 2 cells) so it
+            -- collapses to a single inline row without magnifying short glyphs.
+            -- The strut is asymmetric (not \strut's 70/30): snacks fills the cell
+            -- with no baseline awareness and maps the box bottom to the line
+            -- bottom, so the height/depth split must mirror the editor font's
+            -- baseline ratio or descender-less glyphs hover. Two knobs, both in
+            -- \baselineskip units: their *ratio* (0.15 : 1.02 ~ 15 : 85) is the
+            -- baseline split — 0.15 depth is the floor, any shallower and a
+            -- subscript (k_{cat}) drops below the strut and grows the box so
+            -- `$k$` and `$k_{cat}$` stop matching. Their *sum* is the size knob:
+            -- the glyph ink is fixed, so a taller box shrinks the glyph once the
+            -- collapse squeezes the box into one row. Scale both together to
+            -- resize without disturbing the baseline.
+            local strut = "\\rule[-0.18\\baselineskip]{0pt}{1.02\\baselineskip}"
+            local doc = require("snacks").image.doc
+            local latex = doc.transforms.latex
+            doc.transforms.latex = function(img, ctx)
+                if img.content and img.ext == "math.tex" then
+                    local raw = vim.trim(img.content)
+                    if raw:match("^%$[^$]") or raw:match("^\\%(") then
+                        local inner = raw:gsub("^%$+`?", ""):gsub("`?%$+$", "")
+                            :gsub("^\\%(", ""):gsub("\\%)$", "")
+                        img.content = ("\\begin{math}%s%s\\end{math}"):format(strut, inner)
+                    end
+                end
+                return latex(img, ctx)
+            end
+
+            -- Make collapsed inline math occupy exactly its source width.
+            -- placement.lua:489 sizes the image by pixel aspect + 2 padding
+            -- cells, but it conceals the source `$...$` and replaces it inline —
+            -- so any mismatch reflows the line. Width = source display width keeps
+            -- the glyph where the LaTeX was (left-aligned, no shift when conceal
+            -- toggles under the cursor). At conceallevel 1 the concealed `$...$`
+            -- leaves one residual space cell after the image (level 2 hides it
+            -- fully), so drop a cell there to land back on the source width.
+            local placement = require("snacks").image.placement
+            local state = placement.state
+            placement.state = function(self)
+                local st = state(self)
+                local r = self.opts.range
+                if self.opts.type == "math" and st.loc.height == 1 and r and r[1] == r[3] then
+                    local src = vim.api.nvim_buf_get_text(self.buf, r[1] - 1, r[2], r[3] - 1, r[4], {})[1]
+                    local win = st.wins[1]
+                    if src and win then
+                        local residual = vim.wo[win].conceallevel == 1 and 1 or 0
+                        st.loc.width = math.max(1, vim.api.nvim_strwidth(src) - residual)
+                    end
+                end
+                return st
+            end
+
             -- Persist overrides across colorscheme changes. Snacks has a
             -- managed ColorScheme autocmd that re-applies its defaults after
             -- :highlight clear — onColorScheme fires after it, so our force
