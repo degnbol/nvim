@@ -63,6 +63,7 @@ return {
                     "vim",
                     "regex",
                     "make",
+                    "just",
                     -- "norg",
                     "cmake",
                     "cpp",
