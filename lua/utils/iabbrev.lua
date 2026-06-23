@@ -94,20 +94,44 @@ function M.case_variants(lhs, rhs)
     return out
 end
 
--- Per-buffer registry of (expanded) lhs → {rhs, predicate} entries used by
--- the `<expr>` form. Keyed by bufnr; entries are stale when a buf is wiped
--- but they're only reachable through that buffer's iabbrevs, which are
--- cleared at the same time, so the leak is harmless.
+-- Registry of (expanded) lhs → {rhs, predicate} entries for the `<expr>` form
+-- that every abbrev uses. Buffer-local abbrevs live under their bufnr (looked
+-- up first, so they shadow globals — matching vim); global abbrevs live in
+-- `_dispatch_global`. Per-buffer entries go stale when a buf is wiped but are
+-- only reachable through that buffer's iabbrevs, cleared at the same time, so
+-- the leak is harmless.
 M._dispatch = {}
+M._dispatch_global = {}
 
---- Called from `<expr>` iabbrevs registered by `iabbrev(..., predicate)`.
---- Returns the rhs when the predicate passes, else the lhs (no expansion).
+--- Whether expanding `lhs` here would be at a genuine word start, reading the
+--- actual buffer rather than trusting vim's full-id trigger. vim expands a
+--- keyword (full-id) abbrev when the char before it is a non-keyword char *or
+--- where the current insertion started* (`:help abbreviations`). That second
+--- clause is a loophole: anything that resets the insert anchor mid-word — a
+--- cursor move, or blink.cmp `auto_insert` rewriting the buffer as you type —
+--- makes `id`→`I'd` fire inside "undid", `im`→`I'm` inside "nvim". Re-checking
+--- the real preceding char closes it. Only constrains keyword-initial (full-id)
+--- lhs; end-id/non-id abbrevs keep vim's own front rule.
+--- @param lhs string
+--- @return boolean
+local function at_word_boundary(lhs)
+    if vim.fn.match(lhs:sub(1, 1), "\\k") < 0 then return true end  -- not full-id
+    local col = vim.api.nvim_win_get_cursor(0)[2]
+    local prev = vim.api.nvim_get_current_line():sub(1, col - #lhs):sub(-1)
+    return prev == "" or vim.fn.match(prev, "\\k") < 0
+end
+
+--- Called from the `<expr>` iabbrevs that `iabbrev` registers. Returns the rhs
+--- when it would expand here (at a word boundary, and the predicate passes if
+--- any), else the lhs (no expansion). Buffer-local entries shadow globals.
 --- @param lhs string
 --- @return string
 function M._dispatch_lookup(lhs)
     local entry = (M._dispatch[vim.api.nvim_get_current_buf()] or {})[lhs]
+        or M._dispatch_global[lhs]
     if not entry then return lhs end
     if entry.predicate and not entry.predicate() then return lhs end
+    if not at_word_boundary(lhs) then return lhs end
     return entry.rhs
 end
 
@@ -143,8 +167,13 @@ end
 --- expands {a,b} braces and emits lower/Title/UPPER variants — i.e. the
 --- :Abolish behaviour. With `cases = false`, emits a single literal iabbrev.
 --- With `buf_local = true`, registers as `<buffer>` (current buffer only).
---- With `predicate`, emits an `<expr>` iabbrev that only expands when the
---- predicate returns truthy (called at expansion time, no args).
+--- With `predicate`, expansion is additionally gated on it (called at expansion
+--- time, no args; expands only when truthy).
+---
+--- Every variant is registered as an `<expr>` iabbrev dispatching through
+--- `_dispatch_lookup`, so the word-boundary guard (and any predicate) applies
+--- uniformly. A plain `iabbrev` would let a full-id abbrev expand mid-word
+--- whenever the insert anchor resets (see `at_word_boundary`).
 ---
 --- Each generated lhs variant must satisfy vim's abbreviation rules
 --- (`:help abbreviations`):
@@ -161,6 +190,12 @@ end
 function M.iabbrev(lhs, rhs, cases, buf_local, predicate)
     if cases == nil then cases = true end
     local buf_tag = buf_local and "<buffer> " or ""
+    local bucket = M._dispatch_global
+    if buf_local then
+        local buf = vim.api.nvim_get_current_buf()
+        M._dispatch[buf] = M._dispatch[buf] or {}
+        bucket = M._dispatch[buf]
+    end
     for _, pair in ipairs(M.expand_braces(lhs, rhs)) do
         local l, r = pair[1], pair[2]
         local entries = cases and M.case_variants(l, r) or { [l] = r }
@@ -169,16 +204,10 @@ function M.iabbrev(lhs, rhs, cases, buf_local, predicate)
             if not ok then
                 error(("iabbrev(%q, %q): %s"):format(lhs, rhs, err), 2)
             end
-            if predicate then
-                local buf = vim.api.nvim_get_current_buf()
-                M._dispatch[buf] = M._dispatch[buf] or {}
-                M._dispatch[buf][k] = { rhs = v, predicate = predicate }
-                vim.cmd(string.format(
-                    "iabbrev <expr> %s%s v:lua.require'utils.iabbrev'._dispatch_lookup(%q)",
-                    buf_tag, k, k))
-            else
-                vim.cmd("iabbrev " .. buf_tag .. k .. " " .. v)
-            end
+            bucket[k] = { rhs = v, predicate = predicate }
+            vim.cmd(string.format(
+                "iabbrev <expr> %s%s v:lua.require'utils.iabbrev'._dispatch_lookup(%q)",
+                buf_tag, k, k))
         end
     end
 end

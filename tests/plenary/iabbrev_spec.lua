@@ -108,37 +108,74 @@ describe("iabbrev.iabbrev (side effects)", function()
         pcall(function() vim.cmd("iunabbrev " .. lhs) end)
     end
 
-    it("creates an iabbrev visible to :iabbrev <lhs>", function()
+    -- Every abbrev is now an opaque <expr> dispatch, so assert on what
+    -- _dispatch_lookup returns rather than the :iabbrev listing. An empty
+    -- scratch buffer at BOL is an unconditional word boundary, isolating the
+    -- expansion from the boundary guard for the registration-focused cases.
+    local function fresh_buf()
+        local buf = vim.api.nvim_create_buf(false, true)
+        vim.api.nvim_set_current_buf(buf)
+        return buf
+    end
+
+    it("registers a global abbrev that dispatch-expands", function()
         clear("zzliek"); clear("zzLiek"); clear("zzLIEK")
         ab.iabbrev("zzliek", "like")
-        local out = vim.api.nvim_exec2("iabbrev zzliek", { output = true }).output
-        assert.is_truthy(out:find("like"))
+        fresh_buf()
+        assert.are.equal("like", ab._dispatch_lookup("zzliek"))
     end)
 
-    it("with cases=true defines the UPPER variant too", function()
+    it("with cases=true dispatch-expands the UPPER variant too", function()
         clear("zzfoo"); clear("Zzfoo"); clear("ZZFOO")
         ab.iabbrev("zzfoo", "bar", true)
-        local out = vim.api.nvim_exec2("iabbrev ZZFOO", { output = true }).output
-        assert.is_truthy(out:find("BAR"))
+        fresh_buf()
+        assert.are.equal("BAR", ab._dispatch_lookup("ZZFOO"))
     end)
 
-    it("with cases=false defines only the literal", function()
+    it("with cases=false registers only the literal", function()
         clear("zzIm"); clear("zzim"); clear("zzIM")
         ab.iabbrev("zzIm", "I'm", false)
-        local lower = vim.api.nvim_exec2("iabbrev zzim", { output = true }).output
-        assert.is_truthy(lower:find("No abbreviation") or lower == "")
+        fresh_buf()
+        assert.are.equal("I'm", ab._dispatch_lookup("zzIm"))
+        assert.are.equal("zzim", ab._dispatch_lookup("zzim"))  -- lowercase variant absent
     end)
 
     it("with predicate, dispatch returns rhs when predicate passes", function()
         clear("zzpred")
+        fresh_buf()
         ab.iabbrev("zzpred", "passed", false, true, function() return true end)
         assert.are.equal("passed", ab._dispatch_lookup("zzpred"))
     end)
 
     it("with predicate, dispatch returns lhs when predicate fails", function()
         clear("zzpred2")
+        fresh_buf()
         ab.iabbrev("zzpred2", "passed", false, true, function() return false end)
         assert.are.equal("zzpred2", ab._dispatch_lookup("zzpred2"))
+    end)
+
+    -- The full-id "insertion start" loophole (:help abbreviations): a reset
+    -- insert anchor would otherwise expand `id` inside "undid". _dispatch_lookup
+    -- re-checks the real preceding char so suffix matches don't expand.
+    -- `typed` ends in the just-typed "id"; a trailing space gives a valid
+    -- normal-mode cursor slot right after it (col = #typed), mimicking the
+    -- insert-mode position when the abbrev's trigger char fires.
+    local function dispatch_in_line(typed)
+        local buf = fresh_buf()
+        ab.iabbrev("id", "I'd", false, true, function() return true end)
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, { typed .. " " })
+        vim.api.nvim_win_set_cursor(0, { 1, #typed })
+        return ab._dispatch_lookup("id")
+    end
+
+    it("does not expand a full-id abbrev mid-word (preceded by keyword char)", function()
+        clear("id")
+        assert.are.equal("id", dispatch_in_line("undid"))
+    end)
+
+    it("expands a full-id abbrev at a real word start", function()
+        clear("id")
+        assert.are.equal("I'd", dispatch_in_line("What id"))
     end)
 end)
 
@@ -289,15 +326,14 @@ describe("prose filetype detection (via plugin/abbreviations.lua)", function()
     end
 
     -- Whether `avail → available` is live in a fresh buffer of filetype `ft`.
-    -- avail is registered buffer-local only, so an empty result means the
-    -- buffer was not treated as prose.
+    -- avail is registered buffer-local only, so a non-prose buffer leaves
+    -- _dispatch_lookup returning the lhs unchanged.
     local function registers_prose_abbrev(ft)
         ensure_loaded()
         local buf = vim.api.nvim_create_buf(false, true)
         vim.api.nvim_set_current_buf(buf)
         pcall(function() vim.bo[buf].filetype = ft end)
-        local out = vim.api.nvim_exec2("iabbrev avail", { output = true }).output
-        return out:find("available") ~= nil
+        return ab._dispatch_lookup("avail") == "available"
     end
 
     it("registers for plain markdown", function()
