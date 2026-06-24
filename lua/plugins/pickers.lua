@@ -325,7 +325,12 @@ return {
                 local hide = cf and self:get(cf, ct) or {}
                 for id, img in pairs(self.imgs) do
                     if hide[id] and img.opts.conceal then
+                        -- img:hide() debounces its re-render 10ms (placement.lua),
+                        -- so on entry the image lingers ~10ms over the source vim
+                        -- has already revealed — the flash. Force the real (un-
+                        -- debounced) update so the image vanishes the same redraw.
                         img:hide()
+                        require("snacks").image.placement.update(img)
                     else
                         img:show()
                     end
