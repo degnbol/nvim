@@ -369,8 +369,8 @@ return {
                         local sz = self.img.info and self.img.info.size
                         if sz then
                             local cell = require("snacks").image.terminal.size()
-                            local native = sz.width / sz.height * (cell.cell_height / cell.cell_width)
-                            st.loc.width = math.max(1, math.floor(native + 0.5))
+                            st.loc.width = require("utils.inline_math").cell_width(
+                                sz.width, sz.height, cell.cell_width, cell.cell_height)
                         end
                     end
                 end
