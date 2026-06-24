@@ -163,6 +163,17 @@ return {
                     math = {
                         latex = {
                             font_size = "normalsize", -- default Large
+                            -- Snippets insert real unicode (Δ, ∑, ∂, →, ≤, …;
+                            -- luasnippets/tex/unicode.lua), so compile with
+                            -- unicode-math under tectonic's XeTeX (reads
+                            -- codepoints natively). unicode-math supersedes and
+                            -- clashes with amssymb/amsfonts, so drop both from
+                            -- the snacks default. The template sorts packages
+                            -- alphabetically (doc.lua), so unicode-math lands
+                            -- after amsmath/mathtools — the required load order.
+                            -- Latin Modern Math (the default) covers the glyphs;
+                            -- no \setmathfont needed.
+                            packages = { "amsmath", "amscd", "mathtools", "unicode-math" },
                         }
                     }
                 },
@@ -204,23 +215,129 @@ return {
                 return latex(img, ctx)
             end
 
-            -- conceallevel 0 shows the literal `$...$`, so don't render inline
-            -- math there. Filter math matches out of find_visible when the
-            -- buffer's window is at conceallevel 0; the inline manager's
-            -- reconcile then :close()s any existing math placement (revealing the
-            -- source). Non-math doc images (which conceallevel doesn't hide) pass
-            -- through untouched.
-            local find_visible = doc.find_visible
+            -- Prefetch margin: render math within one screenful above/below the
+            -- viewport so it's ready on arrival instead of converting only once
+            -- scrolled on-screen (conversions are content-hash cached, so the
+            -- cost is paid once, ahead of time). find_visible (discovery) and
+            -- inline.visible (keep-alive/reconcile) MUST use the same range — a
+            -- prefetched off-screen placement that find_visible converts but
+            -- visible() doesn't match gets recreated as a duplicate every tick.
+            local function prefetch_range(info)
+                local margin = info.botline - info.topline
+                return math.max(info.topline - 1 - margin, 1), info.botline + margin
+            end
+
+            -- The line range the cursor "occupies" for conceal purposes: the
+            -- visual selection (or just the cursor line), or nil when
+            -- concealcursor keeps this mode concealed (image stays shown).
+            -- Mirrors snacks' own conceal() check so the freeze below and the
+            -- hide agree on which line is "being edited". Current window only.
+            local function cursor_lines()
+                local mode = vim.fn.mode():sub(1, 1):lower()
+                if vim.wo.concealcursor:find(mode, 1, true) then
+                    return nil
+                end
+                local a, b = vim.fn.line("v"), vim.api.nvim_win_get_cursor(0)[1]
+                return math.min(a, b), math.max(a, b)
+            end
+
+            -- Whether a match/placement is inline math overlapping [cf, ct].
+            -- range is {start_row, start_col, end_row, end_col}, 1-indexed rows.
+            local function math_on_cursor(kind, range, cf, ct)
+                return cf and kind == "math" and range and range[1] <= ct and range[3] >= cf
+            end
+
+            -- Reimplement find_visible (range is hardcoded inside it, so a
+            -- wrapper can't inject the margin) — near-copy of doc.find_visible
+            -- with three drops from the found set:
+            --   * widen the query range by the prefetch margin (above).
+            --   * conceallevel 0 shows the literal `$...$`, so drop math matches
+            --     in any window at cl=0; reconcile then :close()s the placement,
+            --     revealing the source. Non-math doc images pass through.
+            --   * drop math on the cursor line (current buffer) so the
+            --     actively-edited (often syntactically incomplete) expression
+            --     isn't reconverted on every keystroke. Paired with the same drop
+            --     in inline.visible below, the existing placement is left
+            --     untouched — frozen alive (hidden by conceal), not reconverted,
+            --     not closed — until the cursor leaves and conceal() re-renders.
             doc.find_visible = function(buf, cb)
-                return find_visible(buf, function(imgs)
-                    local win = vim.fn.bufwinid(buf)
-                    if win ~= -1 and vim.wo[win].conceallevel == 0 then
-                        imgs = vim.tbl_filter(function(i)
-                            return i.type ~= "math"
-                        end, imgs)
+                local cf, ct
+                if vim.api.nvim_get_current_buf() == buf then
+                    cf, ct = cursor_lines()
+                end
+                local ret = {}
+                local wins = vim.fn.win_findbuf(buf)
+                local count = #wins
+                for _, win in ipairs(wins) do
+                    local info = vim.fn.getwininfo(win)[1]
+                    local cl0 = vim.wo[win].conceallevel == 0
+                    local from, to = prefetch_range(info)
+                    doc.find(buf, function(matches)
+                        for _, i in ipairs(matches) do
+                            if not ((cl0 and i.type == "math") or math_on_cursor(i.type, i.range, cf, ct)) then
+                                ret[i.id] = i
+                            end
+                        end
+                        count = count - 1
+                        if count == 0 and cb then
+                            cb(vim.tbl_values(ret))
+                        end
+                    end, { from = from, to = to })
+                end
+            end
+
+            -- Match find_visible's prefetch margin (the coupling: a prefetched
+            -- off-screen placement that visible() doesn't match is recreated as a
+            -- duplicate every tick) and its cursor-line drop (so the frozen
+            -- placement is neither matched nor closed by reconcile). Reimplemented
+            -- (not wrapped) because the range is hardcoded inside the method.
+            local inline = require("snacks").image.inline
+            inline.visible = function(self)
+                local cf, ct
+                if vim.api.nvim_get_current_buf() == self.buf then
+                    cf, ct = cursor_lines()
+                end
+                local ret = {}
+                for _, win in ipairs(vim.fn.win_findbuf(self.buf)) do
+                    local info = vim.fn.getwininfo(win)[1]
+                    local from, to = prefetch_range(info)
+                    for k, v in pairs(self:get(from, to)) do
+                        if not math_on_cursor(v.opts.type, v.opts.range, cf, ct) then
+                            ret[k] = v
+                        end
                     end
-                    cb(imgs)
-                end)
+                end
+                return ret
+            end
+
+            -- Drive cursor-line conceal as one synchronous state. Stock conceal()
+            -- (inline.lua) img:show()s ALL images, THEN hides the cursor-line
+            -- ones — the show-then-hide on that line is the flash on entry. Build
+            -- the hide-set first and only show() what isn't hidden, so the cursor
+            -- line is never momentarily re-shown over its source. The cursor-line
+            -- placement stays alive (frozen by the find/visible drops above) so
+            -- leaving re-shows it instantly. Editing it leaves it stale; nothing
+            -- else fires update() on cursor-exit, so re-render here — debounced,
+            -- only on line change so horizontal moves within an expression don't
+            -- thrash.
+            inline.conceal = function(self)
+                local cf, ct = cursor_lines()
+                local hide = cf and self:get(cf, ct) or {}
+                for id, img in pairs(self.imgs) do
+                    if hide[id] and img.opts.conceal then
+                        img:hide()
+                    else
+                        img:show()
+                    end
+                end
+                local key = cf and (cf .. ":" .. ct) or ""
+                if key ~= self._cl_key then
+                    self._cl_key = key
+                    self._refresh = self._refresh or require("snacks").util.debounce(function()
+                        self:update()
+                    end, { ms = 100 })
+                    self._refresh()
+                end
             end
 
             -- Size collapsed inline math by how hard the source is concealed.

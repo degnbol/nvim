@@ -34,6 +34,33 @@ nvim --headless +"lua require('nvim-treesitter')._install_task:wait()" +qa
 
 ../tex/unicode/install.sh
 
+# tectonic: self-contained XeTeX engine snacks.image prefers first for inline
+# math rendering (lua/plugins/pickers.lua). XeTeX reads unicode math natively.
+if ! command -v tectonic > /dev/null; then
+    source ~/dotfiles/shell/inst.sh   # inst() → brew / pacman / …
+    inst tectonic
+fi
+
+# Pre-warm tectonic's package bundle. The first compile that loads unicode-math
+# (the snacks inline-math template) downloads fontspec/unicode-math/
+# latinmodern-math.otf — tens of seconds — so the first math buffer opened on a
+# fresh machine looks like it fails to render. Fetch it once, here. Mirrors the
+# template's package set (xcolor + lua/plugins/pickers.lua, sorted) and snacks'
+# convert invocation (convert.lua). Sentinel makes it a one-time op.
+prewarm=~/.cache/nvim/tectonic-prewarmed
+if command -v tectonic > /dev/null && [[ ! -f $prewarm ]]; then
+    tmp=$(mktemp -d)
+    cat > "$tmp/warm.tex" <<'EOF'
+\documentclass[preview,border=0pt,varwidth,12pt]{standalone}
+\usepackage{amscd, amsmath, mathtools, unicode-math, xcolor}
+\begin{document}$α$\end{document}
+EOF
+    if tectonic -Z continue-on-errors --outdir "$tmp" "$tmp/warm.tex" > /dev/null 2>&1; then
+        mkdir -p $prewarm:h && touch $prewarm
+    fi
+    rm -r "$tmp"
+fi
+
 # Blender Python stubs for LSP completion in .blend.py files
 uv pip install --target ../lsp_ext/blender-stubs fake-bpy-module-latest
 
