@@ -387,7 +387,6 @@ map.n('grd', function()
     end))
 end, "Definition")
 
--- TODO: the LSP nmap K should also show the float aligned to the function name start and not cursor.
 map.i('<C-s>', function()
     -- TODO: modify float to remove empty lines at top and bottom.
     -- TODO: update signature help when pressing comma or deleting a comma or moving cursor.
@@ -399,17 +398,42 @@ map.i('<C-s>', function()
     vim.lsp.buf.signature_help { title = nil, offset_x = start_col - c, close_events = { "WinScrolled", "ModeChanged" } }
 end, "Signature help")
 
-vim.api.nvim_create_autocmd("LspAttach", {
-    group = vim.api.nvim_create_augroup("my_lsp_attach", { clear = true }),
-    callback = function()
-        -- TODO: complete this after work
-        -- map.n("K", function()
-        --     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-        --     local cword_start, _ = util.cword_cols()
-        --     vim.lsp.buf.hover { offset_x = cword_start - c, }
-        -- end, "LSP hover", { buffer = true })
+-- Peek the first 500 lines of a file in a hover-style float. Bounded cost on
+-- huge files, more than fills the float. Highlighting via the matched filetype
+-- as the float's 'syntax'. ponytail: regex syntax is enough — add
+-- vim.treesitter.start if it ever matters.
+local function peek_file(path)
+    local lines = vim.fn.readfile(path, "", 500)
+    vim.lsp.util.open_floating_preview(lines, vim.filetype.match({ filename = path }) or "", {})
+end
+
+local function hover_capable(bufnr)
+    for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+        if client:supports_method("textDocument/hover") then return true end
     end
-})
+    return false
+end
+
+-- Overload K: if the cursor is on a path resolving to a readable file, peek it;
+-- else LSP hover; else built-in keywordprg. Global (not buffer-local on
+-- LspAttach) so it works in no-LSP buffers — the primary use case — and so the
+-- LspAttach default sees a K mapping and skips installing its own.
+vim.keymap.set("n", "K", function()
+    local path = require("utils.paths").resolve_path_under_cursor(0)
+    local stat = path and vim.uv.fs_stat(path)
+    if stat and stat.type == "file" then -- dirs (case 1) fall through to hover
+        peek_file(path)
+        return
+    end
+    if hover_capable(0) then
+        local cword_start = util.cword_cols()
+        local c = vim.api.nvim_win_get_cursor(0)[2]
+        vim.lsp.buf.hover({ offset_x = cword_start - c }) -- align float to word start
+        return
+    end
+    -- n = noremap (bypass this + buffer-local maps → built-in K), x = execute now.
+    vim.api.nvim_feedkeys(vim.v.count1 .. "K", "nx", false)
+end, { desc = "Peek file / hover / keywordprg" })
 
 -- custom gx function that supports more website links.
 map.n("gx", function()

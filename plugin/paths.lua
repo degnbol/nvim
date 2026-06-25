@@ -17,13 +17,8 @@ vim.env.PATH = vim.env.HOME
 -- PyMOL stubs for LSP are in basedpyright extraPaths (lsp/basedpyright.lua),
 -- not PYTHONPATH — global PYTHONPATH breaks the real pymol binary.
 
--- Git project roots. vim.fs.root walks the tree in pure Lua — no subprocess.
--- `source` is a bufnr or path. git_root matches .git as file or directory, so
--- inside a submodule it returns the submodule root (same as `git rev-parse
--- --show-toplevel`).
-local function git_root(source)
-	return vim.fs.root(source, ".git")
-end
+local paths = require("utils.paths")
+local git_root = paths.git_root
 
 -- Like git_root but filters to .git *directories*, which means it skips
 -- submodule gitlinks and returns the outermost enclosing repo.
@@ -54,73 +49,14 @@ if roottop and roottop ~= root then
 	vim.opt.path:append(roottop)
 end
 
--- Look up a shell/Makefile-style `NAME=value` assignment in the buffer.
--- Matches line-anchored assignments with no spaces around `=` (zsh/bash/make
--- convention), strips surrounding single or double quotes. Returns nil if not
--- found. Scans from the bottom so later assignments win.
-local function buffer_var(name, bufnr)
-	local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-	for i = #lines, 1, -1 do
-		local val = lines[i]:match("^%s*" .. name .. "=(.+)")
-		if val then
-			val = val:match("^%s*(.-)%s*$")
-			return val:match("^['\"](.-)['\"]$") or val
-		end
-	end
-end
-
--- gf with $(git root) / $VAR / buffer-local var expansion. Stock gf handles
--- $VAR/path via isfname + env, but breaks on $(...) (chars not in isfname, no
--- command substitution) and on vars that exist only as assignments in the
--- current file (e.g. `outdir=fpath` in a zsh script). We resolve:
---   * $(git root) and $(git rev-parse --show-toplevel) only — arbitrary shell
---     from a file would be a footgun.
---   * $VAR from env (vim.fn.expand), falling back to `VAR=value` in the buffer.
+-- gf with $(git root) / $VAR / buffer-local var expansion (resolver in
+-- utils.paths). `normal! gf` stays as the final net — it covers includeexpr and
+-- other edge cases the resolver doesn't, so this is a strict superset.
 vim.keymap.set("n", "gf", function()
-	local line = vim.api.nvim_get_current_line()
-	local col = vim.api.nvim_win_get_cursor(0)[2] + 1
-	local bufnr = vim.api.nvim_get_current_buf()
-	local match
-	for _, pat in ipairs({
-		"%$%b()[%w/%._%-+~=@#%%]*",
-		"%$[%w_]+[%w/%._%-+~=@#%%]*",
-	}) do
-		local start = 1
-		while true do
-			local s, e = line:find(pat, start)
-			if not s then
-				break
-			end
-			if col >= s and col <= e then
-				match = line:sub(s, e)
-				break
-			end
-			start = e + 1
-		end
-		if match then
-			break
-		end
+	local p = paths.resolve_path_under_cursor(0)
+	if p then
+		vim.cmd.edit(vim.fn.fnameescape(p))
+	else
+		vim.cmd("normal! gf")
 	end
-	if match then
-		local token = match:gsub("%$%b()", function(m)
-			local cmd = m:sub(3, -2):match("^%s*(.-)%s*$")
-			if cmd == "git root" or cmd == "git rev-parse --show-toplevel" then
-				return git_root(bufnr) or vim.env.ROOT or m
-			end
-			return m
-		end)
-		-- Env var first; only fall back to buffer assignment if unset.
-		token = token:gsub("%$([%w_]+)", function(name)
-			if vim.env[name] then
-				return "$" .. name
-			end
-			return buffer_var(name, bufnr) or ("$" .. name)
-		end)
-		local path = vim.fn.expand(token)
-		if vim.uv.fs_stat(path) then
-			vim.cmd.edit(vim.fn.fnameescape(path))
-			return
-		end
-	end
-	vim.cmd("normal! gf")
 end, { desc = "gf with $(git root), $VAR, buffer var expansion" })
