@@ -128,6 +128,27 @@ describe("zsh injections", function()
             )
         end)
 
+        it("works as an argument: uv run python -c", function()
+            assert_injection(
+                "uv run python -c 'print(1)'",
+                "python", "print(1)"
+            )
+        end)
+
+        it("works wrapped: timeout 180 python -c", function()
+            assert_injection(
+                "timeout 180 python -c 'print(1)'",
+                "python", "print(1)"
+            )
+        end)
+
+        it("works wrapped, intervening flags: timeout 180 python3 -u -c", function()
+            assert_injection(
+                "timeout 180 python3 -u -c 'print(1)'",
+                "python", "print(1)"
+            )
+        end)
+
         it("does not inject without -c flag", function()
             assert_no_injection("python3 script.py", "python")
         end)
@@ -149,6 +170,13 @@ describe("zsh injections", function()
         it("works with flags before -e", function()
             assert_injection(
                 "julia --threads=4 -e 'println(1)'",
+                "julia", "println(1)"
+            )
+        end)
+
+        it("works wrapped: timeout 60 julia -e", function()
+            assert_injection(
+                "timeout 60 julia -e 'println(1)'",
                 "julia", "println(1)"
             )
         end)
@@ -181,6 +209,12 @@ describe("zsh injections", function()
             )
         end)
 
+        it("works wrapped: timeout 60 Rscript -e", function()
+            assert_injection(
+                "timeout 60 Rscript -e 'print(1)'", "r", "print(1)"
+            )
+        end)
+
         it("does not inject without -e flag", function()
             assert_no_injection("Rscript script.R", "r")
         end)
@@ -201,6 +235,13 @@ describe("zsh injections", function()
         it("injects javascript into double-quoted node -e", function()
             assert_injection(
                 'node -e "console.log(1)"',
+                "javascript", "console.log(1)"
+            )
+        end)
+
+        it("works wrapped: timeout 60 node -e", function()
+            assert_injection(
+                "timeout 60 node -e 'console.log(1)'",
                 "javascript", "console.log(1)"
             )
         end)
@@ -235,6 +276,15 @@ describe("zsh injections", function()
 
         it("injects zsh for sh -c", function()
             assert_injection("sh -c 'echo x'", "zsh", "echo x")
+        end)
+
+        it("works wrapped: timeout 180 zsh -l -c", function()
+            assert_injection(
+                "timeout 180 zsh -l -c 'echo hello'", "zsh", "echo hello")
+        end)
+
+        it("works as an argument: env zsh -c", function()
+            assert_injection("env zsh -c 'echo hello'", "zsh", "echo hello")
         end)
 
         it("injects zsh into each fragment of concatenated raw_strings", function()

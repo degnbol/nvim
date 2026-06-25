@@ -14,72 +14,62 @@
   (#set! injection.language "miller")
   (#set! injection.include-children))
 
-; Inject python into strings after `python3 -c` / `python -c`
-; Works with both single-quoted (raw_string) and double-quoted (string) args.
-; Two variants: python as the command name, and python as an argument
-; (covers `uv run --with pkg python3 -c`, `conda run -n env python3 -c`, etc.)
+; -----------------------------------------------------------------------------
+; Interpreter `<flag> '<code>'` injections (python -c, zsh -c, julia -e, ...).
+;
+; The interpreter is captured as command name OR argument via a [...]
+; alternation, so wrappers work uniformly: `python -c`, `uv run python -c`,
+; `timeout 180 zsh -l -c`, `env -i bash -c`, etc. The interpreter is NOT
+; anchored to the flag, so intervening flags (`-u`, `-l`, ...) are fine; only
+; the flag is anchored adjacent to the string, pinning it to the real `-c`/`-e`.
+; raw_string (single-quoted) and string (double-quoted) need separate patterns
+; because of the differing #offset!/string_content handling.
+; -----------------------------------------------------------------------------
+
+; python -c / python3 -c
 (command
-  name: (command_name) @_cmd
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#any-of? @_cmd "python3" "python")
+  (#any-of? @_interp "python" "python3")
   (#any-of? @_flag "-c" "--cmd")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "python")
   (#set! injection.include-children))
 
 (command
-  name: (command_name) @_cmd
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#any-of? @_cmd "python3" "python")
+  (#any-of? @_interp "python" "python3")
   (#any-of? @_flag "-c" "--cmd")
   (#set! injection.language "python")
   (#set! injection.include-children))
 
+; zsh -c / bash -c / sh -c
 (command
-  argument: (word) @_py
-  .
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#any-of? @_py "python3" "python")
-  (#any-of? @_flag "-c" "--cmd")
-  (#offset! @injection.content 0 1 0 -1)
-  (#set! injection.language "python")
-  (#set! injection.include-children))
-
-(command
-  argument: (word) @_py
-  .
-  argument: (word) @_flag
-  .
-  argument: (string (string_content) @injection.content)
-  (#any-of? @_py "python3" "python")
-  (#any-of? @_flag "-c" "--cmd")
-  (#set! injection.language "python")
-  (#set! injection.include-children))
-
-; Inject zsh into `zsh -c '...'` / `zsh -c "..."` / `bash -c ...` / `sh -c ...`
-(command
-  name: (command_name) @_cmd
-  argument: (word) @_flag
-  .
-  argument: (raw_string) @injection.content
-  (#any-of? @_cmd "zsh" "bash" "sh")
+  (#any-of? @_interp "zsh" "bash" "sh")
   (#any-of? @_flag "-c" "--cmd")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "zsh")
   (#set! injection.include-children))
 
 (command
-  name: (command_name) @_cmd
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#any-of? @_cmd "zsh" "bash" "sh")
+  (#any-of? @_interp "zsh" "bash" "sh")
   (#any-of? @_flag "-c" "--cmd")
   (#set! injection.language "zsh")
   (#set! injection.include-children))
@@ -111,90 +101,98 @@
   (#set! injection.language "zsh")
   (#set! injection.include-children))
 
-; Inject julia into `julia -e '...'`
+; julia -e
 (command
-  name: (command_name) @_cmd
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#eq? @_cmd "julia")
+  (#eq? @_interp "julia")
   (#eq? @_flag "-e")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "julia")
   (#set! injection.include-children))
 
 (command
-  name: (command_name) @_cmd
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#eq? @_cmd "julia")
+  (#eq? @_interp "julia")
   (#eq? @_flag "-e")
   (#set! injection.language "julia")
   (#set! injection.include-children))
 
-; Inject R into `Rscript -e '...'` / `R -e '...'`
+; Rscript -e / R -e
 (command
-  name: (command_name) @_cmd
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#any-of? @_cmd "Rscript" "R")
+  (#any-of? @_interp "Rscript" "R")
   (#eq? @_flag "-e")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "r")
   (#set! injection.include-children))
 
 (command
-  name: (command_name) @_cmd
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#any-of? @_cmd "Rscript" "R")
+  (#any-of? @_interp "Rscript" "R")
   (#eq? @_flag "-e")
   (#set! injection.language "r")
   (#set! injection.include-children))
 
-; Inject javascript into `node -e '...'`
+; node -e
 (command
-  name: (command_name) @_cmd
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#eq? @_cmd "node")
+  (#eq? @_interp "node")
   (#eq? @_flag "-e")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "javascript")
   (#set! injection.include-children))
 
 (command
-  name: (command_name) @_cmd
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#eq? @_cmd "node")
+  (#eq? @_interp "node")
   (#eq? @_flag "-e")
   (#set! injection.language "javascript")
   (#set! injection.include-children))
 
-; Inject lua into `lua -e '...'`
+; lua -e
 (command
-  name: (command_name) @_cmd
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#eq? @_cmd "lua")
+  (#eq? @_interp "lua")
   (#eq? @_flag "-e")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "lua")
   (#set! injection.include-children))
 
 (command
-  name: (command_name) @_cmd
+  [ name: (command_name) @_interp
+    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#eq? @_cmd "lua")
+  (#eq? @_interp "lua")
   (#eq? @_flag "-e")
   (#set! injection.language "lua")
   (#set! injection.include-children))
