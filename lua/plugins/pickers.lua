@@ -354,10 +354,38 @@ return {
             -- else fires update() on cursor-exit, so re-render here — debounced,
             -- only on line change so horizontal moves within an expression don't
             -- thrash.
+            -- A placement's live extmark row (1-indexed) — what nvim tracked the
+            -- image to under edits, vs the stored opts.range which only refreshes
+            -- on reconcile.
+            local function live_row(p)
+                local eid = p.eids and p.eids[1]
+                local m = eid and vim.api.nvim_buf_get_extmark_by_id(p.buf, ns, eid, {})
+                return m and m[1] and m[1] + 1 or nil -- nil if the mark is gone
+            end
+
+            -- placement._render re-pins every extmark to opts.range[1]-1
+            -- (placement.lua:386), discarding the row the extmark tracked to.
+            -- After a structural edit (line :move via ]e/[e, dd, …) a frozen
+            -- cursor-line placement's opts.range is stale, so the next render
+            -- snaps its image back to the old row — divorced from its text — and
+            -- the reconcile then can't match it and spawns duplicates. Sync
+            -- opts.range to the live extmark span before rendering, but only when
+            -- the row actually moved (in-place edits keep the frozen range so a
+            -- half-typed expression isn't re-measured mid-edit).
+            local function sync_range(p)
+                local eid = p.eids and p.eids[1]
+                local m = eid and vim.api.nvim_buf_get_extmark_by_id(p.buf, ns, eid, { details = true })
+                local r = p.opts.range
+                if m and m[1] and r and m[1] + 1 ~= r[1] then
+                    p.opts.range = { m[1] + 1, m[2], (m[3].end_row or m[1]) + 1, m[3].end_col or m[2] }
+                end
+            end
+
             inline.conceal = function(self)
                 local cf, ct = cursor_lines()
                 local hide = cf and self:get(cf, ct) or {}
                 for id, img in pairs(self.imgs) do
+                    sync_range(img)
                     if hide[id] and img.opts.conceal then
                         -- img:hide() debounces its re-render 10ms (placement.lua),
                         -- so on entry the image lingers ~10ms over the source vim
@@ -377,6 +405,75 @@ return {
                     end, { ms = 100 })
                     self._refresh()
                 end
+            end
+
+            -- Reconcile binds each fresh match to a live placement by content
+            -- hash (img.src = the cache PNG path, so the LaTeX→PNG compile is
+            -- already deduped + disk-cached — identical exprs never recompile).
+            -- But identical adjacent `$…$` share one src, so stock's
+            -- first-src-wins (inline.lua:100) picks arbitrarily among them and
+            -- can hand a match the placement sitting on a *different* line —
+            -- swapping their stored opts.range and recreating both extmarks
+            -- (churn + flicker on edit). Extmarks track text edits live, so the
+            -- placement whose live extmark row already equals the match's row IS
+            -- the right one: prefer it, fall back to first-src-wins only when no
+            -- live extmark lands on the row (mark invalidated by an edit across
+            -- the expression, or a brand-new match).
+            -- ponytail: row-only match; two identical `$…$` on one line still
+            -- bind by pairs() order (no row relocation to flicker, so harmless).
+            local Snacks = require("snacks")
+            inline.update = function(self)
+                -- conceal config is a bool or a (lang, type) -> bool predicate.
+                local conceal_cfg = Snacks.image.config.doc.conceal
+                doc.find_visible(self.buf, function(imgs)
+                    local visible = self:visible()
+                    for _, i in ipairs(imgs) do
+                        local img
+                        local tr = i.range and i.range[1]
+                        -- pass 1: position-stable (same src AND same live row);
+                        -- pass 2: first-src-wins fallback.
+                        for pass = 1, 2 do
+                            if img then break end
+                            for v, o in pairs(visible) do
+                                if o.img.src == i.src and (pass == 2 or live_row(o) == tr) then
+                                    img, visible[v] = o, nil
+                                    break
+                                end
+                            end
+                        end
+                        if not img then
+                            img = Snacks.image.placement.new(
+                                self.buf,
+                                i.src,
+                                Snacks.config.merge({}, Snacks.image.config.doc, {
+                                    pos = i.pos,
+                                    range = i.range,
+                                    inline = true,
+                                    conceal = vim.b[self.buf].snacks_image_conceal
+                                        or (type(conceal_cfg) == "function" and conceal_cfg(i.lang, i.type) or conceal_cfg),
+                                    type = i.type,
+                                    on_update = function(p)
+                                        for _, eid in ipairs(p.eids) do
+                                            self.idx[eid] = p
+                                        end
+                                    end,
+                                })
+                            )
+                            for _, eid in ipairs(img.eids) do
+                                self.idx[eid] = img
+                            end
+                            self.imgs[img.id] = img
+                        else
+                            img.opts.pos = i.pos
+                            img.opts.range = i.range
+                            img:update()
+                        end
+                    end
+                    for _, img in pairs(visible) do
+                        img:close()
+                        self.imgs[img.id] = nil
+                    end
+                end)
             end
 
             -- Size collapsed inline math by how hard the source is concealed.
