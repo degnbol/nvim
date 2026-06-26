@@ -398,6 +398,27 @@ map.i('<C-s>', function()
     vim.lsp.buf.signature_help { title = nil, offset_x = start_col - c, close_events = { "WinScrolled", "ModeChanged" } }
 end, "Signature help")
 
+-- LSP hover/signature markdown renders in a conceallevel=3 float (see
+-- ftplugin/markdown.lua), which fully hides conceal-replaced text — including
+-- the HTML entities nvim's markdown query resolves to a glyph at level 2.
+-- Decode them in the LSP markup before it becomes float lines so they survive:
+-- a rendered hover should show `<`, not nothing. (peek_file below passes raw
+-- file lines straight to open_floating_preview, bypassing this — file peeks
+-- stay verbatim.)
+local html_entities = {
+    ["&lt;"] = "<", ["&gt;"] = ">", ["&amp;"] = "&", ["&quot;"] = '"',
+    ["&nbsp;"] = " ", ["&ensp;"] = " ", ["&emsp;"] = " ",
+}
+local convert_markdown = vim.lsp.util.convert_input_to_markdown_lines
+---@diagnostic disable-next-line: duplicate-set-field
+vim.lsp.util.convert_input_to_markdown_lines = function(input, contents)
+    local lines = convert_markdown(input, contents)
+    for i, line in ipairs(lines) do
+        lines[i] = line:gsub("&%a+;", html_entities)
+    end
+    return lines
+end
+
 -- Peek the first 500 lines of a file in a hover-style float. Bounded cost on
 -- huge files, more than fills the float. Highlighting via the matched filetype
 -- as the float's 'syntax'. ponytail: regex syntax is enough — add
@@ -418,7 +439,7 @@ end
 -- else LSP hover; else built-in keywordprg. Global (not buffer-local on
 -- LspAttach) so it works in no-LSP buffers — the primary use case — and so the
 -- LspAttach default sees a K mapping and skips installing its own.
-vim.keymap.set("n", "K", function()
+map.n("K", function()
     local path = require("utils.paths").resolve_path_under_cursor(0)
     local stat = path and vim.uv.fs_stat(path)
     if stat and stat.type == "file" then -- dirs (case 1) fall through to hover
@@ -433,7 +454,7 @@ vim.keymap.set("n", "K", function()
     end
     -- n = noremap (bypass this + buffer-local maps → built-in K), x = execute now.
     vim.api.nvim_feedkeys(vim.v.count1 .. "K", "nx", false)
-end, { desc = "Peek file / hover / keywordprg" })
+end, "Peek file / hover / keywordprg")
 
 -- custom gx function that supports more website links.
 map.n("gx", function()

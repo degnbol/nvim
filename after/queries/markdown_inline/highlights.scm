@@ -81,3 +81,13 @@
   ] @punctuation.bracket
   (#set! priority 110))
 
+; Hide the leading backslash of escapes (`\_`, `\*`, …) only in fully-concealed
+; views (conceallevel=3, used by LSP hover floats — see ftplugin/markdown.lua),
+; while keeping it visible while editing (conceallevel=1). The replacement is a
+; backslash, so the conceal is an identity no-op below level 3 (position
+; unchanged) and the backslash byte disappears only at level 3. #head! narrows
+; the conceal to that byte so the escaped char itself always stays.
+((backslash_escape) @conceal
+  (#head! @conceal 1)
+  (#set! conceal "\\"))
+

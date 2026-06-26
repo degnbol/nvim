@@ -19,9 +19,13 @@ opt.comments = "b:%"
 -- since we are actively using the textwidth in markdown then the moving of the window is just annoying for a slim window
 opt.sidescrolloff = 0
 
--- conceal comment leader and the _ and * around emphasis
--- level=1 -> conceal but don't remove block
-opt.conceallevel = 1
+-- conceal comment leader and the _ and * around emphasis.
+-- Editing a file: level 1 conceals but keeps block markers visible (e.g. the
+-- backslash of escapes stays — see after/queries/markdown_inline). Read-only
+-- scratch markdown (LSP hover floats, file peeks): level 3 fully hides, so
+-- escape backslashes disappear for a clean rendered look. Core sets floats to
+-- 2 before setting filetype, so this ftplugin (run last) sets the final value.
+opt.conceallevel = vim.bo.buftype == "" and 1 or 3
 
 opt.list = false
 

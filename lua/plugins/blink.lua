@@ -485,16 +485,21 @@ return {
 
             require('blink.cmp').setup(opts)
 
-            -- Lower the documentation window's zindex below the menu's. Both default to
-            -- 1001 (hardcoded in blink.cmp.lib.window.open), and ties resolve to draw
-            -- order — the docs window opens after the menu, so it covers the menu when
-            -- they collide. Setting docs to 1000 keeps the menu visually on top.
+            -- Override two hardcoded defaults blink doesn't expose as config:
+            -- 1. zindex: docs and menu both default to 1001 (blink.cmp.lib.window),
+            --    and ties resolve to draw order — docs open after the menu so they
+            --    cover it on collision. 1000 keeps the menu visually on top.
+            -- 2. conceallevel: blink hardcodes 2; bump to 3 so escape backslashes
+            --    (\_, \* — concealed via after/queries/markdown_inline) fully hide,
+            --    matching the LSP hover float. Entities are already decoded to
+            --    glyphs upstream (plugin/keymaps.lua), so level 3 hides nothing else.
             local docs_win = require('blink.cmp.completion.windows.documentation').win
             local orig_open = docs_win.open
             function docs_win:open()
                 orig_open(self)
                 if self.id then
                     pcall(vim.api.nvim_win_set_config, self.id, { zindex = 1000 })
+                    vim.wo[self.id].conceallevel = 3
                 end
             end
 
