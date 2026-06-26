@@ -6,6 +6,12 @@ vim.treesitter.language.register("zsh", "bash")
 vim.treesitter.language.register("zsh", "sh.zsh")
 -- ```scm fenced code blocks in markdown should use the query parser
 vim.treesitter.language.register("query", "scm")
+-- typc = typst code mode. tinymist tags hover/completion code fences ```typc;
+-- no typc parser exists, so map it to the typst parser for markdown injection
+-- (e.g. LSP hover floats). Caveat: the typst grammar parses markup-first, so
+-- bare code-mode lines (`let x = …`) stay plain — only `#`-prefixed
+-- expressions and the hex constant get captured.
+vim.treesitter.language.register("typst", "typc")
 
 local ts_utils = require("utils.treesitter")
 vim.treesitter.query.add_directive(

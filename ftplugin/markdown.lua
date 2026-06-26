@@ -27,6 +27,14 @@ opt.sidescrolloff = 0
 -- 2 before setting filetype, so this ftplugin (run last) sets the final value.
 opt.conceallevel = vim.bo.buftype == "" and 1 or 3
 
+-- mini.hipatterns auto-enables only on normal buffers (buftype == ""), so
+-- read-only scratch markdown (LSP hover floats, peeks) gets no hex swatch.
+-- Enable it manually so colour definitions in hover floats get the same
+-- end-of-line swatch as source buffers.
+if vim.bo.buftype ~= "" then
+    require("mini.hipatterns").enable(0)
+end
+
 opt.list = false
 
 -- Disable the base strikethrough highlight — upstream parser pairs unrelated
