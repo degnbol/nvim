@@ -272,6 +272,13 @@ return {
                     local info = vim.fn.getwininfo(win)[1]
                     local cl0 = vim.wo[win].conceallevel == 0
                     local from, to = prefetch_range(info)
+                    -- doc.find's iter_matches end_row is end-inclusive (covers
+                    -- [from..to+1]) — the same off-by-one as stock get. With get
+                    -- now fixed to [from..to], pass to-1 here so discovery and
+                    -- keep-alive (visible→get) stay aligned on [from..to];
+                    -- otherwise bottom-prefetch math is found but not kept alive
+                    -- and gets recreated every tick. Cost: one line less bottom
+                    -- prefetch (negligible slack margin).
                     doc.find(buf, function(matches)
                         for _, i in ipairs(matches) do
                             if not ((cl0 and i.type == "math") or math_on_cursor(i.type, i.range, cf, ct)) then
@@ -292,6 +299,33 @@ return {
             -- placement is neither matched nor closed by reconcile). Reimplemented
             -- (not wrapped) because the range is hardcoded inside the method.
             local inline = require("snacks").image.inline
+
+            -- Reimplement M:get with the correct end bound. Stock get
+            -- (inline.lua) passes a 1-indexed-inclusive `to` straight into
+            -- nvim_buf_get_extmarks' 0-indexed end row {to, -1}, so it covers
+            -- 1-indexed lines [from..to+1] — one line too many. conceal's
+            -- self:get(cf, ct) then hides the cursor line *plus* the line below
+            -- it (that line shows its source = the cursorline bug). The 0-indexed
+            -- inclusive end for 1-indexed `to` is to-1, so query {to-1, -1}.
+            -- conceal/visible call this and inherit the fix unchanged.
+            local ns = require("snacks").image.placement.ns
+            inline.get = function(self, from, to)
+                local ret = {}
+                local marks = vim.api.nvim_buf_get_extmarks(
+                    self.buf, ns, { from - 1, 0 }, { to - 1, -1 }, { overlap = true, hl_name = false })
+                for _, m in ipairs(marks) do
+                    local p = self.idx[m[1]]
+                    if p and not self.imgs[p.id] then
+                        self.idx[m[1]] = nil
+                        p = nil
+                    end
+                    if p then
+                        ret[p.id] = p
+                    end
+                end
+                return ret
+            end
+
             inline.visible = function(self)
                 local cf, ct
                 if vim.api.nvim_get_current_buf() == self.buf then
