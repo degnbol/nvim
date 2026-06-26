@@ -362,26 +362,12 @@ function M.schedule_notify(obj)
     end)
 end
 
----Like string find, but gives the first match going backwards.
----@param fullString string
----@param searchString string
----@param init? integer
----@param plain? boolean
----@return integer|nil
----@return integer|nil
-function M.rfind(fullString, searchString, init, plain)
-    local n = #fullString
-    init = init and n - init
-    local _start, _end = fullString:reverse():find(searchString:reverse(), init, plain)
-    if _start == nil then return nil end
-    return n - _end + 1, n - _start + 1
-end
-
-function M.cword_cols()
-    local cword = vim.fn.expand("<cword>")
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    local line = vim.api.nvim_get_current_line()
-    return M.rfind(line, cword, c + 1, true)
+---Byte column of the start of the keyword under the cursor.
+---Uses the `\<` start-of-word regex atom rather than text-matching <cword>,
+---so it is correct when the word occurs more than once on the line.
+---@return integer col 1-indexed byte column (cursor's own column if not on a word)
+function M.cword_start_col()
+    return vim.fn.searchpos([[\<]], "bcn")[2]
 end
 
 function M.is_mac()

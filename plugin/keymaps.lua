@@ -407,7 +407,7 @@ local function peek_file(path)
     vim.lsp.util.open_floating_preview(lines, vim.filetype.match({ filename = path }) or "", {})
 end
 
-local function hover_capable(bufnr)
+local function lsp_hover_capable(bufnr)
     for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
         if client:supports_method("textDocument/hover") then return true end
     end
@@ -425,10 +425,10 @@ vim.keymap.set("n", "K", function()
         peek_file(path)
         return
     end
-    if hover_capable(0) then
-        local cword_start = util.cword_cols()
+    if lsp_hover_capable(0) then
+        local cword_start = util.cword_start_col()
         local c = vim.api.nvim_win_get_cursor(0)[2]
-        vim.lsp.buf.hover({ offset_x = cword_start - c }) -- align float to word start
+        vim.lsp.buf.hover({ offset_x = cword_start - c - 1 }) -- align float to word start
         return
     end
     -- n = noremap (bypass this + buffer-local maps → built-in K), x = execute now.
