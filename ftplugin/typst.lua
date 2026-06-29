@@ -26,6 +26,9 @@ map.n('<LocalLeader>t', function ()
     print(exportPdf)
 end, "Toggle update on type", { buffer=true})
 
+-- transliterate math symbol names → unicode glyphs, whole buffer (default rule).
+map.n('<leader>tf', function() require("astfix").run() end, "astfix: names→glyphs", { buffer=true })
+
 vim.opt_local.wrap = true
 vim.opt_local.sidescrolloff = 0
 -- definitely don't break at @ in typst (when wrapping with linebreak). 
