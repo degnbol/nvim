@@ -224,8 +224,12 @@ return {
                 min_window_height = 15, -- Hide on small windows.
                 multiwindow = true,     -- Show context in inactive windows.
                 on_attach = function(buf)
+                    -- Keep context off the prompt box (AgenticInput), but allow
+                    -- it on the chat buffer (AgenticChat): injected code blocks
+                    -- pin their own function/class context, and a scoped
+                    -- queries/agentic/context.scm pins the tool-call ### header.
                     local ft = vim.bo[buf].filetype
-                    return not ft:find("^Agentic")
+                    return not ft:find("^AgenticInput")
                 end,
             }
         end,
