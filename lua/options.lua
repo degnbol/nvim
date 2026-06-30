@@ -156,6 +156,7 @@ vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,t:ver25-TermCurso
 -- only show error for virtual_text since it is often incorrect and is distracting.
 vim.diagnostic.config {
     -- virtual_text = {severity = vim.diagnostic.severity.ERROR}
+    severity_sort = true, -- higher-severity extmark wins on overlap (ERROR underline over WARN)
     signs = {
         text = {
             [vim.diagnostic.severity.ERROR] = "",
