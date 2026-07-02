@@ -1,26 +1,8 @@
 ---@diagnostic disable: unused-local
 local lsu = require "utils/luasnip"
 local s, t, i, c, f, d, sn, fmta, conds, rep, ms = lsu.s, lsu.t, lsu.i, lsu.c, lsu.f, lsu.d, lsu.sn, lsu.fmta, lsu.conds, lsu.rep, lsu.ms
-local util = require "utils/init"
 
-local rtp = vim.fn.stdpath("config")
-
---- Functionnode function to put text from file(s) at a node location
----:h luasnip-functionnode
----@user_args table fnames
----@return text contents from file
-local function putfile(args, parent, user_args)
-    local texts = {}
-    for _, fname in ipairs(user_args) do
-        table.insert(texts, util.readtext(rtp .. "/luasnippets/tex/templates/" .. fname .. ".tex"))
-    end
-    local text = table.concat(texts, '\n')
-    return vim.split(text, '\n')
-end
----@return functionnode
-local function putfilenode(fnames)
-    return f(putfile, {}, {user_args={fnames}})
-end
+local function putfilenode(fnames) return lsu.putfilenode(fnames, "tex", "tex") end
 
 
 return {

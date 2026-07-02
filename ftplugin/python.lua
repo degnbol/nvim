@@ -46,7 +46,8 @@ hi.onColorScheme(function()
     if vim.g.loaded_pymol then set_pymol_hl() end
 end)
 
-local function load_pymol()
+-- Global so the `pymol` snippet's function node (no closure over this file) can call it.
+function Load_pymol()
     -- Set up treesitter injection for pymol_select in Python strings.
     -- Scoped to function args, keyword args, and assignments — not docstrings.
     local read_query = require('utils/init').read_query
@@ -68,12 +69,12 @@ local function load_pymol()
     end
 end
 -- manually load
-map.n('<localleader>+', load_pymol, "Manually load pymol snippets+completion+syntax", { buffer = true, })
+map.n('<localleader>+', Load_pymol, "Manually load pymol snippets+completion+syntax", { buffer = true, })
 -- check if pymol is loaded by scanning first 10 lines
 for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 10, false)) do
     -- might be using e.g. `from pymol_util import *`
     if line:match("import") and line:match("pymol") then
-        return load_pymol()
+        return Load_pymol()
     end
 end
 

@@ -10,18 +10,9 @@ end
 local isOptionLine = function (line_to_cursor)
     return vim.startswith(line_to_cursor, '[')
 end
--- an approximate version of conds.line_begin for show_condition where we have 
--- to allow for partially matching the completion word. We do this by assuming 
--- there is only max 1 word found on the line, which asumes the trigger pattern 
--- does not contain whitespace.
-local isLineBegin = function (line_to_cursor)
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    return line_to_cursor:sub(1,c+1):match('^%s*%a*$')
-end
-
 local opta = {show_condition=isAttrLine}
 local opto = {show_condition=isOptionLine}
-local optb = {show_condition=isLineBegin}
+local optb = {show_condition=ls.line_begin}
 local optt = {show_condition=function(line_to_cursor)
     return not (isAttrLine(line_to_cursor) or isOptionLine(line_to_cursor))
 end}

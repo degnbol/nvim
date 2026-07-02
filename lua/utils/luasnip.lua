@@ -1,6 +1,7 @@
 local M = {}
 
 local ls = require "luasnip"
+local util = require "utils/init"
 local conds = require("luasnip.extras.expand_conditions")
 local sn = ls.snippet_node
 local i = ls.insert_node
@@ -109,11 +110,42 @@ function M.upper_jump(jump_index, node_reference)
     return d(jump_index, upper_jump, {node_reference})
 end
 
+--- Functionnode function reading template file(s) from `luasnippets/<dir>/templates/`.
+--- :h luasnip-functionnode
+local function putfile(args, parent, dir, ext, fnames)
+    local base = vim.fn.stdpath("config") .. "/luasnippets/" .. dir .. "/templates/"
+    local texts = {}
+    for _, fname in ipairs(fnames) do
+        local path = base .. fname .. "." .. ext
+        texts[#texts + 1] = assert(util.readtext(path), "template not found: " .. path)
+    end
+    return vim.split(table.concat(texts, '\n'), '\n')
+end
+--- Functionnode inserting the concatenated contents of template files.
+--- @param fnames string[] template basenames (without extension)
+--- @param dir string filetype subdir under luasnippets/ (e.g. "tex", "typst")
+--- @param ext string template file extension without dot (e.g. "tex", "typ")
+--- @return table functionnode
+function M.putfilenode(fnames, dir, ext)
+    return f(putfile, {}, {user_args = {dir, ext, fnames}})
+end
+
 -- luasnip line_end condition doesn't seem to currently work with blink.cmp
 if pcall(require, 'blink.cmp') then
     M.line_end = function () return true end
 else
     M.line_end = conds.line_end
+end
+
+--- Blink-safe `line_begin` show_condition. `conds.line_begin` reads
+--- `matched_trigger`, which blink's show_condition call omits (it passes only
+--- `line_to_cursor`), so it errors. This approximates it: everything before the
+--- cursor is whitespace plus the partially-typed trigger word (assumes the
+--- trigger contains no whitespace).
+--- @param line_to_cursor string
+--- @return boolean|nil at_line_begin
+function M.line_begin(line_to_cursor)
+    return line_to_cursor:match('^%s*%S*$') ~= nil
 end
 
 return M

@@ -4,6 +4,9 @@ local s, t, i, c, f, d, sn, fmta, conds, rep, ms = ls.s, ls.t, ls.i, ls.c, ls.f,
 return {
 --
 
+s({trig="cli", dscr="Python CLI template"}, ls.putfilenode({"cli"}, "python", "py"),
+{show_condition=ls.line_begin}),
+
 s({trig="#!", dscr="Python shebang", snippetType="autosnippet", condition=conds.line_begin},
 {
     t"#!/usr/bin/env ", c(1, {t"-S uv run --script", t"python3"})
