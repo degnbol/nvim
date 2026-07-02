@@ -76,6 +76,27 @@ function M.inject_by_ext_directive(match, _, source, pred, metadata)
     metadata["injection.language"] = vim.treesitter.language.get_lang(ft) or ft
 end
 
+---Query predicate `(#any-basename-of? @cap "name" ...)` — like `#any-of?` but
+---compares the *basename* of @cap, so a path-prefixed interpreter such as
+---`.venv/bin/python` or `/usr/bin/python3` matches the bare name (`python`,
+---`python3`). Any leading `dir/` components are stripped before the test.
+---@param match table<integer, TSNode[]>
+---@param _ integer pattern index (unused)
+---@param source integer|string buffer or string
+---@param pred any[]
+---@return boolean
+function M.any_basename_of(match, _, source, pred)
+    local nodes = match[pred[2]]
+    if not nodes or #nodes == 0 then return true end
+    for _, node in ipairs(nodes) do
+        local basename = vim.treesitter.get_node_text(node, source):gsub(".*/", "")
+        for i = 3, #pred do
+            if basename == pred[i] then return true end
+        end
+    end
+    return false
+end
+
 ---Query directive `(#head! @cap N)` — narrow @cap to its first N bytes.
 ---Assumes the first N bytes do not span a newline.
 ---@param match table<integer, TSNode[]>

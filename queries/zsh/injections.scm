@@ -8,7 +8,7 @@
   argument: (word) @_verb
   .
   argument: (raw_string) @injection.content
-  (#eq? @_cmd "mlr")
+  (#any-basename-of? @_cmd "mlr")
   (#any-of? @_verb "filter" "put" "tee")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "miller")
@@ -33,7 +33,7 @@
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#any-of? @_interp "python" "python3")
+  (#any-basename-of? @_interp "python" "python3")
   (#any-of? @_flag "-c" "--cmd")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "python")
@@ -45,7 +45,7 @@
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#any-of? @_interp "python" "python3")
+  (#any-basename-of? @_interp "python" "python3")
   (#any-of? @_flag "-c" "--cmd")
   (#set! injection.language "python")
   (#set! injection.include-children))
@@ -57,7 +57,7 @@
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#any-of? @_interp "zsh" "bash" "sh")
+  (#any-basename-of? @_interp "zsh" "bash" "sh")
   (#any-of? @_flag "-c" "--cmd")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "zsh")
@@ -69,7 +69,7 @@
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#any-of? @_interp "zsh" "bash" "sh")
+  (#any-basename-of? @_interp "zsh" "bash" "sh")
   (#any-of? @_flag "-c" "--cmd")
   (#set! injection.language "zsh")
   (#set! injection.include-children))
@@ -84,7 +84,7 @@
   .
   argument: (concatenation
     (raw_string) @injection.content)
-  (#any-of? @_cmd "zsh" "bash" "sh")
+  (#any-basename-of? @_cmd "zsh" "bash" "sh")
   (#any-of? @_flag "-c" "--cmd")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "zsh")
@@ -96,7 +96,7 @@
   .
   argument: (concatenation
     (string (string_content) @injection.content))
-  (#any-of? @_cmd "zsh" "bash" "sh")
+  (#any-basename-of? @_cmd "zsh" "bash" "sh")
   (#any-of? @_flag "-c" "--cmd")
   (#set! injection.language "zsh")
   (#set! injection.include-children))
@@ -108,7 +108,7 @@
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#eq? @_interp "julia")
+  (#any-basename-of? @_interp "julia")
   (#eq? @_flag "-e")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "julia")
@@ -120,7 +120,7 @@
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#eq? @_interp "julia")
+  (#any-basename-of? @_interp "julia")
   (#eq? @_flag "-e")
   (#set! injection.language "julia")
   (#set! injection.include-children))
@@ -132,7 +132,7 @@
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#any-of? @_interp "Rscript" "R")
+  (#any-basename-of? @_interp "Rscript" "R")
   (#eq? @_flag "-e")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "r")
@@ -144,7 +144,7 @@
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#any-of? @_interp "Rscript" "R")
+  (#any-basename-of? @_interp "Rscript" "R")
   (#eq? @_flag "-e")
   (#set! injection.language "r")
   (#set! injection.include-children))
@@ -156,7 +156,7 @@
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#eq? @_interp "node")
+  (#any-basename-of? @_interp "node")
   (#eq? @_flag "-e")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "javascript")
@@ -168,7 +168,7 @@
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#eq? @_interp "node")
+  (#any-basename-of? @_interp "node")
   (#eq? @_flag "-e")
   (#set! injection.language "javascript")
   (#set! injection.include-children))
@@ -180,7 +180,7 @@
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#eq? @_interp "lua")
+  (#any-basename-of? @_interp "lua")
   (#eq? @_flag "-e")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "lua")
@@ -192,7 +192,7 @@
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#eq? @_interp "lua")
+  (#any-basename-of? @_interp "lua")
   (#eq? @_flag "-e")
   (#set! injection.language "lua")
   (#set! injection.include-children))
@@ -201,7 +201,7 @@
 (command
   name: (command_name) @_cmd
   argument: (raw_string) @injection.content
-  (#any-of? @_cmd "awk" "gawk" "mawk")
+  (#any-basename-of? @_cmd "awk" "gawk" "mawk")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "awk")
   (#set! injection.include-children))
@@ -213,7 +213,7 @@
 (command
   name: (command_name) @_cmd
   argument: (raw_string) @injection.content
-  (#any-of? @_cmd "jq" "gojq")
+  (#any-basename-of? @_cmd "jq" "gojq")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "jq")
   (#set! injection.include-children))
@@ -221,7 +221,7 @@
 (command
   name: (command_name) @_cmd
   argument: (string (string_content) @injection.content)
-  (#any-of? @_cmd "jq" "gojq")
+  (#any-basename-of? @_cmd "jq" "gojq")
   (#set! injection.language "jq")
   (#set! injection.include-children))
 
@@ -240,7 +240,7 @@
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#any-of? @_cmd "nvim" "vim")
+  (#any-basename-of? @_cmd "nvim" "vim")
   (#any-of? @_flag "-c" "--cmd")
   (#not-lua-match? @injection.content "^'lua\n")
   (#offset! @injection.content 0 1 0 -1)
@@ -251,7 +251,7 @@
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#any-of? @_cmd "nvim" "vim")
+  (#any-basename-of? @_cmd "nvim" "vim")
   (#any-of? @_flag "-c" "--cmd")
   (#not-lua-match? @injection.content "^lua\n")
   (#set! injection.language "vim"))
@@ -260,7 +260,7 @@
 (command
   name: (command_name) @_cmd
   argument: (concatenation (word) @_plus (raw_string) @injection.content)
-  (#any-of? @_cmd "nvim" "vim")
+  (#any-basename-of? @_cmd "nvim" "vim")
   (#eq? @_plus "+")
   (#not-lua-match? @injection.content "^'lua\n")
   (#offset! @injection.content 0 1 0 -1)
@@ -269,7 +269,7 @@
 (command
   name: (command_name) @_cmd
   argument: (concatenation (word) @_plus (string (string_content) @injection.content))
-  (#any-of? @_cmd "nvim" "vim")
+  (#any-basename-of? @_cmd "nvim" "vim")
   (#eq? @_plus "+")
   (#not-lua-match? @injection.content "^lua\n")
   (#set! injection.language "vim"))
@@ -287,7 +287,7 @@
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#any-of? @_cmd "nvim" "vim")
+  (#any-basename-of? @_cmd "nvim" "vim")
   (#any-of? @_flag "-c" "--cmd")
   (#lua-match? @injection.content "^'lua\n")
   (#trim! @injection.content 5 1)
@@ -304,7 +304,7 @@
   argument: (word) @_flag
   .
   argument: (string) @injection.content
-  (#any-of? @_cmd "nvim" "vim")
+  (#any-basename-of? @_cmd "nvim" "vim")
   (#any-of? @_flag "-c" "--cmd")
   (#lua-match? @injection.content "^\"lua\n")
   (#trim! @injection.content 5 1)
@@ -315,7 +315,7 @@
 (command
   name: (command_name) @_cmd
   argument: (concatenation (word) @_plus (raw_string) @injection.content)
-  (#any-of? @_cmd "nvim" "vim")
+  (#any-basename-of? @_cmd "nvim" "vim")
   (#eq? @_plus "+")
   (#lua-match? @injection.content "^'lua\n")
   (#trim! @injection.content 5 1)
@@ -324,7 +324,7 @@
 (command
   name: (command_name) @_cmd
   argument: (concatenation (word) @_plus (string) @injection.content)
-  (#any-of? @_cmd "nvim" "vim")
+  (#any-basename-of? @_cmd "nvim" "vim")
   (#eq? @_plus "+")
   (#lua-match? @injection.content "^\"lua\n")
   (#trim! @injection.content 5 1)
@@ -370,7 +370,7 @@
     .
     argument: (word) @_stdin)
   (heredoc_redirect (heredoc_body) @injection.content)
-  (#any-of? @_cmd "nvim" "vim")
+  (#any-basename-of? @_cmd "nvim" "vim")
   (#eq? @_lflag "-l")
   (#any-of? @_stdin "/dev/stdin" "-")
   (#set! injection.language "lua"))
@@ -391,7 +391,7 @@
   argument: (_)
   argument: (raw_string) @injection.content
   .
-  (#eq? @_cmd "sqlite3")
+  (#any-basename-of? @_cmd "sqlite3")
   (#offset! @injection.content 0 1 0 -1)
   (#set! injection.language "sql")
   (#set! injection.include-children))
@@ -401,6 +401,6 @@
   argument: (_)
   argument: (string (string_content) @injection.content)
   .
-  (#eq? @_cmd "sqlite3")
+  (#any-basename-of? @_cmd "sqlite3")
   (#set! injection.language "sql")
   (#set! injection.include-children))

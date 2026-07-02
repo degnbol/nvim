@@ -22,6 +22,8 @@ vim.treesitter.query.add_directive(
     "tail!", ts_utils.tail_directive, { force = true })
 vim.treesitter.query.add_directive(
     "inject-by-ext!", ts_utils.inject_by_ext_directive, { force = true })
+vim.treesitter.query.add_predicate(
+    "any-basename-of?", ts_utils.any_basename_of, { force = true })
 
 -- start treesitter for each new filetype
 vim.api.nvim_create_autocmd("FileType", {
