@@ -131,15 +131,11 @@ return {
             -- The problem with this approach is how buggy cmdheight=0 still is.
             -- A different solution is laststatus=0 where the statusline is redesigned as a simple border.
             vim.opt.laststatus = 0
-            -- TODO:
-            -- decide if there should be more of standard statusline info (such as "HELP" for help files) that should be added to render.
-            vim.opt.statusline = ("▁"):rep(vim.api.nvim_win_get_width(0))
-            vim.api.nvim_create_autocmd("WinResized", {
-                group = vim.api.nvim_create_augroup("statusline-update", { clear = true }),
-                callback = function()
-                    vim.opt.statusline = ("▁"):rep(vim.api.nvim_win_get_width(0))
-                end
-            })
+            -- Draw the border with the statusline FILL char, not fixed-width
+            -- content. The fill auto-sizes to each window, so it never truncates
+            -- (no stray '<' in narrow splits) and needs no WinResized recompute.
+            vim.opt.fillchars:append("stl:▁,stlnc:▁")
+            vim.opt.statusline = "%="
         end,
         after = function()
             local helpers = require 'incline.helpers'
