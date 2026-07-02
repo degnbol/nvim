@@ -178,14 +178,14 @@ return {
                     if vim.bo[props.buf].filetype == 'AgenticChat' then
                         local tab = vim.api.nvim_win_get_tabpage(props.win)
                         local headers = vim.t[tab].agentic_headers
-                        local chat = headers and headers.chat
-                        local label = '󰻞'
-                        if chat and chat.session_name then
-                            label = label .. ' ' .. chat.session_name
-                        end
-                        if chat and chat.context then
-                            label = label .. ' ' .. chat.context
-                        end
+                        -- The subagent split shares the AgenticChat filetype; a
+                        -- buffer-local marker set by agentic.nvim tells them apart.
+                        local key = vim.b[props.buf].agentic_window == 'subagent' and 'subagent' or 'chat'
+                        -- Title (with icon) and context are owned by agentic.nvim;
+                        -- surface what it publishes rather than rebuild it here.
+                        local part = (headers and headers[key]) or {}
+                        local label = part.title or 'Agentic'
+                        if part.context then label = label .. ' ' .. part.context end
                         return { { label, guifg = props.focused and hi.fg("StatusLine") or "gray" } }
                     end
                     -- In diffview tabs: show rev info instead of filename
