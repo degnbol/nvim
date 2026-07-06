@@ -108,7 +108,7 @@ opt.laststatus = 1
 -- hide the location in file by default
 opt.ruler = false
 -- hide ~ tilde at end of buffer.
-opt.fillchars = "eob: ,vert:▎,horiz:▁,horizup:▁,horizdown:▁,vertleft:▕,vertright:▕,verthoriz:▁"
+opt.fillchars = "eob: ,vert:│,horiz:─,horizup:┴,horizdown:┬,vertleft:┤,vertright:├,verthoriz:┼"
 -- add space symbol to whitespace chars
 opt.listchars:append('space:⋅')
 opt.listchars:append('tab:▏ ')

@@ -134,7 +134,7 @@ return {
             -- Draw the border with the statusline FILL char, not fixed-width
             -- content. The fill auto-sizes to each window, so it never truncates
             -- (no stray '<' in narrow splits) and needs no WinResized recompute.
-            vim.opt.fillchars:append("stl:▁,stlnc:▁")
+            vim.opt.fillchars:append("stl:─,stlnc:─")
             vim.opt.statusline = "%="
         end,
         after = function()
