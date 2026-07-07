@@ -184,6 +184,30 @@ return {
                 },
             }
 
+            -- Workaround for folke/snacks.nvim#2539 (open; fix PR #2871 unmerged):
+            -- the picker `select` source (backing `vim.ui.select`) sizes its list
+            -- box to `math.min(#items, vim.o.lines * 0.8 - 10)`, which is fractional
+            -- when `lines` isn't a multiple of 5 and #items exceeds it. snacks' win.lua
+            -- passes that straight to nvim_win_set_config, which rejects non-integral
+            -- dims (E5108). Hits large `vim.ui.select` menus (e.g. agentic's mode/
+            -- config-option selector) intermittently, depending on window height.
+            -- The buggy size is injected via the picker's own `layout.config`/
+            -- `on_update_pre`, both of which the picker hard-overrides, so it can't be
+            -- reached from config. Floor at the single chokepoint instead: `win:dim()`,
+            -- whose return `win_opts()` hands to nvim_win_set_config. Remove once fixed
+            -- upstream.
+            local Win = require("snacks.win")
+            if not Win._dim_floored then
+                Win._dim_floored = true
+                local dim = Win.dim
+                function Win.dim(self, parent)
+                    local d = dim(self, parent)
+                    d.height, d.width = math.floor(d.height), math.floor(d.width)
+                    d.row, d.col = math.floor(d.row), math.floor(d.col)
+                    return d
+                end
+            end
+
             -- Render inline `$...$` (and `\(...\)`) math flowing within the line,
             -- while `$$...$$` / `\[...\]` stay display blocks. snacks discards the
             -- delimiter and wraps every expression as display `\[...\]`, whose
