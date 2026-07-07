@@ -139,12 +139,68 @@ map.n("<leader>fp", function()
     require("mini.extra").pickers.explorer { cwd = vim.fn.expand("%:h") }
 end, "Path explorer")
 
+--- Byte offset of the cursor within the word (per 'iskeyword') it sits on, in
+--- window `win`; 0 when the cursor is not on a word character. Mirrors <cword>,
+--- which is what LSP rename prefills its input with.
+--- @param win number
+--- @return number offset
+local function cursor_word_offset(win)
+    local buf = vim.api.nvim_win_get_buf(win)
+    local row, col = unpack(vim.api.nvim_win_get_cursor(win))
+    local before = vim.api.nvim_buf_get_lines(buf, row - 1, row, false)[1]:sub(1, col)
+    -- \k respects 'iskeyword', which is buffer-local, so match in `buf`'s context.
+    return #vim.api.nvim_buf_call(buf, function()
+        return vim.fn.matchstr(before, [[\k*$]])
+    end)
+end
+
 return {
     {
         "snacks.nvim",
-        ---@type snacks.Config
         after = function()
+            ---@type snacks.Config
             require("snacks").setup {
+                -- https://github.com/folke/snacks.nvim/blob/main/docs/input.md
+                input = {
+                    enabled = true,
+                    icon = "",
+                    win = {
+                        relative = "cursor",
+                        row = -1,
+                        -- Anchor the float to the start of the word rather than the
+                        -- cursor, so it doesn't drift right as the cursor sits deeper
+                        -- into the word. Evaluated with the parent window current
+                        -- (before the float opens, and during expand's win:update).
+                        col = function()
+                            return -2 - cursor_word_offset(vim.api.nvim_get_current_win())
+                        end,
+                        width = 30,
+                        on_win = function(self)
+                            -- The float already has focus, so the buffer being
+                            -- renamed is the previous window (#).
+                            local offset = cursor_word_offset(vim.fn.win_getid(vim.fn.winnr("#")))
+                            -- Land in normal mode at the same char offset within the
+                            -- prefilled term. stopinsert is deferred, so schedule the
+                            -- cursor set a tick later (avoids the leave-insert shift).
+                            local function place()
+                                vim.cmd.stopinsert()
+                                vim.schedule(function()
+                                    pcall(vim.api.nvim_win_set_cursor, self.win, { 1, offset })
+                                end)
+                            end
+                            -- snacks' `expand` re-positions the float on the first
+                            -- TextChanged (inserting the default text), resetting the
+                            -- cursor to col 0. This autocmd is registered before snacks'
+                            -- handler, so scheduling place() re-asserts after its reset.
+                            vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+                                buffer = self.buf,
+                                once = true,
+                                callback = function() vim.schedule(place) end,
+                            })
+                            vim.schedule(place)
+                        end,
+                    },
+                },
                 picker = {
                     enabled = true,
                     layout = { fullscreen = true },
