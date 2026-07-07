@@ -12,10 +12,13 @@ vim.api.nvim_create_user_command("Light", function()
     vim.cmd("colorscheme generated")
 end, {})
 
+-- Fall back to a bundled scheme when the generated one hasn't been linked in.
 vim.api.nvim_create_autocmd("VimEnter", {
     callback = function()
         vim.schedule(function()
-            vim.cmd("colorscheme generated")
+            if not pcall(vim.cmd.colorscheme, "generated") then
+                vim.cmd.colorscheme("dawnfox")
+            end
         end)
     end,
 })

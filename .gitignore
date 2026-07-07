@@ -25,6 +25,10 @@ hej_*
 pandoc-unicode-math
 pandoc-unicode-math-from-latex
 
+# generated colorscheme — supplied externally at this path; plugin/theme.lua
+# falls back to a bundled scheme when absent.
+colors/generated.lua
+
 # latex
 *.synctex.gz
 aux/
