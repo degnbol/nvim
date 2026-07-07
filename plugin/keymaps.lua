@@ -529,8 +529,8 @@ map.n("gx", function()
     -- e.g. useful when being lazy and the url is right there on the line.
     -- visually select URL
     require("various-textobjs").url()
-    -- plugin only switches to visual mode when textobj found
-    local foundURL = vim.fn.mode():find("v")
+    -- plugin only switches to visual mode when a URL is found (and notifies on miss)
+    if not vim.fn.mode():find("v") then return end
     -- retrieve URL with the z-register as intermediary
     vim.cmd.normal { '"zy', bang = true }
     local url = vim.fn.getreg("z")
