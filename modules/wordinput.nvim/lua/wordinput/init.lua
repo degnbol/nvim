@@ -24,11 +24,10 @@ local function cursor_word_offset(win)
     end)
 end
 
---- Float width that fits `text`: its display width plus one cell for the
---- cursor's room past the last char. No slack for resize lag is needed: the
---- InsertCharPre handler (see M.open) widens the float *before* each typed char
---- lands, so the view never scrolls to reveal a cursor the current width can't
---- hold.
+--- Float width that fits `text`: its display width plus one cell for the insert
+--- caret's room past the last char at EOL. That trailing cell is left
+--- transparent (see M.open) so it shows the buffer beneath rather than a chrome
+--- strip — only the term itself carries the float's bg_dim.
 --- @param text string
 --- @return number width
 local function width_for(text)
@@ -66,44 +65,67 @@ function M.open(opts, on_confirm)
         style = "minimal",
         border = "none",
     })
-    -- Borderless: the NormalFloat background is the only chrome. `minimal` turns
-    -- off the float's own cursorline, so it renders as a slim strip in the
-    -- colorscheme's recede-surface bg (bg_dim) — distinct from the parent's
-    -- CursorLine underneath.
+    -- `minimal` turns off the float's own cursorline, so it renders as a slim
+    -- strip. winblend=100 makes the whole float transparent; the trailing caret
+    -- cell (past the term) is left that way so the buffer shows through it
+    -- instead of a chrome strip. The term itself is repainted opaque below.
+    vim.wo[win].winblend = 100
+
+    -- Restore opaque chrome over the term only: a highlight whose blend=0
+    -- overrides winblend for its cells (see :h highlight-blend), copying an
+    -- existing group's colours. Read now so it tracks the current colorscheme.
+    local ns = vim.api.nvim_create_namespace("wordinput")
+    local chrome = vim.api.nvim_get_hl(0, { name = "PmenuSel" })
+    vim.api.nvim_set_hl(0, "WordInputTerm", { fg = chrome.fg, bg = chrome.bg, blend = 0 })
 
     -- Normal mode, cursor at the char offset within the term. Plain buffer, so
     -- this is one synchronous call — nothing resets it.
     vim.api.nvim_win_set_cursor(win, { 1, offset })
 
-    -- Grow/shrink the float to the edited term. A width-only reconfigure keeps
-    -- the word-start `col` and the buffer cursor (unlike a full reconfigure),
-    -- so the float widens rightward from the anchor as the term is typed.
-    local function resize(text)
+    -- Fit the float to the term. A width-only reconfigure keeps the word-start
+    -- `col` and the buffer cursor (unlike a full reconfigure), so the float
+    -- widens rightward from the anchor.
+    local function set_width(text)
         vim.api.nvim_win_set_config(win, { width = width_for(text) })
     end
 
+    -- Paint the opaque chrome over the term only: the extmark spans exactly the
+    -- term, so the trailing caret cell stays transparent and the buffer shows
+    -- through it. The insert caret at EOL therefore takes its colour from that
+    -- transparent cell (kitty's `cursor none` reverse-video); leaving it as-is is
+    -- accepted — the caret reading the buffer beneath is consistent with the
+    -- float overlaying the buffer in place.
+    local function paint()
+        if not vim.api.nvim_win_is_valid(win) then return end
+        local line = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or ""
+        vim.api.nvim_buf_set_extmark(buf, ns, 0, 0, {
+            id = 1,
+            end_col = #line,
+            hl_group = "WordInputTerm",
+        })
+    end
+    set_width(default)
+    paint()
+
     -- Widen *ahead* of the typed char: InsertCharPre fires before v:char lands,
-    -- so the float is already wide enough when neovim recomputes horizontal
-    -- scroll at insertion and the first char never scrolls off (this is what
-    -- lets width_for use a single slack cell). Fires only for typed insert-mode
-    -- chars, so it covers growth-by-typing and nothing else.
+    -- so the float already fits it when neovim recomputes scroll at insertion.
+    -- Repaint waits for the ensuing TextChangedI, once v:char is in the buffer.
     vim.api.nvim_create_autocmd("InsertCharPre", {
         buffer = buf,
         callback = function()
             local line = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or ""
-            resize(line .. vim.v.char)
+            set_width(line .. vim.v.char)
         end,
     })
 
-    -- Authoritative resize for everything InsertCharPre misses: insert-mode
-    -- deletion (shrink) and any normal-mode edit (paste, x, ciw…). Fires after
-    -- the change; in normal mode the cursor never sits past the last char, so a
-    -- frame-late resize still fits without scrolling.
+    -- Authoritative resize+repaint for everything InsertCharPre misses:
+    -- insert-mode deletion (shrink) and any normal-mode edit (paste, x, ciw…).
     vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         buffer = buf,
         callback = function()
             local line = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or ""
-            resize(line)
+            set_width(line)
+            paint()
         end,
     })
 
