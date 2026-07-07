@@ -103,6 +103,7 @@ vim.pack.add({
     gh("scalameta/nvim-metals"),
     gh("akinsho/flutter-tools.nvim"),
     gh("saecki/crates.nvim"),
+    gh("saecki/live-rename.nvim"),
 
     -- Mini
     gh("echasnovski/mini.nvim"),
