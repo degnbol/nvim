@@ -24,14 +24,30 @@ local function cursor_word_offset(win)
     end)
 end
 
+--- Float width that fits `text`: its display width plus two cells. One cell is
+--- the cursor's room past the last char; the other is slack so that, since the
+--- resize lags a keystroke behind, the pre-resize width still fits the cursor
+--- when appending — otherwise the view scrolls and hides the first char.
+--- @param text string
+--- @return number width
+local function width_for(text)
+    return vim.api.nvim_strwidth(text) + 2
+end
+
+--- `on_confirm` receives the confirmed text (or nil if cancelled) and the parent
+--- buffer column matching the float cursor's offset within the word: after an
+--- in-place replacement of the word (e.g. LSP rename), placing the cursor there
+--- lands it at the same offset within the new term as it had in the float.
 --- @param opts { default?: string }|nil
---- @param on_confirm fun(value: string|nil)
+--- @param on_confirm fun(value: string|nil, col: number)
 function M.open(opts, on_confirm)
     assert(type(on_confirm) == "function", "`on_confirm` must be a function")
     opts = opts or {}
 
     -- Capture origin before any window work: parent is unambiguously current.
-    local offset = cursor_word_offset(vim.api.nvim_get_current_win())
+    local parent_win = vim.api.nvim_get_current_win()
+    local offset = cursor_word_offset(parent_win)
+    local word_start = vim.api.nvim_win_get_cursor(parent_win)[2] - offset
     local default = opts.default or ""
 
     local buf = vim.api.nvim_create_buf(false, true)
@@ -44,7 +60,7 @@ function M.open(opts, on_confirm)
         -- term overlays the original word.
         col = -offset - 1,
         row = -1,
-        width = math.max(30, #default + 3),
+        width = width_for(default),
         height = 1,
         style = "minimal",
         border = "rounded",
@@ -58,6 +74,17 @@ function M.open(opts, on_confirm)
     -- this is one synchronous call — nothing resets it.
     vim.api.nvim_win_set_cursor(win, { 1, offset })
 
+    -- Grow/shrink the float to the edited term. A width-only reconfigure keeps
+    -- the word-start `col` and the buffer cursor (unlike a full reconfigure),
+    -- so the float widens rightward from the anchor as the term is typed.
+    vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+        buffer = buf,
+        callback = function()
+            local line = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or ""
+            vim.api.nvim_win_set_config(win, { width = width_for(line) })
+        end,
+    })
+
     local done = false
     --- Close the float, then hand the result to on_confirm. Closing first means
     --- nvim_get_current_win() inside the ensuing rename resolves to the parent.
@@ -65,10 +92,14 @@ function M.open(opts, on_confirm)
     local function finish(value)
         if done then return end
         done = true
+        -- Read the float cursor offset before closing; map it to the parent
+        -- column so the word start it anchors to is preserved after an edit.
+        local col = word_start
         if vim.api.nvim_win_is_valid(win) then
+            col = word_start + vim.api.nvim_win_get_cursor(win)[2]
             pcall(vim.api.nvim_win_close, win, true)
         end
-        on_confirm(value)
+        on_confirm(value, col)
     end
 
     -- Defer buffer deletion past the closing keystroke (see neovim skill,

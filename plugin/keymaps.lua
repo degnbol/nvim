@@ -380,8 +380,28 @@ end, "Filtered references")
 map.desc('n', 'gra', "Code actions")
 map.desc('n', 'gri', "Implementations")
 map.n('grn', function()
-    require("wordinput").open({ default = vim.fn.expand("<cword>") }, function(name)
-        if name and #name ~= 0 then vim.lsp.buf.rename(name) end
+    require("wordinput").open({ default = vim.fn.expand("<cword>") }, function(name, col)
+        if not (name and #name ~= 0) then return end
+        -- Rename's edit lands asynchronously (LSP response), and nvim_buf_set_text
+        -- preserves the cursor's absolute column, so move it to the float's in-word
+        -- offset once the edit arrives. Disarm after a grace period so a no-op
+        -- rename doesn't leave the attach to hijack a later, unrelated edit.
+        local win = vim.api.nvim_get_current_win()
+        local buf = vim.api.nvim_win_get_buf(win)
+        local row = vim.api.nvim_win_get_cursor(win)[1]
+        local armed = true
+        vim.defer_fn(function() armed = false end, 2000)
+        vim.api.nvim_buf_attach(buf, false, {
+            on_bytes = function()
+                if not armed then return true end
+                armed = false
+                vim.schedule(function()
+                    pcall(vim.api.nvim_win_set_cursor, win, { row, col })
+                end)
+                return true
+            end,
+        })
+        vim.lsp.buf.rename(name)
     end)
 end, "Rename")
 map.desc('n', 'grt', "Type definitions")
