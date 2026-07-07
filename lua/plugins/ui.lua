@@ -1,27 +1,4 @@
 return {
-    -- popular plugin to take advantage of some exposed UI hooks
-    {
-        "dressing.nvim",
-        -- enabled = false, -- was disabled since rename didn't seem to take effect.
-        event = "DeferredUIEnter",
-        after = function()
-            require("dressing").setup {
-                select = {
-                    builtin = {
-                        win_options = {
-                            wrap = false,
-                        },
-                        override = function(conf)
-                            -- Dressing doesn't account for statuscolumn (" ")
-                            -- in its width calculation
-                            conf.width = math.min(conf.width + 1, vim.o.columns - 2)
-                            return conf
-                        end,
-                    },
-                },
-            }
-        end,
-    },
     -- :Capture hi to call :hi where you can search etc.
     { "capture.vim", cmd = "Capture" },
     {
