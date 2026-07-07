@@ -1,12 +1,12 @@
---- A focused float for editing the term under the cursor.
+--- An alternative to `vim.ui.input` for the term under the cursor.
 ---
---- `require("wordinput").open(opts, on_confirm)` prefills `opts.default` and
---- opens in normal mode with the cursor at the same char offset within the term,
---- anchoring the float to the word start rather than the cursor. Assumes
---- `opts.default` is the term at the parent cursor (true for LSP rename); derives
---- offset/anchor from the live cursor. Uses a plain scratch buffer, so mode and
---- cursor are owned outright: no prompt buffer, no `startinsert!`, no auto-expand
---- reconfigure.
+--- Differences to stock `vim.ui.input`:
+--- - Doesn't change the mode. In practise this mean opening in normal mode instead of insert mode.
+--- - Placed such that the word appears in the float exactly where it was 
+---   visible in the buffer, instead of placing the float relative to the cursor.
+---
+--- Similar differences to plugin alternatives such as snacks' input.
+
 local M = {}
 
 --- Byte offset of the cursor within the word (per 'iskeyword') it sits on, in
@@ -24,14 +24,15 @@ local function cursor_word_offset(win)
     end)
 end
 
---- Float width that fits `text`: its display width plus two cells. One cell is
---- the cursor's room past the last char; the other is slack so that, since the
---- resize lags a keystroke behind, the pre-resize width still fits the cursor
---- when appending — otherwise the view scrolls and hides the first char.
+--- Float width that fits `text`: its display width plus one cell for the
+--- cursor's room past the last char. No slack for resize lag is needed: the
+--- InsertCharPre handler (see M.open) widens the float *before* each typed char
+--- lands, so the view never scrolls to reveal a cursor the current width can't
+--- hold.
 --- @param text string
 --- @return number width
 local function width_for(text)
-    return vim.api.nvim_strwidth(text) + 2
+    return vim.api.nvim_strwidth(text) + 1
 end
 
 --- `on_confirm` receives the confirmed text (or nil if cancelled) and the parent
@@ -55,20 +56,20 @@ function M.open(opts, on_confirm)
 
     local win = vim.api.nvim_open_win(buf, true, {
         relative = "cursor",
-        -- Anchor the buffer's first column to the word start: offset cells left
-        -- of the cursor, minus 1 more for the border column, so the prefilled
-        -- term overlays the original word.
-        col = -offset - 1,
-        row = -1,
+        -- Borderless: anchor the first column to the word start (offset cells
+        -- left of the cursor) and sit on the cursor's own line, so the prefilled
+        -- term overlays the original word in place.
+        col = -offset,
+        row = 0,
         width = width_for(default),
         height = 1,
         style = "minimal",
-        border = "rounded",
+        border = "none",
     })
-    -- Reuse snacks' input highlight groups so the look matches the generic
-    -- vim.ui.input float (snacks defines these; it's always loaded).
-    vim.wo[win].winhighlight =
-        "NormalFloat:SnacksInputNormal,FloatBorder:SnacksInputBorder,FloatTitle:SnacksInputTitle"
+    -- Borderless: the NormalFloat background is the only chrome. `minimal` turns
+    -- off the float's own cursorline, so it renders as a slim strip in the
+    -- colorscheme's recede-surface bg (bg_dim) — distinct from the parent's
+    -- CursorLine underneath.
 
     -- Normal mode, cursor at the char offset within the term. Plain buffer, so
     -- this is one synchronous call — nothing resets it.
@@ -77,11 +78,32 @@ function M.open(opts, on_confirm)
     -- Grow/shrink the float to the edited term. A width-only reconfigure keeps
     -- the word-start `col` and the buffer cursor (unlike a full reconfigure),
     -- so the float widens rightward from the anchor as the term is typed.
+    local function resize(text)
+        vim.api.nvim_win_set_config(win, { width = width_for(text) })
+    end
+
+    -- Widen *ahead* of the typed char: InsertCharPre fires before v:char lands,
+    -- so the float is already wide enough when neovim recomputes horizontal
+    -- scroll at insertion and the first char never scrolls off (this is what
+    -- lets width_for use a single slack cell). Fires only for typed insert-mode
+    -- chars, so it covers growth-by-typing and nothing else.
+    vim.api.nvim_create_autocmd("InsertCharPre", {
+        buffer = buf,
+        callback = function()
+            local line = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or ""
+            resize(line .. vim.v.char)
+        end,
+    })
+
+    -- Authoritative resize for everything InsertCharPre misses: insert-mode
+    -- deletion (shrink) and any normal-mode edit (paste, x, ciw…). Fires after
+    -- the change; in normal mode the cursor never sits past the last char, so a
+    -- frame-late resize still fits without scrolling.
     vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         buffer = buf,
         callback = function()
             local line = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or ""
-            vim.api.nvim_win_set_config(win, { width = width_for(line) })
+            resize(line)
         end,
     })
 
