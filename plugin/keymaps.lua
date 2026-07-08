@@ -371,12 +371,9 @@ map.desc('n', '[d', "Diagnostic")
 map.desc('n', ']d', "Diagnostic")
 map.n('<leader>dl', vim.diagnostic.setloclist, "Loclist diagnostics")
 
--- Goto references excluding the line it's called from.
-map.n('grr', function()
-    vim.lsp.buf.references(nil, map.filter_lsp_items(function(item)
-        return not map.qf_item_is_self(item)
-    end))
-end, "Filtered references")
+map.n('grr', map.lsp_references, "References")
+-- grR excludes the line it's called from.
+map.n('grR', function() map.lsp_references(map.qf_item_is_self) end, "Other references")
 map.desc('n', 'gra', "Code actions")
 map.desc('n', 'gri', "Implementations")
 -- grn (rename) is handled by live-rename.nvim's lz.n keys spec.

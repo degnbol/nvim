@@ -211,37 +211,34 @@ end
 ---result, quickfix if several). Shared by the global `grd` and buffer-local
 ---overrides that defer to the LSP on a miss.
 function M.lsp_definition()
-    vim.lsp.buf.definition(M.filter_lsp_items(function(item)
-        return not M.qf_item_is_self(item)
-    end))
+    vim.lsp.buf.definition(M.filter_lsp_items(M.qf_item_is_self))
 end
 
----Get the ListOpts which can be given to e.g. vim.lsp.buf.references or other
----lsp function.
----Filters the results placed in qf using the given `fun`.
----`fun` gets one argument `item`, see `:h setqflist-what`.
----It returns a boolean, indicating if the given `item` should be kept.
----@param fun function
----@return vim.lsp.ListOpts
-function M.filter_lsp_items(fun)
+---Goto LSP references, dropping items matching any reject predicate.
+--- @param ... fun(item: table): boolean reject predicates
+function M.lsp_references(...)
+    vim.lsp.buf.references(nil, M.filter_lsp_items(...))
+end
+
+---Build the ListOpts for e.g. vim.lsp.buf.references/definition that drop
+---items matching any reject predicate, then route survivors through qf_mini.
+---No predicates → keep everything. Each predicate gets one `item`, see
+---`:h setqflist-what`, and returns true to drop the item.
+--- @param ... fun(item: table): boolean reject predicates
+--- @return vim.lsp.LocationOpts
+function M.filter_lsp_items(...)
+    local rejects = { ... }
     return {
         on_list = function(options)
-            if #options.items == 0 then
-                print("No LSP items to filter.")
+            local kept = vim.tbl_filter(function(item)
+                return not vim.iter(rejects):any(function(reject) return reject(item) end)
+            end, options.items)
+            if #kept == 0 then
+                print("No LSP items after filtering.")
                 return
             end
-            local items = {}
-            for _, item in ipairs(options.items) do
-                if fun(item) then
-                    table.insert(items, item)
-                end
-            end
-            if #items == 0 then
-                print("No LSP items after filtering.")
-            else
-                options.items = items
-                M.qf_mini(options)
-            end
+            options.items = kept
+            M.qf_mini(options)
         end
     }
 end
