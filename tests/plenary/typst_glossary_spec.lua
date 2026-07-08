@@ -25,6 +25,51 @@ describe("typst_glossary", function()
         assert.is_nil(positions["plain"])
     end)
 
+    it("fields extracts an entry's string/content values, stripping brackets", function()
+        local content = table.concat({
+            "#let g = (",
+            '  mep: (',
+            '    short: "MEP",',
+            "    long-fmt: [2-#emph[C]-methyl],",
+            "    description: [The @ts pathway.],",
+            "  ),",
+            "  ts: ( short: \"TS\", long: \"terpene synthase\" ),",
+            ")",
+        }, "\n")
+        local mep = gloss.fields(content, "mep")
+        assert.are.same({ text = "MEP", kind = "string" }, mep["short"])
+        assert.are.same({ text = "2-#emph[C]-methyl", kind = "content" }, mep["long-fmt"])
+        assert.are.same({ text = "The @ts pathway.", kind = "content" }, mep["description"])
+        assert.are.same({ text = "terpene synthase", kind = "string" }, gloss.fields(content, "ts")["long"])
+        assert.is_nil(gloss.fields(content, "absent"))
+    end)
+
+    it("render prefers -fmt forms, keeps short even if it differs from the key", function()
+        local md = gloss.render({
+            short = { text = "kcat", kind = "string" },
+            ["short-fmt"] = { text = '$k_"cat"$', kind = "content" },
+            long = { text = "turnover number", kind = "string" },
+        })
+        assert.are.equal('```typst\n$k_"cat"$ — turnover number\n```', md)
+    end)
+
+    it("render fences content descriptions, omits the dash when no long form", function()
+        assert.are.equal(
+            "```typst\nMEP\n```\n\n```typst\nThe @ts pathway.\n```",
+            gloss.render({
+                short = { text = "MEP", kind = "string" },
+                description = { text = "The @ts pathway.", kind = "content" },
+            })
+        )
+        assert.are.equal(
+            "```typst\nTS\n```\n\nA plain string description.",
+            gloss.render({
+                short = { text = "TS", kind = "string" },
+                description = { text = "A plain string description.", kind = "string" },
+            })
+        )
+    end)
+
     it("imports keeps relative file paths, drops package imports", function()
         local content = table.concat({
             '#import "preamble.typ": *',

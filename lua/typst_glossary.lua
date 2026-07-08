@@ -59,25 +59,80 @@ function M.entries(content)
     return positions
 end
 
----Definition qf items for the glossary ref under the cursor, or nil to defer.
----Returns nil when the cursor isn't on a ref (LSP owns `@fig:`/`@sec:`/…) or the
----key isn't a glossary entry in the buffer or its import graph. The buffer is
----searched too so refs between entries inside a glossary file itself resolve
----(descriptions reference sibling terms). BFS walks only the relative imports
----the document declares, so sibling docs and package deps stay unreachable.
----@param bufnr integer
----@return table[]|nil items `:h setqflist-what` items
-function M.resolve(bufnr)
-    local node = vim.treesitter.get_node()
-    while node and node:type() ~= "ref" do node = node:parent() end
-    if not node then return nil end
-    local key = M.ref_key(vim.treesitter.get_node_text(node, bufnr))
+---Glossary field values of the entry keyed `key`, or nil if no such entry.
+---Scopes to the matched entry's `(group)` and pulls its `field: value` pairs
+---whose value is a string or content block (the fields a hover shows), keyed by
+---field name. Content keeps its raw typst source (brackets stripped) so callers
+---can render it as typst; strings are dequoted.
+---@param content string typst source
+---@param key string entry key
+---@return table<string, { text: string, kind: "string"|"content" }>|nil fields
+function M.fields(content, key)
+    local root = vim.treesitter.get_string_parser(content, "typst"):parse()[1]:root()
+    local entry_q = vim.treesitter.query.parse("typst", "(tagged [(ident) (string)] @key (group) @group)")
+    local group
+    for _, match in entry_q:iter_matches(root, content) do
+        local key_node = match[1][1] -- @key is the first capture
+        if dequote(vim.treesitter.get_node_text(key_node, content)) == key then
+            group = match[2][1] -- @group
+            break
+        end
+    end
+    if not group then return nil end
 
-    -- Unsaved buffer edits: read the start buffer from memory, imports from disk.
+    local field_q = vim.treesitter.query.parse("typst", "(tagged [(ident) (string)] @field [(content) (string)] @value)")
+    local fields = {}
+    for _, match in field_q:iter_matches(group, content) do
+        local name = dequote(vim.treesitter.get_node_text(match[1][1], content))
+        local value_node = match[2][1]
+        local text = vim.treesitter.get_node_text(value_node, content)
+        local kind = value_node:type()
+        text = kind == "content" and text:gsub("^%[(.*)%]$", "%1") or dequote(text)
+        fields[name] = { text = vim.trim(text), kind = kind }
+    end
+    return fields
+end
+
+---Hover markdown for glossary entry `fields`, or nil if there's nothing to show.
+---Shows the short form (`short-fmt` over `short`, which can differ from the ref
+---key) — em-dash — long form (`long-fmt` over `long`, omitted when neither
+---exists), then the description. Content-typed values render in a ```typst```
+---fence for typst highlighting via the standard markdown-hover treesitter path;
+---plain-string descriptions render as a markdown paragraph.
+---@param fields table<string, { text: string, kind: "string"|"content" }>
+---@return string|nil markdown
+function M.render(fields)
+    local short = fields["short-fmt"] or fields["short"]
+    local long = fields["long-fmt"] or fields["long"]
+    local desc = fields["description"]
+    if not (short or long) then return nil end
+
+    local signature = short and short.text or ""
+    if long then signature = signature .. " — " .. long.text end
+    local lines = { "```typst", signature, "```" }
+    if desc then
+        table.insert(lines, "")
+        if desc.kind == "content" then
+            vim.list_extend(lines, { "```typst", desc.text, "```" })
+        else
+            table.insert(lines, desc.text)
+        end
+    end
+    return table.concat(lines, "\n")
+end
+
+---Walk the relative-import graph from `bufnr`, collecting `extract`'s non-nil
+---results. The start buffer is read from memory (unsaved edits), imports from
+---disk; the buffer is included so refs between entries inside a glossary file
+---resolve (descriptions cite sibling terms). BFS follows only relative file
+---imports, so sibling docs and package deps stay unreachable.
+---@param bufnr integer
+---@param extract fun(path: string, content: string, lines: string[]): any|nil
+---@return any[] results in BFS order
+function M.walk(bufnr, extract)
     local buf_path = vim.fn.resolve(vim.api.nvim_buf_get_name(bufnr))
     local start_lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-
-    local items = {}
+    local results = {}
     local visited = {}
     local queue = { buf_path }
     while #queue > 0 do
@@ -88,21 +143,66 @@ function M.resolve(bufnr)
                 or (vim.uv.fs_stat(path) or {}).type == "file" and vim.fn.readfile(path)
             if lines then
                 local content = table.concat(lines, "\n")
-                local pos = M.entries(content)[key]
-                if pos then
-                    table.insert(items, {
-                        filename = path,
-                        lnum = pos[1] + 1,
-                        col = pos[2] + 1,
-                        text = vim.trim(lines[pos[1] + 1] or ""),
-                    })
-                end
+                local result = extract(path, content, lines)
+                if result ~= nil then table.insert(results, result) end
                 vim.list_extend(queue, M.imports(content, vim.fs.dirname(path)))
             end
         end
     end
+    return results
+end
+
+---Key of the glossary `ref` node covering position `(row, col)`, or nil.
+---@param bufnr integer
+---@param row integer 0-indexed
+---@param col integer 0-indexed
+---@return string|nil key
+local function ref_key_at(bufnr, row, col)
+    local ok, parser = pcall(vim.treesitter.get_parser, bufnr, "typst")
+    if not ok or not parser then return nil end
+    parser:parse({ row, row }) -- get_node doesn't parse on its own
+    local node = vim.treesitter.get_node({ bufnr = bufnr, pos = { row, col } })
+    while node and node:type() ~= "ref" do node = node:parent() end
+    if not node then return nil end
+    return M.ref_key(vim.treesitter.get_node_text(node, bufnr))
+end
+
+---Definition qf items for the glossary ref under the cursor, or nil to defer.
+---Returns nil when the cursor isn't on a ref (LSP owns `@fig:`/`@sec:`/…) or the
+---key isn't a glossary entry in the buffer or its import graph.
+---@param bufnr integer
+---@return table[]|nil items `:h setqflist-what` items
+function M.resolve(bufnr)
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local key = ref_key_at(bufnr, row - 1, col)
+    if not key then return nil end
+    local items = M.walk(bufnr, function(path, content, lines)
+        local pos = M.entries(content)[key]
+        if pos then
+            return {
+                filename = path,
+                lnum = pos[1] + 1,
+                col = pos[2] + 1,
+                text = vim.trim(lines[pos[1] + 1] or ""),
+            }
+        end
+    end)
     if #items > 0 then return items end
     return nil
+end
+
+---Hover markdown for the glossary ref at position `(row, col)`, or nil to defer.
+---nil when the position isn't on a ref, or its key isn't a glossary entry in the
+---buffer or its import graph — leaving the hover to other LSP clients.
+---@param bufnr integer
+---@param row integer 0-indexed
+---@param col integer 0-indexed
+---@return string|nil markdown
+function M.hover(bufnr, row, col)
+    local key = ref_key_at(bufnr, row, col)
+    if not key then return nil end
+    local fields = M.walk(bufnr, function(_, content) return M.fields(content, key) end)[1]
+    return fields and M.render(fields)
 end
 
 return M

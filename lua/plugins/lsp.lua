@@ -142,6 +142,9 @@ return {
 			-- JSON with schemas - see lsp/jsonls.lua
 			vim.lsp.enable("jsonls")
 
+			-- Hover for glossy `@term` refs - see lsp/typst_glossary.lua
+			vim.lsp.enable("typst_glossary")
+
 			-- grammar. Not yet supporting latex but supports typst.
 			-- vim.lsp.config('harper_ls', {
 			--     settings = {
