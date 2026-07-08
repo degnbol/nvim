@@ -190,6 +190,29 @@ return {
 			-- Mason overrides filetypes to {"python"}, re-add compound filetype.
 			vim.lsp.config("basedpyright", { filetypes = { "python", "python.blender" } })
 			vim.lsp.config("ruff", { filetypes = { "python", "python.blender" } })
+
+			-- tinymist: nvim-lspconfig's own lsp/tinymist.lua on_attach (its Lsp*
+			-- export/pin commands) wins the runtimepath deep-merge over ours, so our
+			-- main-pinning never ran and ref hover (@cite/@fig/@tbl) came up empty
+			-- for want of a pinned main. Re-apply ours last so it wins, chaining
+			-- nvim-lspconfig's on_attach (resolved lazily on first attach -- not yet
+			-- on the runtimepath when this runs) to keep those commands.
+			local tinymist = dofile(vim.fn.stdpath("config") .. "/lsp/tinymist.lua")
+			local tinymist_base
+			vim.lsp.config("tinymist", {
+				on_attach = function(client, bufnr)
+					if tinymist_base == nil then
+						tinymist_base = false
+						for _, f in ipairs(vim.api.nvim_get_runtime_file("lsp/tinymist.lua", true)) do
+							if not f:find(vim.fn.stdpath("config"), 1, true) then
+								tinymist_base = dofile(f).on_attach
+							end
+						end
+					end
+					if tinymist_base then tinymist_base(client, bufnr) end
+					tinymist.on_attach(client, bufnr)
+				end,
+			})
 		end,
 	},
 	-- flutter tools contains LSP for dart.

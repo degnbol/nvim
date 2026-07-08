@@ -102,7 +102,7 @@ The R languageserver doesn't resolve `...` forwarding — functions like `scale_
 
 **Config:** `lsp/r_language_server.lua` sets a custom `cmd` that sources the patch before `languageserver::run()`.
 
-**Mason-lspconfig override:** Mason's `automatic_enable` calls `vim.lsp.config()` which overrides fields from `lsp/*.lua` — not just `cmd` but also `filetypes` and other fields. Fix: in `lua/plugins/lsp.lua`, re-apply custom config after `setup()`. Already done for: `r_language_server` (custom cmd), `basedpyright` and `ruff` (compound filetypes).
+**Mason-lspconfig override:** Mason's `automatic_enable` calls `vim.lsp.config()` which overrides fields from `lsp/*.lua` — not just `cmd` but also `filetypes` and other fields. Fix: in `lua/plugins/lsp.lua`, re-apply custom config after `setup()`. Already done for: `r_language_server` (custom cmd), `basedpyright` and `ruff` (compound filetypes), `tinymist` (`on_attach`, which pins a main so ref hover/goto-def work — see the comment there).
 
 ## Miller DSL Highlighting
 
