@@ -10,7 +10,7 @@ describe("typst_glossary", function()
         assert.are.equal("π-bond", gloss.ref_key("@π-bond"))
     end)
 
-    it("entries finds dict pairs by row, dequotes keys, skips string fields", function()
+    it("entries finds dict pairs by {row, col}, dequotes keys, skips string fields", function()
         local content = table.concat({
             "#let g = (",
             '  ts: ( short: "TS" ),',
@@ -18,11 +18,11 @@ describe("typst_glossary", function()
             "  plain: 3,",
             ")",
         }, "\n")
-        local rows = gloss.entries(content)
-        assert.are.equal(1, rows["ts"])
-        assert.are.equal(2, rows["1-2-shift"])
-        assert.is_nil(rows["short"])
-        assert.is_nil(rows["plain"])
+        local positions = gloss.entries(content)
+        assert.are.same({ 1, 2 }, positions["ts"])
+        assert.are.same({ 2, 2 }, positions["1-2-shift"])
+        assert.is_nil(positions["short"])
+        assert.is_nil(positions["plain"])
     end)
 
     it("imports keeps relative file paths, drops package imports", function()

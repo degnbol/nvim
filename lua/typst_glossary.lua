@@ -43,19 +43,20 @@ function M.imports(content, dir)
     return paths
 end
 
----Glossary dict entries in typst source, mapping key → 0-indexed definition row.
+---Glossary dict entries in typst source, mapping key → its 0-indexed `{row, col}`.
 ---Matches entry-level pairs `key: (…)` (bare or quoted key) via the `(group)`
 ---value constraint, which excludes string/content fields (`short: "TS"`).
 ---@param content string typst source
----@return table<string, integer> rows
+---@return table<string, [integer, integer]> positions
 function M.entries(content)
     local root = vim.treesitter.get_string_parser(content, "typst"):parse()[1]:root()
     local query = vim.treesitter.query.parse("typst", "(tagged [(ident) (string)] @key (group))")
-    local rows = {}
+    local positions = {}
     for _, node in query:iter_captures(root, content) do
-        rows[dequote(vim.treesitter.get_node_text(node, content))] = (node:range())
+        local row, col = node:range()
+        positions[dequote(vim.treesitter.get_node_text(node, content))] = { row, col }
     end
-    return rows
+    return positions
 end
 
 ---Definition qf items for the glossary ref under the cursor, or nil to defer.
@@ -87,13 +88,13 @@ function M.resolve(bufnr)
                 or (vim.uv.fs_stat(path) or {}).type == "file" and vim.fn.readfile(path)
             if lines then
                 local content = table.concat(lines, "\n")
-                local row = M.entries(content)[key]
-                if row then
+                local pos = M.entries(content)[key]
+                if pos then
                     table.insert(items, {
                         filename = path,
-                        lnum = row + 1,
-                        col = 1,
-                        text = vim.trim(lines[row + 1] or ""),
+                        lnum = pos[1] + 1,
+                        col = pos[2] + 1,
+                        text = vim.trim(lines[pos[1] + 1] or ""),
                     })
                 end
                 vim.list_extend(queue, M.imports(content, vim.fs.dirname(path)))
