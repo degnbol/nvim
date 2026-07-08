@@ -10,21 +10,12 @@ else
     map.n('<leader>cv', "!pdf " .. path_pdf .. "<CR>", "Compile view", { buffer=true, silent=true, })
 end
 
--- toggle updating pdf on typing.
--- Doesn't work if running module file, hence we use TypstWatch instead by default.
-map.n('<LocalLeader>t', function ()
-    local lsp = require"lspconfig".typst_lsp
-    local exportPdf
-    if lsp.manager.config.settings.exportPdf == "onType" then
-        exportPdf = "never" -- use TypstWatch to compile
-    else
-        exportPdf = "onType"
-    end
-    vim.cmd.LspStop()
-    require"lspconfig".typst_lsp.setup { settings = { exportPdf = exportPdf } }
-    vim.cmd.LspStart()
-    print(exportPdf)
-end, "Toggle update on type", { buffer=true})
+-- grd: jump to a glossary entry's definition for glossy `@term` refs; defer to
+-- the LSP for everything else (`@fig:`/`@sec:`/`@eq:`, which it resolves right).
+map.n('grd', function()
+    local items = require"typst_glossary".resolve(0)
+    if items then map.qf_mini { items = items } else map.lsp_definition() end
+end, "Definition (glossary-aware)", { buffer=true })
 
 -- transliterate math symbol names → unicode glyphs, whole buffer (default rule).
 map.n('<leader>tf', function() require("astfix").run() end, "astfix: names→glyphs", { buffer=true })

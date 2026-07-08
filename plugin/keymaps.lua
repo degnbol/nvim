@@ -381,11 +381,7 @@ map.desc('n', 'gra', "Code actions")
 map.desc('n', 'gri', "Implementations")
 -- grn (rename) is handled by live-rename.nvim's lz.n keys spec.
 map.desc('n', 'grt', "Type definitions")
-map.n('grd', function()
-    vim.lsp.buf.definition(map.filter_lsp_items(function(item)
-        return not map.qf_item_is_self(item)
-    end))
-end, "Definition")
+map.n('grd', map.lsp_definition, "Definition")
 
 map.i('<C-s>', function()
     -- TODO: modify float to remove empty lines at top and bottom.

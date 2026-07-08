@@ -207,6 +207,15 @@ function M.qf_mini(options)
     end
 end
 
+---Goto LSP definition, excluding the line it was called from (jumps if one
+---result, quickfix if several). Shared by the global `grd` and buffer-local
+---overrides that defer to the LSP on a miss.
+function M.lsp_definition()
+    vim.lsp.buf.definition(M.filter_lsp_items(function(item)
+        return not M.qf_item_is_self(item)
+    end))
+end
+
 ---Get the ListOpts which can be given to e.g. vim.lsp.buf.references or other
 ---lsp function.
 ---Filters the results placed in qf using the given `fun`.
