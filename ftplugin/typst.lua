@@ -17,6 +17,21 @@ map.n('grd', function()
     if items then map.qf_mini { items = items } else map.lsp_definition() end
 end, "Definition (glossary-aware)", { buffer=true })
 
+-- K: our concise glossary hover for glossy `@term` refs; defer to the LSP
+-- otherwise. tinymist doesn't strip `:pl`/`:cap`/… ref modifiers, so its hover
+-- for a glossy ref is noisier and less useful — ours wins outright rather than
+-- both showing (vim.lsp.buf.hover merges every client with no priority knob).
+map.n('K', function()
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local markdown = require"typst_glossary".hover(0, row - 1, col)
+    if markdown then
+        vim.lsp.util.open_floating_preview(
+            vim.split(markdown, "\n"), "markdown", { focus_id = "textDocument/hover" })
+    else
+        vim.lsp.buf.hover()
+    end
+end, "Hover (glossary-aware)", { buffer=true })
+
 -- transliterate math symbol names → unicode glyphs, whole buffer (default rule).
 map.n('<leader>tf', function() require("astfix").run() end, "astfix: names→glyphs", { buffer=true })
 
