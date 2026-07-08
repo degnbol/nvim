@@ -161,12 +161,20 @@ settings depend on the lz.n-loaded plugin's own ftplugin having run first (e.g. 
 override a `comments=` clear, or call `compiler <name>` once the plugin's
 `compiler/<name>.vim` is available).
 
-## pack_specs.lua vs lua/plugins/
+## File map
 
-- `pack_specs.lua` — declares what to install (vim.pack registry)
-- `lua/plugins/*.lua` — declares how/when to load (lz.n specs)
+- `lua/pack_specs.lua` — `vim.pack.add()` registry: declares *what* to install (all remote plugins)
+- `lua/pack_hooks.lua` — `PackChanged` build hooks (mason, treesitter, etc.)
+- `lua/plugins/*.lua` — lz.n specs: declares *how/when* to load; auto-discovered via `require("lz.n").load("plugins")`
+- **Dev plugins** (`modules/`) — added to rtp manually in `init.lua`; their lz.n specs use `load = function() end` so vim.pack doesn't touch rtp for them
 
-Plugins in pack_specs.lua without a corresponding lz.n spec are installed to opt/ but
+Plugins in `pack_specs.lua` without a corresponding lz.n spec are installed to opt/ but
 have no loading mechanism. With the current vim.pack behaviour, they still end up on
 rtp and their plugin/ files still run. With a custom `load` function, they would
 genuinely never load unless explicitly packadd'd.
+
+## Disabling plugins
+
+Use `enabled = false` in the lz.n spec. Keep the full spec (setup config, keymaps,
+etc.) intact so the plugin can be re-enabled later by removing the flag. Never delete
+the spec body when disabling.

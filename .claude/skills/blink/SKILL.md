@@ -1,6 +1,6 @@
 ---
 name: blink
-description: blink.cmp completion plugin internals. Use when debugging completion behaviour, modifying keyword handling, trigger logic, or fuzzy matching in blink.cmp.
+description: blink.cmp completion plugin internals and this config's custom completion providers (Miller DSL, PyMOL). Use when debugging completion behaviour, modifying keyword handling, trigger logic, or fuzzy matching in blink.cmp, editing lua/plugins/blink.lua or lua/completion/*, or working on blink.compat/nvim-cmp coexistence.
 ---
 
 # blink.cmp
@@ -33,6 +33,54 @@ LuaSnip snippets appear via the built-in `luasnip` source. Snippet jump keymaps 
 - **Comma-separated values**: `guess_keyword_range` extends backwards through commas, filtering out items that don't match the extended text. Fix by returning `","` from `get_trigger_characters()` — blink resets context after commas so the keyword starts fresh. The source must self-gate (return empty when not in context) since the trigger fires globally. See [internals](references/internals.md) for details.
 
 - **Dash-prefixed items** (CLI flags like `-f`, `--output`): hyphen can't start a keyword, so typing `-f` gives keyword `f`. Accepting item `-f` replaces only `f` → `--f`. Fix: use `textEdit` with a range that includes the typed dash prefix. Compute by matching `%-[-a-zA-Z]*$` on text before cursor.
+
+## blink.compat / nvim-cmp coexistence
+
+blink.compat with `impersonate_nvim_cmp = true` replaces
+`package.loaded["cmp"]` with a mock. `require("cmp")` returns the mock even
+after clearing package.loaded (blink.compat has its own `lua/cmp/init.lua`). In
+`cmp.lua`, check `package.loaded["blink.cmp"]` at runtime and skip cmp setup
+when blink is active.
+
+## Config completion providers
+
+Custom blink.cmp providers built for this config. Data files are generated, not
+hand-maintained — regenerate after the upstream tool upgrades.
+
+### Miller DSL (`blink_mlr`)
+
+Inside `put`/`filter` DSL strings:
+- After `$` → column names from referenced input files.
+- Otherwise → DSL builtin functions (223), keywords (40), special variables (14).
+
+Data generated from `mlr -F` and `mlr -K` by
+`lua/completion/mlr/miller_functions.json.sh` → `miller_functions.json`.
+Regenerate after Miller upgrades.
+
+### PyMOL
+
+Three independent data sources (not derivations of each other):
+
+1. **`lsp_ext/pymol-open-source/modules/pymol/`** — vendored pymol source, added
+   to `$PYTHONPATH` in `plugin/paths.lua` so basedpyright resolves `from pymol
+   import cmd` (type info, hover, go-to-definition).
+2. **`lua/completion/pymol/pymol.html`** — command reference from
+   `cmd.write_html_ref()` (usage/args/examples). Not currently wired into
+   completions.
+3. **`lua/completion/pymol/pymol_settings_descriptions/*.md`** — scraped from the
+   PyMOL Wiki. Used by the `pymol_settings` provider
+   (`lua/completion/pymol/blink_pymol_settings.lua`), which completes settings
+   inside `set()`/`cmd.set()` calls.
+
+`lua/completion/pymol/blink_pymol_select.lua` completes selection keywords,
+builtins, operators, and representation names inside Python strings. Activates
+only where the `pymol_select` treesitter injection is active (checks
+`parser:language_for_range():lang()`) — no completions in docstrings or
+non-pymol strings.
+
+Loading is conditional: `ftplugin/python.lua` scans the first 10 lines for
+`import.*pymol` (or `<localleader>+` manually), setting `vim.g.loaded_pymol`
+which gates the blink providers.
 
 ## References
 
