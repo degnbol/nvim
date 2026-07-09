@@ -73,6 +73,21 @@ local function assert_no_injection(src, lang)
         "expected no " .. lang .. " injections, got " .. #inj)
 end
 
+--- Assert `src` parses without error via the range-limited path the highlighter
+--- uses (`parser:parse({{start, end}})`) — the path that crashed on injection
+--- ranges with a negative coordinate.
+local function assert_parses(src)
+    local buf = vim.api.nvim_create_buf(true, false)
+    vim.api.nvim_set_current_buf(buf)
+    local lines = vim.split(src, "\n", { plain = true })
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+    vim.bo[buf].filetype = "sh.zsh"
+    local parser = vim.treesitter.get_parser(buf)
+    local ok, err = pcall(function() parser:parse({ { 0, #lines } }) end)
+    pcall(vim.api.nvim_buf_delete, buf, { force = true })
+    assert.is_true(ok, "expected parse to succeed, got error: " .. tostring(err))
+end
+
 describe("zsh injections", function()
     describe("miller", function()
         it("injects miller into single-quoted put string", function()
@@ -571,6 +586,32 @@ describe("zsh injections", function()
                 "javascript", "export const x = 1;")
             assert_injection(heredoc("/tmp/a.cjs", "'EOF'", "module.exports = 1;"),
                 "javascript", "module.exports = 1;")
+        end)
+    end)
+
+    -- Quote-stripping via #trim! must never emit a negative-coordinate range.
+    -- An unterminated single quote (the transient state while typing the pair)
+    -- error-recovers to a raw_string ending at column 0 of the next line; the
+    -- old `#offset! ... 0 -1` then computed end column -1 and crashed
+    -- set_included_ranges with "Range value out of bounds".
+    describe("degenerate quotes", function()
+        it("parses an empty single-quoted -c string", function()
+            assert_parses("zsh -c ''")
+        end)
+
+        it("parses an unterminated single quote", function()
+            assert_parses("zsh -c '")
+        end)
+
+        it("parses empty quotes for other interpreters", function()
+            assert_parses("python3 -c ''")
+            assert_parses("jq ''")
+            assert_parses("mlr put ''")
+            assert_parses("sqlite3 db.sqlite ''")
+        end)
+
+        it("still injects a non-empty single-quoted string", function()
+            assert_injection("zsh -c 'echo hi'", "zsh", "echo hi")
         end)
     end)
 end)

@@ -14,14 +14,39 @@ function M.get_parent(type)
     end
 end
 
+---Advance `n` bytes forward from a start position through `text`, tracking
+---(row, col, byte). Newline-aware: `\n` increments the row and resets the
+---byte-column to 0. All coordinates are 0-indexed, matching `TSNode:range(true)`.
+---@param text string
+---@param n integer bytes to advance
+---@param row integer
+---@param col integer byte-column
+---@param byte integer byte offset
+---@return integer row
+---@return integer col
+---@return integer byte
+local function advance_bytes(text, n, row, col, byte)
+    for i = 1, n do
+        if text:byte(i) == 0x0a then
+            row = row + 1
+            col = 0
+        else
+            col = col + 1
+        end
+        byte = byte + 1
+    end
+    return row, col, byte
+end
+
 ---Query directive `(#trim! @cap PREFIX_BYTES SUFFIX_BYTES)`.
----Skips PREFIX_BYTES from the start (newline-aware: increments row, resets col)
----and SUFFIX_BYTES from the end (assumed not to cross a newline) of @cap, then
+---Trims PREFIX_BYTES from the start and SUFFIX_BYTES from the end of @cap, then
 ---sets metadata.range to a (row, col, byte) triple consistent across all three
----coordinates. `#offset!` does naive (row+drow, col+dcol) arithmetic and breaks
----when col_delta would push col past the end of a short line — e.g. injecting
----lua into `nvim -c 'lua\nCODE\n'` where the first line of the raw_string ends
----right after `'lua`.
+---coordinates. Both ends are computed by a newline-aware forward walk, so the
+---range stays valid when the node spans lines — or when error recovery of an
+---unterminated string ends the node at column 0, where `#offset!`'s naive
+---(row+drow, col+dcol) arithmetic would emit a negative column and crash
+---`set_included_ranges` ("Range value out of bounds"). A degenerate result
+---(end before start) drops the injection.
 ---@param match table<integer, TSNode[]>
 ---@param _ integer pattern index (unused)
 ---@param source integer|string buffer or string
@@ -34,23 +59,14 @@ function M.trim_directive(match, _, source, pred, metadata)
     local nodes = match[capture_id]
     if not nodes or #nodes == 0 then return end
     local node = nodes[1]
-    local sr, sc, sb, er, ec, eb = node:range(true)
+    local sr, sc, sb = node:range(true)
     local text = vim.treesitter.get_node_text(node, source)
-    local new_sr, new_sc, new_sb = sr, sc, sb
-    for i = 1, prefix_bytes do
-        if text:byte(i) == 0x0a then
-            new_sr = new_sr + 1
-            new_sc = 0
-        else
-            new_sc = new_sc + 1
-        end
-        new_sb = new_sb + 1
-    end
+    local keep = #text - suffix_bytes
+    if keep < prefix_bytes then return end -- nothing left after trimming
+    local new_sr, new_sc, new_sb = advance_bytes(text, prefix_bytes, sr, sc, sb)
+    local new_er, new_ec, new_eb = advance_bytes(text, keep, sr, sc, sb)
     if not metadata[capture_id] then metadata[capture_id] = {} end
-    metadata[capture_id].range = {
-        new_sr, new_sc, new_sb,
-        er, ec - suffix_bytes, eb - suffix_bytes,
-    }
+    metadata[capture_id].range = { new_sr, new_sc, new_sb, new_er, new_ec, new_eb }
 end
 
 ---Query directive `(#inject-by-ext! @dest)` — set `injection.language` from the

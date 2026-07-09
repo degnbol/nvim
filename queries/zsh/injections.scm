@@ -10,7 +10,7 @@
   argument: (raw_string) @injection.content
   (#any-basename-of? @_cmd "mlr")
   (#any-of? @_verb "filter" "put" "tee")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "miller")
   (#set! injection.include-children))
 
@@ -26,7 +26,7 @@
   .
   argument: (raw_string) @injection.content
   (#any-of? @_verb "filter" "put")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "miller")
   (#set! injection.include-children))
 
@@ -39,7 +39,7 @@
 ; anchored to the flag, so intervening flags (`-u`, `-l`, ...) are fine; only
 ; the flag is anchored adjacent to the string, pinning it to the real `-c`/`-e`.
 ; raw_string (single-quoted) and string (double-quoted) need separate patterns
-; because of the differing #offset!/string_content handling.
+; because of the differing #trim!/string_content handling.
 ; -----------------------------------------------------------------------------
 
 ; python -c / python3 -c
@@ -51,7 +51,7 @@
   argument: (raw_string) @injection.content
   (#any-basename-of? @_interp "python" "python3")
   (#any-of? @_flag "-c" "--cmd")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "python")
   (#set! injection.include-children))
 
@@ -75,7 +75,7 @@
   argument: (raw_string) @injection.content
   (#any-basename-of? @_interp "zsh" "bash" "sh")
   (#any-of? @_flag "-c" "--cmd")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "zsh")
   (#set! injection.include-children))
 
@@ -102,7 +102,7 @@
     (raw_string) @injection.content)
   (#any-basename-of? @_cmd "zsh" "bash" "sh")
   (#any-of? @_flag "-c" "--cmd")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "zsh")
   (#set! injection.include-children))
 
@@ -126,7 +126,7 @@
   argument: (raw_string) @injection.content
   (#any-basename-of? @_interp "julia")
   (#eq? @_flag "-e")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "julia")
   (#set! injection.include-children))
 
@@ -150,7 +150,7 @@
   argument: (raw_string) @injection.content
   (#any-basename-of? @_interp "Rscript" "R")
   (#eq? @_flag "-e")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "r")
   (#set! injection.include-children))
 
@@ -174,7 +174,7 @@
   argument: (raw_string) @injection.content
   (#any-basename-of? @_interp "node")
   (#eq? @_flag "-e")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "javascript")
   (#set! injection.include-children))
 
@@ -198,7 +198,7 @@
   argument: (raw_string) @injection.content
   (#any-basename-of? @_interp "lua")
   (#eq? @_flag "-e")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "lua")
   (#set! injection.include-children))
 
@@ -218,7 +218,7 @@
   name: (command_name) @_cmd
   argument: (raw_string) @injection.content
   (#any-basename-of? @_cmd "awk" "gawk" "mawk")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "awk")
   (#set! injection.include-children))
 
@@ -230,7 +230,7 @@
   name: (command_name) @_cmd
   argument: (raw_string) @injection.content
   (#any-basename-of? @_cmd "jq" "gojq")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "jq")
   (#set! injection.include-children))
 
@@ -259,7 +259,7 @@
   (#any-basename-of? @_cmd "nvim" "vim")
   (#any-of? @_flag "-c" "--cmd")
   (#not-lua-match? @injection.content "^'lua\n")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "vim"))
 
 (command
@@ -279,7 +279,7 @@
   (#any-basename-of? @_cmd "nvim" "vim")
   (#eq? @_plus "+")
   (#not-lua-match? @injection.content "^'lua\n")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "vim"))
 
 (command
@@ -408,7 +408,7 @@
   argument: (raw_string) @injection.content
   .
   (#any-basename-of? @_cmd "sqlite3")
-  (#offset! @injection.content 0 1 0 -1)
+  (#trim! @injection.content 1 1)
   (#set! injection.language "sql")
   (#set! injection.include-children))
 
