@@ -14,6 +14,22 @@
   (#set! injection.language "miller")
   (#set! injection.include-children))
 
+; A verb chained via `+\` (backslash immediately after `+`, no space) makes
+; tree-sitter-zsh split the chain: `mlr … +` becomes one command and the verb
+; starts a new one, so `put`/`filter` land as command_name rather than an
+; argument to `mlr`. Inject miller when such a verb command_name is immediately
+; followed by a single-quoted string. `tee` is excluded here (unlike above): it
+; is a real command whose miller verb takes a filename, not DSL, so a bare
+; `tee '…'` command would be a false positive.
+(command
+  name: (command_name) @_verb
+  .
+  argument: (raw_string) @injection.content
+  (#any-of? @_verb "filter" "put")
+  (#offset! @injection.content 0 1 0 -1)
+  (#set! injection.language "miller")
+  (#set! injection.include-children))
+
 ; -----------------------------------------------------------------------------
 ; Interpreter `<flag> '<code>'` injections (python -c, zsh -c, julia -e, ...).
 ;
