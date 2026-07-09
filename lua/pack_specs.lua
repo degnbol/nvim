@@ -57,7 +57,6 @@ vim.pack.add({
     { src = gh("j-hui/fidget.nvim"), version = "legacy" },
 
     -- Filetypes
-    gh("terrortylor/nvim-comment"),
     gh("JuliaEditorSupport/julia-vim"),
     gh("jeetsukumaran/vim-pythonsense"),
     gh("RishabhRD/popfix"),

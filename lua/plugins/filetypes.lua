@@ -2,17 +2,6 @@ local util = require "utils/init"
 local hi = require "utils/highlights"
 
 return {
-    -- add keybindings to toggle comments with motions etc.
-    {
-        "nvim-comment",
-        after = function()
-            require 'nvim_comment'.setup {
-                -- default is ic which should instead be the treesitter @comment.inner.
-                -- aC is almost the same and provided by a vim plugin that extends the kana plugin.
-                comment_chunk_text_object = "iC",
-            }
-        end
-    },
     -- julia support, colors and unicode substitution. CANNOT use ft=julia
     {
         "julia-vim",
