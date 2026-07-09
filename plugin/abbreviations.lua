@@ -89,6 +89,33 @@ local function typst_prose()
     return true  -- top-level markup
 end
 
+-- Markdown/CommonMark: prose everywhere except verbatim — code blocks and
+-- inline code spans (`…`). A span's closing backtick is itself the abbrev
+-- trigger, so at expansion time the span is still unterminated and there is no
+-- `code_span` node yet (and it lives in the injected markdown_inline tree,
+-- which `get_node` skips anyway); count the backticks left of the cursor
+-- instead — an odd tally means we're inside an unclosed span. Code blocks are
+-- block-level and parse even while unterminated, so treesitter catches those.
+-- Caveat: the count assumes single-backtick spans; ``double`` spans aren't
+-- gated (rare in prose).
+local function markdown_prose()
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local ok, parser = pcall(vim.treesitter.get_parser)
+    if ok and parser then
+        parser:parse({ row - 1, row })  -- keep the tree current at the cursor
+        local node = parser:named_node_for_range({ row - 1, col, row - 1, col })
+        while node do
+            local t = node:type()
+            if t == "fenced_code_block" or t == "indented_code_block" then
+                return false
+            end
+            node = node:parent()
+        end
+    end
+    local before = vim.api.nvim_get_current_line():sub(1, col)
+    return select(2, before:gsub("`", "")) % 2 == 0
+end
+
 -- ── Lazy apostrophe ──────────────────────────────────────────────────────
 abc("{ca,is,are,do,does,did,has,have,had,was,were,would,should,could,wo}nt", "{}n't")
 abc("{let,that,there,here,who,what}s", "{}'s")
@@ -176,9 +203,9 @@ ab("danish", "Danish")
 ab("oC", "°C")
 
 -- ── Prose only ───────────────────────────────────────────────────────────
--- Registered buffer-local for prose filetypes via FileType autocmd. For
--- tex/typst (mixed prose+math+code), a treesitter predicate gates expansion
--- so abbrevs only fire in prose regions.
+-- Registered buffer-local for prose filetypes via FileType autocmd. A
+-- treesitter predicate gates expansion so abbrevs only fire in prose regions:
+-- tex/typst exclude math+code, markdown excludes code spans and code blocks.
 local function setup_prose_abbrevs(pred)
     pab("im", "I'm", pred)
     pab("ive", "I've", pred)
@@ -217,15 +244,19 @@ end
 -- load markdown's syntax and ftplugin via neovim's dotted runtime loading, but a
 -- bare-name autocmd pattern never matches them, because pattern matching treats
 -- the filetype as one opaque string. A buffer is prose when any of its
--- components is. The math-gating predicate comes from whichever component
--- defines one (tex/typst).
+-- components is. The verbatim-gating predicate comes from whichever component
+-- defines one (tex/typst math+code, or markdown code spans/blocks).
 vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("ProseAbbrevs", { clear = true }),
     callback = function(ev)
         local is_prose, pred = false, nil
         for _, part in ipairs(vim.split(ev.match, ".", { plain = true })) do
             if is_prose_ft(part) then is_prose = true end
-            if ft_predicate[part] then pred = ft_predicate[part] end
+            if ft_predicate[part] then
+                pred = ft_predicate[part]
+            elseif vim.treesitter.language.get_lang(part) == "markdown" then
+                pred = markdown_prose  -- gate out ` code spans and code blocks
+            end
         end
         if is_prose then setup_prose_abbrevs(pred) end
     end,

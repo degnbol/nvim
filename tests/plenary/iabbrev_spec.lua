@@ -312,6 +312,49 @@ describe("typst prose predicate (via plugin/abbreviations.lua)", function()
     skip_check("code arg in call",     { "#text(weight: algo)[Body]" }, "algo")
 end)
 
+describe("markdown prose predicate (via plugin/abbreviations.lua)", function()
+    -- Prose everywhere except verbatim: inline code spans (`…`) and code
+    -- blocks. The closing backtick of a span is itself the abbrev trigger, so
+    -- at expansion time the span is unterminated — hence the backtick-count
+    -- heuristic rather than a `code_span` treesitter node.
+    local plugin_loaded = false
+    local function ensure_loaded()
+        if plugin_loaded then return end
+        dofile(vim.fn.expand("$XDG_CONFIG_HOME/nvim/plugin/abbreviations.lua"))
+        plugin_loaded = true
+    end
+
+    local function dispatch_at(lines, lhs, row, col)
+        ensure_loaded()
+        local buf = vim.api.nvim_create_buf(false, true)
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+        vim.api.nvim_set_current_buf(buf)
+        pcall(function() vim.bo[buf].filetype = "markdown" end)
+        vim.treesitter.get_parser(buf, "markdown"):parse(true)
+        vim.api.nvim_win_set_cursor(0, { row + 1, col })
+        return ab._dispatch_lookup(lhs)
+    end
+
+    it("plain prose expands", function()
+        assert.are_not.equal("algo", dispatch_at({ "Prose with algo here" }, "algo", 0, 15))
+    end)
+    it("inside an unclosed inline span skips (closing-backtick trigger)", function()
+        assert.are.equal("algo", dispatch_at({ "Ref `algo" }, "algo", 0, 9))
+    end)
+    it("inside a closed inline span skips", function()
+        assert.are.equal("algo", dispatch_at({ "Ref `algo` done" }, "algo", 0, 9))
+    end)
+    it("after a closed span (back in prose) expands", function()
+        assert.are_not.equal("algo", dispatch_at({ "`x` algo here" }, "algo", 0, 8))
+    end)
+    it("inside a fenced code block skips", function()
+        assert.are.equal("algo", dispatch_at({ "```", "algo = 1", "```" }, "algo", 1, 4))
+    end)
+    it("inside an indented code block skips", function()
+        assert.are.equal("algo", dispatch_at({ "    algo = 1" }, "algo", 0, 8))
+    end)
+end)
+
 describe("prose filetype detection (via plugin/abbreviations.lua)", function()
     -- The FileType autocmd registers buffer-local prose abbrevs (e.g.
     -- avail → available) on prose filetypes. Detection spans the explicit
