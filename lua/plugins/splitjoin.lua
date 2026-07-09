@@ -140,6 +140,9 @@ return {
             -- add custom language support
             vim.g.conjoin_filetypes = {
                 asciidoc = { trailing = '+$' },
+                -- conjoin matches &filetype exactly; our zsh buffers use the
+                -- compound filetype "sh.zsh", so it misses the builtin "zsh" entry.
+                ['sh.zsh'] = { trailing = [[\\$]] },
             }
         end,
     },
