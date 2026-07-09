@@ -3,7 +3,7 @@ cd $0:h
 # https://tree-sitter.github.io/tree-sitter/creating-parsers
 # https://crates.io/crates/tree-sitter-cli
 # also available on mason but might be the smaller version?
-cargo install tree-sitter-cli
+cargo install --locked tree-sitter-cli
 
 # LSP for tree-sitter query files
 # https://github.com/ribru17/ts_query_ls

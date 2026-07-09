@@ -18,7 +18,7 @@ command -v npm > /dev/null || echo "Install npm to get LSP installs"
 # https://tree-sitter.github.io/tree-sitter/creating-parsers#installation
 if ! command -v tree-sitter > /dev/null; then
     command -v cargo > /dev/null || ~/dotfiles/config/cargo/install.sh
-    cargo install tree-sitter-cli
+    cargo install --locked tree-sitter-cli
 fi
 # Install treesitter parsers (waits for async compilation to finish)
 nvim --headless +"lua require('nvim-treesitter')._install_task:wait()" +qa

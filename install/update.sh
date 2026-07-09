@@ -7,7 +7,7 @@ nvim --headless '+Lazy! sync' +qa
 
 # update tree-sitter-cli
 command -v rustup > /dev/null && rustup update
-cargo install tree-sitter-cli
+cargo install --locked tree-sitter-cli
 
 
 
