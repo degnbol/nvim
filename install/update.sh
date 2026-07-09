@@ -9,5 +9,6 @@ nvim --headless '+Lazy! sync' +qa
 command -v rustup > /dev/null && rustup update
 cargo install --locked tree-sitter-cli
 
-
+# rebuild the typst code-mode parser (bump $SHA in the script to update it)
+${0:h}/tree-sitter-typc.sh
 

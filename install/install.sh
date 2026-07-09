@@ -23,6 +23,9 @@ fi
 # Install treesitter parsers (waits for async compilation to finish)
 nvim --headless +"lua require('nvim-treesitter')._install_task:wait()" +qa
 
+# typst code-mode parser (built from source; not in nvim-treesitter's registry)
+./tree-sitter-typc.sh
+
 # ripgrep for telescope to perform searching of words within files
 # conda install -yc conda-forge ripgrep pynvim
 # uv tool install ripgrep pynvim
