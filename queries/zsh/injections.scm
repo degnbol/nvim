@@ -33,184 +33,58 @@
 ; -----------------------------------------------------------------------------
 ; Interpreter `<flag> '<code>'` injections (python -c, zsh -c, julia -e, ...).
 ;
-; The interpreter is captured as command name OR argument via a [...]
-; alternation, so wrappers work uniformly: `python -c`, `uv run python -c`,
-; `timeout 180 zsh -l -c`, `env -i bash -c`, etc. The interpreter is NOT
-; anchored to the flag, so intervening flags (`-u`, `-l`, ...) are fine; only
-; the flag is anchored adjacent to the string, pinning it to the real `-c`/`-e`.
+; #inject-interp! (see lua/utils/treesitter.lua) resolves the interpreter and
+; target language in Lua: it gates @_flag to a single-dash cluster ending in a
+; command char (`-c`/`-e`, plus clusters like `-lc`), walks back past other
+; flags to the interpreter token, and looks it up in a basename → language
+; table. This is O(1) in concurrent partial matches regardless of command
+; length — a floating `@_interp` capture is O(command length) and silently
+; starves the injection out past tree-sitter's match_limit on long commands
+; (see notes/PLAN-zsh-injection-match-explosion.md).
+;
+; There is no static injection.language: an off-table interpreter or a
+; non-command flag leaves it unset, so the capture is ignored (same contract as
+; #inject-by-ext!). That lets `nvim -c` / `sqlite3 db 'sql'` / `grep -e` fall
+; through to their own patterns or to no injection.
+;
 ; raw_string (single-quoted) and string (double-quoted) need separate patterns
-; because of the differing #trim!/string_content handling.
+; (differing #trim!/string_content handling), plus the `'a'$var'b'`
+; concatenation form.
 ; -----------------------------------------------------------------------------
-
-; python -c / python3 -c
 (command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#any-basename-of? @_interp "python" "python3")
-  (#any-of? @_flag "-c" "--cmd")
+  (#inject-interp! @_flag)
   (#trim! @injection.content 1 1)
-  (#set! injection.language "python")
   (#set! injection.include-children))
 
 (command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
   argument: (word) @_flag
   .
   argument: (string (string_content) @injection.content)
-  (#any-basename-of? @_interp "python" "python3")
-  (#any-of? @_flag "-c" "--cmd")
-  (#set! injection.language "python")
+  (#inject-interp! @_flag)
   (#set! injection.include-children))
 
-; zsh -c / bash -c / sh -c
-(command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
-  argument: (word) @_flag
-  .
-  argument: (raw_string) @injection.content
-  (#any-basename-of? @_interp "zsh" "bash" "sh")
-  (#any-of? @_flag "-c" "--cmd")
-  (#trim! @injection.content 1 1)
-  (#set! injection.language "zsh")
-  (#set! injection.include-children))
-
-(command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
-  argument: (word) @_flag
-  .
-  argument: (string (string_content) @injection.content)
-  (#any-basename-of? @_interp "zsh" "bash" "sh")
-  (#any-of? @_flag "-c" "--cmd")
-  (#set! injection.language "zsh")
-  (#set! injection.include-children))
-
-; Concatenation form: `zsh -c 'prefix'$var'suffix'`. Each raw_string fragment
-; is injected independently; variable_ref siblings are highlighted by the
-; outer zsh parser. Fragments may not parse as complete zsh, but most
+; Concatenation form: `zsh -c 'prefix'$var'suffix'`. Each raw_string / string
+; fragment is injected independently; variable_ref siblings are highlighted by
+; the outer zsh parser. Fragments may not parse as complete code, but most
 ; highlighting still comes through via error recovery.
 (command
-  name: (command_name) @_cmd
   argument: (word) @_flag
   .
   argument: (concatenation
     (raw_string) @injection.content)
-  (#any-basename-of? @_cmd "zsh" "bash" "sh")
-  (#any-of? @_flag "-c" "--cmd")
+  (#inject-interp! @_flag)
   (#trim! @injection.content 1 1)
-  (#set! injection.language "zsh")
   (#set! injection.include-children))
 
 (command
-  name: (command_name) @_cmd
   argument: (word) @_flag
   .
   argument: (concatenation
     (string (string_content) @injection.content))
-  (#any-basename-of? @_cmd "zsh" "bash" "sh")
-  (#any-of? @_flag "-c" "--cmd")
-  (#set! injection.language "zsh")
-  (#set! injection.include-children))
-
-; julia -e
-(command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
-  argument: (word) @_flag
-  .
-  argument: (raw_string) @injection.content
-  (#any-basename-of? @_interp "julia")
-  (#eq? @_flag "-e")
-  (#trim! @injection.content 1 1)
-  (#set! injection.language "julia")
-  (#set! injection.include-children))
-
-(command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
-  argument: (word) @_flag
-  .
-  argument: (string (string_content) @injection.content)
-  (#any-basename-of? @_interp "julia")
-  (#eq? @_flag "-e")
-  (#set! injection.language "julia")
-  (#set! injection.include-children))
-
-; Rscript -e / R -e
-(command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
-  argument: (word) @_flag
-  .
-  argument: (raw_string) @injection.content
-  (#any-basename-of? @_interp "Rscript" "R")
-  (#eq? @_flag "-e")
-  (#trim! @injection.content 1 1)
-  (#set! injection.language "r")
-  (#set! injection.include-children))
-
-(command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
-  argument: (word) @_flag
-  .
-  argument: (string (string_content) @injection.content)
-  (#any-basename-of? @_interp "Rscript" "R")
-  (#eq? @_flag "-e")
-  (#set! injection.language "r")
-  (#set! injection.include-children))
-
-; node -e
-(command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
-  argument: (word) @_flag
-  .
-  argument: (raw_string) @injection.content
-  (#any-basename-of? @_interp "node")
-  (#eq? @_flag "-e")
-  (#trim! @injection.content 1 1)
-  (#set! injection.language "javascript")
-  (#set! injection.include-children))
-
-(command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
-  argument: (word) @_flag
-  .
-  argument: (string (string_content) @injection.content)
-  (#any-basename-of? @_interp "node")
-  (#eq? @_flag "-e")
-  (#set! injection.language "javascript")
-  (#set! injection.include-children))
-
-; lua -e
-(command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
-  argument: (word) @_flag
-  .
-  argument: (raw_string) @injection.content
-  (#any-basename-of? @_interp "lua")
-  (#eq? @_flag "-e")
-  (#trim! @injection.content 1 1)
-  (#set! injection.language "lua")
-  (#set! injection.include-children))
-
-(command
-  [ name: (command_name) @_interp
-    argument: (word) @_interp ]
-  argument: (word) @_flag
-  .
-  argument: (string (string_content) @injection.content)
-  (#any-basename-of? @_interp "lua")
-  (#eq? @_flag "-e")
-  (#set! injection.language "lua")
+  (#inject-interp! @_flag)
   (#set! injection.include-children))
 
 ; Inject awk into the first raw_string argument of awk/gawk/mawk

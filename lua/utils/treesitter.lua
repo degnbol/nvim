@@ -92,6 +92,64 @@ function M.inject_by_ext_directive(match, _, source, pred, metadata)
     metadata["injection.language"] = vim.treesitter.language.get_lang(ft) or ft
 end
 
+---Interpreter basename → { command-flag char, injection language }. The `char`
+---is the getopt command flag that makes the interpreter read its next arg as
+---code (`-c` for shells/python, `-e` for julia/node/lua/R); it gates against a
+---flag that merely ends in the same letter on an unrelated command.
+---@type table<string, { char: string, lang: string }>
+local INTERPRETERS = {
+    python  = { char = "c", lang = "python" },
+    python3 = { char = "c", lang = "python" },
+    sh      = { char = "c", lang = "zsh" },
+    bash    = { char = "c", lang = "zsh" },
+    zsh     = { char = "c", lang = "zsh" },
+    julia   = { char = "e", lang = "julia" },
+    node    = { char = "e", lang = "javascript" },
+    lua     = { char = "e", lang = "lua" },
+    R       = { char = "e", lang = "r" },
+    Rscript = { char = "e", lang = "r" },
+}
+
+---Query directive `(#inject-interp! @flag)` — resolve an interpreter injection
+---from the command flag adjacent to the injected string, in O(1) concurrent
+---partial matches (see notes/PLAN-zsh-injection-match-explosion.md for why a
+---floating `@_interp` capture is O(command length) and silently starves out).
+---
+---1. Flag-shape gate: @flag must be a single-dash cluster (`-…`, not `--long`)
+---   whose last char is a command char (`c`/`e`). This subsumes plain `-c`/`-e`
+---   and clusters where the command flag is last (`-lc`, `-uc`).
+---2. Backward walk: from @flag, skip `-`-prefixed flags and take the first
+---   non-flag token (an argument word or the command_name) as the interpreter.
+---   Handles every wrapper/prefix uniformly (`uv run python -c`,
+---   `timeout 180 python3 -u -c`, `env -i bash -c`).
+---3. Table lookup: set `injection.language` iff the interpreter basename is in
+---   INTERPRETERS and its `char` matches the flag's command char. Otherwise
+---   leave it unset — the capture is ignored (same contract as
+---   `#inject-by-ext!`), letting `nvim -c` / `grep -e` fall through.
+---@param match table<integer, TSNode[]>
+---@param _ integer pattern index (unused)
+---@param source integer|string buffer or string
+---@param pred any[]
+---@param metadata vim.treesitter.query.TSMetadata
+function M.inject_interp_directive(match, _, source, pred, metadata)
+    local nodes = match[pred[2]]
+    if not nodes or #nodes == 0 then return end
+    local flag = vim.treesitter.get_node_text(nodes[1], source)
+    if flag:sub(1, 1) ~= "-" or flag:sub(2, 2) == "-" then return end
+    local cmd_char = flag:sub(-1)
+    if cmd_char ~= "c" and cmd_char ~= "e" then return end
+    local node = nodes[1]:prev_named_sibling()
+    while node and vim.treesitter.get_node_text(node, source):sub(1, 1) == "-" do
+        node = node:prev_named_sibling()
+    end
+    if not node then return end
+    local basename = vim.treesitter.get_node_text(node, source):gsub(".*/", "")
+    local interp = INTERPRETERS[basename]
+    if interp and interp.char == cmd_char then
+        metadata["injection.language"] = interp.lang
+    end
+end
+
 ---Query predicate `(#any-basename-of? @cap "name" ...)` — like `#any-of?` but
 ---compares the *basename* of @cap, so a path-prefixed interpreter such as
 ---`.venv/bin/python` or `/usr/bin/python3` matches the bare name (`python`,

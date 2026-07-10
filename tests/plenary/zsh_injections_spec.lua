@@ -298,6 +298,14 @@ describe("zsh injections", function()
                 "timeout 180 zsh -l -c 'echo hello'", "zsh", "echo hello")
         end)
 
+        it("injects zsh for combined short flags: zsh -lc", function()
+            assert_injection("zsh -lc 'ls'", "zsh", "ls")
+        end)
+
+        it("injects zsh for combined short flags wrapped: uv run zsh -lc", function()
+            assert_injection("uv run zsh -lc 'ls'", "zsh", "ls")
+        end)
+
         it("works as an argument: env zsh -c", function()
             assert_injection("env zsh -c 'echo hello'", "zsh", "echo hello")
         end)
@@ -586,6 +594,34 @@ describe("zsh injections", function()
                 "javascript", "export const x = 1;")
             assert_injection(heredoc("/tmp/a.cjs", "'EOF'", "module.exports = 1;"),
                 "javascript", "module.exports = 1;")
+        end)
+    end)
+
+    -- Long commands must not silently starve their injection. The interpreter
+    -- query is O(1) in concurrent partial matches; the old floating @_interp
+    -- capture was O(command length) and dropped past tree-sitter's match_limit
+    -- of 256 (see notes/PLAN-zsh-injection-match-explosion.md). The harness
+    -- parses via the same 256-limit path production uses, so the explosion
+    -- reproduces deterministically.
+    describe("long-command match explosion", function()
+        it("injects miller for the original --from symptom command", function()
+            assert_injection(
+                "mlr -t --hi --from ./filename.tsv.gz sort + uniq -a + filter '$col != \"\"'",
+                "miller", '$col != ""')
+        end)
+
+        it("injects miller for a much longer command", function()
+            assert_injection(
+                "mlr -t --hi --from ./a.tsv.gz sort -f a -f b -f c + uniq -a"
+                .. " + head -n 100 -g x + cat -n + filter '$col != \"\"'",
+                "miller", '$col != ""')
+        end)
+
+        it("injects python for -c buried in a long command", function()
+            assert_injection(
+                "timeout 180 env -i FOO=1 BAR=2 uv run --with numpy --with pandas"
+                .. " python3 -u -B -c 'print(1)'",
+                "python", "print(1)")
         end)
     end)
 
