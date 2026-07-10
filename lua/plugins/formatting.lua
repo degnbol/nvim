@@ -11,10 +11,17 @@ return {
             formatters_by_ft = {
                 sh = { "shfmt" },
                 bash = { "shfmt" },
-                zsh = { "shfmt" },
-                ["sh.zsh"] = { "shfmt" },
+                zsh = { "shfmt", "fmt_zsh_mlr" },
+                ["sh.zsh"] = { "shfmt", "fmt_zsh_mlr" },
             },
             formatters = {
+                -- Cosmetic mlr-invocation formatter (config/fmt-zsh-mlr). Runs
+                -- after shfmt; the two are order-independent — shfmt leaves the
+                -- `+ \` reflow byte-identical. Only active if the binary is on PATH.
+                fmt_zsh_mlr = {
+                    command = "fmt-zsh-mlr",
+                    stdin = true,
+                },
                 shfmt = {
                     prepend_args = function(_, ctx)
                         local args = { "-i", "4", "-bn", "-ci", "-sr" }

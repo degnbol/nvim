@@ -17,6 +17,11 @@ vim.opt_local.formatoptions:remove('o')
 
 -- shfmt for gq via formatprg (conform.nvim handles grf)
 if vim.fn.executable("shfmt") == 1 then
-    local dialect = vim.bo.filetype:find("zsh") and "zsh" or "auto"
-    vim.opt_local.formatprg = "shfmt -ln " .. dialect .. " -i 4 -bn -ci -sr"
+    local is_zsh = vim.bo.filetype:find("zsh") ~= nil
+    local prg = "shfmt -ln " .. (is_zsh and "zsh" or "auto") .. " -i 4 -bn -ci -sr"
+    -- Chain the cosmetic mlr-invocation formatter for zsh (order-independent).
+    if is_zsh and vim.fn.executable("fmt-zsh-mlr") == 1 then
+        prg = prg .. " | fmt-zsh-mlr"
+    end
+    vim.opt_local.formatprg = prg
 end
