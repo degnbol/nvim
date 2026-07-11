@@ -22,14 +22,24 @@ local function get_injections(src)
     local parser = vim.treesitter.get_parser(buf)
     parser:parse(true)
     local results = {}
+    -- Dedupe by (lang, range): a full-suite run occasionally yields the same
+    -- injected region twice (identical included range → two trees). A genuinely
+    -- distinct injection has a distinct range, so this only drops true
+    -- duplicates and keeps count-based assertions trustworthy.
+    local seen = {}
     local function collect(p)
         for lang, child in pairs(p:children()) do
             for _, tree in ipairs(child:trees()) do
                 local root = tree:root()
-                results[#results + 1] = {
-                    lang = lang,
-                    text = vim.treesitter.get_node_text(root, buf),
-                }
+                local sr, sc, er, ec = root:range()
+                local key = table.concat({ lang, sr, sc, er, ec }, ":")
+                if not seen[key] then
+                    seen[key] = true
+                    results[#results + 1] = {
+                        lang = lang,
+                        text = vim.treesitter.get_node_text(root, buf),
+                    }
+                end
             end
             collect(child)
         end
@@ -51,14 +61,29 @@ local function injections_for(src, lang)
     return filtered
 end
 
+--- Injected text with a single trailing newline stripped. Multi-line and
+--- heredoc ranges legitimately include the newline before their terminator
+--- (`(heredoc_body)` up to the end tag; a multi-line `-c 'lua\n…\n'` after
+--- `#trim!`); single-line ranges have none. The assertions check "the region
+--- is this code", not byte-exact line termination, so normalise it away.
+local function injected_text(entry)
+    return (entry.text:gsub("\n$", ""))
+end
+
+--- True if any entry's injected text equals `want` (ignoring a trailing newline).
+local function has_text(entries, want)
+    for _, entry in ipairs(entries) do
+        if injected_text(entry) == want then return true end
+    end
+    return false
+end
+
 --- Assert at least one injection of the given language contains the expected text.
 local function assert_injection(src, expected_lang, expected_text)
     local inj = injections_for(src, expected_lang)
     assert.is_true(#inj >= 1,
         "expected at least 1 " .. expected_lang .. " injection, got 0")
-    for _, entry in ipairs(inj) do
-        if entry.text == expected_text then return end
-    end
+    if has_text(inj, expected_text) then return end
     local got = {}
     for _, e in ipairs(inj) do got[#got + 1] = vim.inspect(e.text) end
     assert.is_true(false,
@@ -315,10 +340,8 @@ describe("zsh injections", function()
             -- injected content, so use content without leading spaces.
             local inj = injections_for(
                 "zsh -c 'prefix='$ROOT';suffix'", "zsh")
-            local texts = {}
-            for _, entry in ipairs(inj) do texts[#texts + 1] = entry.text end
-            assert.is_true(vim.tbl_contains(texts, "prefix="))
-            assert.is_true(vim.tbl_contains(texts, ";suffix"))
+            assert.is_true(has_text(inj, "prefix="))
+            assert.is_true(has_text(inj, ";suffix"))
         end)
 
         it("does not inject without -c flag", function()
@@ -354,9 +377,7 @@ describe("zsh injections", function()
             -- complexity to suppress it.
             local inj = injections_for(
                 "jq --arg name \"Alice\" '.user = $name'", "jq")
-            local texts = {}
-            for _, e in ipairs(inj) do texts[#texts + 1] = e.text end
-            assert.is_true(vim.tbl_contains(texts, ".user = $name"))
+            assert.is_true(has_text(inj, ".user = $name"))
         end)
 
         it("does not inject for unrelated commands", function()
@@ -404,10 +425,8 @@ describe("zsh injections", function()
             local inj = injections_for(
                 "nvim --headless -c 'lua print(1)' -c 'qa'", "lua")
             -- Should have the lua injection but not inject 'qa'
-            local texts = {}
-            for _, entry in ipairs(inj) do texts[#texts + 1] = entry.text end
-            assert.is_true(vim.tbl_contains(texts, "print(1)"))
-            assert.is_false(vim.tbl_contains(texts, "qa"))
+            assert.is_true(has_text(inj, "print(1)"))
+            assert.is_false(has_text(inj, "qa"))
         end)
 
         it("injects vim into non-lua -c args", function()
@@ -582,6 +601,17 @@ describe("zsh injections", function()
                 "cat > /tmp/a.xyz <<EOF\nblah\nEOF",
                 "lua")
         end)
+
+        it("includes the trailing newline of the heredoc body in the range",
+            function()
+                -- The other assertions tolerate a trailing newline; this one
+                -- pins that the range-end genuinely covers it, so the range
+                -- calculation stays anchored to the (heredoc_body) node.
+                local inj = injections_for(
+                    heredoc("/tmp/a.lua", "'EOF'", "local x = 1"), "lua")
+                assert.is_true(#inj >= 1)
+                assert.are.equal("local x = 1\n", inj[1].text)
+            end)
 
         it(".bash maps to bash (zsh alias), not sh", function()
             -- .bash uses the bash/zsh parser, not anything else
