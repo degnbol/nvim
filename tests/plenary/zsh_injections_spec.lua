@@ -600,9 +600,8 @@ describe("zsh injections", function()
     -- Long commands must not silently starve their injection. The interpreter
     -- query is O(1) in concurrent partial matches; the old floating @_interp
     -- capture was O(command length) and dropped past tree-sitter's match_limit
-    -- of 256 (see notes/PLAN-zsh-injection-match-explosion.md). The harness
-    -- parses via the same 256-limit path production uses, so the explosion
-    -- reproduces deterministically.
+    -- of 256. The harness parses via the same 256-limit path production uses,
+    -- so the explosion reproduces deterministically.
     describe("long-command match explosion", function()
         it("injects miller for the original --from symptom command", function()
             assert_injection(

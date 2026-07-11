@@ -39,8 +39,8 @@
 ; flags to the interpreter token, and looks it up in a basename → language
 ; table. This is O(1) in concurrent partial matches regardless of command
 ; length — a floating `@_interp` capture is O(command length) and silently
-; starves the injection out past tree-sitter's match_limit on long commands
-; (see notes/PLAN-zsh-injection-match-explosion.md).
+; starves the injection out past tree-sitter's hardcoded match_limit (256) on
+; long commands.
 ;
 ; There is no static injection.language: an off-table interpreter or a
 ; non-command flag leaves it unset, so the capture is ignored (same contract as

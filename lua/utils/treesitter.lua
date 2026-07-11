@@ -112,8 +112,9 @@ local INTERPRETERS = {
 
 ---Query directive `(#inject-interp! @flag)` — resolve an interpreter injection
 ---from the command flag adjacent to the injected string, in O(1) concurrent
----partial matches (see notes/PLAN-zsh-injection-match-explosion.md for why a
----floating `@_interp` capture is O(command length) and silently starves out).
+---partial matches. A floating `@_interp` capture is O(command length) and
+---silently starves the injection out past tree-sitter's match_limit (256) on
+---long commands.
 ---
 ---1. Flag-shape gate: @flag must be a single-dash cluster (`-…`, not `--long`)
 ---   whose last char is a command char (`c`/`e`). This subsumes plain `-c`/`-e`
