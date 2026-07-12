@@ -24,7 +24,7 @@ return {
                 },
                 shfmt = {
                     prepend_args = function(_, ctx)
-                        local args = { "-i", "4", "-bn", "-ci", "-sr" }
+                        local args = { "-i", "4", "-ci", "-sr" }
                         if ctx.filename and ctx.filename:match("%.zsh$") or
                             vim.bo[ctx.buf].filetype:find("zsh") then
                             table.insert(args, 1, "-ln")
