@@ -8,28 +8,7 @@ require "keymaps/surround"
 require "keymaps/blockim"
 require "keymaps/comments"
 
--- Horizontal scroll. zh/zl alone are clamped to the cursor line's length, so
--- on a short/empty cursor line they do nothing even when a longer line is in
--- view. hscroll first parks the cursor on the longest visible line (as
--- neovim's native ScrollWheel horizontal scroll does, see :h scroll-mouse-wheel)
--- so the viewport is free to move. dir is "h" (left) or "l" (right).
-local function hscroll(dir)
-    return function()
-        local top = vim.fn.line('w0')
-        local visible = vim.api.nvim_buf_get_lines(0, top - 1, vim.fn.line('w$'), false)
-        local target, width = vim.fn.line('.'), -1
-        for idx, line in ipairs(visible) do
-            local w = vim.fn.strdisplaywidth(line)
-            if w > width then width, target = w, top + idx - 1 end
-        end
-        if target ~= vim.fn.line('.') then
-            -- Land within the current viewport so neovim doesn't reset leftcol to reveal the cursor.
-            local col = vim.fn.virtcol2col(0, target, vim.fn.winsaveview().leftcol + 1)
-            vim.api.nvim_win_set_cursor(0, { target, math.max(col - 1, 0) })
-        end
-        vim.cmd('normal! 3z' .. dir)
-    end
-end
+local hscroll = require("utils/hscroll").hscroll
 
 for _, i in ipairs({ "", "2-", "3-", "4-" }) do
     for _, d in ipairs({ "Left", "Right" }) do
