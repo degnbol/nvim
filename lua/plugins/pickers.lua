@@ -276,6 +276,21 @@ return {
                 return cf and kind == "math" and range and range[1] <= ct and range[3] >= cf
             end
 
+            -- A hard-wrapped inline `$…$` spans two buffer lines, so its range's
+            -- start and end rows differ. snacks then routes it through the
+            -- multi-line block path (placement.lua:291), which assumes each
+            -- spanned line belongs wholly to the image — it tiles the image
+            -- across both lines and conceal_lines the second, garbling the
+            -- surrounding prose. Clamp such a match to its first line so it
+            -- takes the single-line inline path instead: one image on the first
+            -- line, in the empty space the wrap left. The trailing fragment on
+            -- the next line stays visible as literal source — a cue that the
+            -- expression should be joined onto one line.
+            local function first_line_range(buf, range)
+                local eol = #(vim.api.nvim_buf_get_lines(buf, range[1] - 1, range[1], false)[1] or "")
+                return { range[1], range[2], range[1], eol }
+            end
+
             -- Reimplement find_visible (range is hardcoded inside it, so a
             -- wrapper can't inject the margin) — near-copy of doc.find_visible
             -- with three drops from the found set:
@@ -310,6 +325,9 @@ return {
                     -- prefetch (negligible slack margin).
                     doc.find(buf, function(matches)
                         for _, i in ipairs(matches) do
+                            if i.type == "math" and i.range and i.range[1] ~= i.range[3] then
+                                i.range = first_line_range(buf, i.range)
+                            end
                             if not ((cl0 and i.type == "math") or math_on_cursor(i.type, i.range, cf, ct)) then
                                 ret[i.id] = i
                             end
