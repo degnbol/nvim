@@ -13,6 +13,7 @@ return {
                 bash = { "shfmt" },
                 zsh = { "shfmt", "fmt_zsh_mlr" },
                 ["sh.zsh"] = { "shfmt", "fmt_zsh_mlr" },
+                typst = { "typstyle" },
             },
             formatters = {
                 -- Cosmetic mlr-invocation formatter (config/fmt-zsh-mlr). Runs
