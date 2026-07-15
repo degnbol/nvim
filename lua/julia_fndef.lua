@@ -3,6 +3,7 @@
 
 local M = {}
 
+local ts = require "utils/treesitter"
 local gettext = vim.treesitter.get_node_text
 
 --- @class JuliaDef
@@ -84,13 +85,7 @@ end
 --- any enclosing `macrocall_expression` so a `@inline` prefix is preserved.
 --- @return JuliaDef|nil
 local function def_under_cursor()
-    local node = vim.treesitter.get_node()
-    while node do
-        local def = parse_def(node, 0)
-        if def then return def end
-        node = node:parent()
-    end
-    return nil
+    return ts.ancestor(function(node) return parse_def(node, 0) end)
 end
 
 --- One indentation level for the current buffer.

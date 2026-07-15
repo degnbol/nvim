@@ -7,6 +7,8 @@
 ---All parsing is treesitter over the typst grammar — no line patterns, no `rg`.
 local M = {}
 
+local ts = require "utils/treesitter"
+
 ---Strip a leading and trailing `"` from a treesitter string-node text.
 ---@param s string
 ---@return string
@@ -161,10 +163,10 @@ local function ref_key_at(bufnr, row, col)
     local ok, parser = pcall(vim.treesitter.get_parser, bufnr, "typst")
     if not ok or not parser then return nil end
     parser:parse({ row, row }) -- get_node doesn't parse on its own
-    local node = vim.treesitter.get_node({ bufnr = bufnr, pos = { row, col } })
-    while node and node:type() ~= "ref" do node = node:parent() end
-    if not node then return nil end
-    return M.ref_key(vim.treesitter.get_node_text(node, bufnr))
+    local start = vim.treesitter.get_node({ bufnr = bufnr, pos = { row, col } })
+    local ref = ts.ancestor("ref", start)
+    if not ref then return nil end
+    return M.ref_key(vim.treesitter.get_node_text(ref, bufnr))
 end
 
 ---Definition qf items for the glossary ref under the cursor, or nil to defer.

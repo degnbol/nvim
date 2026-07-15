@@ -1,15 +1,21 @@
 local M = {}
 
----Iterate through parent treesitter nodes until reaching one of a given type.
----Useful to get e.g. the surrounding calling function, with type "call_expression".
----@param type string
----@return TSNode|nil
-function M.get_parent(type)
-    local node = vim.treesitter.get_node()
-    while node ~= nil do
-        if node:type() == type then
-            return node
-        end
+---Climb from `start` (default: node under the cursor) to the nearest ancestor
+---satisfying `match`. `match` is either a node-type string, or a predicate
+---returning a truthy value; the returned value is that predicate's result (a
+---bare type string yields the matching node), so this doubles as an extractor.
+---@param match string|fun(node: TSNode): any
+---@param start TSNode|nil
+---@return any
+function M.ancestor(match, start)
+    local pred = match
+    if type(match) == "string" then
+        pred = function(n) return n:type() == match and n or nil end
+    end
+    local node = start or vim.treesitter.get_node()
+    while node do
+        local result = pred(node)
+        if result then return result end
         node = node:parent()
     end
 end
