@@ -48,7 +48,7 @@ return {
                 acp_providers = {
                     ["opencode-acp"] = {
                         env = {
-                            OPENAI_BASE_URL = "https://litellm.dev.xyme.cloud/v1",
+                            OPENAI_BASE_URL = "https://litellm.svc.xyme.cloud/",
                             -- set in untracked .env and available in apple Passwords.
                             -- Also needed ~/.config/opencode/config.json
                             OPENAI_API_KEY = os.getenv("OPENCODE_LITELLM_API_KEY"),
