@@ -129,6 +129,29 @@ describe("zsh injections", function()
             )
         end)
 
+        it("injects with a flag between put and the DSL", function()
+            assert_injection("mlr put -q '@sum += $x'", "miller", "@sum += $x")
+        end)
+
+        it("injects with multiple flags between the verb and the DSL", function()
+            assert_injection("mlr put -q -S '$y = $x'", "miller", "$y = $x")
+        end)
+
+        it("injects the DSL passed as an -e value", function()
+            assert_injection("mlr put -e '$x = 1'", "miller", "$x = 1")
+        end)
+
+        it("injects with flags before the DSL after mlr's own flags", function()
+            assert_injection(
+                "mlr --from data.csv put -q '$x = 1'",
+                "miller", "$x = 1"
+            )
+        end)
+
+        it("does not inject a quoted -f script filename as DSL", function()
+            assert_no_injection("mlr put -f 'script.mlr'", "miller")
+        end)
+
         it("does not inject for non-DSL verbs", function()
             assert_no_injection("mlr head -n 5", "miller")
         end)

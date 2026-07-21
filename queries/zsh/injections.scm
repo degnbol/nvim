@@ -14,6 +14,26 @@
   (#set! injection.language "miller")
   (#set! injection.include-children))
 
+; Same, but with flags between the verb and the DSL, e.g. `mlr put -q '…'` or
+; `mlr put -e '…'`. The dash-flag is anchored adjacent to the string (not just
+; "verb somewhere before"): this stops the pattern jumping over a chained verb
+; in `mlr put '…' then filter '…'`, where `filter` — not a flag — precedes the
+; second string. `-f`/`-s` take a filename / name=value, not DSL, so exclude
+; them to avoid injecting a quoted filename as miller.
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_verb
+  argument: (word) @_flag
+  .
+  argument: (raw_string) @injection.content
+  (#any-basename-of? @_cmd "mlr")
+  (#any-of? @_verb "filter" "put" "tee")
+  (#lua-match? @_flag "^%-")
+  (#not-any-of? @_flag "-f" "-s")
+  (#trim! @injection.content 1 1)
+  (#set! injection.language "miller")
+  (#set! injection.include-children))
+
 ; A verb chained via `+\` (backslash immediately after `+`, no space) makes
 ; tree-sitter-zsh split the chain: `mlr … +` becomes one command and the verb
 ; starts a new one, so `put`/`filter` land as command_name rather than an
@@ -26,6 +46,19 @@
   .
   argument: (raw_string) @injection.content
   (#any-of? @_verb "filter" "put")
+  (#trim! @injection.content 1 1)
+  (#set! injection.language "miller")
+  (#set! injection.include-children))
+
+; Chained verb with flags between it and the DSL, e.g. `… + put -q '…'`.
+(command
+  name: (command_name) @_verb
+  argument: (word) @_flag
+  .
+  argument: (raw_string) @injection.content
+  (#any-of? @_verb "filter" "put")
+  (#lua-match? @_flag "^%-")
+  (#not-any-of? @_flag "-f" "-s")
   (#trim! @injection.content 1 1)
   (#set! injection.language "miller")
   (#set! injection.include-children))
