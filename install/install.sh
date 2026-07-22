@@ -35,8 +35,6 @@ nvim --headless +"lua require('nvim-treesitter')._install_task:wait()" +qa
 # for editing jupyter notebooks
 # conda install -yc conda-forge jupytext
 
-../tex/unicode/install.sh
-
 # tectonic: self-contained XeTeX engine snacks.image prefers first for inline
 # math rendering (lua/plugins/pickers.lua). XeTeX reads unicode math natively.
 if ! command -v tectonic > /dev/null; then

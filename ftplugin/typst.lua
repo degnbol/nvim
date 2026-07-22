@@ -32,8 +32,8 @@ map.n('K', function()
     end
 end, "Hover (glossary-aware)", { buffer=true })
 
--- transliterate math symbol names → unicode glyphs, whole buffer (default rule).
-map.n('<leader>tf', function() require("astfix").run() end, "astfix: names→glyphs", { buffer=true })
+-- canonicalize source: math symbol names → unicode glyphs, punctuation → ASCII.
+map.n('<leader>tf', function() require("canon").run() end, "canon: names→glyphs", { buffer=true })
 
 vim.opt_local.wrap = true
 vim.opt_local.sidescrolloff = 0

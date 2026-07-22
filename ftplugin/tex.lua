@@ -46,26 +46,6 @@ function! IsText() abort
 endfunction
 ]])
 
-local unicode_sh = vim.fn.expand("$XDG_CONFIG_HOME/nvim/tex/unicode")
-vim.keymap.set("n", "<plug>Latex2Unicode",
-    "v<plug>(vimtex-a$):!" .. unicode_sh .. "/latex2unicode.sh<CR>",
-    { buffer = true, remap = true })
-vim.keymap.set("n", "<plug>Unicode2Latex",
-    "v<plug>(vimtex-a$):!" .. unicode_sh .. "/unicode2latex.sh<CR>",
-    { buffer = true, remap = true })
-vim.keymap.set("x", "<plug>Latex2Unicode_visual",
-    ":!" .. unicode_sh .. "/latex2unicode.sh<CR>",
-    { buffer = true, remap = true })
-vim.keymap.set("x", "<plug>Unicode2Latex_visual",
-    ":!" .. unicode_sh .. "/unicode2latex.sh<CR>",
-    { buffer = true, remap = true })
--- convenient macros stored to registers u and l that goes to next math then
--- converts. Can be repeated with a count, and recalled quickly with @@ to
--- quickly convert each math env in a file.
--- ']4' and '<leader>lu' are defined in whichkey.lua
-vim.fn.setreg("u", "]4 lu")
-vim.fn.setreg("l", "]4 lU")
-
 -- We aren't using em-dashes much at all in latex due to style guide
 -- suggesting spaced en-dash
 -- https://www.stylemanual.gov.au/grammar-punctuation-and-conventions/punctuation/dashes
@@ -275,8 +255,8 @@ map.n("<LocalLeader>j", "<Plug>TableJumpPre", "goto/from preamble (table)", {buf
 map.n('<LocalLeader>m', "<Plug>(vimtex-toggle-main)", "Toggle compiling main vs subfile", {buffer=true})
 map.desc('n', '<LocalLeader>t', "TOC open")
 map.desc('n', '<LocalLeader>T', "TOC toggle")
-map.n("<LocalLeader>u", "<Plug>Latex2Unicode", "TeX -> unicode", {buffer=true})
-map.nx("<LocalLeader>U", "<Plug>Unicode2Latex", "Unicode -> TeX", {buffer=true})
+map.n("<LocalLeader>u", function() require("canon").run() end, "TeX -> unicode", {buffer=true})
+map.n("<LocalLeader>U", function() require("canon").run("ascii") end, "Unicode -> TeX", {buffer=true})
 map.n('<leader>cv', '<Plug>(vimtex-view)', "View", {buffer=true})
 map.n('<LocalLeader>r', "<Plug>(vimtex-reload)", "Reload", {buffer=true})
 map.n('<LocalLeader>R', "<Plug>(vimtex-reload-state)", "Reload state", {buffer=true})
