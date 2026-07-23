@@ -65,6 +65,9 @@ function Load_pymol()
     -- This global var is also used by blink to enable pymol_settings provider
     if not vim.g.loaded_pymol then
         vim.g.loaded_pymol = true
+        -- LuaSnip lazy-loads on InsertEnter; opening a pymol file triggers this
+        -- at BufReadPost, before that, so force it onto the rtp first.
+        require("lz.n").trigger_load("LuaSnip")
         require("luasnip").add_snippets("python", require 'luasnippets.python_pymol')
     end
 end
