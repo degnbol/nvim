@@ -5,6 +5,7 @@ vim.opt_local.concealcursor = "nvc"
 vim.opt_local.commentstring = "#%s"
 
 local util = require "utils/init"
+local map = require "utils/keymap"
 
 -- # For agents
 -- The TSV ftplugin's column hiding (`zc`/`zo`/`za`) works by actually removing text from the buffer and storing it in `vim.b`. The `modified` flag is preserved so hiding doesn't mark clean buffers as dirty.
@@ -332,17 +333,17 @@ local function getCurCols()
     end
 end
 
-vim.keymap.set({ 'n', 'v' }, 'zc',
+map.buf({ 'n', 'v' }, 'zc',
     function() hide(getCurCols(), vim.v.count) end,
-    { desc = "Hide current column(s)" }
+    "Hide current column(s)"
 )
 
-vim.keymap.set({ 'n', 'v' }, 'zo',
+map.buf({ 'n', 'v' }, 'zo',
     function() unhide(getCurCols()) end,
-    { desc = "Unhide current column(s)" }
+    "Unhide current column(s)"
 )
 
-vim.keymap.set({ 'n', 'v' }, 'za',
+map.buf({ 'n', 'v' }, 'za',
     function()
         local cols = getCurCols()
         local hidden = get_hidden()
@@ -358,11 +359,11 @@ vim.keymap.set({ 'n', 'v' }, 'za',
         if #to_unhide > 0 then unhide(to_unhide) end
         if #to_hide > 0 then hide(to_hide, vim.v.count) end
     end,
-    { desc = "Toggle hiding current column(s)" }
+    "Toggle hiding current column(s)"
 )
 
--- vim.keymap.set( {'n', 'v'}, '<Plug>TsvHideMore',
-vim.keymap.set({ 'n', 'v' }, '{', function()
+-- map.buf( {'n', 'v'}, '<Plug>TsvHideMore',
+map.buf({ 'n', 'v' }, '{', function()
         local cols = getCurCols()
         local hidden = get_hidden()
         local maxwidths = get_maxwidths()
@@ -373,11 +374,11 @@ vim.keymap.set({ 'n', 'v' }, '{', function()
             hide({ col }, math.max(1, width - vim.v.count1))
         end
     end,
-    { desc = "Hide more of current column(s)", buffer = true }
+    "Hide more of current column(s)"
 )
 
--- vim.keymap.set( {'n', 'v'}, '<Plug>TsvHideMore',
-vim.keymap.set({ 'n', 'v' }, '}', function()
+-- map.buf( {'n', 'v'}, '<Plug>TsvHideMore',
+map.buf({ 'n', 'v' }, '}', function()
         local cols = getCurCols()
         local hidden = get_hidden()
         local maxwidths = get_maxwidths()
@@ -394,7 +395,7 @@ vim.keymap.set({ 'n', 'v' }, '}', function()
             end
         end
     end,
-    { desc = "Hide less of current column(s)", buffer = true }
+    "Hide less of current column(s)"
 )
 
 local grp = vim.api.nvim_create_augroup("hide", { clear = true })
@@ -406,7 +407,7 @@ vim.api.nvim_create_autocmd(defaults.checkevents, {
 })
 
 -- also set a manual call in case we don't want to save
-vim.keymap.set('n', '<localleader>a', updateWidths, { desc = "Align columns" })
+map.buf('n', '<localleader>a', updateWidths, "Align columns")
 
 -- unhide and rehide when saving as to always save the full text to file
 local cols_hidden_before_write = {}
@@ -611,42 +612,42 @@ local function smartRedo()
 end
 
 -- Plugin mappings for smart undo/redo
-vim.keymap.set('n', '<Plug>(TsvUndo)', smartUndo, { buffer = true })
-vim.keymap.set('n', '<Plug>(TsvRedo)', smartRedo, { buffer = true })
+map.buf('n', '<Plug>(TsvUndo)', smartUndo)
+map.buf('n', '<Plug>(TsvRedo)', smartRedo)
 
 -- Default mappings (users can override in their config)
-vim.keymap.set('n', 'u', '<Plug>(TsvUndo)', { buffer = true, remap = true })
-vim.keymap.set('n', '<C-r>', '<Plug>(TsvRedo)', { buffer = true, remap = true })
+map.buf('n', 'u', '<Plug>(TsvUndo)', "TSV Undo", { remap = true })
+map.buf('n', '<C-r>', '<Plug>(TsvRedo)', "TSV Redo", { remap = true })
 
 
-vim.keymap.set('n', ']]', function()
+map.buf('n', ']]', function()
     local r, c = util.get_cursor()
     local col = getCol(r, c)
     local nCol = getCol(r, nil)
     local c1, _ = getCellRange(r + 1, math.min(nCol, col + vim.v.count1))
     util.set_cursor(r, c1)
-end, { desc = "Goto next start of cell", buffer = true })
-vim.keymap.set('n', '[[', function()
+end, "Goto next start of cell")
+map.buf('n', '[[', function()
     local r, c = util.get_cursor()
     local col = getCol(r, c)
     local c1, _ = getCellRange(r + 1, math.max(1, col - vim.v.count1))
     util.set_cursor(r, c1)
-end, { desc = "Goto previous start of cell", buffer = true })
-vim.keymap.set('n', '][', function()
+end, "Goto previous start of cell")
+map.buf('n', '][', function()
     local r, c = util.get_cursor()
     local col = getCol(r, c)
     local nCol = getCol(r, nil)
     local c1, c2 = getCellRange(r + 1, math.min(nCol, col + vim.v.count1))
     util.set_cursor(r, math.max(c2 - 1, c1))
-end, { desc = "Goto next end of cell" })
-vim.keymap.set('n', '[]', function()
+end, "Goto next end of cell")
+map.buf('n', '[]', function()
     local r, c = util.get_cursor()
     local col = getCol(r, c)
     local c1, c2 = getCellRange(r + 1, math.max(1, col - vim.v.count1))
     util.set_cursor(r, math.max(c2 - 1, c1))
-end, { desc = "Goto previous end of cell", buffer = true })
+end, "Goto previous end of cell")
 
-vim.keymap.set('x', 'ax', function()
+map.buf('x', 'ax', function()
     local mode = util.get_mode()
     local r, c1, c2 = getCurCellRange()
     if c1 == nil then return end
@@ -654,8 +655,8 @@ vim.keymap.set('x', 'ax', function()
     util.set_cursor(r, c1)
     util.set_mode(mode)
     util.set_cursor(r, c2)
-end, { desc = "In cell" })
-vim.keymap.set('x', 'ix', function()
+end, "In cell")
+map.buf('x', 'ix', function()
     local mode = util.get_mode()
     local r, c1, c2 = getCurCellRange()
     if c1 == nil or c1 >= c2 then return end
@@ -663,23 +664,23 @@ vim.keymap.set('x', 'ix', function()
     util.set_cursor(r, c1)
     util.set_mode(mode)
     util.set_cursor(r, c2 - 1)
-end, { desc = "In cell" })
-vim.keymap.set('o', 'ax', function()
+end, "In cell")
+map.buf('o', 'ax', function()
     local r, c1, c2 = getCurCellRange()
     if c1 == nil then return end
     util.end_visual()
     util.set_cursor(r, c1)
     util.set_mode('v')
     util.set_cursor(r, c2)
-end, { desc = "In cell" })
-vim.keymap.set('o', 'ix', function()
+end, "In cell")
+map.buf('o', 'ix', function()
     local r, c1, c2 = getCurCellRange()
     if c1 == nil or c1 >= c2 then return end
     util.end_visual()
     util.set_cursor(r, c1)
     util.set_mode('v')
     util.set_cursor(r, c2 - 1)
-end, { desc = "In cell" })
+end, "In cell")
 
 
 
@@ -809,7 +810,7 @@ if false then
     })
 end
 
-vim.keymap.set('n', '<LocalLeader>h', function()
+map.buf('n', '<LocalLeader>h', function()
     if vim.v.count == 0 then
         -- toggle
         if winid_float == nil then
@@ -825,13 +826,13 @@ vim.keymap.set('n', '<LocalLeader>h', function()
             vim.api.nvim_win_set_config(winid_float, { height = vim.v.count })
         end
     end
-end, { buffer = true, desc = "Toggle header or set its size with count" })
-vim.keymap.set('v', '<LocalLeader>h', function()
+end, "Toggle header or set its size with count")
+map.buf('v', '<LocalLeader>h', function()
     local r1, _, r2, _ = util.get_visual_range()
     -- close then reopen if already open
     if winid_float ~= nil then close_header() end
     open_header(r1, r2 - r1 + 1)
-end, { buffer = true, desc = "Set header to the selected range of lines" })
+end, "Set header to the selected range of lines")
 
 
 -- FIXME: bug with header row where comment rows before it are excluded.
