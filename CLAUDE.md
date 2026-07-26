@@ -2,6 +2,8 @@
 
 `~/nvim` = `~/.config/nvim` = `~/dotfiles/config/nvim` (symlinks). All the same directory.
 
+Prefer lua (LuaJIT) config over vimscript.
+
 Config-specific detail lives in local skills (auto-loaded by description), not here:
 `plugins`, `blink`, `snippets`, `lsp`, `treesitter-config`, `math-images`,
 `version-audit`. General neovim knowledge is in the global `neovim` skill and its
