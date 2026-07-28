@@ -25,6 +25,7 @@ class Args(Tap):
     cool_value: str = "foo"
     "Name of column with cool value."
 
+    # Short flags are useful
     def configure(self) -> None:
         self.add_argument("-v", "--cool-value")
 
