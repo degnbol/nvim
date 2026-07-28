@@ -14,7 +14,8 @@ vim.filetype.add {
         tsv = "tsv", tab = "tsv", bed = "tsv",
         ipynb = "python",
         gitconfig = "gitconfig",
-        ndjson = "jsonl", -- jsonl is native; ndjson is the same format
+        ndjson = "jsonl", -- jsonl is native. ndjson is the same format.
+        mrv = "xml", -- Marvin Document. ChemAxon Markup Language.
     },
     filename = {
         ["karabiner.json"] = "json.karabiner",
