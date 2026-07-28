@@ -7,7 +7,6 @@ import sys
 import csv
 
 from tap import Tap
-import numpy as np
 
 def f(v: str) -> str:
     """Useful function.
@@ -43,7 +42,7 @@ def main() -> None:
     elif args.cool_value not in reader.fieldnames:
         args.error(f"Column {args.cool_value} not found among {' '.join(reader.fieldnames)}.")
 
-    # Write TSV
+    # Write TSV (DictWriter suits column passthrough; f-string print or csv.writer are fine for fixed scalar columns)
     w = csv.DictWriter(sys.stdout, fieldnames=[*reader.fieldnames, "bar"], delimiter="\t")
     w.writeheader()
     for row in reader:
