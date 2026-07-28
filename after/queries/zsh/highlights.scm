@@ -78,3 +78,31 @@
 (for_statement
   (word) @string.special.path
   (#lua-match? @string.special.path "[a-zA-Z0-9_*-]+%.[a-zA-Z][a-zA-Z0-9._-]*$"))
+
+; --- $expansions inside injected regions ---
+
+; Keep shell $expansions in their zsh colours when they fall inside an injected
+; region — interpreter double-quoted strings and heredoc bodies (see
+; queries/zsh/injections.scm). Those injections cover the whole string/body
+; including the $expansion bytes, so the injected language would otherwise
+; colour them. Re-assert the base zsh captures at priority 101 (> injected
+; default 100) so the outer language wins for those cells. This reuses the base
+; groups and mirrors the base query's split — `$`/`${`/`}` sigils =
+; @punctuation.special, name = @variable — rather than flattening the whole node
+; to one @variable. Scoped to string/heredoc_body so ordinary shell code keeps
+; the base @variable.builtin/@constant refinements. Command substitutions
+; ($(...)) are left to their own highlighting.
+((string
+   (variable_ref "$" @punctuation.special (simple_variable_name) @variable))
+ (#set! priority 101))
+((string
+   (expansion "${" @punctuation.special
+     (simple_variable_name) @variable "}" @punctuation.special))
+ (#set! priority 101))
+((heredoc_body
+   (variable_ref "$" @punctuation.special (simple_variable_name) @variable))
+ (#set! priority 101))
+((heredoc_body
+   (expansion "${" @punctuation.special
+     (simple_variable_name) @variable "}" @punctuation.special))
+ (#set! priority 101))

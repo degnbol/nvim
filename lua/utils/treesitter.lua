@@ -114,6 +114,7 @@ local INTERPRETERS = {
     lua     = { char = "e", lang = "lua" },
     R       = { char = "e", lang = "r" },
     Rscript = { char = "e", lang = "r" },
+    gnuplot = { char = "e", lang = "gnuplot" },
 }
 
 ---Query directive `(#inject-interp! @flag)` — resolve an interpreter injection
@@ -155,6 +156,25 @@ function M.inject_interp_directive(match, _, source, pred, metadata)
     if interp and interp.char == cmd_char then
         metadata["injection.language"] = interp.lang
     end
+end
+
+---Query directive `(#inject-interp-cmd! @cmd)` — like `#inject-interp!` but for
+---an interpreter that reads its code from stdin via a heredoc, with no flag
+---(`gnuplot <<GP … GP`, `python <<EOF … EOF`). Resolves @cmd's basename in the
+---INTERPRETERS table and sets `injection.language` to its `lang`; the `char`
+---(command flag) is irrelevant here. An off-table command leaves the language
+---unset, so the capture is ignored (same contract as `#inject-by-ext!`).
+---@param match table<integer, TSNode[]>
+---@param _ integer pattern index (unused)
+---@param source integer|string buffer or string
+---@param pred any[]
+---@param metadata vim.treesitter.query.TSMetadata
+function M.inject_interp_cmd_directive(match, _, source, pred, metadata)
+    local nodes = match[pred[2]]
+    if not nodes or #nodes == 0 then return end
+    local basename = vim.treesitter.get_node_text(nodes[1], source):gsub(".*/", "")
+    local interp = INTERPRETERS[basename]
+    if interp then metadata["injection.language"] = interp.lang end
 end
 
 ---Query predicate `(#any-basename-of? @cap "name" ...)` — like `#any-of?` but

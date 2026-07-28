@@ -81,8 +81,16 @@
 ; through to their own patterns or to no injection.
 ;
 ; raw_string (single-quoted) and string (double-quoted) need separate patterns
-; (differing #trim!/string_content handling), plus the `'a'$var'b'`
-; concatenation form.
+; (differing #trim! handling), plus the `'a'$var'b'` concatenation form.
+;
+; The double-quoted pattern captures the whole (string) node (not its
+; string_content children) and trims the two `"`. A `"…$var…"` is parsed by
+; tree-sitter-zsh as string_content + variable_ref fragments; capturing
+; string_content would inject each fragment as its own broken sub-tree, so
+; capture the whole node with include-children instead — one contiguous tree.
+; The $expansion bytes keep their zsh colours: after/queries/zsh/highlights.scm
+; re-asserts the base zsh captures over the injected region at priority 101
+; (they would otherwise take the injected language's colour).
 ; -----------------------------------------------------------------------------
 (command
   argument: (word) @_flag
@@ -95,8 +103,9 @@
 (command
   argument: (word) @_flag
   .
-  argument: (string (string_content) @injection.content)
+  argument: (string) @injection.content
   (#inject-interp! @_flag)
+  (#trim! @injection.content 1 1)
   (#set! injection.include-children))
 
 ; Concatenation form: `zsh -c 'prefix'$var'suffix'`. Each raw_string / string
@@ -276,6 +285,26 @@
   (file_redirect destination: (_) @_dest)
   (heredoc_body) @injection.content
   (#inject-by-ext! @_dest))
+
+; -----------------------------------------------------------------------------
+; `interp <<TAG … TAG` — a command that runs its heredoc body as code because it
+; reads its script from stdin (`gnuplot <<GP`, `python <<EOF`, `julia <<EOF`).
+; #inject-interp-cmd! resolves the command basename → language via the same
+; INTERPRETERS table as the `-c`/`-e` flag path (the flag char is irrelevant
+; here); an off-table command leaves it unset, so `cat <<EOF` falls through to
+; the #inject-by-ext! / heredoc-tag rules.
+;
+; include-children keeps the whole body as one contiguous region: an unquoted
+; heredoc (`<<GP`, not `<<'GP'`) expands `$var`, which tree-sitter-zsh splits
+; into fragments — capturing them piecewise would inject each as a broken
+; sub-tree. The $expansions keep their zsh colours: after/queries/zsh/highlights.scm
+; re-asserts the base zsh captures over the injected region at priority 101.
+; -----------------------------------------------------------------------------
+(redirected_statement
+  body: (command name: (command_name) @_cmd)
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#inject-interp-cmd! @_cmd)
+  (#set! injection.include-children))
 
 ; -----------------------------------------------------------------------------
 ; `nvim --headless -l /dev/stdin <<EOF ... EOF` — inject lua into the heredoc
