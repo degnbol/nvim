@@ -22,7 +22,8 @@ def f(v: str) -> str:
     return v
 
 class Args(Tap):
-    cool_value: str = "foo"  # Name of column with cool value.
+    cool_value: str = "foo"
+    "Name of column with cool value."
 
     def configure(self) -> None:
         self.add_argument("-v", "--cool-value")
