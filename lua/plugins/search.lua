@@ -1,5 +1,32 @@
+local util = require "utils/init"
 local map = require "utils/keymap"
-local search = require "utils/search"
+
+---Horizontally scroll the current window so the whole match under the cursor
+---is visible, its end flush against the right edge. Native search already keeps
+---the match *start* (the cursor) on screen, so only a right-clipped end needs
+---revealing; an already-visible match is left where native put it. No-op when
+---'wrap' is on or there is no single-line match at the cursor.
+local function reveal()
+    if vim.wo.wrap then return end
+    local pattern = vim.fn.getreg('/')
+    if pattern == '' then return end
+    local match_end = vim.fn.searchpos(pattern, 'cenz') -- {lnum, col}, no cursor move
+    if match_end[1] ~= vim.fn.line('.') then return end -- no match, or spans lines
+
+    local win = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1]
+    local text_width = win.width - win.textoff
+    local leftcol = vim.fn.winsaveview().leftcol
+    local end_col = vim.fn.virtcol({ match_end[1], match_end[2] })
+
+    if end_col > leftcol + text_width then
+        util.set_view({ leftcol = end_col - text_width })
+    end
+end
+
+-- Shared reveal trigger. Defined at module top level (not in a plugin's `after`)
+-- so both the / commit chain and vim-asterisk can reference it regardless of
+-- load order.
+map.n('<Plug>(RevealMatch)', reveal)
 
 ---Repeat search with `key` (n/N): jump natively, keep vim-searchindex's match
 ---counter, then scroll to reveal the whole match. Factory so n and N share it.
@@ -10,19 +37,13 @@ local function search_repeat(key)
             vim.api.nvim_echo({ { (err:gsub('^Vim:', '')), 'ErrorMsg' } }, true, {})
             return
         end
-        vim.api.nvim_feedkeys(vim.keycode('<Plug>SearchIndex'), 'm', false)
-        search.reveal()
+        -- <Plug>SearchIndex restores a view snapshot taken with the match at
+        -- the left edge, so it must run (synchronously, hence 'x') before the
+        -- reveal or it clobbers the anchored leftcol.
+        vim.api.nvim_feedkeys(vim.keycode('<Plug>SearchIndex'), 'mx', false)
+        reveal()
     end
 end
-
--- Reveal the whole match after a / or ? search too.
-vim.api.nvim_create_autocmd('CmdlineLeave', {
-    pattern = { '/', '?' },
-    callback = function()
-        if vim.v.event.abort then return end
-        vim.schedule(search.reveal)
-    end,
-})
 
 return {
     -- Let's search result box show number of matches when there's >99 matches.
@@ -32,6 +53,15 @@ return {
         after = function()
             map.n('n', search_repeat('n'), "Search next")
             map.n('N', search_repeat('N'), "Search prev")
+            -- Chain the reveal onto searchindex's own <CR> cmdline map (which
+            -- appends <Plug>SearchIndex after a / or ? search) so the jump,
+            -- count and reveal run in one synchronous pass, same as n/N.
+            map.c('<CR>', function()
+                if vim.fn.getcmdtype():match('[/?]') then
+                    return '<CR><Plug>SearchIndex<Plug>(RevealMatch)'
+                end
+                return '<CR>'
+            end, "Search: jump, count, reveal", { expr = true, remap = true })
         end,
     },
     -- Show a scrollbar, mostly in order to show search results far away in file.
@@ -99,7 +129,6 @@ return {
                     return keys
                 end
             end
-            map.n("<Plug>(RevealMatch)", search.reveal)
             map.nox("*", asterisk_expr("*"), "Search next \\<cword\\>", { expr = true })
             map.nox("#", asterisk_expr("#"), "Search previous \\<cword\\>", { expr = true })
             map.nox("g*", asterisk_expr("g*"), "Search next cword", { expr = true })
