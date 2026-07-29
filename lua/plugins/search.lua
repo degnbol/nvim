@@ -1,10 +1,38 @@
 local map = require "utils/keymap"
+local search = require "utils/search"
+
+---Repeat search with `key` (n/N): jump natively, keep vim-searchindex's match
+---counter, then scroll to reveal the whole match. Factory so n and N share it.
+local function search_repeat(key)
+    return function()
+        local ok, err = pcall(vim.cmd.normal, { vim.v.count1 .. key, bang = true })
+        if not ok then
+            vim.api.nvim_echo({ { (err:gsub('^Vim:', '')), 'ErrorMsg' } }, true, {})
+            return
+        end
+        vim.api.nvim_feedkeys(vim.keycode('<Plug>SearchIndex'), 'm', false)
+        search.reveal()
+    end
+end
+
+-- Reveal the whole match after a / or ? search too.
+vim.api.nvim_create_autocmd('CmdlineLeave', {
+    pattern = { '/', '?' },
+    callback = function()
+        if vim.v.event.abort then return end
+        vim.schedule(search.reveal)
+    end,
+})
 
 return {
     -- Let's search result box show number of matches when there's >99 matches.
     {
         "vim-searchindex",
         -- keys = { "/", "g/", "*", "#", "g*", "g#" }
+        after = function()
+            map.n('n', search_repeat('n'), "Search next")
+            map.n('N', search_repeat('N'), "Search prev")
+        end,
     },
     -- Show a scrollbar, mostly in order to show search results far away in file.
     -- Requires hlslens to show search results in scrollbar.
@@ -61,13 +89,17 @@ return {
                     suffix = stock_expr
                 end
                 return function()
-                    if is_searching_for_cword() then
-                        return "<Plug>(asterisk-" .. prefix .. suffix .. ")"
-                    else
-                        return "<Plug>(asterisk-" .. prefix .. "z" .. suffix .. ")"
+                    local z = is_searching_for_cword() and "" or "z"
+                    local keys = "<Plug>(asterisk-" .. prefix .. z .. suffix .. ")"
+                    -- Reveal only in normal mode; in o-pending/visual * is a
+                    -- motion and a trailing reveal would corrupt the operator.
+                    if vim.fn.mode() == "n" then
+                        keys = keys .. "<Plug>(RevealMatch)"
                     end
+                    return keys
                 end
             end
+            map.n("<Plug>(RevealMatch)", search.reveal)
             map.nox("*", asterisk_expr("*"), "Search next \\<cword\\>", { expr = true })
             map.nox("#", asterisk_expr("#"), "Search previous \\<cword\\>", { expr = true })
             map.nox("g*", asterisk_expr("g*"), "Search next cword", { expr = true })
