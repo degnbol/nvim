@@ -1,2 +1,2 @@
 
-return { filetypes = { "sh", "bash", "zsh" } }
+return { filetypes = { "sh", "bash", "zsh", "sh.zsh" } }

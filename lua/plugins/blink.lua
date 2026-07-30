@@ -37,7 +37,13 @@ local source_icon = {
     emoji          = "😃",
 }
 
-local zsh_sources = { "mlr_columns", "zsh", "lsp", "path", "snippets", "buffer" }
+-- No "lsp": bashls (a bash server) completes generic PATH executables, fully
+-- duplicating cmp-zsh's context-aware command/flag completion -- but with no
+-- sortText, so its items tie on score and win the unstable sort, burying the
+-- obvious short command (`run` behind `run-clang-tidy`). cmp-zsh owns command
+-- completion; bashls stays attached for hover/diagnostics/symbols, and the
+-- buffer source still covers in-file identifiers.
+local zsh_sources = { "mlr_columns", "zsh", "path", "snippets", "buffer" }
 
 local only_snippets = false
 
@@ -144,6 +150,29 @@ return {
             require("blink.compat").setup { impersonate_nvim_cmp = true }
             vim.cmd.packadd("blink-cmp-dictionary")
 
+            -- cmp-zsh registers its nvim-cmp source in after/plugin, which
+            -- :packadd never sources (:h packadd — only plugin/, not
+            -- after/plugin/). Load it and register explicitly so blink.compat's
+            -- "zsh" provider resolves. zshrc=true sources the real rc (zsh -i)
+            -- so custom fpath completions are live, matching the shell.
+            vim.cmd.packadd("cmp-zsh")
+            -- cmp-zsh's built-in captures are either too bare (zsh -f, no custom
+            -- fpath completions) or too rich (full interactive zshrc, whose
+            -- antidote zle plugins + prompt leak escape sequences as bogus
+            -- items). Use a minimal env that has just our completion config.
+            vim.env.CMP_ZSH_SHARED =
+                vim.api.nvim_get_runtime_file("bin/cmp_capture_shared.zsh", false)[1]
+            require("cmp_zsh").capture_script_path =
+                vim.fn.stdpath("config") .. "/lua/completion/cmp_zsh_capture.zsh"
+            require("cmp").register_source("zsh", require("cmp_zsh").new())
+
+            -- Same story as cmp-zsh: registration lives in each plugin's
+            -- after/plugin, which :packadd never sources — do it explicitly.
+            vim.cmd.packadd("cmp-nerdfonts")
+            require("cmp").register_source("nerdfonts", require("cmp_nerdfonts"))
+            vim.cmd.packadd("cmp-nvim-lua")
+            require("cmp").register_source("nvim_lua", require("cmp_nvim_lua").new())
+
             ---@module 'blink.cmp'
             ---@type blink.cmp.Config
             local opts = {
@@ -215,6 +244,19 @@ return {
                         zsh = {
                             name = "zsh",
                             module = 'blink.compat.source',
+                            -- compsys emits items in an arbitrary order and sets
+                            -- no sortText, and blink scores every prefix match
+                            -- equally -- so the base command (`cargo`, `run`)
+                            -- gets buried behind longer siblings
+                            -- (`cargo-install-update`, `run-clang-tidy`). Rank
+                            -- shortest-first, then alphabetically, so the obvious
+                            -- completion leads.
+                            transform_items = function(_, items)
+                                for _, item in ipairs(items) do
+                                    item.sortText = ("%03d%s"):format(#item.label, item.label)
+                                end
+                                return items
+                            end,
                         },
                         nerdfonts = {
                             name = "nerdfonts",

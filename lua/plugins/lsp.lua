@@ -187,6 +187,8 @@ return {
 			-- Mason overrides filetypes to {"python"}, re-add compound filetype.
 			vim.lsp.config("basedpyright", { filetypes = { "python", "python.blender" } })
 			vim.lsp.config("ruff", { filetypes = { "python", "python.blender" } })
+			-- Our zsh buffers use the compound filetype "sh.zsh"; re-add it.
+			vim.lsp.config("bashls", { filetypes = { "sh", "bash", "zsh", "sh.zsh" } })
 
 			-- tinymist: nvim-lspconfig's own lsp/tinymist.lua on_attach (its Lsp*
 			-- export/pin commands) wins the runtimepath deep-merge over ours, so our
