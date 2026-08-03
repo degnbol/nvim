@@ -545,6 +545,45 @@ describe("zsh injections", function()
         end)
     end)
 
+    describe("interpreter stdin heredoc", function()
+        local function heredoc(cmd, body)
+            return table.concat({ cmd .. " <<'EOF'", body, "EOF" }, "\n")
+        end
+
+        it("injects python for bare command_name: python <<EOF", function()
+            assert_injection(heredoc("python", "print(1)"), "python", "print(1)")
+        end)
+
+        it("injects python for wrapped interpreter: uv run python <<EOF", function()
+            assert_injection(heredoc("uv run python", "print(1)"),
+                "python", "print(1)")
+        end)
+
+        it("injects python past a - stdin marker: uv run python - <<EOF", function()
+            assert_injection(heredoc("uv run python -", "print(1)"),
+                "python", "print(1)")
+        end)
+
+        it("injects python past flags and marker: python -u - <<EOF", function()
+            assert_injection(heredoc("python -u -", "print(1)"),
+                "python", "print(1)")
+        end)
+
+        it("injects python when the interpreter ends a && list", function()
+            assert_injection(heredoc("cd /tmp && uv run python -", "print(1)"),
+                "python", "print(1)")
+        end)
+
+        it("injects gnuplot for gnuplot <<EOF", function()
+            assert_injection(heredoc("gnuplot", "plot sin(x)"),
+                "gnuplot", "plot sin(x)")
+        end)
+
+        it("does not inject for an off-table command: cat <<EOF", function()
+            assert_no_injection(heredoc("cat", "print(1)"), "python")
+        end)
+    end)
+
     describe("heredoc by file-redirect extension", function()
         local function heredoc(dest, tag, body)
             tag = tag or "EOF"

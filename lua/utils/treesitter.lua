@@ -117,6 +117,23 @@ local INTERPRETERS = {
     gnuplot = { char = "e", lang = "gnuplot" },
 }
 
+---Walk backward from `node` over `-`-prefixed tokens (flags and the bare `-`
+---stdin marker) to the interpreter token, and return its INTERPRETERS entry (or
+---nil if no non-flag token is reached or its basename is off-table). `node` is
+---the token adjacent to the code: a `-c`/`-e` flag's previous sibling, or a
+---command's last argument. Any leading `dir/` on the interpreter is stripped
+---before the lookup, so `.venv/bin/python` resolves as `python`.
+---@param node TSNode|nil
+---@param source integer|string buffer or string
+---@return { char: string, lang: string }|nil
+local function resolve_interp(node, source)
+    while node and vim.treesitter.get_node_text(node, source):sub(1, 1) == "-" do
+        node = node:prev_named_sibling()
+    end
+    if not node then return end
+    return INTERPRETERS[vim.treesitter.get_node_text(node, source):gsub(".*/", "")]
+end
+
 ---Query directive `(#inject-interp! @flag)` — resolve an interpreter injection
 ---from the command flag adjacent to the injected string, in O(1) concurrent
 ---partial matches. A floating `@_interp` capture is O(command length) and
@@ -146,13 +163,7 @@ function M.inject_interp_directive(match, _, source, pred, metadata)
     if flag:sub(1, 1) ~= "-" or flag:sub(2, 2) == "-" then return end
     local cmd_char = flag:sub(-1)
     if cmd_char ~= "c" and cmd_char ~= "e" then return end
-    local node = nodes[1]:prev_named_sibling()
-    while node and vim.treesitter.get_node_text(node, source):sub(1, 1) == "-" do
-        node = node:prev_named_sibling()
-    end
-    if not node then return end
-    local basename = vim.treesitter.get_node_text(node, source):gsub(".*/", "")
-    local interp = INTERPRETERS[basename]
+    local interp = resolve_interp(nodes[1]:prev_named_sibling(), source)
     if interp and interp.char == cmd_char then
         metadata["injection.language"] = interp.lang
     end
@@ -160,10 +171,16 @@ end
 
 ---Query directive `(#inject-interp-cmd! @cmd)` — like `#inject-interp!` but for
 ---an interpreter that reads its code from stdin via a heredoc, with no flag
----(`gnuplot <<GP … GP`, `python <<EOF … EOF`). Resolves @cmd's basename in the
----INTERPRETERS table and sets `injection.language` to its `lang`; the `char`
----(command flag) is irrelevant here. An off-table command leaves the language
----unset, so the capture is ignored (same contract as `#inject-by-ext!`).
+---(`gnuplot <<GP … GP`, `python <<EOF … EOF`, `uv run python - <<EOF … EOF`).
+---@cmd is the whole interpreter (command) node. The interpreter may be wrapped
+---(`uv run python`) and/or trailed by a bare `-` stdin marker and flags
+---(`python -u -`), so walk backward from the last child skipping `-`-prefixed
+---tokens (flags and the bare `-`) to the interpreter token — the same backward
+---walk as `#inject-interp!`, but anchored on the command's last argument rather
+---than a `-c`/`-e` flag. Resolves that token's basename in the INTERPRETERS
+---table and sets `injection.language` to its `lang` (the `char` command flag is
+---irrelevant here). An off-table interpreter leaves the language unset, so the
+---capture is ignored (same contract as `#inject-by-ext!`).
 ---@param match table<integer, TSNode[]>
 ---@param _ integer pattern index (unused)
 ---@param source integer|string buffer or string
@@ -172,8 +189,8 @@ end
 function M.inject_interp_cmd_directive(match, _, source, pred, metadata)
     local nodes = match[pred[2]]
     if not nodes or #nodes == 0 then return end
-    local basename = vim.treesitter.get_node_text(nodes[1], source):gsub(".*/", "")
-    local interp = INTERPRETERS[basename]
+    local cmd = nodes[1]
+    local interp = resolve_interp(cmd:named_child(cmd:named_child_count() - 1), source)
     if interp then metadata["injection.language"] = interp.lang end
 end
 

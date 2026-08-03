@@ -288,11 +288,23 @@
 
 ; -----------------------------------------------------------------------------
 ; `interp <<TAG … TAG` — a command that runs its heredoc body as code because it
-; reads its script from stdin (`gnuplot <<GP`, `python <<EOF`, `julia <<EOF`).
-; #inject-interp-cmd! resolves the command basename → language via the same
-; INTERPRETERS table as the `-c`/`-e` flag path (the flag char is irrelevant
-; here); an off-table command leaves it unset, so `cat <<EOF` falls through to
-; the #inject-by-ext! / heredoc-tag rules.
+; reads its script from stdin (`gnuplot <<GP`, `python <<EOF`, `uv run python -
+; <<EOF`). #inject-interp-cmd! takes the whole command node and walks back from
+; its last argument (skipping the `-` stdin marker and flags) to the interpreter
+; token, then resolves basename → language via the same INTERPRETERS table as
+; the `-c`/`-e` flag path (the flag char is irrelevant here); an off-table
+; interpreter leaves it unset, so `cat <<EOF` falls through to the
+; #inject-by-ext! / heredoc-tag rules.
+;
+; Two body shapes: a bare command (`python <<EOF`), and a `list` whose last
+; command is the interpreter (`cd … && uv run python - <<EOF`).
+;
+; The heuristic assumes the command's trailing token IS the executed
+; interpreter. With no flag to gate on (unlike the `-c`/`-e` path), a command
+; whose last argument merely names an interpreter — `echo python <<EOF`,
+; `which node <<EOF` — mis-injects its heredoc as that language. Accepted: it's
+; inseparable from wrapper support (`timeout 180 python` and `echo python` are
+; structurally identical), and such commands feeding a heredoc are rare.
 ;
 ; include-children keeps the whole body as one contiguous region: an unquoted
 ; heredoc (`<<GP`, not `<<'GP'`) expands `$var`, which tree-sitter-zsh splits
@@ -301,7 +313,13 @@
 ; re-asserts the base zsh captures over the injected region at priority 101.
 ; -----------------------------------------------------------------------------
 (redirected_statement
-  body: (command name: (command_name) @_cmd)
+  body: (command) @_cmd
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#inject-interp-cmd! @_cmd)
+  (#set! injection.include-children))
+
+(redirected_statement
+  body: (list (command) @_cmd .)
   (heredoc_redirect (heredoc_body) @injection.content)
   (#inject-interp-cmd! @_cmd)
   (#set! injection.include-children))
