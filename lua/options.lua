@@ -137,7 +137,8 @@ vim.opt.spellfile = config .. "/spell/custom.utf8.add"
 -- set a default commentstring
 vim.opt.commentstring = "#%s"
 
-opt.foldlevel = 99 -- so we don't fold from the start
+opt.foldlevel = 99 -- don't close folds from the start
+opt.foldminlines = 10 -- don't close trivial folds (automatically)
 opt.foldmethod = 'expr'
 opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 
