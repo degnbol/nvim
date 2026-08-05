@@ -1,6 +1,13 @@
-"""Title.
+"""One line: what the tool produces from what input.
 
-Usage details that aren't better described by a flag's help text.
+Reads <what data> from stdin (or file args; ±.gz). Note <one-line caveat, if any>.
+
+Writes <format>, one row per <unit>. Columns:
+- `col`: what it holds (omit the gloss when the name says it)
+
+Keep this an I/O contract — what is read, what is written. Rationale, provenance, and
+design justification are inner thoughts: put them in a comment at the mechanism, or
+nowhere. Don't restate what a flag's help text already says.
 """
 import argparse
 import sys
