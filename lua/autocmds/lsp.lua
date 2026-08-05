@@ -24,6 +24,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
 
+        -- Augment rename with structural string references (argparse dests, …).
+        local lsp_rename = require "lsp_rename"
+        if lsp_rename.supports(vim.bo[args.buf].filetype) then
+            lsp_rename.install(client)
+        end
+
         -- See `:help vim.lsp.*` for documentation on any of the below functions
         -- TODO: have treesitter fallback for things like go to references for when LSP is not attached.
 
