@@ -14,6 +14,20 @@ local function rename_keeping_cursor()
     local win = vim.api.nvim_get_current_win()
     local buf = vim.api.nvim_win_get_buf(win)
     local row, col = unpack(vim.api.nvim_win_get_cursor(win))
+
+    -- On an argparse/Tap option string, redirect the rename to the class
+    -- attribute it configures, so the LSP has a real symbol to anchor on. The
+    -- caret then tracks that attribute; restore it if rename bails (below).
+    local origin
+    if vim.bo[buf].filetype == "python" then
+        local arow, acol = require("lsp_rename.anchor").position(buf, row - 1, col)
+        if arow and acol then
+            origin = { row, col }
+            row, col = arow + 1, acol
+            vim.api.nvim_win_set_cursor(win, { row, col })
+        end
+    end
+
     -- Recover the word start: \k respects buffer-local 'iskeyword', so match in
     -- the buffer's context (mirrors <cword>, which is what rename prefills).
     local before = vim.api.nvim_buf_get_lines(buf, row - 1, row, false)[1]:sub(1, col)
@@ -25,9 +39,13 @@ local function rename_keeping_cursor()
     require("live-rename").rename()
 
     -- rename() focuses its float; if it bailed (no client / invalid position)
-    -- the window is unchanged and there's nothing to track.
+    -- the window is unchanged and there's nothing to track. Undo any redirect
+    -- so the caret stays where grn was pressed rather than on the attribute.
     local float_win = vim.api.nvim_get_current_win()
-    if float_win == win then return end
+    if float_win == win then
+        if origin then vim.api.nvim_win_set_cursor(win, origin) end
+        return
+    end
 
     vim.api.nvim_buf_attach(buf, false, {
         on_bytes = function()
