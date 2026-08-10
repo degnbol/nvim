@@ -130,7 +130,12 @@ grammar require filtering, decided up front (milestone 1):
   description. **Type**: use the signature annotation when present (code is the
   source of truth); when the signature param is *unannotated*, **preserve the
   docstring's existing type** — never blank a hand-written type just because the
-  code lacks an annotation.
+  code lacks an annotation. **But do not *inject* a signature type into a
+  typeless docstring**: this config's Google style drops `(type)` from `Args:`
+  (types live in the annotated signature — see codedocs config in
+  `lua/plugins/code_actions.lua`). A docstring whose params are all typeless is a
+  deliberate style; refreshing type only applies to entries that *already* carry
+  one. (Render already omits absent types; reconcile must not add them.)
 - Doc entries with no matching signature name = **orphans** → held in an
   `unmatched` bucket, rendered under a visible marker rather than dropped. The
   marker format must itself **round-trip**: a second reconcile must re-parse it
@@ -269,18 +274,62 @@ harness):
 3. **`lsp_rename` docstring matcher**: rename a param → docstring name token
    tracks it in the same undo block. Reuses the milestone-1 `locate_doc_entries`;
    depends on the augment-contract extension (pass edit ranges).
-4. Orphan UX — flag unmatched entries clearly.
+4. Orphan UX — flag unmatched entries clearly. Leaning: keep the round-tripping
+   `Orphaned Args:` section (it is what makes reclaim-on-re-add and idempotency
+   work — the description must live where `parse` reads it) but add a
+   `vim.diagnostic` ("param documented but absent from the signature") so an
+   orphan reads as a fix-me, not as shipped documentation. A TODO *comment* was
+   considered and rejected for now: it lives outside the docstring node, so it
+   breaks the single-edit-region round-trip and silently drops the reclaim
+   feature unless the lang layer also emits *and re-parses* a structured marker —
+   strictly more machinery than the diagnostic for the same UX.
 5. Second **style** (NumPy or reST) — validates the style boundary for both
    consumers at once.
 6. Second **language** — validates the treesitter boundary.
 7. Nice-to-haves: tabstops on new blanks; `returns`/`raises` reconcile; class
    docstrings; style auto-detection.
 
-## Open questions
+## Resolved decisions
 
-- Orphan rendering: inline marker vs a separate holding section vs virtual-text
-  warning + no buffer change? (Marker must round-trip — argues against free-text.)
-- Style mismatch on parse failure: fall back to fresh-generate (data loss risk)
-  or abort with a warning (safe default)? Leaning abort-and-warn.
-- Do we ever touch `summary`/`other` sections, or treat them as strictly
-  immutable passthrough? (Default: immutable.)
+- **Orphan rendering → dedicated round-tripping section.** Orphans render under
+  their own header (`google.ORPHAN_HEADER`, "Orphaned Args:"), which `parse`
+  routes back to `unmatched`. Chosen over an inline marker (which couples to
+  description prose — a description starting with the marker string would
+  misparse) and over virtual-text-only (which leaves no buffer trace). Final UX
+  polish is milestone 4; the parse/render *contract* is fixed.
+- **Style mismatch on parse failure → abort + warn.** No silent data loss.
+- **`summary` / `other` → immutable passthrough.** Reconcile never rewrites them.
+- **`locate_doc_entries` ≠ `parse`.** Two functions over a shared line-scanner:
+  `parse(text) → DocModel` (structure, no positions); `locate_doc_entries(text) →
+  {name, range}[]` (param name tokens, ranges relative to `text`, for the rename
+  matcher's minimal edit).
+
+## Status
+
+- **Milestone 1 — done.** `lua/docstring/{model,style/google,lang/python}.lua`;
+  `parse`/`render`/`locate_doc_entries` + treesitter `locate_target`/
+  `signature_params`/`locate_docstring`. Round-trip + unit tests in
+  `tests/plenary/docstring_spec.lua` and `docstring_python_spec.lua`.
+  Reviewed; fixed round-trip breaks (return-type mis-split on a colon in prose,
+  dropped dotted `Raises:` names, f-string mistaken for a docstring) and shared
+  the entry recogniser between `parse` and `locate_doc_entries`.
+  Known M1 limitations (documented at the code): a single word before a colon in
+  `Returns:` (`Note: it varies.`) is indistinguishable from a typed return;
+  implicitly-concatenated string docstrings read as no docstring.
+- **Milestone 2 — done.** `lua/docstring/{reconcile,command}.lua` +
+  `lua/docstring/lang/python.lua`'s `body_row`; `:Docstring` registered
+  buffer-local on python via `lua/autocmds/docstring.lua`. Reconcile reorders to
+  signature order, appends fresh typeless entries, and surfaces removed params as
+  orphans (reclaiming an orphan's description if its param returns); summary,
+  returns, raises, other pass through (returns/raises refresh is M7). The command
+  replaces an existing docstring or inserts a fresh one before the first body
+  statement, re-indented to the body. Tests in `docstring_reconcile_spec.lua`
+  (pure, incl. idempotency + typeless policy) and `docstring_command_spec.lua`
+  (buffer round-trip, reorder, fresh-gen, idempotency).
+- **Review findings 5 & 6 (carried from M1) — settled.** Both resolved by one
+  "a header needs an indented body" guard plus render honesty: `split_sections`
+  only treats `Header:` as a section when a following body line is indented (so a
+  summary ending in `Note:` stays prose), and render never emits a section whose
+  body would be blank (an empty-description, typeless return renders nothing) nor
+  a trailing space after an empty entry description — keeping parse and render
+  consistent under fresh-gen and idempotency.
