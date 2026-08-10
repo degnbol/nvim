@@ -117,12 +117,16 @@ local function on_range(_, _, bufnr, brow, _, erow, ecol)
     end
 end
 
---- Register the decoration provider (markdown windows only) and the autocmds
---- that clear the existence cache. Idempotent.
+--- Register the decoration provider (markdown-parsed windows only) and the
+--- autocmds that clear the existence cache. Idempotent.
 function M.setup()
     vim.api.nvim_set_decoration_provider(ns, {
         on_win = function(_, _, bufnr)
-            return vim.bo[bufnr].filetype == "markdown"
+            -- Gate on the treesitter language, not the raw filetype, so buffers
+            -- that render as markdown under a different filetype (e.g.
+            -- AgenticInput, which registers markdown) are included too.
+            return vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
+                == "markdown"
         end,
         on_range = on_range,
     })
