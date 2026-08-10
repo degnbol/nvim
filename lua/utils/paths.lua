@@ -112,4 +112,24 @@ function M.resolve_path_under_cursor(bufnr)
     return nil
 end
 
+-- Resolve a path token to its single absolute candidate, as pure string math —
+-- no filesystem access. vim.fs.normalize expands ~ / $ENV and resolves . / ..;
+-- a relative token is anchored to the buffer's own directory when it has a
+-- name, else the cwd (the nameless-scratch-buffer case). Unlike
+-- resolve_path_under_cursor (the gf resolver) there is no 'path' search, no
+-- git-root or buffer-var expansion, and no cursor dependency, so the result is
+-- a pure function of (token, base dir) — a valid cache key for an existence
+-- check.
+---@param token string a path-shaped token
+---@param bufnr integer 0 = current buffer
+---@return string|nil abspath normalized absolute path (existence not checked)
+function M.resolve_path(token, bufnr)
+    if token == "" then return nil end
+    local path = vim.fs.normalize(token)
+    if vim.startswith(path, "/") then return path end
+    local name = vim.api.nvim_buf_get_name(bufnr)
+    local base = name ~= "" and vim.fs.dirname(name) or vim.uv.cwd()
+    return vim.fs.normalize(base .. "/" .. path)
+end
+
 return M
