@@ -3,11 +3,19 @@ return {
     event = "BufWritePre",
     keys = {
         { "grf", function()
-            require("conform").format({ async = true, lsp_fallback = true })
+            local buf = vim.api.nvim_get_current_buf()
+            require("conform").format(
+                { async = true, lsp_format = "fallback", bufnr = buf },
+                function(err) require("conform_error").report(err, buf) end
+            )
         end, mode = { "n", "x" }, desc = "Format" },
-    },
+},
     after = function()
         require("conform").setup({
+            -- Execution-error stderr is surfaced by conform_error's callback
+            -- (real message + inline diagnostic) instead of conform's generic
+            -- "See :ConformInfo" notification.
+            notify_on_error = false,
             formatters_by_ft = {
                 sh = { "shfmt" },
                 bash = { "shfmt" },
