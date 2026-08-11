@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
  
 PDFgen is a library to generate PDF files containing text and graphics.  It is the 

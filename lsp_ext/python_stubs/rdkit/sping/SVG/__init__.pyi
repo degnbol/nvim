@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 from __future__ import annotations
 from math import acos
 from math import acosh

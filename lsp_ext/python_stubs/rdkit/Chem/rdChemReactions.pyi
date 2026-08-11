@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing classes and functions for working with chemical reactions.
 """
@@ -735,6 +736,8 @@ class MOL_SPTR_VECT(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_value_policy<boost::python::return_by_value, boost::python::default_call_policies>, std::__1::__wrap_iter<boost::shared_ptr<RDKit::ROMol>*>> __iter__(boost::python::back_reference<std::__1::vector<boost::shared_ptr<RDKit::ROMol>, std::__1::allocator<boost::shared_ptr<RDKit::ROMol>>>&>)
         """
     def __len__(self) -> int:
         """
@@ -854,6 +857,8 @@ class VectMolVect(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_internal_reference<1ul, boost::python::default_call_policies>, std::__1::__wrap_iter<std::__1::vector<boost::shared_ptr<RDKit::ROMol>, std::__1::allocator<boost::shared_ptr<RDKit::ROMol>>>*>> __iter__(boost::python::back_reference<std::__1::vector<std::__1::vector<boost::shared_ptr<RDKit::ROMol>, std::__1::allocator<boost::shared_ptr<RDKit::ROMol>>>, std::__1::allocator<std::__1::vector<boost::shared_ptr<RDKit::ROMol>, std::__1::allocator<boost::shared_ptr<RDKit::ROMol>>>>>&>)
         """
     def __len__(self) -> int:
         """

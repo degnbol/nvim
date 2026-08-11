@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
  utility functionality for molecular similarity
  includes a command line app for screening databases

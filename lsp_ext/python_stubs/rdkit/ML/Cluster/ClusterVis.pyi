@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Cluster tree visualization using Sping
 

@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing an assortment of functionality for basic data structures.
 
@@ -134,9 +135,14 @@ class ExplicitBitVect(Boost.Python.instance):
         
         BitVectToText( (SparseBitVect)bv1) -> str :
         
+            C++ signature :
+                std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> BitVectToText(SparseBitVect)
+        
         BitVectToText( (ExplicitBitVect)bv1) -> str :
             Returns a string of zeros and ones representing the bit vector.
         
+            C++ signature :
+                std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> BitVectToText(ExplicitBitVect)
         """
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -742,9 +748,14 @@ class SparseBitVect(Boost.Python.instance):
         
         BitVectToText( (SparseBitVect)bv1) -> str :
         
+            C++ signature :
+                std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> BitVectToText(SparseBitVect)
+        
         BitVectToText( (ExplicitBitVect)bv1) -> str :
             Returns a string of zeros and ones representing the bit vector.
         
+            C++ signature :
+                std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> BitVectToText(ExplicitBitVect)
         """
     @staticmethod
     def __reduce__(*args, **kwargs):

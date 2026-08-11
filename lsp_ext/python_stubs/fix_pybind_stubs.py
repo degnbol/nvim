@@ -15,7 +15,9 @@ installed in the active environment), and ``--in-place`` rewrites the installed
 ``<package>-stubs`` itself. Both fix these defects:
 
 - Strip the ``C++ signature :`` block from docstrings (keeps the readable
-  Boost signature line and prose above it).
+  Boost signature line and prose above it), except where the stub's own return
+  annotation is missing or ``Any`` and the C++ line names a concrete type — there
+  it is the only type information available, so it stays verbatim.
 - Drop ``__init__``/``__new__`` docstrings that are only that C++ noise, so
   pyright falls back to the class docstring on constructor hover.
 - Comment out lines whose assignment target is a Python keyword (e.g. an enum
@@ -23,16 +25,32 @@ installed in the active environment), and ``--in-place`` rewrites the installed
 - Type each property from a no-arg instance of its class and record the
   default value: ``allowCXSMILES: bool`` with ``(default: True)``.
 
+Every rewritten file gets a ``# fix_pybind_stubs: <package> <version>`` head
+comment. Comments never reach pyright's hover, so it costs nothing to display and
+lets a consumer detect a patched tree by what the script asserts rather than by
+residue it may legitimately leave behind (a reinstall replaces the files and
+drops the marker with them, so detection still self-heals).
+
 Must run where ``<package>`` is importable (for the property introspection).
 """
 import argparse
+import ast
 import importlib
+import importlib.metadata
 import keyword
 import pathlib
 import re
 import shutil
 
+MARKER_PREFIX = "# fix_pybind_stubs:"
+
 _CPP_MARKER = re.compile(r"^(\s*)C\+\+ signature :\s*$")
+_CPP_RETURN = re.compile(r"^\s*(.*?)\s*[\w:~]+\(.*\)\s*$")
+# Boost's stand-ins for "some Python object", which say no more than the stub's
+# own `Any`, plus the constructor returns that describe nothing.
+_OPAQUE_CPP = frozenset({"void", "void*", "_object*", "PyObject*",
+                         "boost::python::api::object", "boost::python::object"})
+_WEAK_PY = frozenset({"Any", "typing.Any", "object", "Incomplete"})
 _CONSTRUCTOR_DOC = re.compile(
     r'(def (?:__init__|__new__)\([^)]*\)(?:\s*->\s*[^:\n]+)?:\s*)'
     r'("""(?:[^"]|"(?!""))*""")'
@@ -49,19 +67,66 @@ _PROPERTY = re.compile(
 )
 
 
-def strip_cpp_signature(text):
+def cpp_return_type(line):
+    """Return type named by a Boost C++ signature line.
+
+    line: a signature line such as
+        ``ExplicitBitVect* GetAvalonFP(RDKit::ROMol,unsigned int)``.
+    Returns the text before the function name, empty for a constructor, or None
+    if the line is not a signature.
+    """
+    m = _CPP_RETURN.match(line)
+    return m.group(1) if m else None
+
+
+def keepable_signature_lines(text):
+    """Line numbers of C++ signature markers whose block still adds type information.
+
+    text: stub source.
+    Returns the 1-based line numbers of ``C++ signature :`` markers inside the
+    docstring of a function whose own return annotation is missing or ``Any``,
+    where the C++ line names a concrete type. Elsewhere the block only restates
+    the stub's own signature.
+    """
+    lines = text.splitlines()
+    # Keyword targets are a syntax error, and line-count preserving to comment
+    # out, so the numbers hold against the caller's text.
+    tree = ast.parse(comment_keyword_targets(text))
+    keep = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.FunctionDef):
+            continue
+        if node.returns is not None and ast.unparse(node.returns) not in _WEAK_PY:
+            continue
+        doc = node.body[0]
+        if not (isinstance(doc, ast.Expr) and isinstance(doc.value, ast.Constant)
+                and isinstance(doc.value.value, str)):
+            continue
+        # Each marker is read together with the line below it, so stop one short.
+        last = min(doc.end_lineno or doc.lineno, len(lines) - 1)
+        for n in range(doc.lineno, last + 1):
+            if not _CPP_MARKER.match(lines[n - 1]):
+                continue
+            ret = cpp_return_type(lines[n])
+            if ret and ret not in _OPAQUE_CPP:
+                keep.add(n)
+    return frozenset(keep)
+
+
+def strip_cpp_signatures(text, keep=frozenset()):
     """Remove ``C++ signature :`` blocks from docstrings.
 
     text: stub source.
-    Returns the source with each marker line and its following more-indented
-    C++ type lines removed.
+    keep: 1-based line numbers of marker lines whose block to leave in place.
+    Returns the source with every other marker line and its following
+    more-indented C++ type lines removed.
     """
     lines = text.splitlines(keepends=True)
     out = []
     i = 0
     while i < len(lines):
         marker = _CPP_MARKER.match(lines[i])
-        if not marker:
+        if not marker or i + 1 in keep:
             out.append(lines[i])
             i += 1
             continue
@@ -180,13 +245,40 @@ def type_properties(text, module):
 def clean(text):
     """Apply the import-free text cleanups to one stub's source.
 
-    text: stub source.
-    Returns the cleaned source.
+    text: stub source, patched or not; a marker line left by a previous run is
+        dropped so the cleanups are idempotent.
+    Returns the cleaned source, without a marker.
     """
+    if text.startswith(MARKER_PREFIX):
+        text = text.split("\n", 1)[-1]
     text = drop_constructor_docstrings(text)
-    text = strip_cpp_signature(text)
+    text = strip_cpp_signatures(text, keepable_signature_lines(text))
     text = comment_keyword_targets(text)
     return text
+
+
+def package_version(package):
+    """Version the installed distribution reports for a package.
+
+    package: import name, which is also the distribution name for the packages
+        this fixes.
+    Returns the version, or ``unknown`` when no distribution of that name is
+    installed — the marker is provenance, so a missing version must not stop the
+    stubs being patched.
+    """
+    try:
+        return importlib.metadata.version(package)
+    except importlib.metadata.PackageNotFoundError:
+        return "unknown"
+
+
+def marker_line(package):
+    """Head comment recording what rewrote a stub, and which version it described.
+
+    package: import name whose version is recorded.
+    Returns the comment line, newline included.
+    """
+    return f"{MARKER_PREFIX} {package} {package_version(package)}\n"
 
 
 def module_name(pyi_path, stub_root, package):
@@ -213,6 +305,7 @@ def patch_dir(stub_root, package):
     properties untyped.
     """
     root = stub_root.resolve()
+    marker = marker_line(package)
     unimportable = []
     for p in root.rglob("*.pyi"):
         # Explicit encoding: a few stubs are non-ASCII and the locale is the
@@ -228,7 +321,7 @@ def patch_dir(stub_root, package):
                 unimportable.append(f"{name} ({e})")
             else:
                 text = type_properties(text, module)
-        p.write_text(text, encoding="utf-8")
+        p.write_text(marker + text, encoding="utf-8")
     return unimportable
 
 

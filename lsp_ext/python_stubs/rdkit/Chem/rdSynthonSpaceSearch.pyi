@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing implementation of SynthonSpace search of Synthon-based chemical libraries such as Enamine REAL.  NOTE: This functionality is experimental and the API and/or results may change in future releases.
 """

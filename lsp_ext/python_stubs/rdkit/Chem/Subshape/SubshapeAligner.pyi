@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 from __future__ import annotations
 import numpy as numpy
 from rdkit import Chem

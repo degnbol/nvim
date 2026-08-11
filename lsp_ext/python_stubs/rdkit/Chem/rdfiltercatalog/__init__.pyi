@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 from __future__ import annotations
 import rdkit.Chem
 import typing
@@ -187,6 +188,8 @@ class FilterCatalogEntryList(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_value_policy<boost::python::return_by_value, boost::python::default_call_policies>, std::__1::__wrap_iter<boost::shared_ptr<RDKit::FilterCatalogEntry const>*>> __iter__(boost::python::back_reference<std::__1::vector<boost::shared_ptr<RDKit::FilterCatalogEntry const>, std::__1::allocator<boost::shared_ptr<RDKit::FilterCatalogEntry const>>>&>)
         """
     def __len__(self) -> int:
         """
@@ -218,6 +221,8 @@ class FilterCatalogListOfEntryList(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_internal_reference<1ul, boost::python::default_call_policies>, std::__1::__wrap_iter<std::__1::vector<boost::shared_ptr<RDKit::FilterCatalogEntry const>, std::__1::allocator<boost::shared_ptr<RDKit::FilterCatalogEntry const>>>*>> __iter__(boost::python::back_reference<std::__1::vector<std::__1::vector<boost::shared_ptr<RDKit::FilterCatalogEntry const>, std::__1::allocator<boost::shared_ptr<RDKit::FilterCatalogEntry const>>>, std::__1::allocator<std::__1::vector<boost::shared_ptr<RDKit::FilterCatalogEntry const>, std::__1::allocator<boost::shared_ptr<RDKit::FilterCatalogEntry const>>>>>&>)
         """
     def __len__(self) -> int:
         """
@@ -427,6 +432,8 @@ class MolList(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_value_policy<boost::python::return_by_value, boost::python::default_call_policies>, std::__1::__wrap_iter<RDKit::ROMol**>> __iter__(boost::python::back_reference<std::__1::vector<RDKit::ROMol*, std::__1::allocator<RDKit::ROMol*>>&>)
         """
     def __len__(self) -> int:
         """
@@ -545,6 +552,8 @@ class VectFilterMatch(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_internal_reference<1ul, boost::python::default_call_policies>, std::__1::__wrap_iter<RDKit::FilterMatch*>> __iter__(boost::python::back_reference<std::__1::vector<RDKit::FilterMatch, std::__1::allocator<RDKit::FilterMatch>>&>)
         """
     def __len__(self) -> int:
         """

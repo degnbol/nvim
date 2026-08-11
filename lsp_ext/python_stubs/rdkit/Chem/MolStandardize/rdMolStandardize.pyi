@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing tools for normalizing molecules defined by SMARTS patterns
 """
@@ -308,6 +309,8 @@ class MOL_SPTR_VECT(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_value_policy<boost::python::return_by_value, boost::python::default_call_policies>, std::__1::__wrap_iter<boost::shared_ptr<RDKit::ROMol>*>> __iter__(boost::python::back_reference<std::__1::vector<boost::shared_ptr<RDKit::ROMol>, std::__1::allocator<boost::shared_ptr<RDKit::ROMol>>>&>)
         """
     def __len__(self) -> int:
         """
@@ -467,6 +470,8 @@ class PipelineLog(Boost.Python.instance):
         """
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_internal_reference<1ul, boost::python::default_call_policies>, std::__1::__wrap_iter<RDKit::MolStandardize::PipelineLogEntry*>> __iter__(boost::python::back_reference<std::__1::vector<RDKit::MolStandardize::PipelineLogEntry, std::__1::allocator<RDKit::MolStandardize::PipelineLogEntry>>&>)
         """
     def __len__(self) -> int:
         """
@@ -720,6 +725,8 @@ class SmilesTautomerMap(Boost.Python.instance):
         """
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_value_policy<boost::python::return_by_value, boost::python::default_call_policies>, std::__1::__map_iterator<std::__1::__tree_iterator<std::__1::__value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, RDKit::MolStandardize::Tautomer>, std::__1::__tree_node<std::__1::__value_type<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, RDKit::MolStandardize::Tautomer>, void*>*, long>>> __iter__(boost::python::back_reference<std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, RDKit::MolStandardize::Tautomer, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, RDKit::MolStandardize::Tautomer>>>&>)
         """
     def __len__(self) -> int:
         """
@@ -781,6 +788,8 @@ class SubstructTermVector(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_internal_reference<1ul, boost::python::default_call_policies>, std::__1::__wrap_iter<RDKit::MolStandardize::TautomerScoringFunctions::SubstructTerm*>> __iter__(boost::python::back_reference<std::__1::vector<RDKit::MolStandardize::TautomerScoringFunctions::SubstructTerm, std::__1::allocator<RDKit::MolStandardize::TautomerScoringFunctions::SubstructTerm>>&>)
         """
     def __len__(self) -> int:
         """
@@ -1001,6 +1010,8 @@ class TautomerEnumeratorResult(Boost.Python.instance):
         """
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_value_policy<boost::python::return_by_value, boost::python::default_call_policies>, RDKit::MolStandardize::TautomerEnumeratorResult::const_iterator> __iter__(boost::python::back_reference<(anonymous namespace)::PyTautomerEnumeratorResult&>)
         """
     def __len__(self) -> int:
         """
@@ -1087,6 +1098,8 @@ class map_indexing_suite_SmilesTautomerMap_entry(Boost.Python.instance):
         """
 def CHARGE_CORRECTIONS() -> typing.Any:
     """
+        C++ signature :
+            std::__1::vector<RDKit::MolStandardize::ChargeCorrection, std::__1::allocator<RDKit::MolStandardize::ChargeCorrection>> CHARGE_CORRECTIONS()
     """
 def CanonicalTautomer(mol: Mol, params: typing.Any = None) -> rdkit.Chem.Mol:
     """

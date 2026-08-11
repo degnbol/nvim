@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
  Contains an implementation of Atom-pair fingerprints, as
 described in:

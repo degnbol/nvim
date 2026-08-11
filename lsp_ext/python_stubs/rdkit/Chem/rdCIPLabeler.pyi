@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing a function to assign stereochemical labels based on an accurate CIP rules implementation. This algoritm is a port of https://github.com/SiMolecule/centres, which was originally written by John Mayfield. The original algorithm is described in:
 

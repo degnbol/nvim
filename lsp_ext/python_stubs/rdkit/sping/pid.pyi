@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 
 PIDDLE (Plug-In Drawing, Does Little Else)

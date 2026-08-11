@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing functions to perform 3D operations like rotate and translate conformations
 """

@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing functionality from the Avalon toolkit.
 
@@ -96,6 +97,8 @@ def GetAvalonCountFP(mol: typing.Any, nBits: int = 512, isQuery: bool = False, b
     """
         returns the Avalon count fingerprint for an RDKit molecule
     
+        C++ signature :
+            RDKit::SparseIntVect<unsigned int>* GetAvalonCountFP(RDKit::ROMol [,unsigned int=512 [,bool=False [,unsigned int=15761407]]])
     """
 @typing.overload
 def GetAvalonCountFP(molData: str, isSmiles: bool, nBits: int = 512, isQuery: bool = False, bitFlags: int = 15761407) -> typing.Any:
@@ -104,12 +107,16 @@ def GetAvalonCountFP(molData: str, isSmiles: bool, nBits: int = 512, isQuery: bo
         If the isSmiles argument is true, the data is assumed to be SMILES, otherwise
         MDL mol data is assumed.
     
+        C++ signature :
+            RDKit::SparseIntVect<unsigned int>* GetAvalonCountFP(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>,bool [,unsigned int=512 [,bool=False [,unsigned int=15761407]]])
     """
 @typing.overload
 def GetAvalonFP(mol: typing.Any, nBits: int = 512, isQuery: bool = False, resetVect: bool = False, bitFlags: int = 15761407) -> typing.Any:
     """
         returns the Avalon fingerprint for an RDKit molecule
     
+        C++ signature :
+            ExplicitBitVect* GetAvalonFP(RDKit::ROMol [,unsigned int=512 [,bool=False [,bool=False [,unsigned int=15761407]]]])
     """
 @typing.overload
 def GetAvalonFP(molData: str, isSmiles: bool, nBits: int = 512, isQuery: bool = False, resetVect: bool = False, bitFlags: int = 15761407) -> typing.Any:
@@ -118,6 +125,8 @@ def GetAvalonFP(molData: str, isSmiles: bool, nBits: int = 512, isQuery: bool = 
         If the isSmiles argument is true, the data is assumed to be SMILES, otherwise
         MDL mol data is assumed.
     
+        C++ signature :
+            ExplicitBitVect* GetAvalonFP(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>,bool [,unsigned int=512 [,bool=False [,bool=False [,unsigned int=15761407]]]])
     """
 @typing.overload
 def GetAvalonFPAsWords(mol: typing.Any, nBits: int = 512, isQuery: bool = False, resetVect: bool = False, bitFlags: int = 15761407) -> list:

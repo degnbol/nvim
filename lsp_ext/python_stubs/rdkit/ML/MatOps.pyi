@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
  Matrix operations which may or may not come in handy some day
 

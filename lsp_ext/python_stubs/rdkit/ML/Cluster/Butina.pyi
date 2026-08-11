@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
  Implementation of the clustering algorithm published in:
   Butina JCICS 39 747-750 (1999)

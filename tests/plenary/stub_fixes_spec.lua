@@ -1,5 +1,6 @@
 ---@diagnostic disable: undefined-global
 local stub_fixes = require "autocmds/stub_fixes"
+local util = require "utils/init"
 
 --- The configured fix for a package, as the autocmd would use it.
 --- @param pkg string
@@ -54,28 +55,9 @@ describe("stub_fixes.env_of", function()
     end)
 end)
 
-describe("stub_fixes.is_unpatched", function()
-    local defects = fix_for("rdkit").defects
-
-    it("detects a C++ signature block", function()
-        assert.is_true(stub_fixes.is_unpatched('    """\n        C++ signature :\n    """\n',
-            defects))
-    end)
-
-    it("detects an untyped property", function()
-        assert.is_true(stub_fixes.is_unpatched(
-            "    @property\n    def allowCXSMILES(*args, **kwargs):\n        ...\n", defects))
-    end)
-
-    it("accepts a patched stub with untyped plain methods", function()
-        assert.is_false(stub_fixes.is_unpatched(
-            "    @property\n    def allowCXSMILES(self) -> bool: ...\n" ..
-            "    @staticmethod\n    def flush(*args, **kwargs): ...\n", defects))
-    end)
-end)
-
 -- Mirrors the real defect: an untyped property in an installed `rdkit-stubs/`,
--- fixed in place and re-typed by the running server without a restart.
+-- fixed in place and re-typed by the running server without a restart. `format`
+-- is the property the fixer cannot type, since its value is not a builtin scalar.
 local STUB = [[
 class SmilesParserParams:
     """
@@ -94,6 +76,11 @@ class SmilesParserParams:
     @allowCXSMILES.setter
     def allowCXSMILES(*args, **kwargs):
         ...
+    @property
+    def format(*args, **kwargs):
+        """
+        the input format
+        """
 ]]
 
 local SOURCE = [[
@@ -101,6 +88,10 @@ class SmilesParserParams:
     @property
     def allowCXSMILES(self):
         return True
+
+    @property
+    def format(self):
+        return object()
 ]]
 
 local MAIN = [[
@@ -185,11 +176,15 @@ local function assert_retypes(fix, buf, client, site)
     local env = assert(stub_fixes.env_of(vim.uri_to_fname(location.uri or location.targetUri),
         fix.pkg))
     assert.are.equal(site .. "/rdkit-stubs", env.stubs)
-    assert.is_true(stub_fixes.is_unpatched(
-        assert(require("utils/init").readtext(env.stubs .. "/" .. fix.probe)), fix.defects))
+    local probe = env.stubs .. "/" .. fix.probe
+    assert.is_false(vim.startswith(assert(util.readtext(probe)), fix.marker))
 
     stub_fixes.patch(fix, env, client)
     assert.is_true(vim.wait(20000, function() return hover_shows(client, buf, "bool") end, 200))
+    -- The marker is what stops a later session prompting again, even though
+    -- `format` is still untyped in the patched file.
+    assert.is_true(vim.startswith(assert(util.readtext(probe)), fix.marker))
+    assert.is_truthy(assert(util.readtext(probe)):find("def format%(%*args, %*%*kwargs%)"))
 end
 
 describe("stub_fixes", function()

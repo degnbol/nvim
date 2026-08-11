@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing the core chemistry functionality of the RDKit
 """
@@ -3473,6 +3474,8 @@ class StereoGroup_vect(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_internal_reference<1ul, boost::python::default_call_policies>, std::__1::__wrap_iter<RDKit::StereoGroup*>> __iter__(boost::python::back_reference<std::__1::vector<RDKit::StereoGroup, std::__1::allocator<RDKit::StereoGroup>>&>)
         """
     def __len__(self) -> int:
         """
@@ -3851,6 +3854,8 @@ class SubstanceGroup_VECT(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_internal_reference<1ul, boost::python::default_call_policies>, std::__1::__wrap_iter<RDKit::SubstanceGroup*>> __iter__(boost::python::back_reference<std::__1::vector<RDKit::SubstanceGroup, std::__1::allocator<RDKit::SubstanceGroup>>&>)
         """
     def __len__(self) -> int:
         """
@@ -4139,6 +4144,8 @@ class _listN5boost10shared_ptrIN5RDKit9ConformerEEE(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_internal_reference<1ul, boost::python::default_call_policies>, std::__1::__list_iterator<boost::shared_ptr<RDKit::Conformer>, void*>> __iter__(boost::python::back_reference<std::__1::list<boost::shared_ptr<RDKit::Conformer>, std::__1::allocator<boost::shared_ptr<RDKit::Conformer>>>&>)
         """
     def __len__(self) -> int:
         """
@@ -4164,6 +4171,8 @@ class _listPN5RDKit4AtomE(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_value_policy<boost::python::return_by_value, boost::python::default_call_policies>, std::__1::__list_iterator<RDKit::Atom*, void*>> __iter__(boost::python::back_reference<std::__1::list<RDKit::Atom*, std::__1::allocator<RDKit::Atom*>>&>)
         """
     def __len__(self) -> int:
         """
@@ -4189,6 +4198,8 @@ class _listPN5RDKit4BondE(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_value_policy<boost::python::return_by_value, boost::python::default_call_policies>, std::__1::__list_iterator<RDKit::Bond*, void*>> __iter__(boost::python::back_reference<std::__1::list<RDKit::Bond*, std::__1::allocator<RDKit::Bond*>>&>)
         """
     def __len__(self) -> int:
         """

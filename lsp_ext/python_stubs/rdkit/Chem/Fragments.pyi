@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
  functions to match a bunch of fragment descriptors from a file
 

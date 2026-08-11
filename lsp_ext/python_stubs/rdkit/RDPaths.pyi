@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 from __future__ import annotations
 import os as os
 __all__: list[str] = ['RDCodeDir', 'RDContribDir', 'RDDataDir', 'RDDocsDir', 'RDProjDir', 'os']

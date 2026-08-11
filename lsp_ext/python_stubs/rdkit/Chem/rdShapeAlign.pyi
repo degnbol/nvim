@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 from __future__ import annotations
 import typing
 __all__: list[str] = ['AlignMol', 'AlignShapes', 'FloatVector', 'PrepareConformer', 'ScoreMol', 'ScoreShape', 'ShapeInput', 'ShapeInputOptions', 'TransformConformer']
@@ -19,6 +20,8 @@ class FloatVector(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_value_policy<boost::python::return_by_value, boost::python::default_call_policies>, std::__1::__wrap_iter<float*>> __iter__(boost::python::back_reference<std::__1::vector<float, std::__1::allocator<float>>&>)
         """
     def __len__(self) -> int:
         """

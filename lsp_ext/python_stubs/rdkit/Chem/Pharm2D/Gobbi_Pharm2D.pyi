@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
  Definitions for 2D Pharmacophores from:
   Gobbi and Poppinger, Biotech. Bioeng. _61_ 47-54 (1998)

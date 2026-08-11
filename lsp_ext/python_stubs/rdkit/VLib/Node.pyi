@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 from __future__ import annotations
 import sys as sys
 __all__: list[str] = ['VLibNode', 'sys']

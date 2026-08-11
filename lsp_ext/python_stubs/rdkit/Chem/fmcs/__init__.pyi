@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
  Actual implementation of the FMCS algorithm
 This code should be used by importing rdkit.Chem.MCS

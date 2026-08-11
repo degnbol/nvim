@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing functions for creating a Scaffold Network
 """
@@ -62,6 +63,8 @@ class NetworkEdge_VECT(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_internal_reference<1ul, boost::python::default_call_policies>, std::__1::__wrap_iter<RDKit::ScaffoldNetwork::NetworkEdge*>> __iter__(boost::python::back_reference<std::__1::vector<RDKit::ScaffoldNetwork::NetworkEdge, std::__1::allocator<RDKit::ScaffoldNetwork::NetworkEdge>>&>)
         """
     def __len__(self) -> int:
         """

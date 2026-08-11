@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
  Exposes functionality for MOE-like approximate molecular surface area
 descriptors.

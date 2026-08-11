@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 from __future__ import annotations
 __all__: list[str] = ['GetInchiVersion', 'InchiToInchiKey', 'InchiToMol', 'MolBlockToInchi', 'MolToInchi', 'MolToInchiKey']
 def GetInchiVersion() -> str:

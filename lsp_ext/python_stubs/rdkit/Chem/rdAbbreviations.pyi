@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing functions for working with molecular abbreviations
 """
@@ -61,6 +62,8 @@ class _vectN5RDKit13Abbreviations22AbbreviationDefinitionE(Boost.Python.instance
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_internal_reference<1ul, boost::python::default_call_policies>, std::__1::__wrap_iter<RDKit::Abbreviations::AbbreviationDefinition*>> __iter__(boost::python::back_reference<std::__1::vector<RDKit::Abbreviations::AbbreviationDefinition, std::__1::allocator<RDKit::Abbreviations::AbbreviationDefinition>>&>)
         """
     def __len__(self) -> int:
         """

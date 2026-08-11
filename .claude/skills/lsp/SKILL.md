@@ -44,7 +44,9 @@ language server's `stubPath` for any project owning a `pyrightconfig.json` or
 `[tool.basedpyright]`, so such projects read only their environment's own
 `<pkg>-stubs/`. `lua/autocmds/stub_fixes.lua` rewrites those in place (per-env
 confirm, then `didChangeWatchedFiles` to re-type without a restart) — see its
-`M.fixes` for the packages covered and the defects each is detected by.
+`M.fixes` for the packages covered and the marker each is detected by. Detection is
+that marker rather than the absence of defects, because the fixer legitimately
+leaves some behind (properties whose type it cannot read off a live instance).
 
 ## R language server — `...` forwarding patch
 

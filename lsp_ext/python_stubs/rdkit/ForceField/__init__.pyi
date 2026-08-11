@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 from __future__ import annotations
 from rdkit.ForceField.rdForceField import ForceField
 from rdkit.ForceField.rdForceField import MMFFMolProperties

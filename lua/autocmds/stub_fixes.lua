@@ -15,8 +15,8 @@ local M = {}
 
 --- @class StubFix
 --- @field pkg string import name; gates the buffer scan and names `<package>-stubs`
---- @field probe string path inside the stub tree whose content reveals the defect
---- @field defects string[] Lua patterns; any match in the probe means unpatched
+--- @field probe string path inside the stub tree whose head carries the marker
+--- @field marker string comment the script writes at the head of each file it rewrote
 --- @field script string fixer, run as `<env python> <script> <package> --in-place`
 
 --- @class StubFix.Env
@@ -31,7 +31,7 @@ M.fixes = {
         -- in docstrings and types every property `(*args, **kwargs)`. This module
         -- holds SmilesParserParams, which shows both.
         probe = "Chem/rdmolfiles.pyi",
-        defects = { "C%+%+ signature", "@property\n%s*def %w+%(%*args, %*%*kwargs%)" },
+        marker = "# fix_pybind_stubs:",
         script = vim.fn.stdpath("config") .. "/lsp_ext/python_stubs/fix_pybind_stubs.py",
     },
 }
@@ -64,17 +64,6 @@ function M.env_of(path, pkg)
     local root, site = path:match("^(.*)(/lib/python[^/]*/site%-packages)/")
     if not root then return nil end
     return { stubs = root .. site .. "/" .. pkg .. "-stubs", python = root .. "/bin/python" }
-end
-
---- Whether a stub file still carries any of the generator's defects.
---- @param text string contents of a `.pyi`
---- @param defects string[] Lua patterns
---- @return boolean
-function M.is_unpatched(text, defects)
-    for _, defect in ipairs(defects) do
-        if text:find(defect) then return true end
-    end
-    return false
 end
 
 --- Tell a server that every stub file under a directory changed on disk.
@@ -118,15 +107,17 @@ function M.patch(fix, env, client)
         end)
 end
 
---- Offer to patch an environment's stubs if they still carry the defects.
+--- Offer to patch an environment's stubs unless the fixer's marker is already there.
 --- @param fix StubFix
 --- @param env StubFix.Env
 --- @param client vim.lsp.Client
 local function consider(fix, env, client)
     local probe = util.readtext(env.stubs .. "/" .. fix.probe)
-    -- No stubs (or already good) is nothing to do; detecting by content rather
-    -- than a marker file self-heals when a reinstall restores the bad stubs.
-    if not probe or not M.is_unpatched(probe, fix.defects) then
+    -- No stubs, or the fixer's own record of having rewritten them, is nothing to
+    -- do. The marker rather than leftover defects, because the fixer legitimately
+    -- leaves some behind (properties it cannot type); it still self-heals when a
+    -- reinstall restores the bad stubs, which drops the marker with them.
+    if not probe or vim.startswith(probe, fix.marker) then
         state[env.stubs] = "ok"
         return
     end

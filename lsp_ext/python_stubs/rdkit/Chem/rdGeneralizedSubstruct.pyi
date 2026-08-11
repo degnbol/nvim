@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing functions for generalized substructure searching
 """
@@ -20,6 +21,8 @@ class ExtendedQueryMol(Boost.Python.instance):
         """
     def PatternFingerprintQuery(self, fingerprintSize: int = 2048) -> typing.Any:
         """
+            C++ signature :
+                std::__1::unique_ptr<ExplicitBitVect, std::__1::default_delete<ExplicitBitVect>> PatternFingerprintQuery(RDKit::GeneralizedSubstruct::ExtendedQueryMol {lvalue} [,unsigned int=2048])
         """
     def ToBinary(self) -> typing.Any:
         """
@@ -63,4 +66,6 @@ def PatternFingerprintTarget(target: Mol, fingerprintSize: int = 2048) -> typing
     """
         Creates a pattern fingerprint for a target molecule that is compatible with an extended query
     
+        C++ signature :
+            std::__1::unique_ptr<ExplicitBitVect, std::__1::default_delete<ExplicitBitVect>> PatternFingerprintTarget(RDKit::ROMol [,unsigned int=2048])
     """

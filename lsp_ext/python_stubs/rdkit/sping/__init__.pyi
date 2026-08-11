@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 from __future__ import annotations
 __all__: list[str] = ['version', 'version_maj_number', 'version_min_number']
 version: str = '1.1.0'

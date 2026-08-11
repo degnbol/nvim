@@ -8,7 +8,9 @@ function signatures but three defects, since pybind11-stubgen can't parse
 Boost.Python's own signatures: raw C++ in docstrings, enum members named after
 Python keywords emitted as invalid syntax, and untyped `(*args, **kwargs)`
 properties. `fix_pybind_stubs.py` copies them here and fixes those — see its
-docstring; `test_fix_pybind_stubs.py` covers the transforms.
+docstring, with `test_fix_pybind_stubs.py` covering the transforms. Each rewritten
+file opens with a `# fix_pybind_stubs: <package> <version>` comment, recording what
+produced it without reaching pyright's hover.
 
 Vendored as a *complete* package so this `stubPath` copy wins over any
 `rdkit-stubs` installed in a project's environment (an installed one otherwise

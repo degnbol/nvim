@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing implementation of Gaussian-based shape overlay and scoring.NOTE: This functionality is experimental and the API and/or results may change in future releases.
 """

@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 This is the PIDDLE back end for PDF.  It acts as a wrapper
 over the pdfgen.Canvas class, and translates between the

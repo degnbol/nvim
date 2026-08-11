@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
  Supplies an abstract class for working with sequences of molecules
 

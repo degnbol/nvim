@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing functions to enumerate stereoisomers of a molecule.  Chiral centers and double bonds will be enumerated if unassigned, or, if the appropriate option is set, if assigned.  Atropisomers will only be enumerated if assigned.  There is, as yet, no means of finding  unassigned atropisomers.
 """

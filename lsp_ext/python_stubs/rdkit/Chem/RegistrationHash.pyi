@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 
 Generate a unique hash code for a molecule based on chemistry. If two

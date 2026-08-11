@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing RDKit functionality for manipulating molecules.
 """
@@ -218,6 +219,8 @@ class BoolVector(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_value_policy<boost::python::return_by_value, boost::python::default_call_policies>, std::__1::__bit_iterator<std::__1::vector<bool, std::__1::allocator<bool>>, false, 0ul>> __iter__(boost::python::back_reference<std::__1::vector<bool, std::__1::allocator<bool>>&>)
         """
     def __len__(self) -> int:
         """
@@ -518,6 +521,8 @@ class UIntUIntMap(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_value_policy<boost::python::return_by_value, boost::python::default_call_policies>, std::__1::__map_iterator<std::__1::__tree_iterator<std::__1::__value_type<unsigned int, unsigned int>, std::__1::__tree_node<std::__1::__value_type<unsigned int, unsigned int>, void*>*, long>>> __iter__(boost::python::back_reference<std::__1::map<unsigned int, unsigned int, std::__1::less<unsigned int>, std::__1::allocator<std::__1::pair<unsigned int const, unsigned int>>>&>)
         """
     def __len__(self) -> int:
         """
@@ -543,6 +548,8 @@ class _vectN5RDKit9Chirality10StereoInfoE(Boost.Python.instance):
         ...
     def __iter__(self) -> typing.Any:
         """
+            C++ signature :
+                boost::python::objects::iterator_range<boost::python::return_internal_reference<1ul, boost::python::default_call_policies>, std::__1::__wrap_iter<RDKit::Chirality::StereoInfo*>> __iter__(boost::python::back_reference<std::__1::vector<RDKit::Chirality::StereoInfo, std::__1::allocator<RDKit::Chirality::StereoInfo>>&>)
         """
     def __len__(self) -> int:
         """

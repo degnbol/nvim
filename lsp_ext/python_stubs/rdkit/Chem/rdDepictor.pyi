@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing the functionality to compute 2D coordinates for a molecule
 """

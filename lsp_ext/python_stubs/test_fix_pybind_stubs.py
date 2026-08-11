@@ -37,6 +37,13 @@ class SmilesParserParams(Boost.Python.instance):
             C++ signature :
                 void flush(RDKit::Writer {lvalue})
         """
+    def GetFingerprint(self) -> typing.Any:
+        """
+            Returns the fingerprint.
+
+            C++ signature :
+                ExplicitBitVect* GetFingerprint(RDKit::ROMol)
+        """
 '''
 
 
@@ -48,9 +55,37 @@ def test_drops_cpp_only_constructor_docstring():
 
 
 def test_strips_cpp_block_keeps_prose():
-    out = v.strip_cpp_signature(BLOCK)
+    out = v.strip_cpp_signatures(BLOCK)
     assert "C++ signature" not in out
     assert "Flushes the output file." in out  # prose above the block survives
+
+
+def test_keeps_the_block_that_is_the_only_type_source():
+    # GetFingerprint is annotated `-> typing.Any`, so its C++ return is the only
+    # place the real type appears; flush's C++ return is `void`, which is not.
+    out = v.strip_cpp_signatures(BLOCK, v.keepable_signature_lines(BLOCK))
+    assert "ExplicitBitVect* GetFingerprint" in out
+    assert "void flush" not in out
+
+
+def test_keeps_no_block_for_a_fully_typed_def():
+    src = ('def f(mol: Mol) -> int:\n    """\n        C++ signature :\n'
+           "            int f(RDKit::ROMol)\n" '    """\n')
+    assert v.keepable_signature_lines(src) == set()
+
+
+def test_keepable_lines_survive_a_keyword_enum_member():
+    src = ('class E(Boost.Python.enum):\n'
+           '    None: typing.ClassVar[E]  # value = E.None\n'
+           '    OTHER: typing.ClassVar[E]\n'
+           'def f(mol) -> typing.Any:\n    """\n        C++ signature :\n'
+           "            ExplicitBitVect* f(RDKit::ROMol)\n" '    """\n')
+    assert v.keepable_signature_lines(src) == {6}
+
+
+def test_marker_is_a_comment_naming_the_package_and_version():
+    # An uninstalled package also covers the version fallback.
+    assert v.marker_line("nosuchpkg") == "# fix_pybind_stubs: nosuchpkg unknown\n"
 
 
 def test_comments_keyword_enum_member():
@@ -104,7 +139,9 @@ def test_patch_staged_rewrites_the_tree_in_place():
             "fake.Chem.rdmolfiles (No module named 'fake')"
         ]
         out = (root / "Chem" / "rdmolfiles.pyi").read_text()
-        assert "C++ signature" not in out
+        assert out.startswith("# fix_pybind_stubs: fake unknown\n")
+        assert "void flush" not in out            # redundant block dropped
+        assert "ExplicitBitVect* GetFingerprint" in out  # informative one kept
         assert not list(root.parent.glob("fake-stubs.*"))  # no staging/backup left
 
 
@@ -142,7 +179,7 @@ def test_patch_staged_recovers_an_interrupted_swap():
         shutil.copytree(root, root.with_name(root.name + ".new"))
         root.rename(root.with_name(root.name + ".bak"))
         v.patch_staged(root, "fake")
-        assert "C++ signature" not in (root / "Chem" / "rdmolfiles.pyi").read_text()
+        assert (root / "Chem" / "rdmolfiles.pyi").read_text().startswith(v.MARKER_PREFIX)
         assert not list(root.parent.glob("fake-stubs.*"))
 
 

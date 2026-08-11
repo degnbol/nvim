@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 """
 Module containing the calculator for metric matrix calculation, 
 e.g. similarity and distance matrices

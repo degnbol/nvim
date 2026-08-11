@@ -1,3 +1,4 @@
+# fix_pybind_stubs: rdkit 2026.3.5
 from __future__ import annotations
 from builtins import memoryview as binaryHolder
 from rdkit import RDConfig
