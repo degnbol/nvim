@@ -1,0 +1,25 @@
+from __future__ import annotations
+import rdkit.Chem.rdfiltercatalog
+import typing
+__all__: list[str] = ['And', 'Not', 'Or']
+class And(rdkit.Chem.rdfiltercatalog.FilterMatcherBase):
+    __instance_size__: typing.ClassVar[int] = 104
+    @staticmethod
+    def __reduce__(*args, **kwargs):
+        ...
+    def __init__(self, arg1: FilterMatcherBase, arg2: FilterMatcherBase) -> None:
+        ...
+class Not(rdkit.Chem.rdfiltercatalog.FilterMatcherBase):
+    __instance_size__: typing.ClassVar[int] = 88
+    @staticmethod
+    def __reduce__(*args, **kwargs):
+        ...
+    def __init__(self, arg1: FilterMatcherBase) -> None:
+        ...
+class Or(rdkit.Chem.rdfiltercatalog.FilterMatcherBase):
+    __instance_size__: typing.ClassVar[int] = 104
+    @staticmethod
+    def __reduce__(*args, **kwargs):
+        ...
+    def __init__(self, arg1: FilterMatcherBase, arg2: FilterMatcherBase) -> None:
+        ...
