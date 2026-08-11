@@ -42,3 +42,6 @@ rtps/
 # symlinks into python_stubs/ are created by ftplugin/blender.lua
 lsp_ext/blender-stubs/
 lsp_ext/python_stubs/*-stubs
+
+# python bytecode
+__pycache__/

@@ -39,6 +39,13 @@ glob when generating a fallback pyright config for projects without their own
 there). Both neovim and the lint hook pick it up automatically — no config
 changes needed.
 
+**`stubPath` reaches config-less projects only.** basedpyright discards the
+language server's `stubPath` for any project owning a `pyrightconfig.json` or
+`[tool.basedpyright]`, so such projects read only their environment's own
+`<pkg>-stubs/`. `lua/autocmds/stub_fixes.lua` rewrites those in place (per-env
+confirm, then `didChangeWatchedFiles` to re-type without a restart) — see its
+`M.fixes` for the packages covered and the defects each is detected by.
+
 ## R language server — `...` forwarding patch
 
 The R languageserver doesn't resolve `...` forwarding — functions like

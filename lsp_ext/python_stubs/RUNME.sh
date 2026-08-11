@@ -38,6 +38,11 @@ stub gudhi    --with gudhi --with scikit-learn --with matplotlib --with pot \
               --skip gudhi.tensorflow
 stub Bio      --with biopython --static
 
+# rdkit ships official (typed) pybind11-stubgen stubs bundled as rdkit-stubs/.
+# Vendor them as a complete package (so this copy wins over any rdkit-stubs
+# installed in a project's env) and fix the C++ noise and untyped properties.
+uv run --no-project --with rdkit python3 fix_pybind_stubs.py rdkit --out rdkit
+
 # pyrosetta: ~2 GB install, skip if stubs already exist
 if [[ ! -d pyrosetta ]]; then
   for pkg in pyrosetta pyrosetta.rosetta pyrosetta.rosetta.std \

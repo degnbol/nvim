@@ -6,6 +6,7 @@ require "autocmds/lsp"
 require "autocmds/kitty"
 require "autocmds/ftoverrides"
 require "autocmds/docstring"
+require "autocmds/stub_fixes"
 
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "*",
