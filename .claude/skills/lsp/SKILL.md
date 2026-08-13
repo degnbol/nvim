@@ -1,6 +1,6 @@
 ---
 name: lsp
-description: This config's LSP setup — lsp_ext/ external type sources and stubs for basedpyright, the R languageserver `...`-forwarding patch, and the mason-lspconfig field-override workaround. Use when editing lsp/*.lua, lua/plugins/lsp.lua, files under lsp_ext/, or configuring basedpyright/ruff/r_language_server/tinymist.
+description: This config's LSP setup — lsp_ext/ external type sources and stubs for basedpyright, per-script clients for PEP 723 uv scripts, the R languageserver `...`-forwarding patch, and the mason-lspconfig field-override workaround. Use when editing lsp/*.lua, lua/plugins/lsp.lua, files under lsp_ext/, or configuring basedpyright/ruff/r_language_server/tinymist.
 ---
 
 # LSP (this config)
@@ -47,6 +47,27 @@ confirm, then `didChangeWatchedFiles` to re-type without a restart) — see its
 `M.fixes` for the packages covered and the marker each is detected by. Detection is
 that marker rather than the absence of defects, because the fixer legitimately
 leaves some behind (properties whose type it cannot read off a live instance).
+
+## PEP 723 uv scripts — a client per script
+
+A `# /// script` file's dependencies live in an environment of its own under
+`~/.cache/uv/environments-v2/`. `lua/autocmds/uv_script_env.lua` gives such a
+buffer its own basedpyright with `settings.python.pythonPath` set to that
+interpreter, entered from `root_dir` in `lsp/basedpyright.lua` and stopped on
+its last detach. One server per open uv script.
+
+- `pythonPath` is not a config-file field, so unlike `stubPath`/`extraPaths`
+  (above) it survives a project's own `pyrightconfig.json`.
+- `reuse_client = M.same_env` must stay a **field** of the config, not only an
+  argument to `vim.lsp.start`: neovim's default compares name and workspace
+  folders only, so a plain `.py` buffer rooted at a script's directory would
+  inherit that script's environment. Which client belongs to which environment
+  is carried by a `uv_script_python` field on the config, not by
+  `settings.python.pythonPath` — `LspPyrightSetPythonPath` rewrites the live
+  settings in place.
+- The name stays `basedpyright`, so `stub_fixes` applies, prompting once per
+  script environment — and again after a dependency-list edit, which is a new
+  environment.
 
 ## R language server — `...` forwarding patch
 
