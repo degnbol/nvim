@@ -6,7 +6,7 @@ local mod = require("completion.mlr.blink_mlr")
 --- Create a buffer with the given lines, set filetype to zsh, and wait for
 --- tree-sitter to parse. Returns the buffer handle.
 -- Match the real config: zsh files use compound ft "sh.zsh", and
--- lua/autocmds/treesitter.lua registers "zsh" parser for "sh.zsh".
+-- plugin/treesitter.lua registers "zsh" parser for "sh.zsh".
 vim.treesitter.language.register("zsh", "sh.zsh")
 
 local function create_zsh_buffer(lines)

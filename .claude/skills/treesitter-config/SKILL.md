@@ -17,7 +17,7 @@ nvim-treesitter — better than the bash parser, which this config doesn't use.
 
 Zsh files use compound filetype `"sh.zsh"` for vim regex syntax (loads sh
 patterns first, then zsh overrides). `vim.treesitter.language.register("zsh",
-"sh.zsh")` in `lua/autocmds/treesitter.lua` overrides the default
+"sh.zsh")` in `plugin/treesitter.lua` overrides the default
 first-component behaviour so treesitter uses the dedicated zsh parser.
 
 **Parser limitations:** No `indents.scm` (no auto-indent). `~` inside `[[ ]]`

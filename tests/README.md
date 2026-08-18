@@ -50,5 +50,5 @@ Because `minimal_init.lua` adds the config dir to runtimepath, `plugin/` and `ft
 
 `vim.treesitter.get_node()` calls `get_parser(buf)` without an explicit language. This relies on the filetype→parser mapping being correct. Two things to watch:
 
-1. **Compound filetypes**: `"sh.zsh"` maps to the first component `"sh"` by default (no parser installed). The config registers `"zsh"` for `"sh.zsh"` in `lua/autocmds/treesitter.lua`, but if that hasn't loaded, add `vim.treesitter.language.register("zsh", "sh.zsh")` in the test file.
+1. **Compound filetypes**: `"sh.zsh"` maps to the first component `"sh"` by default (no parser installed). The config registers `"zsh"` for `"sh.zsh"` in `plugin/treesitter.lua`, but if that hasn't loaded, add `vim.treesitter.language.register("zsh", "sh.zsh")` in the test file.
 2. **Parser must be created before `get_node()`**: Call `vim.treesitter.get_parser(buf):parse()` after setting buffer content. Without this, `get_node()` returns `nil`.
