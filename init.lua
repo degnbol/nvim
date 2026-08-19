@@ -29,3 +29,4 @@ require("pack_specs")
 vim.cmd.packadd("lz.n")
 require("lz.n").load("plugins")
 
+require("path_highlight").setup()
