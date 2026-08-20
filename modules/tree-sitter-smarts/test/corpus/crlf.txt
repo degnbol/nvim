@@ -1,0 +1,31 @@
+================================================================================
+Carriage returns
+================================================================================
+CCO ethanol
+CCO
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (name))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))))

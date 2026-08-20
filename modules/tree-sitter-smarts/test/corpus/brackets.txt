@@ -1,0 +1,444 @@
+================================================================================
+Hydrogen count with and without a digit
+================================================================================
+[nH]
+[CH]
+[CH3]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (aromatic_symbol)
+              (hydrogen
+                (property_name))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (hydrogen
+                (property_name))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (hydrogen
+                (property_name)
+                (count)))))))))
+
+================================================================================
+Hydrogen alone
+================================================================================
+[H]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (hydrogen
+              (property_name))))))))
+
+================================================================================
+Repeated charge signs are one charge
+================================================================================
+[--]
+[++]
+[+2]
+[O-]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (charge))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (charge))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (charge))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (charge))))))))
+
+================================================================================
+Atomic number
+================================================================================
+[#6]
+[#7,#8]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (atomic_number))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (or_expr
+              (atomic_number)
+              (atomic_number))))))))
+
+================================================================================
+Atom class
+================================================================================
+[C:1]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (atom_class
+                (class_number)))))))))
+
+================================================================================
+Logical operators
+================================================================================
+[c;h1]
+[C&!N]
+[C,N;R]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_low
+              (aromatic_symbol)
+              (property_primitive
+                (property_name)
+                (count))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (negation
+                (element_symbol))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_low
+              (or_expr
+                (element_symbol)
+                (element_symbol))
+              (property_primitive
+                (property_name)))))))))
+
+================================================================================
+Hybridisation
+================================================================================
+[C^3]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (property_primitive
+                (property_name)
+                (count)))))))))
+
+================================================================================
+Isotope
+================================================================================
+[13C]
+[13CH3]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (isotope)
+              (element_symbol)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (and_high
+                (isotope)
+                (element_symbol))
+              (hydrogen
+                (property_name)
+                (count)))))))))
+
+================================================================================
+Chirality classes
+================================================================================
+[C@]
+[C@@]
+[C@TH1]
+[C@AL1]
+[S@TB5]
+[Co@OH12]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (chirality)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (chirality)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (chirality)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (chirality)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (chirality)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (chirality))))))))
+
+================================================================================
+Recursive SMARTS
+================================================================================
+[$(C.C)]
+[$([$(C)])]
+[$([C:1])]
+[!$(CC)]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (recursive
+              (chain
+                (branched_atom
+                  (organic_symbol))
+                (chain
+                  (branched_atom
+                    (organic_symbol))))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (recursive
+              (chain
+                (branched_atom
+                  (bracket_atom
+                    (recursive
+                      (chain
+                        (branched_atom
+                          (organic_symbol)))))))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (recursive
+              (chain
+                (branched_atom
+                  (bracket_atom
+                    (and_high
+                      (element_symbol)
+                      (atom_class
+                        (class_number))))))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (negation
+              (recursive
+                (chain
+                  (branched_atom
+                    (organic_symbol))
+                  (chain
+                    (branched_atom
+                      (organic_symbol))))))))))))
+
+================================================================================
+Property primitives
+================================================================================
+[R]
+[R2]
+[D3]
+[X4]
+[v3]
+[x2]
+[z1]
+[Z2]
+[k1]
+[r6]
+[d2]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (property_primitive
+              (property_name)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (property_primitive
+              (property_name)
+              (count)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (property_primitive
+              (property_name)
+              (count)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (property_primitive
+              (property_name)
+              (count)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (property_primitive
+              (property_name)
+              (count)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (property_primitive
+              (property_name)
+              (count)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (property_primitive
+              (property_name)
+              (count)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (property_primitive
+              (property_name)
+              (count)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (property_primitive
+              (property_name)
+              (count)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (property_primitive
+              (property_name)
+              (count)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (property_primitive
+              (property_name)
+              (count))))))))

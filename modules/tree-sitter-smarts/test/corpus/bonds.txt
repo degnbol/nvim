@@ -1,0 +1,357 @@
+================================================================================
+Quadruple bond
+================================================================================
+C$C
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (bond
+          (bond_prim))
+        (chain
+          (branched_atom
+            (organic_symbol)))))))
+
+================================================================================
+Negated bond primitives
+================================================================================
+C!-!=C
+C!-C
+C!#C
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (bond
+          (bond_prim)
+          (bond_prim))
+        (chain
+          (branched_atom
+            (organic_symbol))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (bond
+          (bond_prim))
+        (chain
+          (branched_atom
+            (organic_symbol))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (bond
+          (bond_prim))
+        (chain
+          (branched_atom
+            (organic_symbol)))))))
+
+================================================================================
+Bond expressions
+================================================================================
+C-,=C
+C-;@C
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (bond
+          (bond_prim)
+          (bond_prim))
+        (chain
+          (branched_atom
+            (organic_symbol))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (bond
+          (bond_prim)
+          (bond_prim))
+        (chain
+          (branched_atom
+            (organic_symbol)))))))
+
+================================================================================
+Three-digit ring closure
+================================================================================
+C%(100)CCCC%(100)
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol)
+          (ring_bond
+            (ring_number)))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))
+            (chain
+              (branched_atom
+                (organic_symbol))
+              (chain
+                (branched_atom
+                  (organic_symbol)
+                  (ring_bond
+                    (ring_number)))))))))))
+
+================================================================================
+Two-digit ring closure
+================================================================================
+C%10CCCCCCCCC%10
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol)
+          (ring_bond
+            (ring_number)))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))
+            (chain
+              (branched_atom
+                (organic_symbol))
+              (chain
+                (branched_atom
+                  (organic_symbol))
+                (chain
+                  (branched_atom
+                    (organic_symbol))
+                  (chain
+                    (branched_atom
+                      (organic_symbol))
+                    (chain
+                      (branched_atom
+                        (organic_symbol))
+                      (chain
+                        (branched_atom
+                          (organic_symbol))
+                        (chain
+                          (branched_atom
+                            (organic_symbol)
+                            (ring_bond
+                              (ring_number))))))))))))))))
+
+================================================================================
+Bond-prefixed ring closure
+================================================================================
+C-1CCCCC-1
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol)
+          (ring_bond
+            (bond
+              (bond_prim))
+            (ring_number)))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))
+            (chain
+              (branched_atom
+                (organic_symbol))
+              (chain
+                (branched_atom
+                  (organic_symbol))
+                (chain
+                  (branched_atom
+                    (organic_symbol)
+                    (ring_bond
+                      (bond
+                        (bond_prim))
+                      (ring_number))))))))))))
+
+================================================================================
+Branches
+================================================================================
+[C@@](F)(Cl)Br
+CC(=O)O
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (chirality)))
+          (branch
+            (chain
+              (branched_atom
+                (organic_symbol))))
+          (branch
+            (chain
+              (branched_atom
+                (organic_symbol)))))
+        (chain
+          (branched_atom
+            (organic_symbol))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol)
+            (branch
+              (bond
+                (bond_prim))
+              (chain
+                (branched_atom
+                  (organic_symbol)))))
+          (chain
+            (branched_atom
+              (organic_symbol))))))))
+
+================================================================================
+Disconnected components
+================================================================================
+C.C
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol)))))))
+
+================================================================================
+Dative bonds
+================================================================================
+N->[Pt]<-N
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (bond
+          (bond_prim))
+        (chain
+          (branched_atom
+            (bracket_atom
+              (element_symbol)))
+          (bond
+            (bond_prim))
+          (chain
+            (branched_atom
+              (organic_symbol))))))))
+
+================================================================================
+A dative bond closes a ring
+================================================================================
+N->1CC1
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol)
+          (ring_bond
+            (bond
+              (bond_prim))
+            (ring_number)))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol)
+              (ring_bond
+                (ring_number)))))))))
+
+================================================================================
+A dative bond in a bond expression
+================================================================================
+[C]-,->[O]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (element_symbol)))
+        (bond
+          (bond_prim)
+          (bond_prim))
+        (chain
+          (branched_atom
+            (bracket_atom
+              (element_symbol))))))))
+
+================================================================================
+A doubled backslash is one bond
+================================================================================
+C/C=C\\C
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (bond
+          (bond_prim))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (bond
+            (bond_prim))
+          (chain
+            (branched_atom
+              (organic_symbol))
+            (bond
+              (bond_prim))
+            (chain
+              (branched_atom
+                (organic_symbol)))))))))

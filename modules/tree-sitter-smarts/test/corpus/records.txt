@@ -1,0 +1,254 @@
+================================================================================
+Header line
+================================================================================
+SMILES	Name	Activity
+CCO ethanol
+--------------------------------------------------------------------------------
+
+(source_file
+  (header
+    (header_field)
+    (header_field)
+    (header_field))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (name)))
+
+================================================================================
+A first line that parses as a structure is a record
+================================================================================
+CCO ethanol
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (name)))
+
+================================================================================
+Comment
+================================================================================
+# ethanol
+  # indented
+CCO
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (comment)
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))))
+
+================================================================================
+Blank lines
+================================================================================
+CCO
+
+   
+CCO
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol)))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))))
+
+================================================================================
+Trailing whitespace after a structure
+================================================================================
+CCO   
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))))
+
+================================================================================
+Name with internal spaces
+================================================================================
+CCO	ethyl alcohol
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (name)))
+
+================================================================================
+CX layer on a molecule
+================================================================================
+[#6][#6][#8] |$foo;;$|
+CCO |(0,0,;1,0,;2,0,)| ethanol
+CCO |$_R1;;$| ethanol
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (atomic_number)))
+        (chain
+          (branched_atom
+            (bracket_atom
+              (atomic_number)))
+          (chain
+            (branched_atom
+              (bracket_atom
+                (atomic_number)))))))
+    (cx_layer
+      (cx_atom_labels
+        (label))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (cx_layer
+      (cx_coordinates
+        (coordinate)
+        (coordinate)
+        (coordinate)
+        (coordinate)
+        (coordinate)
+        (coordinate)))
+    (name))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (cx_layer
+      (cx_atom_labels
+        (label)))
+    (name)))
+
+================================================================================
+CX layer on a reaction
+================================================================================
+[C:1][O:2]>>[C:1][O:2] |$a;b;c;d$|
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (atom_class
+                (class_number)))))
+        (chain
+          (branched_atom
+            (bracket_atom
+              (and_high
+                (element_symbol)
+                (atom_class
+                  (class_number)))))))
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (atom_class
+                (class_number)))))
+        (chain
+          (branched_atom
+            (bracket_atom
+              (and_high
+                (element_symbol)
+                (atom_class
+                  (class_number))))))))
+    (cx_layer
+      (cx_atom_labels
+        (label)
+        (label)
+        (label)
+        (label)))))
+
+================================================================================
+A name may not begin with a pipe
+:error
+================================================================================
+CCO |unclosed
+--------------------------------------------------------------------------------
+
+(source_file)

@@ -1,0 +1,17 @@
+{
+  "grammars": [
+    {
+      "name": "smarts",
+      "scope": "source.smarts",
+      "path": ".",
+      "file-types": ["smarts", "sma", "smirks", "smi", "smiles", "cxsmiles", "rsmi"],
+      "highlights": "queries/smarts/highlights.scm",
+      "injection-regex": "smarts"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Tree-sitter grammar for chemical line notation: SMILES, SMARTS, SMIRKS and their CX and reaction layers"
+  }
+}

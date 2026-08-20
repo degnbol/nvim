@@ -36,6 +36,11 @@ return {
                             path = vim.fn.stdpath('config') .. '/modules/tree-sitter-miller',
                         },
                     }
+                    parsers.smarts = {
+                        install_info = {
+                            path = vim.fn.stdpath('config') .. '/modules/tree-sitter-smarts',
+                        },
+                    }
                 end
             })
 
@@ -86,6 +91,7 @@ return {
                     "css",
                     "pymol_select", -- local grammar registered above
                     "miller",       -- local grammar registered above
+                    "smarts",       -- local grammar registered above
                 }
                 -- Expose task so headless scripts can wait on it:
                 -- nvim --headless +"lua require('nvim-treesitter')._install_task:wait()" +qa

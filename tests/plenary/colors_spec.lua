@@ -256,3 +256,68 @@ describe("colors", function()
         end)
     end)
 end)
+
+describe("contrast_ratio", function()
+    it("is 21:1 for black against white", function()
+        assert(approx_equal(21, colors.contrast_ratio("#000000", "#FFFFFF"), 0.01))
+    end)
+
+    it("is 1:1 for a colour against itself", function()
+        assert(approx_equal(1, colors.contrast_ratio("#e06633", "#e06633"), 0.001))
+    end)
+
+    it("does not depend on the argument order", function()
+        assert(approx_equal(colors.contrast_ratio("#faf4ed", "#3050f8"),
+            colors.contrast_ratio("#3050f8", "#faf4ed"), 1e-12))
+    end)
+end)
+
+describe("chem palette", function()
+    local elements = require("chem/elements")
+    local palette = require("chem/highlight")
+    local hi = require("utils/highlights")
+
+    -- `Normal`'s background in the light and dark colorschemes this config ships
+    -- (dawnfox and terafox); the generator hardcodes the same pair.
+    local backgrounds = { light = "#faf4ed", dark = "#152528" }
+
+    -- The floor the hand-written palette already met: fluorine on light,
+    -- iodine on dark.
+    local FLOOR = 2.0
+
+    for background, hex in pairs(backgrounds) do
+        it("stays legible on " .. background, function()
+            for _, element in ipairs(elements) do
+                local ratio = colors.contrast_ratio(element[background], hex)
+                assert(ratio >= FLOOR,
+                    ("%s is %.2f:1 on %s"):format(element.name, ratio, background))
+            end
+        end)
+
+        it("gives no two elements one colour on " .. background, function()
+            local named = {}
+            for _, element in ipairs(elements) do
+                assert(not named[element[background]],
+                    ("%s and %s share %s"):format(named[element[background]],
+                        element.name, element[background]))
+                named[element[background]] = element.name
+            end
+        end)
+    end
+
+    -- Over the whole table, not one element: 56 of the 97 rows carry the same
+    -- hex in both columns, so a single element proves nothing about the switch.
+    it("takes the column 'background' names", function()
+        local restore = vim.o.background
+        palette.setup()
+        for background in pairs(backgrounds) do
+            vim.o.background = background
+            vim.api.nvim_exec_autocmds("ColorScheme", { group = "onColorScheme" })
+            for _, element in ipairs(elements) do
+                assert.are.equal(element[background],
+                    ("#%06x"):format(hi.get("@chem.element." .. element.name).fg))
+            end
+        end
+        vim.o.background = restore
+    end)
+end)

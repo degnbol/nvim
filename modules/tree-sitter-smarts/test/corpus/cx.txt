@@ -1,0 +1,361 @@
+================================================================================
+Coordinates, with the components the writer omits
+================================================================================
+CCO |(-1.29904,-0.25,;0,0.5,;1.29904,-0.25,)|
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (cx_layer
+      (cx_coordinates
+        (coordinate)
+        (coordinate)
+        (coordinate)
+        (coordinate)
+        (coordinate)
+        (coordinate)))))
+
+================================================================================
+An empty point puts its atom at the origin
+================================================================================
+CCO |(;;)|
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (cx_layer
+      (cx_coordinates))))
+
+================================================================================
+Atom labels, one per atom, empty where the atom has none
+================================================================================
+*-CCCN-* |$star_e;;;;;star_e$|
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (wildcard))
+        (bond
+          (bond_prim))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))
+            (chain
+              (branched_atom
+                (organic_symbol))
+              (chain
+                (branched_atom
+                  (organic_symbol))
+                (bond
+                  (bond_prim))
+                (chain
+                  (branched_atom
+                    (wildcard)))))))))
+    (cx_layer
+      (cx_atom_labels
+        (label)
+        (label)))))
+
+================================================================================
+Atom values are the same block under another marker
+================================================================================
+CCO |$_AV:one;;three$|
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (cx_layer
+      (cx_atom_values
+        (label)
+        (label)))))
+
+================================================================================
+A label may hold what would otherwise delimit
+================================================================================
+CCO |$R&#44;1;a>b;$|
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (cx_layer
+      (cx_atom_labels
+        (label
+          (escape))
+        (label)))))
+
+================================================================================
+Atom properties name their own keys
+================================================================================
+CNC |atomProp:0.pKa.4.76:1.tag.an amine|
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (cx_layer
+      (cx_atom_props
+        (atom_prop
+          (index)
+          (prop_name)
+          (prop_value))
+        (atom_prop
+          (index)
+          (prop_name)
+          (prop_value))))))
+
+================================================================================
+A data sgroup, whose query operator is a bare greater-than
+================================================================================
+CCCC |SgD:3,2,1,0:pH:7:>=:mol/L:t:(1.,1.)|
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))
+            (chain
+              (branched_atom
+                (organic_symbol)))))))
+    (cx_layer
+      (cx_data_sgroup
+        (index)
+        (index)
+        (index)
+        (index)
+        (sgroup_field)
+        (sgroup_field)
+        (sgroup_field)
+        (sgroup_field)
+        (sgroup_field))
+      (cx_coordinates
+        (coordinate)
+        (coordinate)))))
+
+================================================================================
+A polymer sgroup, with the comma of its superscript escaped
+================================================================================
+*-CCCN-* |Sg:n:1,2,3::hh&#44;f:6,0,:4,2,|
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (wildcard))
+        (bond
+          (bond_prim))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))
+            (chain
+              (branched_atom
+                (organic_symbol))
+              (chain
+                (branched_atom
+                  (organic_symbol))
+                (bond
+                  (bond_prim))
+                (chain
+                  (branched_atom
+                    (wildcard)))))))))
+    (cx_layer
+      (cx_polymer_sgroup
+        (sgroup_type)
+        (index)
+        (index)
+        (index)
+        (sgroup_field)
+        (index)
+        (index)
+        (index)
+        (index)))))
+
+================================================================================
+An unknown sgroup type is not a sgroup
+:error
+================================================================================
+CCC |Sg:bogus:0|
+--------------------------------------------------------------------------------
+
+
+
+================================================================================
+Radicals, ring bond counts and wedges all index atoms
+================================================================================
+[CH2]C |^1:0,2,rb:0:*,wU:1.0|
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (hydrogen
+                (property_name)
+                (count)))))
+        (chain
+          (branched_atom
+            (organic_symbol)))))
+    (cx_layer
+      (cx_field
+        (cx_name)
+        (index)
+        (index))
+      (cx_field
+        (cx_name)
+        (index)
+        (wildcard))
+      (cx_field
+        (cx_name)
+        (index)
+        (index)))))
+
+================================================================================
+Fields in one layer, comma separated
+================================================================================
+CCO |(1,1,;2,2,;3,3,),$a;b;c$,atomProp:0.k.v|
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (cx_layer
+      (cx_coordinates
+        (coordinate)
+        (coordinate)
+        (coordinate)
+        (coordinate)
+        (coordinate)
+        (coordinate))
+      (cx_atom_labels
+        (label)
+        (label)
+        (label))
+      (cx_atom_props
+        (atom_prop
+          (index)
+          (prop_name)
+          (prop_value))))))
+
+================================================================================
+An empty layer
+================================================================================
+CCO ||
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (cx_layer)))
+
+================================================================================
+A layer, then a name
+================================================================================
+CCO |^1:0| ethanol
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (organic_symbol))
+          (chain
+            (branched_atom
+              (organic_symbol))))))
+    (cx_layer
+      (cx_field
+        (cx_name)
+        (index)))
+    (name)))

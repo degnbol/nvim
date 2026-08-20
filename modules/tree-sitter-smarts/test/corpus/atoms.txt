@@ -1,0 +1,336 @@
+================================================================================
+Bare two-letter sequences are two atoms
+================================================================================
+Sn
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (aromatic_symbol)))))))
+
+================================================================================
+Bracketed, the same two letters are one element
+================================================================================
+[Sn]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (element_symbol)))))))
+
+================================================================================
+Thiophenol: sulfur and aromatic carbon, not scandium
+================================================================================
+Sc1ccccc1
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (organic_symbol))
+        (chain
+          (branched_atom
+            (aromatic_symbol)
+            (ring_bond
+              (ring_number)))
+          (chain
+            (branched_atom
+              (aromatic_symbol))
+            (chain
+              (branched_atom
+                (aromatic_symbol))
+              (chain
+                (branched_atom
+                  (aromatic_symbol))
+                (chain
+                  (branched_atom
+                    (aromatic_symbol))
+                  (chain
+                    (branched_atom
+                      (aromatic_symbol)
+                      (ring_bond
+                        (ring_number)))))))))))))
+
+================================================================================
+Inside brackets element symbols win by longest match
+================================================================================
+[Ra]
+[As]
+[Sc]
+[Ar]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (element_symbol))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (element_symbol))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (element_symbol))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (element_symbol)))))))
+
+================================================================================
+Nh is nitrogen plus implicit-H count, not nihonium
+================================================================================
+[Nh]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (and_high
+              (element_symbol)
+              (property_primitive
+                (property_name)))))))))
+
+================================================================================
+Bare aromatic alphabet
+================================================================================
+b1ccccc1
+c1ccccc1
+n1ccccc1
+o1cccc1
+p1cccc1
+s1cccc1
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (aromatic_symbol)
+          (ring_bond
+            (ring_number)))
+        (chain
+          (branched_atom
+            (aromatic_symbol))
+          (chain
+            (branched_atom
+              (aromatic_symbol))
+            (chain
+              (branched_atom
+                (aromatic_symbol))
+              (chain
+                (branched_atom
+                  (aromatic_symbol))
+                (chain
+                  (branched_atom
+                    (aromatic_symbol)
+                    (ring_bond
+                      (ring_number)))))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (aromatic_symbol)
+          (ring_bond
+            (ring_number)))
+        (chain
+          (branched_atom
+            (aromatic_symbol))
+          (chain
+            (branched_atom
+              (aromatic_symbol))
+            (chain
+              (branched_atom
+                (aromatic_symbol))
+              (chain
+                (branched_atom
+                  (aromatic_symbol))
+                (chain
+                  (branched_atom
+                    (aromatic_symbol)
+                    (ring_bond
+                      (ring_number)))))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (aromatic_symbol)
+          (ring_bond
+            (ring_number)))
+        (chain
+          (branched_atom
+            (aromatic_symbol))
+          (chain
+            (branched_atom
+              (aromatic_symbol))
+            (chain
+              (branched_atom
+                (aromatic_symbol))
+              (chain
+                (branched_atom
+                  (aromatic_symbol))
+                (chain
+                  (branched_atom
+                    (aromatic_symbol)
+                    (ring_bond
+                      (ring_number)))))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (aromatic_symbol)
+          (ring_bond
+            (ring_number)))
+        (chain
+          (branched_atom
+            (aromatic_symbol))
+          (chain
+            (branched_atom
+              (aromatic_symbol))
+            (chain
+              (branched_atom
+                (aromatic_symbol))
+              (chain
+                (branched_atom
+                  (aromatic_symbol)
+                  (ring_bond
+                    (ring_number))))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (aromatic_symbol)
+          (ring_bond
+            (ring_number)))
+        (chain
+          (branched_atom
+            (aromatic_symbol))
+          (chain
+            (branched_atom
+              (aromatic_symbol))
+            (chain
+              (branched_atom
+                (aromatic_symbol))
+              (chain
+                (branched_atom
+                  (aromatic_symbol)
+                  (ring_bond
+                    (ring_number))))))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (aromatic_symbol)
+          (ring_bond
+            (ring_number)))
+        (chain
+          (branched_atom
+            (aromatic_symbol))
+          (chain
+            (branched_atom
+              (aromatic_symbol))
+            (chain
+              (branched_atom
+                (aromatic_symbol))
+              (chain
+                (branched_atom
+                  (aromatic_symbol)
+                  (ring_bond
+                    (ring_number)))))))))))
+
+================================================================================
+Bracket-only aromatics
+================================================================================
+[si]
+[as]
+[se]
+[te]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (aromatic_symbol))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (aromatic_symbol))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (aromatic_symbol))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (aromatic_symbol)))))))
+
+================================================================================
+Wildcards
+================================================================================
+*A
+[a]
+[A]
+[*]
+--------------------------------------------------------------------------------
+
+(source_file
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (wildcard))
+        (chain
+          (branched_atom
+            (wildcard))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (wildcard))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (wildcard))))))
+  (record
+    (structure
+      (chain
+        (branched_atom
+          (bracket_atom
+            (wildcard)))))))

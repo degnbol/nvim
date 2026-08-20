@@ -491,6 +491,26 @@ function M.hex_to_CIELab(hex)
     return M.sRGB_to_CIELab(M.hex_to_sRGB(hex))
 end
 
+---Relative luminance as WCAG 2.1 defines it: CIE Y under D65, which is the
+---second row of the sRGB primary matrix.
+---https://www.w3.org/TR/WCAG21/#dfn-relative-luminance
+---@param hex string
+---@return number luminance 0 for black, 1 for white
+function M.hex_to_luminance(hex)
+    return M.lRGB_to_XYZ(M.sRGB_to_lRGB(M.hex_to_sRGB(hex)))[2]
+end
+
+---WCAG 2.1 contrast ratio between two colors, whichever is the lighter.
+---https://www.w3.org/TR/WCAG21/#dfn-contrast-ratio
+---@param hex1 string
+---@param hex2 string
+---@return number ratio 1 for two identical colors, 21 for black against white
+function M.contrast_ratio(hex1, hex2)
+    local brighter, dimmer = M.hex_to_luminance(hex1), M.hex_to_luminance(hex2)
+    if dimmer > brighter then brighter, dimmer = dimmer, brighter end
+    return (brighter + 0.05) / (dimmer + 0.05)
+end
+
 function M.CIELab_to_hex(cielab)
     return M.sRGB_to_hex(M.CIELab_to_sRGB(cielab))
 end

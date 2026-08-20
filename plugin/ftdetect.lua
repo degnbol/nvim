@@ -6,6 +6,11 @@ vim.filetype.add {
         crd = "asciidoc.chordpro",
         cypher = "cypher", cyp = "cypher", cql = "cypher",
         mlr = "miller",
+        -- Chemical line notation. A `.smarts` file is not written in SMILES, so
+        -- the dialect is recorded in the filetype; both share one parser.
+        -- `.smi` otherwise resolves to the built-in `mib`.
+        smi = "smiles", smiles = "smiles", cxsmiles = "smiles", rsmi = "smiles",
+        smarts = "smarts", sma = "smarts", smirks = "smarts",
         pdb = "pdb",
         piano = "piano",
         pml = "pymol",

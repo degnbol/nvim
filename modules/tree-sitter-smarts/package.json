@@ -1,0 +1,13 @@
+{
+  "name": "tree-sitter-smarts",
+  "version": "0.1.0",
+  "description": "Tree-sitter grammar for SMILES, SMARTS, SMIRKS and CXSMILES",
+  "main": "bindings/node",
+  "keywords": ["parser", "tree-sitter", "smarts", "smiles", "cheminformatics"],
+  "dependencies": {
+    "nan": "^2.18.0"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.25.0"
+  }
+}
