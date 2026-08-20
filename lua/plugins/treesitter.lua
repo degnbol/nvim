@@ -24,16 +24,16 @@ return {
                             queries = 'queries',
                         },
                     }
+                    -- The local grammars' queries resolve off the rtp: modules/ is in
+                    -- runtimepath, in standard queries/<lang>/ layout.
                     parsers.pymol_select = {
                         install_info = {
                             path = vim.fn.stdpath('config') .. '/modules/tree-sitter-pymol-select',
-                            queries = 'queries',
                         },
                     }
                     parsers.miller = {
                         install_info = {
                             path = vim.fn.stdpath('config') .. '/modules/tree-sitter-miller',
-                            queries = 'queries',
                         },
                     }
                 end
