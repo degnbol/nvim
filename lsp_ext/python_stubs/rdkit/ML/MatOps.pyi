@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Matrix operations which may or may not come in handy some day
 

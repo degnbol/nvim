@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Atom-based calculation of LogP and MR using Crippen's approach
 
@@ -52,3 +52,33 @@ def _pyMolMR(inMol, patts = None, order = None, verbose = 0, addHs = 1):
 _patternOrder: list = list()
 _smartsPatterns: dict = {}
 defaultPatternFileName: str = '/Users/runner/work/rdkit-pypi/rdkit-pypi/build/temp.macosx-11.0-arm64-cpython-311/rdkit_install/share/RDKit/Data/Crippen.txt'
+
+# present at runtime, absent from the generated stub:
+def MolLogP(*x, **y):
+    r"""
+    Wildman-Crippen LogP value
+
+    Uses an atom-based scheme based on the values in the paper:
+       S. A. Wildman and G. M. Crippen JCICS 39 868-873 (1999)
+
+    **Arguments**
+
+      - inMol: a molecule
+
+      - addHs: (optional) toggles adding of Hs to the molecule for the calculation.
+        If true, hydrogens will be added to the molecule and used in the calculation.
+    """
+def MolMR(*x, **y):
+    r"""
+    Wildman-Crippen MR value
+
+    Uses an atom-based scheme based on the values in the paper:
+       S. A. Wildman and G. M. Crippen JCICS 39 868-873 (1999)
+
+    **Arguments**
+
+      - inMol: a molecule
+
+      - addHs: (optional) toggles adding of Hs to the molecule for the calculation.
+        If true, hydrogens will be added to the molecule and used in the calculation.
+    """

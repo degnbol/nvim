@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  contains the Cluster class for representing hierarchical cluster trees
 

@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 from collections import abc
 from rdkit import Chem
@@ -358,3 +358,196 @@ _descList: list  # value = [('MaxAbsEStateIndex', rdkit.Chem.EState.EState.MaxAb
 autocorr: rdkit.Chem.ChemUtils.DescriptorUtilities.VectorDescriptorWrapper  # value = <rdkit.Chem.ChemUtils.DescriptorUtilities.VectorDescriptorWrapper object>
 descList: list  # value = [('MaxAbsEStateIndex', rdkit.Chem.EState.EState.MaxAbsEStateIndex), ('MaxEStateIndex', rdkit.Chem.EState.EState.MaxEStateIndex), ('MinAbsEStateIndex', rdkit.Chem.EState.EState.MinAbsEStateIndex), ('MinEStateIndex', rdkit.Chem.EState.EState.MinEStateIndex), ('qed', rdkit.Chem.QED.qed), ('SPS', rdkit.Chem.SpacialScore.SPS), ('MolWt', <function <lambda> at 0x106a7e2a0>), ('HeavyAtomMolWt', HeavyAtomMolWt), ('ExactMolWt', <function <lambda> at 0x106a7eb60>), ('NumValenceElectrons', NumValenceElectrons), ('NumRadicalElectrons', NumRadicalElectrons), ('MaxPartialCharge', MaxPartialCharge), ('MinPartialCharge', MinPartialCharge), ('MaxAbsPartialCharge', MaxAbsPartialCharge), ('MinAbsPartialCharge', MinAbsPartialCharge), ('FpDensityMorgan1', FpDensityMorgan1), ('FpDensityMorgan2', FpDensityMorgan2), ('FpDensityMorgan3', FpDensityMorgan3), ('BCUT2D_MWHI', rdkit.Chem.ChemUtils.DescriptorUtilities.BCUT2D_MWHI), ('BCUT2D_MWLOW', rdkit.Chem.ChemUtils.DescriptorUtilities.BCUT2D_MWLOW), ('BCUT2D_CHGHI', rdkit.Chem.ChemUtils.DescriptorUtilities.BCUT2D_CHGHI), ('BCUT2D_CHGLO', rdkit.Chem.ChemUtils.DescriptorUtilities.BCUT2D_CHGLO), ('BCUT2D_LOGPHI', rdkit.Chem.ChemUtils.DescriptorUtilities.BCUT2D_LOGPHI), ('BCUT2D_LOGPLOW', rdkit.Chem.ChemUtils.DescriptorUtilities.BCUT2D_LOGPLOW), ('BCUT2D_MRHI', rdkit.Chem.ChemUtils.DescriptorUtilities.BCUT2D_MRHI), ('BCUT2D_MRLOW', rdkit.Chem.ChemUtils.DescriptorUtilities.BCUT2D_MRLOW), ('AvgIpc', rdkit.Chem.GraphDescriptors.AvgIpc), ('BalabanJ', rdkit.Chem.GraphDescriptors.BalabanJ), ('BertzCT', rdkit.Chem.GraphDescriptors.BertzCT), ('Chi0', rdkit.Chem.GraphDescriptors.Chi0), ('Chi0n', <function <lambda> at 0x106aa5760>), ('Chi0v', <function <lambda> at 0x106aa53a0>), ('Chi1', rdkit.Chem.GraphDescriptors.Chi1), ('Chi1n', <function <lambda> at 0x106aa5800>), ('Chi1v', <function <lambda> at 0x106aa5440>), ('Chi2n', <function <lambda> at 0x106aa58a0>), ('Chi2v', <function <lambda> at 0x106aa54e0>), ('Chi3n', <function <lambda> at 0x106aa5940>), ('Chi3v', <function <lambda> at 0x106aa5580>), ('Chi4n', <function <lambda> at 0x106aa59e0>), ('Chi4v', <function <lambda> at 0x106aa5620>), ('HallKierAlpha', <function <lambda> at 0x106aa4720>), ('Ipc', rdkit.Chem.GraphDescriptors.Ipc), ('Kappa1', <function <lambda> at 0x106aa47c0>), ('Kappa2', <function <lambda> at 0x106aa4860>), ('Kappa3', <function <lambda> at 0x106aa4900>), ('LabuteASA', <function <lambda> at 0x106a7d300>), ('PEOE_VSA1', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c9a0>), ('PEOE_VSA10', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7cf40>), ('PEOE_VSA11', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7cfe0>), ('PEOE_VSA12', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7d080>), ('PEOE_VSA13', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7d120>), ('PEOE_VSA14', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7d1c0>), ('PEOE_VSA2', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7ca40>), ('PEOE_VSA3', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7cae0>), ('PEOE_VSA4', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7cb80>), ('PEOE_VSA5', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7cc20>), ('PEOE_VSA6', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7ccc0>), ('PEOE_VSA7', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7cd60>), ('PEOE_VSA8', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7ce00>), ('PEOE_VSA9', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7cea0>), ('SMR_VSA1', <function _InstallDescriptors.<locals>.<lambda> at 0x106a4fba0>), ('SMR_VSA10', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c180>), ('SMR_VSA2', <function _InstallDescriptors.<locals>.<lambda> at 0x106a4fc40>), ('SMR_VSA3', <function _InstallDescriptors.<locals>.<lambda> at 0x106a4fce0>), ('SMR_VSA4', <function _InstallDescriptors.<locals>.<lambda> at 0x106a4fd80>), ('SMR_VSA5', <function _InstallDescriptors.<locals>.<lambda> at 0x106a4fe20>), ('SMR_VSA6', <function _InstallDescriptors.<locals>.<lambda> at 0x106a4fec0>), ('SMR_VSA7', <function _InstallDescriptors.<locals>.<lambda> at 0x106a4ff60>), ('SMR_VSA8', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c040>), ('SMR_VSA9', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c0e0>), ('SlogP_VSA1', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c220>), ('SlogP_VSA10', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c7c0>), ('SlogP_VSA11', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c860>), ('SlogP_VSA12', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c900>), ('SlogP_VSA2', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c2c0>), ('SlogP_VSA3', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c360>), ('SlogP_VSA4', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c400>), ('SlogP_VSA5', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c4a0>), ('SlogP_VSA6', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c540>), ('SlogP_VSA7', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c5e0>), ('SlogP_VSA8', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c680>), ('SlogP_VSA9', <function _InstallDescriptors.<locals>.<lambda> at 0x106a7c720>), ('TPSA', <function <lambda> at 0x106a7d4e0>), ('EState_VSA1', rdkit.Chem.EState.EState_VSA.EState_VSA1), ('EState_VSA10', rdkit.Chem.EState.EState_VSA.EState_VSA10), ('EState_VSA11', rdkit.Chem.EState.EState_VSA.EState_VSA11), ('EState_VSA2', rdkit.Chem.EState.EState_VSA.EState_VSA2), ('EState_VSA3', rdkit.Chem.EState.EState_VSA.EState_VSA3), ('EState_VSA4', rdkit.Chem.EState.EState_VSA.EState_VSA4), ('EState_VSA5', rdkit.Chem.EState.EState_VSA.EState_VSA5), ('EState_VSA6', rdkit.Chem.EState.EState_VSA.EState_VSA6), ('EState_VSA7', rdkit.Chem.EState.EState_VSA.EState_VSA7), ('EState_VSA8', rdkit.Chem.EState.EState_VSA.EState_VSA8), ('EState_VSA9', rdkit.Chem.EState.EState_VSA.EState_VSA9), ('VSA_EState1', <function _descriptor_VSA_EState.<locals>.VSA_EState_bin at 0x106aa7560>), ('VSA_EState10', <function _descriptor_VSA_EState.<locals>.VSA_EState_bin at 0x106aa7b00>), ('VSA_EState2', <function _descriptor_VSA_EState.<locals>.VSA_EState_bin at 0x106aa7600>), ('VSA_EState3', <function _descriptor_VSA_EState.<locals>.VSA_EState_bin at 0x106aa76a0>), ('VSA_EState4', <function _descriptor_VSA_EState.<locals>.VSA_EState_bin at 0x106aa7740>), ('VSA_EState5', <function _descriptor_VSA_EState.<locals>.VSA_EState_bin at 0x106aa77e0>), ('VSA_EState6', <function _descriptor_VSA_EState.<locals>.VSA_EState_bin at 0x106aa7880>), ('VSA_EState7', <function _descriptor_VSA_EState.<locals>.VSA_EState_bin at 0x106aa7920>), ('VSA_EState8', <function _descriptor_VSA_EState.<locals>.VSA_EState_bin at 0x106aa79c0>), ('VSA_EState9', <function _descriptor_VSA_EState.<locals>.VSA_EState_bin at 0x106aa7a60>), ('FractionCSP3', <function <lambda> at 0x106aa6700>), ('HeavyAtomCount', rdkit.Chem.Lipinski.HeavyAtomCount), ('NHOHCount', <function <lambda> at 0x106aa6520>), ('NOCount', <function <lambda> at 0x106aa6480>), ('NumAliphaticCarbocycles', <function <lambda> at 0x106aa6c00>), ('NumAliphaticHeterocycles', <function <lambda> at 0x106aa6ca0>), ('NumAliphaticRings', <function <lambda> at 0x106aa6b60>), ('NumAmideBonds', <function <lambda> at 0x106aa6e80>), ('NumAromaticCarbocycles', <function <lambda> at 0x106aa67a0>), ('NumAromaticHeterocycles', <function <lambda> at 0x106aa6980>), ('NumAromaticRings', <function <lambda> at 0x106aa6840>), ('NumAtomStereoCenters', <function <lambda> at 0x106aa6f20>), ('NumBridgeheadAtoms', <function <lambda> at 0x106aa6de0>), ('NumHAcceptors', <function <lambda> at 0x106aa60c0>), ('NumHDonors', <function <lambda> at 0x106aa5f80>), ('NumHeteroatoms', <function <lambda> at 0x106aa6200>), ('NumHeterocycles', <function <lambda> at 0x106aa6fc0>), ('NumRotatableBonds', <function <lambda> at 0x106aa6340>), ('NumSaturatedCarbocycles', <function <lambda> at 0x106aa6ac0>), ('NumSaturatedHeterocycles', <function <lambda> at 0x106aa6a20>), ('NumSaturatedRings', <function <lambda> at 0x106aa68e0>), ('NumSpiroAtoms', <function <lambda> at 0x106aa7060>), ('NumUnspecifiedAtomStereoCenters', <function <lambda> at 0x106aa6d40>), ('Phi', <function <lambda> at 0x106aa7100>), ('RingCount', <function <lambda> at 0x106aa65c0>), ('MolLogP', <function <lambda> at 0x106a4f6a0>), ('MolMR', <function <lambda> at 0x106a4f740>), ('fr_Al_COO', <function _LoadPatterns.<locals>.<lambda> at 0x106a8ccc0>), ('fr_Al_OH', <function _LoadPatterns.<locals>.<lambda> at 0x106a8c900>), ('fr_Al_OH_noTert', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f6a0>), ('fr_ArN', <function _LoadPatterns.<locals>.<lambda> at 0x106a8fc40>), ('fr_Ar_COO', <function _LoadPatterns.<locals>.<lambda> at 0x106a8cd60>), ('fr_Ar_N', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d440>), ('fr_Ar_NH', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d4e0>), ('fr_Ar_OH', <function _LoadPatterns.<locals>.<lambda> at 0x106a8ca40>), ('fr_COO', <function _LoadPatterns.<locals>.<lambda> at 0x106a8ce00>), ('fr_COO2', <function _LoadPatterns.<locals>.<lambda> at 0x106a8cea0>), ('fr_C_O', <function _LoadPatterns.<locals>.<lambda> at 0x106a8c860>), ('fr_C_O_noCOO', <function _LoadPatterns.<locals>.<lambda> at 0x106a8c9a0>), ('fr_C_S', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e480>), ('fr_HOCCN', <function _LoadPatterns.<locals>.<lambda> at 0x106a8fce0>), ('fr_Imine', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d620>), ('fr_NH0', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d3a0>), ('fr_NH1', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d300>), ('fr_NH2', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d260>), ('fr_N_O', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d940>), ('fr_Ndealkylation1', <function _LoadPatterns.<locals>.<lambda> at 0x106a8fa60>), ('fr_Ndealkylation2', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f9c0>), ('fr_Nhpyrrole', <function _LoadPatterns.<locals>.<lambda> at 0x106a8dee0>), ('fr_SH', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e3e0>), ('fr_aldehyde', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d120>), ('fr_alkyl_carbamate', <function _LoadPatterns.<locals>.<lambda> at 0x106a8fb00>), ('fr_alkyl_halide', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e2a0>), ('fr_allylic_oxid', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f880>), ('fr_amide', <function _LoadPatterns.<locals>.<lambda> at 0x106a8dc60>), ('fr_amidine', <function _LoadPatterns.<locals>.<lambda> at 0x106a8dda0>), ('fr_aniline', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d580>), ('fr_aryl_methyl', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f920>), ('fr_azide', <function _LoadPatterns.<locals>.<lambda> at 0x106a8dbc0>), ('fr_azo', <function _LoadPatterns.<locals>.<lambda> at 0x106a8da80>), ('fr_barbitur', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e700>), ('fr_benzene', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f240>), ('fr_benzodiazepine', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f740>), ('fr_bicyclic', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f1a0>), ('fr_diazo', <function _LoadPatterns.<locals>.<lambda> at 0x106a8db20>), ('fr_dihydropyridine', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f560>), ('fr_epoxide', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f060>), ('fr_ester', <function _LoadPatterns.<locals>.<lambda> at 0x106a8cc20>), ('fr_ether', <function _LoadPatterns.<locals>.<lambda> at 0x106a8cfe0>), ('fr_furan', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e980>), ('fr_guanido', <function _LoadPatterns.<locals>.<lambda> at 0x106a8de40>), ('fr_halogen', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e200>), ('fr_hdrzine', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d760>), ('fr_hdrzone', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d800>), ('fr_imidazole', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e8e0>), ('fr_imide', <function _LoadPatterns.<locals>.<lambda> at 0x106a8df80>), ('fr_isocyan', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e020>), ('fr_isothiocyan', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e0c0>), ('fr_ketone', <function _LoadPatterns.<locals>.<lambda> at 0x106a8cf40>), ('fr_ketone_Topliss', <function _LoadPatterns.<locals>.<lambda> at 0x106a8fba0>), ('fr_lactam', <function _LoadPatterns.<locals>.<lambda> at 0x106a8ee80>), ('fr_lactone', <function _LoadPatterns.<locals>.<lambda> at 0x106a8ef20>), ('fr_methoxy', <function _LoadPatterns.<locals>.<lambda> at 0x106a8cae0>), ('fr_morpholine', <function _LoadPatterns.<locals>.<lambda> at 0x106a8ede0>), ('fr_nitrile', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d6c0>), ('fr_nitro', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d9e0>), ('fr_nitro_arom', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f420>), ('fr_nitro_arom_nonortho', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f4c0>), ('fr_nitroso', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d8a0>), ('fr_oxazole', <function _LoadPatterns.<locals>.<lambda> at 0x106a8eb60>), ('fr_oxime', <function _LoadPatterns.<locals>.<lambda> at 0x106a8cb80>), ('fr_para_hydroxylation', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f7e0>), ('fr_phenol', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d080>), ('fr_phenol_noOrthoHbond', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f600>), ('fr_phos_acid', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f2e0>), ('fr_phos_ester', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f380>), ('fr_piperdine', <function _LoadPatterns.<locals>.<lambda> at 0x106a8eca0>), ('fr_piperzine', <function _LoadPatterns.<locals>.<lambda> at 0x106a8ed40>), ('fr_priamide', <function _LoadPatterns.<locals>.<lambda> at 0x106a8dd00>), ('fr_prisulfonamd', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e660>), ('fr_pyridine', <function _LoadPatterns.<locals>.<lambda> at 0x106a8ec00>), ('fr_quatN', <function _LoadPatterns.<locals>.<lambda> at 0x106a8d1c0>), ('fr_sulfide', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e340>), ('fr_sulfonamd', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e5c0>), ('fr_sulfone', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e520>), ('fr_term_acetylene', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e840>), ('fr_tetrazole', <function _LoadPatterns.<locals>.<lambda> at 0x106a8efc0>), ('fr_thiazole', <function _LoadPatterns.<locals>.<lambda> at 0x106a8eac0>), ('fr_thiocyan', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e160>), ('fr_thiophene', <function _LoadPatterns.<locals>.<lambda> at 0x106a8ea20>), ('fr_unbrch_alkane', <function _LoadPatterns.<locals>.<lambda> at 0x106a8f100>), ('fr_urea', <function _LoadPatterns.<locals>.<lambda> at 0x106a8e7a0>)]
 names: list = ['AUTOCORR2D_1', 'AUTOCORR2D_2', 'AUTOCORR2D_3', 'AUTOCORR2D_4', 'AUTOCORR2D_5', 'AUTOCORR2D_6', 'AUTOCORR2D_7', 'AUTOCORR2D_8', 'AUTOCORR2D_9', 'AUTOCORR2D_10', 'AUTOCORR2D_11', 'AUTOCORR2D_12', 'AUTOCORR2D_13', 'AUTOCORR2D_14', 'AUTOCORR2D_15', 'AUTOCORR2D_16', 'AUTOCORR2D_17', 'AUTOCORR2D_18', 'AUTOCORR2D_19', 'AUTOCORR2D_20', 'AUTOCORR2D_21', 'AUTOCORR2D_22', 'AUTOCORR2D_23', 'AUTOCORR2D_24', 'AUTOCORR2D_25', 'AUTOCORR2D_26', 'AUTOCORR2D_27', 'AUTOCORR2D_28', 'AUTOCORR2D_29', 'AUTOCORR2D_30', 'AUTOCORR2D_31', 'AUTOCORR2D_32', 'AUTOCORR2D_33', 'AUTOCORR2D_34', 'AUTOCORR2D_35', 'AUTOCORR2D_36', 'AUTOCORR2D_37', 'AUTOCORR2D_38', 'AUTOCORR2D_39', 'AUTOCORR2D_40', 'AUTOCORR2D_41', 'AUTOCORR2D_42', 'AUTOCORR2D_43', 'AUTOCORR2D_44', 'AUTOCORR2D_45', 'AUTOCORR2D_46', 'AUTOCORR2D_47', 'AUTOCORR2D_48', 'AUTOCORR2D_49', 'AUTOCORR2D_50', 'AUTOCORR2D_51', 'AUTOCORR2D_52', 'AUTOCORR2D_53', 'AUTOCORR2D_54', 'AUTOCORR2D_55', 'AUTOCORR2D_56', 'AUTOCORR2D_57', 'AUTOCORR2D_58', 'AUTOCORR2D_59', 'AUTOCORR2D_60', 'AUTOCORR2D_61', 'AUTOCORR2D_62', 'AUTOCORR2D_63', 'AUTOCORR2D_64', 'AUTOCORR2D_65', 'AUTOCORR2D_66', 'AUTOCORR2D_67', 'AUTOCORR2D_68', 'AUTOCORR2D_69', 'AUTOCORR2D_70', 'AUTOCORR2D_71', 'AUTOCORR2D_72', 'AUTOCORR2D_73', 'AUTOCORR2D_74', 'AUTOCORR2D_75', 'AUTOCORR2D_76', 'AUTOCORR2D_77', 'AUTOCORR2D_78', 'AUTOCORR2D_79', 'AUTOCORR2D_80', 'AUTOCORR2D_81', 'AUTOCORR2D_82', 'AUTOCORR2D_83', 'AUTOCORR2D_84', 'AUTOCORR2D_85', 'AUTOCORR2D_86', 'AUTOCORR2D_87', 'AUTOCORR2D_88', 'AUTOCORR2D_89', 'AUTOCORR2D_90', 'AUTOCORR2D_91', 'AUTOCORR2D_92', 'AUTOCORR2D_93', 'AUTOCORR2D_94', 'AUTOCORR2D_95', 'AUTOCORR2D_96', 'AUTOCORR2D_97', 'AUTOCORR2D_98', 'AUTOCORR2D_99', 'AUTOCORR2D_100', 'AUTOCORR2D_101', 'AUTOCORR2D_102', 'AUTOCORR2D_103', 'AUTOCORR2D_104', 'AUTOCORR2D_105', 'AUTOCORR2D_106', 'AUTOCORR2D_107', 'AUTOCORR2D_108', 'AUTOCORR2D_109', 'AUTOCORR2D_110', 'AUTOCORR2D_111', 'AUTOCORR2D_112', 'AUTOCORR2D_113', 'AUTOCORR2D_114', 'AUTOCORR2D_115', 'AUTOCORR2D_116', 'AUTOCORR2D_117', 'AUTOCORR2D_118', 'AUTOCORR2D_119', 'AUTOCORR2D_120', 'AUTOCORR2D_121', 'AUTOCORR2D_122', 'AUTOCORR2D_123', 'AUTOCORR2D_124', 'AUTOCORR2D_125', 'AUTOCORR2D_126', 'AUTOCORR2D_127', 'AUTOCORR2D_128', 'AUTOCORR2D_129', 'AUTOCORR2D_130', 'AUTOCORR2D_131', 'AUTOCORR2D_132', 'AUTOCORR2D_133', 'AUTOCORR2D_134', 'AUTOCORR2D_135', 'AUTOCORR2D_136', 'AUTOCORR2D_137', 'AUTOCORR2D_138', 'AUTOCORR2D_139', 'AUTOCORR2D_140', 'AUTOCORR2D_141', 'AUTOCORR2D_142', 'AUTOCORR2D_143', 'AUTOCORR2D_144', 'AUTOCORR2D_145', 'AUTOCORR2D_146', 'AUTOCORR2D_147', 'AUTOCORR2D_148', 'AUTOCORR2D_149', 'AUTOCORR2D_150', 'AUTOCORR2D_151', 'AUTOCORR2D_152', 'AUTOCORR2D_153', 'AUTOCORR2D_154', 'AUTOCORR2D_155', 'AUTOCORR2D_156', 'AUTOCORR2D_157', 'AUTOCORR2D_158', 'AUTOCORR2D_159', 'AUTOCORR2D_160', 'AUTOCORR2D_161', 'AUTOCORR2D_162', 'AUTOCORR2D_163', 'AUTOCORR2D_164', 'AUTOCORR2D_165', 'AUTOCORR2D_166', 'AUTOCORR2D_167', 'AUTOCORR2D_168', 'AUTOCORR2D_169', 'AUTOCORR2D_170', 'AUTOCORR2D_171', 'AUTOCORR2D_172', 'AUTOCORR2D_173', 'AUTOCORR2D_174', 'AUTOCORR2D_175', 'AUTOCORR2D_176', 'AUTOCORR2D_177', 'AUTOCORR2D_178', 'AUTOCORR2D_179', 'AUTOCORR2D_180', 'AUTOCORR2D_181', 'AUTOCORR2D_182', 'AUTOCORR2D_183', 'AUTOCORR2D_184', 'AUTOCORR2D_185', 'AUTOCORR2D_186', 'AUTOCORR2D_187', 'AUTOCORR2D_188', 'AUTOCORR2D_189', 'AUTOCORR2D_190', 'AUTOCORR2D_191', 'AUTOCORR2D_192']
+
+# present at runtime, absent from the generated stub:
+from rdkit.Chem.GraphDescriptors import Chi0n as Chi0n
+from rdkit.Chem.GraphDescriptors import Chi0v as Chi0v
+from rdkit.Chem.GraphDescriptors import Chi1n as Chi1n
+from rdkit.Chem.GraphDescriptors import Chi1v as Chi1v
+from rdkit.Chem.GraphDescriptors import Chi2n as Chi2n
+from rdkit.Chem.GraphDescriptors import Chi2v as Chi2v
+from rdkit.Chem.GraphDescriptors import Chi3n as Chi3n
+from rdkit.Chem.GraphDescriptors import Chi3v as Chi3v
+from rdkit.Chem.GraphDescriptors import Chi4n as Chi4n
+from rdkit.Chem.GraphDescriptors import Chi4v as Chi4v
+def ExactMolWt(*x, **y):
+    r"""
+    The exact molecular weight of the molecule
+
+    >>> ExactMolWt(Chem.MolFromSmiles('CC'))
+    30.04...
+    >>> ExactMolWt(Chem.MolFromSmiles('[13CH3]C'))
+    31.05...
+    """
+from rdkit.Chem.Lipinski import FractionCSP3 as FractionCSP3
+from rdkit.Chem.GraphDescriptors import HallKierAlpha as HallKierAlpha
+from rdkit.Chem.GraphDescriptors import Kappa1 as Kappa1
+from rdkit.Chem.GraphDescriptors import Kappa2 as Kappa2
+from rdkit.Chem.GraphDescriptors import Kappa3 as Kappa3
+from rdkit.Chem.MolSurf import LabuteASA as LabuteASA
+from rdkit.Chem.Crippen import MolLogP as MolLogP
+from rdkit.Chem.Crippen import MolMR as MolMR
+def MolWt(*x, **y):
+    r"""
+    The average molecular weight of the molecule
+
+    >>> MolWt(Chem.MolFromSmiles('CC'))
+    30.07
+    >>> MolWt(Chem.MolFromSmiles('[NH4+].[Cl-]'))
+    53.49...
+    """
+from rdkit.Chem.Lipinski import NHOHCount as NHOHCount
+from rdkit.Chem.Lipinski import NOCount as NOCount
+from rdkit.Chem.Lipinski import NumAliphaticCarbocycles as NumAliphaticCarbocycles
+from rdkit.Chem.Lipinski import NumAliphaticHeterocycles as NumAliphaticHeterocycles
+from rdkit.Chem.Lipinski import NumAliphaticRings as NumAliphaticRings
+from rdkit.Chem.Lipinski import NumAmideBonds as NumAmideBonds
+from rdkit.Chem.Lipinski import NumAromaticCarbocycles as NumAromaticCarbocycles
+from rdkit.Chem.Lipinski import NumAromaticHeterocycles as NumAromaticHeterocycles
+from rdkit.Chem.Lipinski import NumAromaticRings as NumAromaticRings
+from rdkit.Chem.Lipinski import NumAtomStereoCenters as NumAtomStereoCenters
+from rdkit.Chem.Lipinski import NumBridgeheadAtoms as NumBridgeheadAtoms
+from rdkit.Chem.Lipinski import NumHAcceptors as NumHAcceptors
+from rdkit.Chem.Lipinski import NumHDonors as NumHDonors
+from rdkit.Chem.Lipinski import NumHeteroatoms as NumHeteroatoms
+from rdkit.Chem.Lipinski import NumHeterocycles as NumHeterocycles
+from rdkit.Chem.Lipinski import NumRotatableBonds as NumRotatableBonds
+from rdkit.Chem.Lipinski import NumSaturatedCarbocycles as NumSaturatedCarbocycles
+from rdkit.Chem.Lipinski import NumSaturatedHeterocycles as NumSaturatedHeterocycles
+from rdkit.Chem.Lipinski import NumSaturatedRings as NumSaturatedRings
+from rdkit.Chem.Lipinski import NumSpiroAtoms as NumSpiroAtoms
+from rdkit.Chem.Lipinski import NumUnspecifiedAtomStereoCenters as NumUnspecifiedAtomStereoCenters
+from rdkit.Chem.MolSurf import PEOE_VSA1 as PEOE_VSA1
+from rdkit.Chem.MolSurf import PEOE_VSA10 as PEOE_VSA10
+from rdkit.Chem.MolSurf import PEOE_VSA11 as PEOE_VSA11
+from rdkit.Chem.MolSurf import PEOE_VSA12 as PEOE_VSA12
+from rdkit.Chem.MolSurf import PEOE_VSA13 as PEOE_VSA13
+from rdkit.Chem.MolSurf import PEOE_VSA14 as PEOE_VSA14
+from rdkit.Chem.MolSurf import PEOE_VSA2 as PEOE_VSA2
+from rdkit.Chem.MolSurf import PEOE_VSA3 as PEOE_VSA3
+from rdkit.Chem.MolSurf import PEOE_VSA4 as PEOE_VSA4
+from rdkit.Chem.MolSurf import PEOE_VSA5 as PEOE_VSA5
+from rdkit.Chem.MolSurf import PEOE_VSA6 as PEOE_VSA6
+from rdkit.Chem.MolSurf import PEOE_VSA7 as PEOE_VSA7
+from rdkit.Chem.MolSurf import PEOE_VSA8 as PEOE_VSA8
+from rdkit.Chem.MolSurf import PEOE_VSA9 as PEOE_VSA9
+from rdkit.Chem.Lipinski import Phi as Phi
+from rdkit.Chem.Lipinski import RingCount as RingCount
+from rdkit.Chem.MolSurf import SMR_VSA1 as SMR_VSA1
+from rdkit.Chem.MolSurf import SMR_VSA10 as SMR_VSA10
+from rdkit.Chem.MolSurf import SMR_VSA2 as SMR_VSA2
+from rdkit.Chem.MolSurf import SMR_VSA3 as SMR_VSA3
+from rdkit.Chem.MolSurf import SMR_VSA4 as SMR_VSA4
+from rdkit.Chem.MolSurf import SMR_VSA5 as SMR_VSA5
+from rdkit.Chem.MolSurf import SMR_VSA6 as SMR_VSA6
+from rdkit.Chem.MolSurf import SMR_VSA7 as SMR_VSA7
+from rdkit.Chem.MolSurf import SMR_VSA8 as SMR_VSA8
+from rdkit.Chem.MolSurf import SMR_VSA9 as SMR_VSA9
+from rdkit.Chem.MolSurf import SlogP_VSA1 as SlogP_VSA1
+from rdkit.Chem.MolSurf import SlogP_VSA10 as SlogP_VSA10
+from rdkit.Chem.MolSurf import SlogP_VSA11 as SlogP_VSA11
+from rdkit.Chem.MolSurf import SlogP_VSA12 as SlogP_VSA12
+from rdkit.Chem.MolSurf import SlogP_VSA2 as SlogP_VSA2
+from rdkit.Chem.MolSurf import SlogP_VSA3 as SlogP_VSA3
+from rdkit.Chem.MolSurf import SlogP_VSA4 as SlogP_VSA4
+from rdkit.Chem.MolSurf import SlogP_VSA5 as SlogP_VSA5
+from rdkit.Chem.MolSurf import SlogP_VSA6 as SlogP_VSA6
+from rdkit.Chem.MolSurf import SlogP_VSA7 as SlogP_VSA7
+from rdkit.Chem.MolSurf import SlogP_VSA8 as SlogP_VSA8
+from rdkit.Chem.MolSurf import SlogP_VSA9 as SlogP_VSA9
+from rdkit.Chem.MolSurf import TPSA as TPSA
+from rdkit.Chem.EState.EState_VSA import VSA_EState1 as VSA_EState1
+from rdkit.Chem.EState.EState_VSA import VSA_EState10 as VSA_EState10
+from rdkit.Chem.EState.EState_VSA import VSA_EState2 as VSA_EState2
+from rdkit.Chem.EState.EState_VSA import VSA_EState3 as VSA_EState3
+from rdkit.Chem.EState.EState_VSA import VSA_EState4 as VSA_EState4
+from rdkit.Chem.EState.EState_VSA import VSA_EState5 as VSA_EState5
+from rdkit.Chem.EState.EState_VSA import VSA_EState6 as VSA_EState6
+from rdkit.Chem.EState.EState_VSA import VSA_EState7 as VSA_EState7
+from rdkit.Chem.EState.EState_VSA import VSA_EState8 as VSA_EState8
+from rdkit.Chem.EState.EState_VSA import VSA_EState9 as VSA_EState9
+from rdkit.Chem.Fragments import fr_Al_COO as fr_Al_COO
+from rdkit.Chem.Fragments import fr_Al_OH as fr_Al_OH
+from rdkit.Chem.Fragments import fr_Al_OH_noTert as fr_Al_OH_noTert
+from rdkit.Chem.Fragments import fr_ArN as fr_ArN
+from rdkit.Chem.Fragments import fr_Ar_COO as fr_Ar_COO
+from rdkit.Chem.Fragments import fr_Ar_N as fr_Ar_N
+from rdkit.Chem.Fragments import fr_Ar_NH as fr_Ar_NH
+from rdkit.Chem.Fragments import fr_Ar_OH as fr_Ar_OH
+from rdkit.Chem.Fragments import fr_COO as fr_COO
+from rdkit.Chem.Fragments import fr_COO2 as fr_COO2
+from rdkit.Chem.Fragments import fr_C_O as fr_C_O
+from rdkit.Chem.Fragments import fr_C_O_noCOO as fr_C_O_noCOO
+from rdkit.Chem.Fragments import fr_C_S as fr_C_S
+from rdkit.Chem.Fragments import fr_HOCCN as fr_HOCCN
+from rdkit.Chem.Fragments import fr_Imine as fr_Imine
+from rdkit.Chem.Fragments import fr_NH0 as fr_NH0
+from rdkit.Chem.Fragments import fr_NH1 as fr_NH1
+from rdkit.Chem.Fragments import fr_NH2 as fr_NH2
+from rdkit.Chem.Fragments import fr_N_O as fr_N_O
+from rdkit.Chem.Fragments import fr_Ndealkylation1 as fr_Ndealkylation1
+from rdkit.Chem.Fragments import fr_Ndealkylation2 as fr_Ndealkylation2
+from rdkit.Chem.Fragments import fr_Nhpyrrole as fr_Nhpyrrole
+from rdkit.Chem.Fragments import fr_SH as fr_SH
+from rdkit.Chem.Fragments import fr_aldehyde as fr_aldehyde
+from rdkit.Chem.Fragments import fr_alkyl_carbamate as fr_alkyl_carbamate
+from rdkit.Chem.Fragments import fr_alkyl_halide as fr_alkyl_halide
+from rdkit.Chem.Fragments import fr_allylic_oxid as fr_allylic_oxid
+from rdkit.Chem.Fragments import fr_amide as fr_amide
+from rdkit.Chem.Fragments import fr_amidine as fr_amidine
+from rdkit.Chem.Fragments import fr_aniline as fr_aniline
+from rdkit.Chem.Fragments import fr_aryl_methyl as fr_aryl_methyl
+from rdkit.Chem.Fragments import fr_azide as fr_azide
+from rdkit.Chem.Fragments import fr_azo as fr_azo
+from rdkit.Chem.Fragments import fr_barbitur as fr_barbitur
+from rdkit.Chem.Fragments import fr_benzene as fr_benzene
+from rdkit.Chem.Fragments import fr_benzodiazepine as fr_benzodiazepine
+from rdkit.Chem.Fragments import fr_bicyclic as fr_bicyclic
+from rdkit.Chem.Fragments import fr_diazo as fr_diazo
+from rdkit.Chem.Fragments import fr_dihydropyridine as fr_dihydropyridine
+from rdkit.Chem.Fragments import fr_epoxide as fr_epoxide
+from rdkit.Chem.Fragments import fr_ester as fr_ester
+from rdkit.Chem.Fragments import fr_ether as fr_ether
+from rdkit.Chem.Fragments import fr_furan as fr_furan
+from rdkit.Chem.Fragments import fr_guanido as fr_guanido
+from rdkit.Chem.Fragments import fr_halogen as fr_halogen
+from rdkit.Chem.Fragments import fr_hdrzine as fr_hdrzine
+from rdkit.Chem.Fragments import fr_hdrzone as fr_hdrzone
+from rdkit.Chem.Fragments import fr_imidazole as fr_imidazole
+from rdkit.Chem.Fragments import fr_imide as fr_imide
+from rdkit.Chem.Fragments import fr_isocyan as fr_isocyan
+from rdkit.Chem.Fragments import fr_isothiocyan as fr_isothiocyan
+from rdkit.Chem.Fragments import fr_ketone as fr_ketone
+from rdkit.Chem.Fragments import fr_ketone_Topliss as fr_ketone_Topliss
+from rdkit.Chem.Fragments import fr_lactam as fr_lactam
+from rdkit.Chem.Fragments import fr_lactone as fr_lactone
+from rdkit.Chem.Fragments import fr_methoxy as fr_methoxy
+from rdkit.Chem.Fragments import fr_morpholine as fr_morpholine
+from rdkit.Chem.Fragments import fr_nitrile as fr_nitrile
+from rdkit.Chem.Fragments import fr_nitro as fr_nitro
+from rdkit.Chem.Fragments import fr_nitro_arom as fr_nitro_arom
+from rdkit.Chem.Fragments import fr_nitro_arom_nonortho as fr_nitro_arom_nonortho
+from rdkit.Chem.Fragments import fr_nitroso as fr_nitroso
+from rdkit.Chem.Fragments import fr_oxazole as fr_oxazole
+from rdkit.Chem.Fragments import fr_oxime as fr_oxime
+from rdkit.Chem.Fragments import fr_para_hydroxylation as fr_para_hydroxylation
+from rdkit.Chem.Fragments import fr_phenol as fr_phenol
+from rdkit.Chem.Fragments import fr_phenol_noOrthoHbond as fr_phenol_noOrthoHbond
+from rdkit.Chem.Fragments import fr_phos_acid as fr_phos_acid
+from rdkit.Chem.Fragments import fr_phos_ester as fr_phos_ester
+from rdkit.Chem.Fragments import fr_piperdine as fr_piperdine
+from rdkit.Chem.Fragments import fr_piperzine as fr_piperzine
+from rdkit.Chem.Fragments import fr_priamide as fr_priamide
+from rdkit.Chem.Fragments import fr_prisulfonamd as fr_prisulfonamd
+from rdkit.Chem.Fragments import fr_pyridine as fr_pyridine
+from rdkit.Chem.Fragments import fr_quatN as fr_quatN
+from rdkit.Chem.Fragments import fr_sulfide as fr_sulfide
+from rdkit.Chem.Fragments import fr_sulfonamd as fr_sulfonamd
+from rdkit.Chem.Fragments import fr_sulfone as fr_sulfone
+from rdkit.Chem.Fragments import fr_term_acetylene as fr_term_acetylene
+from rdkit.Chem.Fragments import fr_tetrazole as fr_tetrazole
+from rdkit.Chem.Fragments import fr_thiazole as fr_thiazole
+from rdkit.Chem.Fragments import fr_thiocyan as fr_thiocyan
+from rdkit.Chem.Fragments import fr_thiophene as fr_thiophene
+from rdkit.Chem.Fragments import fr_unbrch_alkane as fr_unbrch_alkane
+from rdkit.Chem.Fragments import fr_urea as fr_urea

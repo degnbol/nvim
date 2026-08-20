@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 from rdkit.Chem import ChemicalFeatures
 import rdkit.Chem.rdChemicalFeatures

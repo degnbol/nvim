@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import rdkit.Chem
 import typing
@@ -588,3 +588,6 @@ def RunFilterCatalog(filterCatalog: FilterCatalog, smiles: _vectNSt3__112basic_s
         Use numThreads=0 to use all available processors. Returns a vector of vectors.  For each input smiles, a vector of FilterCatalogEntry objects are returned for each matched filter.  If a molecule matches no filter, the vector will be empty. If a smiles string can't be parsed, a 'Bad smiles' entry is returned.
     
     """
+
+# present at runtime, absent from the generated stub:
+from . import FilterMatchOps as FilterMatchOps

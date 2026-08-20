@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing interface to the YAeHMOP extended Hueckel library.
 Please note that this interface should still be considered experimental and may

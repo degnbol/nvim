@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont

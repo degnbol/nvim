@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Informational Entropy functions
 
@@ -48,3 +48,7 @@ def PyInfoGain(varMat):
     """
 _log2: float = 0.6931471805599453
 hascEntropy: int = 1
+
+# present at runtime, absent from the generated stub:
+from rdkit.ML.InfoTheory.rdInfoTheory import InfoEntropy as InfoEntropy
+from rdkit.ML.InfoTheory.rdInfoTheory import InfoGain as InfoGain

@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import random as random
 from rdkit import Chem
@@ -217,3 +217,6 @@ def _getFlippers(mol, options):
     ...
 def _test():
     ...
+
+# present at runtime, absent from the generated stub:
+from rdkit.Chem.rdDistGeom import EmbedMolecule as EmbedMolecule

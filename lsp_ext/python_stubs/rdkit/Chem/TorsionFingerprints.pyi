@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Torsion Fingerprints (Deviation) (TFD)
     According to a paper from Schulz-Gasch et al., JCIM, 52, 1499-1512 (2012).

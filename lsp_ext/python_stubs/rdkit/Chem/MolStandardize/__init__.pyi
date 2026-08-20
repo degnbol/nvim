@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 
 Molecule Validation and Standardization
@@ -21,3 +21,6 @@ def ReorderTautomers(molecule):
         :return: A list of Molecule objects.
         
     """
+
+# present at runtime, absent from the generated stub:
+from . import rdMolStandardize as rdMolStandardize

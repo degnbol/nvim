@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 
 Generate a unique hash code for a molecule based on chemistry. If two
@@ -157,3 +157,8 @@ EMPTY_MOL_TAUTOMER_HASH: str = '_0_0'
 ENHANCED_STEREO_GROUP_REGEX: re.Pattern  # value = re.compile('((?:a|[&o]\\d+):\\d+(?:,\\d+)*)')
 ENHANCED_STEREO_GROUP_WEIGHTS: dict  # value = {rdkit.Chem.rdchem.StereoGroupType.STEREO_AND: 1000, rdkit.Chem.rdchem.StereoGroupType.STEREO_OR: 2000, rdkit.Chem.rdchem.StereoGroupType.STEREO_ABSOLUTE: 3000}
 logger: logging.Logger  # value = <Logger rdkit.Chem.RegistrationHash (WARNING)>
+
+# present at runtime, absent from the generated stub:
+from typing import Dict as Dict
+from typing import Iterable as Iterable
+from typing import Optional as Optional

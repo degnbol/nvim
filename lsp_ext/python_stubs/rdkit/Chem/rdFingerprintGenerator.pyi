@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import typing
 __all__: list[str] = ['AdditionalOutput', 'AtomInvariantsGenerator', 'AtomPairFP', 'AtomPairFingerprintOptions', 'BondInvariantsGenerator', 'FPType', 'FingerprintGenerator32', 'FingerprintGenerator64', 'FingerprintGeneratorFromJSON', 'FingerprintOptions', 'GetAtomPairAtomInvGen', 'GetAtomPairGenerator', 'GetCountFPs', 'GetFPs', 'GetMorganAtomInvGen', 'GetMorganBondInvGen', 'GetMorganFeatureAtomInvGen', 'GetMorganGenerator', 'GetRDKitAtomInvGen', 'GetRDKitFPGenerator', 'GetSparseCountFPs', 'GetSparseFPs', 'GetTopologicalTorsionGenerator', 'MorganFP', 'MorganFingerprintOptions', 'RDKitFP', 'RDKitFingerprintOptions', 'TopologicalTorsionFP', 'TopologicalTorsionFingerprintOptions']

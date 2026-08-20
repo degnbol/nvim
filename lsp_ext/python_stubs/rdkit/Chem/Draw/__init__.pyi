@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 from _io import BytesIO
 from collections import namedtuple
@@ -350,3 +350,18 @@ PRESHAPES: rdMolDraw2D.DrawElement  # value = rdkit.Chem.Draw.rdMolDraw2D.DrawEl
 RADICALS: rdMolDraw2D.DrawElement  # value = rdkit.Chem.Draw.rdMolDraw2D.DrawElement.RADICALS
 Right: rdMolDraw2D.LegendPosition  # value = rdkit.Chem.Draw.rdMolDraw2D.LegendPosition.Right
 Top: rdMolDraw2D.LegendPosition  # value = rdkit.Chem.Draw.rdMolDraw2D.LegendPosition.Top
+
+# present at runtime, absent from the generated stub:
+from rdkit.Chem.Draw.rdMolDraw2D import ContourAndDrawGaussians as ContourAndDrawGaussians
+from rdkit.Chem.Draw.rdMolDraw2D import ContourAndDrawGrid as ContourAndDrawGrid
+from rdkit.Chem.Draw.rdMolDraw2D import DrawMoleculeACS1996 as DrawMoleculeACS1996
+from rdkit.Chem.Draw.rdMolDraw2D import MeanBondLength as MeanBondLength
+from rdkit.Chem.Draw.rdMolDraw2D import MolToACS1996SVG as MolToACS1996SVG
+from rdkit.Chem.Draw.rdMolDraw2D import PrepareAndDrawMolecule as PrepareAndDrawMolecule
+from rdkit.Chem.Draw.rdMolDraw2D import PrepareMolForDrawing as PrepareMolForDrawing
+from rdkit.Chem.Draw.rdMolDraw2D import SetACS1996Mode as SetACS1996Mode
+from rdkit.Chem.Draw.rdMolDraw2D import SetDarkMode as SetDarkMode
+from rdkit.Chem.Draw.rdMolDraw2D import SetMonochromeMode as SetMonochromeMode
+from rdkit.Chem.Draw.rdMolDraw2D import UpdateDrawerParamsFromJSON as UpdateDrawerParamsFromJSON
+from rdkit.Chem.Draw.rdMolDraw2D import UpdateMolDrawOptionsFromJSON as UpdateMolDrawOptionsFromJSON
+from . import rdMolDraw2D as rdMolDraw2D

@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing free chemical feature functionality
      These are features that are not associated with molecules. They are 

@@ -55,6 +55,23 @@ describe("stub_fixes.env_of", function()
     end)
 end)
 
+describe("stub_fixes.patched_by_current", function()
+    local fix = fix_for("rdkit")
+
+    it("re-offers a tree patched before the fingerprint existed", function()
+        assert.is_false(stub_fixes.patched_by_current(fix.marker .. " rdkit 2026.3.5", fix))
+    end)
+
+    it("re-offers a tree patched by a different fixer", function()
+        assert.is_false(stub_fixes.patched_by_current(fix.marker .. " rdkit 2026.3.5 deadbeef",
+            fix))
+    end)
+
+    it("rejects a head without the marker", function()
+        assert.is_false(stub_fixes.patched_by_current("from __future__ import annotations", fix))
+    end)
+end)
+
 -- Mirrors the real defect: an untyped property in an installed `rdkit-stubs/`,
 -- fixed in place and re-typed by the running server without a restart. `format`
 -- is the property the fixer cannot type, since its value is not a builtin scalar.
@@ -182,8 +199,10 @@ local function assert_retypes(fix, buf, client, site)
     stub_fixes.patch(fix, env, client)
     assert.is_true(vim.wait(20000, function() return hover_shows(client, buf, "bool") end, 200))
     -- The marker is what stops a later session prompting again, even though
-    -- `format` is still untyped in the patched file.
-    assert.is_true(vim.startswith(assert(util.readtext(probe)), fix.marker))
+    -- `format` is still untyped in the patched file. Its last field is the
+    -- fixer's own digest, so an edit to the script re-offers the environment.
+    assert.is_true(stub_fixes.patched_by_current(assert(util.readtext(probe)):match("^[^\n]*"),
+        fix))
     assert.is_truthy(assert(util.readtext(probe)):find("def format%(%*args, %*%*kwargs%)"))
 end
 

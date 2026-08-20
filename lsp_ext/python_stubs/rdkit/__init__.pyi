@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import logging as logging
 import sys as sys
@@ -19,3 +19,6 @@ log_handler: logging.StreamHandler  # value = <StreamHandler <stderr> (NOTSET)>
 logger: logging.Logger  # value = <Logger rdkit (WARNING)>
 name: str = '__file__'
 object: str = '/Users/runner/work/rdkit-pypi/rdkit-pypi/build/temp.macosx-11.0-arm64-cpython-311/rdkit_install/lib/python3.11/site-packages/rdkit/rdBase.so'
+
+# present at runtime, absent from the generated stub:
+from . import rdBase as rdBase

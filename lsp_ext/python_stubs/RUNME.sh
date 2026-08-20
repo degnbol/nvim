@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 # Generate Python type stubs for C-extension packages.
 # Stubs are used by basedpyright via the stubPath setting.
+set -euo pipefail
 cd $0:h
 
 # stub [--skip mod1,mod2] [--static] <package> --with dep [--with ...]
@@ -41,7 +42,22 @@ stub Bio      --with biopython --static
 # rdkit ships official (typed) pybind11-stubgen stubs bundled as rdkit-stubs/.
 # Vendor them as a complete package (so this copy wins over any rdkit-stubs
 # installed in a project's env) and fix the C++ noise and untyped properties.
-uv run --no-project --with rdkit python3 fix_pybind_stubs.py rdkit --out rdkit
+# pandas and IPython are dependencies of the fix, not of rdkit: rdkit's own stub
+# build had neither, so the modules guarding on them (PandasTools,
+# Draw.IPythonConsole, ...) define nothing without them and ship no .pyi at all.
+# pyright does not fall back to source for a module missing from a stub package,
+# so generate those first; the fixer merges the bundle over them and fixes both.
+rdkit_deps=(--with rdkit --with pandas --with ipython)
+if [[ -d rdkit ]]; then rm -r rdkit; fi
+missing=($(uv run --no-project $rdkit_deps python3 -c \
+  "import fix_pybind_stubs as f; print(*f.missing_stub_modules('rdkit'), sep='\n')"))
+for m in $missing; do
+  # Six of these need a GUI toolkit, a database driver or the ChemDraw
+  # application, and stay without a stub.
+  uv run --no-project --with mypy $rdkit_deps stubgen --inspect-mode --out . -m $m \
+    || print -u2 "$m: left without a stub"
+done
+uv run --no-project $rdkit_deps python3 fix_pybind_stubs.py rdkit --out rdkit
 
 # pyrosetta: ~2 GB install, skip if stubs already exist
 if [[ ! -d pyrosetta ]]; then

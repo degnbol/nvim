@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import logging as logging
 from rdkit import Chem
@@ -160,3 +160,6 @@ def _parse_auxinfo_coordinates(auxinfo):
 INCHI_AVAILABLE: bool = True
 logLevelToLogFunctionLookup: dict = {20: rdkit.RDLogger.logger.info, 10: rdkit.RDLogger.logger.debug, 30: rdkit.RDLogger.logger.warning, 50: rdkit.RDLogger.logger.critical, 40: rdkit.RDLogger.logger.error}
 logger: rdkit.RDLogger.logger  # value = <rdkit.RDLogger.logger object>
+
+# present at runtime, absent from the generated stub:
+from rdkit.Chem.rdinchi import GetInchiVersion as GetInchiVersion

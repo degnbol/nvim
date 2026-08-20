@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  A module for molecules and stuff
 
@@ -6,6 +6,8 @@
 
 """
 from __future__ import annotations
+import typing
+_RDKitObj = typing.TypeVar('_RDKitObj')
 from rdkit.Chem.inchi import InchiReadWriteError
 from rdkit.Chem.inchi import InchiToInchiKey
 from rdkit.Chem.inchi import MolBlockToInchi
@@ -115,31 +117,14 @@ from .rdinchi import *
 from .rdmolfiles import *
 from .rdmolops import *
 __all__: list[str] = ['ADJUST_IGNOREALL', 'ADJUST_IGNORECHAINS', 'ADJUST_IGNOREDUMMIES', 'ADJUST_IGNOREMAPPED', 'ADJUST_IGNORENONDUMMIES', 'ADJUST_IGNORENONE', 'ADJUST_IGNORERINGS', 'ALLOW_CHARGE_SEPARATION', 'ALLOW_INCOMPLETE_OCTETS', 'AROMATICITY_CUSTOM', 'AROMATICITY_DEFAULT', 'AROMATICITY_MDL', 'AROMATICITY_MMFF94', 'AROMATICITY_RDKIT', 'AROMATICITY_SIMPLE', 'AddHsParameters', 'AdjustQueryParameters', 'AdjustQueryWhichFlags', 'AllProps', 'AromaticityModel', 'Atom', 'AtomCoordsMatcher', 'AtomKekulizeException', 'AtomMonomerInfo', 'AtomMonomerType', 'AtomPDBResidueInfo', 'AtomProps', 'AtomSanitizeException', 'AtomValenceException', 'Bond', 'BondDir', 'BondProps', 'BondStereo', 'BondType', 'BondWedgingParameters', 'BoolVector', 'CDXMLFormat', 'CDXMLParserParams', 'CHI_ALLENE', 'CHI_OCTAHEDRAL', 'CHI_OTHER', 'CHI_SQUAREPLANAR', 'CHI_TETRAHEDRAL', 'CHI_TETRAHEDRAL_CCW', 'CHI_TETRAHEDRAL_CW', 'CHI_TRIGONALBIPYRAMIDAL', 'CHI_UNSPECIFIED', 'COMPOSITE_AND', 'COMPOSITE_OR', 'COMPOSITE_XOR', 'CXSmilesFields', 'CanonSmiles', 'ChiralType', 'CompositeQueryType', 'ComputedProps', 'Conformer', 'CoordsAsDouble', 'DataStructs', 'EXPLICIT', 'EditableMol', 'FindMolChiralCenters', 'FixedMolSizeMolBundle', 'ForwardSDMolSupplier', 'HybridizationType', 'IMPLICIT', 'INCHI_AVAILABLE', 'InchiReadWriteError', 'InchiToInchiKey', 'JSONParseParameters', 'JSONWriteParameters', 'KEKULE_ALL', 'KekulizeException', 'LayeredFingerprint_substructLayers', 'MaeMolSupplier', 'MaeWriter', 'Mol', 'MolBlockToInchi', 'MolBlockToInchiAndAuxInfo', 'MolBundle', 'MolFromInchi', 'MolFromInchiAndAuxInfo', 'MolFromSCSRParams', 'MolProps', 'MolSanitizeException', 'MolToInchi', 'MolToInchiAndAuxInfo', 'MolToInchiKey', 'MolWriterParams', 'MolzipLabel', 'MolzipParams', 'MultiConfMolFromSDF', 'MultithreadedSDMolSupplier', 'MultithreadedSmilesMolSupplier', 'NoConformers', 'NoProps', 'PDBWriter', 'PNGMetadataParams', 'PeriodicTable', 'PrivateProps', 'PropertyPickleOptions', 'QueryAtom', 'QueryAtomData', 'QueryBond', 'QuickSmartsMatch', 'RDConfig', 'RWMol', 'RemoveHsParameters', 'ResonanceFlags', 'ResonanceMolSupplier', 'ResonanceMolSupplierCallback', 'RestoreBondDirOption', 'RingInfo', 'SANITIZE_ADJUSTHS', 'SANITIZE_ALL', 'SANITIZE_CLEANUP', 'SANITIZE_CLEANUPATROPISOMERS', 'SANITIZE_CLEANUPCHIRALITY', 'SANITIZE_CLEANUP_ORGANOMETALLICS', 'SANITIZE_FINDRADICALS', 'SANITIZE_KEKULIZE', 'SANITIZE_NONE', 'SANITIZE_PROPERTIES', 'SANITIZE_SETAROMATICITY', 'SANITIZE_SETCONJUGATION', 'SANITIZE_SETHYBRIDIZATION', 'SANITIZE_SYMMRINGS', 'SCSRBaseHbondOptions', 'SCSRTemplateNames', 'SDMolSupplier', 'SDWriter', 'STEREO_ABSOLUTE', 'STEREO_AND', 'STEREO_OR', 'SanitizeFlags', 'SmartsParserParams', 'SmilesMolSupplier', 'SmilesParserParams', 'SmilesWriteParams', 'SmilesWriter', 'StereoBondThresholds', 'StereoDescriptor', 'StereoGroup', 'StereoGroupAbsOptions', 'StereoGroupType', 'StereoGroup_vect', 'StereoInfo', 'StereoSpecified', 'StereoType', 'SubsetInfo', 'SubsetMethod', 'SubsetOptions', 'SubstanceGroup', 'SubstanceGroupAttach', 'SubstanceGroupCState', 'SubstanceGroup_VECT', 'SubstructMatchParameters', 'SupplierFromFilename', 'TDTMolSupplier', 'TDTWriter', 'UIntUIntMap', 'UNCONSTRAINED_ANIONS', 'UNCONSTRAINED_CATIONS', 'ValenceType', 'inchi', 'map_indexing_suite_UIntUIntMap_entry', 'rdBase', 'rdCIPLabeler', 'rdCoordGen', 'rdGeometry', 'rdMolInterchange', 'rdchem', 'rdinchi', 'rdmolfiles', 'rdmolops', 'templDir']
-class _GetAtomsIterator(_GetRDKitObjIterator):
-    def _getRDKitItem(self, i):
-        ...
-    def _sizeCalc(self):
-        ...
-class _GetBondsIterator(_GetRDKitObjIterator):
-    def _getRDKitItem(self, i):
-        ...
-    def _sizeCalc(self):
-        ...
-class _GetRDKitObjIterator:
-    def __getitem__(self, i):
-        ...
-    def __init__(self, mol):
-        ...
-    def __iter__(self):
-        ...
-    def __len__(self):
-        ...
-    def __next__(self):
-        ...
-    def _getRDKitItem(self, i):
-        ...
-    def _sizeCalc(self):
-        ...
+class _GetAtomsIterator(_GetRDKitObjIterator[Atom]): ...
+class _GetBondsIterator(_GetRDKitObjIterator[Bond]): ...
+class _GetRDKitObjIterator(typing.Generic[_RDKitObj]):
+    def __init__(self, mol: Mol) -> None: ...
+    def __iter__(self) -> _GetRDKitObjIterator[_RDKitObj]: ...
+    def __next__(self) -> _RDKitObj: ...
+    def __getitem__(self, i: int) -> _RDKitObj: ...
+    def __len__(self) -> int: ...
 def CanonSmiles(smi, useChiral = 1):
     """
      A convenience function for canonicalizing SMILES
@@ -323,3 +308,214 @@ STEREO_OR: rdchem.StereoGroupType  # value = rdkit.Chem.rdchem.StereoGroupType.S
 UNCONSTRAINED_ANIONS: rdchem.ResonanceFlags  # value = rdkit.Chem.rdchem.ResonanceFlags.UNCONSTRAINED_ANIONS
 UNCONSTRAINED_CATIONS: rdchem.ResonanceFlags  # value = rdkit.Chem.rdchem.ResonanceFlags.UNCONSTRAINED_CATIONS
 templDir: str = '/Users/runner/work/rdkit-pypi/rdkit-pypi/build/temp.macosx-11.0-arm64-cpython-311/rdkit_install/share/RDKit/Data/'
+
+# present at runtime, absent from the generated stub:
+from rdkit.Chem.rdmolops import AddHs as AddHs
+from rdkit.Chem.rdmolfiles import AddMetadataToPNGFile as AddMetadataToPNGFile
+from rdkit.Chem.rdmolfiles import AddMetadataToPNGString as AddMetadataToPNGString
+from rdkit.Chem.rdchem import AddMolSubstanceGroup as AddMolSubstanceGroup
+from rdkit.Chem.rdmolops import AddRecursiveQuery as AddRecursiveQuery
+from rdkit.Chem.rdmolops import AddStereoAnnotations as AddStereoAnnotations
+from rdkit.Chem.rdmolops import AddWavyBondsForStereoAny as AddWavyBondsForStereoAny
+from rdkit.Chem.rdmolops import AdjustQueryProperties as AdjustQueryProperties
+from rdkit.Chem.rdmolops import AdjustQueryPropertiesWithGenericGroups as AdjustQueryPropertiesWithGenericGroups
+from rdkit.Chem.rdmolops import AssignAtomChiralTagsFromMolParity as AssignAtomChiralTagsFromMolParity
+from rdkit.Chem.rdmolops import AssignAtomChiralTagsFromStructure as AssignAtomChiralTagsFromStructure
+from rdkit.Chem.rdCIPLabeler import AssignCIPLabels as AssignCIPLabels
+from rdkit.Chem.rdmolops import AssignChiralTypesFromBondDirs as AssignChiralTypesFromBondDirs
+from rdkit.Chem.rdmolops import AssignRadicals as AssignRadicals
+from rdkit.Chem.rdmolops import AssignStereochemistry as AssignStereochemistry
+from rdkit.Chem.rdmolops import AssignStereochemistryFrom3D as AssignStereochemistryFrom3D
+from rdkit.Chem.rdmolfiles import AtomFromSmarts as AtomFromSmarts
+from rdkit.Chem.rdmolfiles import AtomFromSmiles as AtomFromSmiles
+from rdkit.Chem.rdmolops import AtomHasConjugatedBond as AtomHasConjugatedBond
+from rdkit.Chem.rdmolfiles import BondFromSmarts as BondFromSmarts
+from rdkit.Chem.rdmolfiles import BondFromSmiles as BondFromSmiles
+from rdkit.Chem.rdmolfiles import CanonicalRankAtoms as CanonicalRankAtoms
+from rdkit.Chem.rdmolfiles import CanonicalRankAtomsInFragment as CanonicalRankAtomsInFragment
+from rdkit.Chem.rdmolfiles import CanonicalizeEnhancedStereo as CanonicalizeEnhancedStereo
+from rdkit.Chem.rdmolops import CanonicalizeStereoGroups as CanonicalizeStereoGroups
+from rdkit.Chem.rdmolops import Cleanup as Cleanup
+from rdkit.Chem.rdmolops import CleanupAtropisomers as CleanupAtropisomers
+from rdkit.Chem.rdmolops import CleanupChirality as CleanupChirality
+from rdkit.Chem.rdmolops import CleanupOrganometallics as CleanupOrganometallics
+from rdkit.Chem.rdmolops import CleanupStereoGroups as CleanupStereoGroups
+from rdkit.Chem.rdchem import ClearMolSubstanceGroups as ClearMolSubstanceGroups
+from rdkit.Chem.rdmolops import CollapseAttachmentPoints as CollapseAttachmentPoints
+from rdkit.Chem.rdmolops import CombineMols as CombineMols
+from rdkit.Chem.rdmolops import ComputeAtomCIPRanks as ComputeAtomCIPRanks
+from rdkit.Chem.rdmolops import ConvertGenericQueriesToSubstanceGroups as ConvertGenericQueriesToSubstanceGroups
+from rdkit.Chem.rdmolops import CopyMolSubset as CopyMolSubset
+from rdkit.Chem.rdmolops import CountAtomElec as CountAtomElec
+from rdkit.Chem.rdmolfiles import CreateAtomBoolPropertyList as CreateAtomBoolPropertyList
+from rdkit.Chem.rdmolfiles import CreateAtomDoublePropertyList as CreateAtomDoublePropertyList
+from rdkit.Chem.rdmolfiles import CreateAtomIntPropertyList as CreateAtomIntPropertyList
+from rdkit.Chem.rdmolfiles import CreateAtomStringPropertyList as CreateAtomStringPropertyList
+from rdkit.Chem.rdmolfiles import CreateBondBoolPropertyList as CreateBondBoolPropertyList
+from rdkit.Chem.rdmolfiles import CreateBondDoublePropertyList as CreateBondDoublePropertyList
+from rdkit.Chem.rdmolfiles import CreateBondIntPropertyList as CreateBondIntPropertyList
+from rdkit.Chem.rdmolfiles import CreateBondStringPropertyList as CreateBondStringPropertyList
+from rdkit.Chem.rdchem import CreateMolDataSubstanceGroup as CreateMolDataSubstanceGroup
+from rdkit.Chem.rdchem import CreateMolSubstanceGroup as CreateMolSubstanceGroup
+from rdkit.Chem.rdchem import CreateStereoGroup as CreateStereoGroup
+from rdkit.Chem.rdmolops import DativeBondsToHaptic as DativeBondsToHaptic
+from rdkit.Chem.rdmolops import DeleteSubstructs as DeleteSubstructs
+from rdkit.Chem.rdmolops import DetectBondStereoChemistry as DetectBondStereoChemistry
+from rdkit.Chem.rdmolops import DetectBondStereochemistry as DetectBondStereochemistry
+from rdkit.Chem.rdmolops import DetectChemistryProblems as DetectChemistryProblems
+from rdkit.Chem.rdmolops import ExpandAttachmentPoints as ExpandAttachmentPoints
+from rdkit.Chem.rdmolops import FastFindRings as FastFindRings
+from rdkit.Chem.rdmolops import FindAllPathsOfLengthN as FindAllPathsOfLengthN
+from rdkit.Chem.rdmolops import FindAllSubgraphsOfLengthMToN as FindAllSubgraphsOfLengthMToN
+from rdkit.Chem.rdmolops import FindAllSubgraphsOfLengthN as FindAllSubgraphsOfLengthN
+from rdkit.Chem.rdmolops import FindAtomEnvironmentOfRadiusN as FindAtomEnvironmentOfRadiusN
+from rdkit.Chem.rdmolops import FindMesoCenters as FindMesoCenters
+from rdkit.Chem.rdmolops import FindPotentialStereo as FindPotentialStereo
+from rdkit.Chem.rdmolops import FindPotentialStereoBonds as FindPotentialStereoBonds
+from rdkit.Chem.rdmolops import FindRingFamilies as FindRingFamilies
+from rdkit.Chem.rdmolops import FindUniqueSubgraphsOfLengthN as FindUniqueSubgraphsOfLengthN
+from rdkit.Chem.rdchem import ForwardStereoGroupIds as ForwardStereoGroupIds
+from rdkit.Chem.rdmolops import FragmentOnBRICSBonds as FragmentOnBRICSBonds
+from rdkit.Chem.rdmolops import FragmentOnBonds as FragmentOnBonds
+from rdkit.Chem.rdmolops import FragmentOnSomeBonds as FragmentOnSomeBonds
+from rdkit.Chem.rdmolops import Get3DDistanceMatrix as Get3DDistanceMatrix
+from rdkit.Chem.rdmolops import GetAdjacencyMatrix as GetAdjacencyMatrix
+from rdkit.Chem.rdmolops import GetAllowNontetrahedralChirality as GetAllowNontetrahedralChirality
+from rdkit.Chem.rdchem import GetAtomAlias as GetAtomAlias
+from rdkit.Chem.rdchem import GetAtomRLabel as GetAtomRLabel
+from rdkit.Chem.rdchem import GetAtomValue as GetAtomValue
+from rdkit.Chem.rdchem import GetDefaultPickleProperties as GetDefaultPickleProperties
+from rdkit.Chem.rdmolops import GetDistanceMatrix as GetDistanceMatrix
+from rdkit.Chem.rdmolops import GetFormalCharge as GetFormalCharge
+from rdkit.Chem.rdinchi import GetInchiVersion as GetInchiVersion
+from rdkit.Chem.rdmolops import GetMolFrags as GetMolFrags
+from rdkit.Chem.rdchem import GetMolSubstanceGroupWithIdx as GetMolSubstanceGroupWithIdx
+from rdkit.Chem.rdchem import GetMolSubstanceGroups as GetMolSubstanceGroups
+from rdkit.Chem.rdmolops import GetMostSubstitutedCoreMatch as GetMostSubstitutedCoreMatch
+from rdkit.Chem.rdchem import GetNumPiElectrons as GetNumPiElectrons
+from rdkit.Chem.rdchem import GetPeriodicTable as GetPeriodicTable
+from rdkit.Chem.rdmolops import GetSSSR as GetSSSR
+from rdkit.Chem.rdmolops import GetShortestPath as GetShortestPath
+from rdkit.Chem.rdchem import GetSupplementalSmilesLabel as GetSupplementalSmilesLabel
+from rdkit.Chem.rdmolops import GetSymmSSSR as GetSymmSSSR
+from rdkit.Chem.rdmolops import GetUseLegacyStereoPerception as GetUseLegacyStereoPerception
+from rdkit.Chem.rdmolops import HapticBondsToDative as HapticBondsToDative
+from rdkit.Chem.rdmolfiles import HasChemDrawCDXSupport as HasChemDrawCDXSupport
+from rdkit.Chem.rdmolops import HasQueryHs as HasQueryHs
+from rdkit.Chem.rdMolInterchange import JSONToMols as JSONToMols
+from rdkit.Chem.rdmolops import Kekulize as Kekulize
+from rdkit.Chem.rdmolops import KekulizeIfPossible as KekulizeIfPossible
+from rdkit.Chem.rdmolops import LayeredFingerprint as LayeredFingerprint
+from rdkit.Chem.rdmolops import MergeQueryHs as MergeQueryHs
+from rdkit.Chem.rdmolfiles import MetadataFromPNGFile as MetadataFromPNGFile
+from rdkit.Chem.rdmolfiles import MetadataFromPNGString as MetadataFromPNGString
+from rdkit.Chem.rdmolops import MolAddRecursiveQueries as MolAddRecursiveQueries
+from rdkit.Chem.rdchem import MolBundleCanSerialize as MolBundleCanSerialize
+from rdkit.Chem.rdmolfiles import MolFragmentToCXSmarts as MolFragmentToCXSmarts
+from rdkit.Chem.rdmolfiles import MolFragmentToCXSmiles as MolFragmentToCXSmiles
+from rdkit.Chem.rdmolfiles import MolFragmentToSmarts as MolFragmentToSmarts
+from rdkit.Chem.rdmolfiles import MolFragmentToSmiles as MolFragmentToSmiles
+from rdkit.Chem.rdmolfiles import MolFromFASTA as MolFromFASTA
+from rdkit.Chem.rdmolfiles import MolFromHELM as MolFromHELM
+from rdkit.Chem.rdmolfiles import MolFromMol2Block as MolFromMol2Block
+from rdkit.Chem.rdmolfiles import MolFromMol2File as MolFromMol2File
+from rdkit.Chem.rdmolfiles import MolFromMolBlock as MolFromMolBlock
+from rdkit.Chem.rdmolfiles import MolFromMolFile as MolFromMolFile
+from rdkit.Chem.rdmolfiles import MolFromMrvBlock as MolFromMrvBlock
+from rdkit.Chem.rdmolfiles import MolFromMrvFile as MolFromMrvFile
+from rdkit.Chem.rdmolfiles import MolFromPDBBlock as MolFromPDBBlock
+from rdkit.Chem.rdmolfiles import MolFromPDBFile as MolFromPDBFile
+from rdkit.Chem.rdmolfiles import MolFromPNGFile as MolFromPNGFile
+from rdkit.Chem.rdmolfiles import MolFromPNGString as MolFromPNGString
+from rdkit.Chem.rdmolfiles import MolFromRDKitSVG as MolFromRDKitSVG
+from rdkit.Chem.rdmolfiles import MolFromSCSRBlock as MolFromSCSRBlock
+from rdkit.Chem.rdmolfiles import MolFromSCSRFile as MolFromSCSRFile
+from rdkit.Chem.rdmolfiles import MolFromSequence as MolFromSequence
+from rdkit.Chem.rdmolfiles import MolFromSmarts as MolFromSmarts
+from rdkit.Chem.rdmolfiles import MolFromSmiles as MolFromSmiles
+from rdkit.Chem.rdmolfiles import MolFromTPLBlock as MolFromTPLBlock
+from rdkit.Chem.rdmolfiles import MolFromTPLFile as MolFromTPLFile
+from rdkit.Chem.rdmolfiles import MolFromXYZBlock as MolFromXYZBlock
+from rdkit.Chem.rdmolfiles import MolFromXYZFile as MolFromXYZFile
+from rdkit.Chem.rdmolfiles import MolMetadataToPNGFile as MolMetadataToPNGFile
+from rdkit.Chem.rdmolfiles import MolMetadataToPNGString as MolMetadataToPNGString
+from rdkit.Chem.rdmolfiles import MolToCDXMLBlock as MolToCDXMLBlock
+from rdkit.Chem.rdmolfiles import MolToCMLBlock as MolToCMLBlock
+from rdkit.Chem.rdmolfiles import MolToCMLFile as MolToCMLFile
+from rdkit.Chem.rdmolfiles import MolToCXSmarts as MolToCXSmarts
+from rdkit.Chem.rdmolfiles import MolToCXSmiles as MolToCXSmiles
+from rdkit.Chem.rdmolfiles import MolToFASTA as MolToFASTA
+from rdkit.Chem.rdmolfiles import MolToHELM as MolToHELM
+from rdkit.Chem.rdMolInterchange import MolToJSON as MolToJSON
+from rdkit.Chem.rdmolfiles import MolToMolBlock as MolToMolBlock
+from rdkit.Chem.rdmolfiles import MolToMolFile as MolToMolFile
+from rdkit.Chem.rdmolfiles import MolToMrvBlock as MolToMrvBlock
+from rdkit.Chem.rdmolfiles import MolToMrvFile as MolToMrvFile
+from rdkit.Chem.rdmolfiles import MolToPDBBlock as MolToPDBBlock
+from rdkit.Chem.rdmolfiles import MolToPDBFile as MolToPDBFile
+from rdkit.Chem.rdmolfiles import MolToRandomSmilesVect as MolToRandomSmilesVect
+from rdkit.Chem.rdmolfiles import MolToSequence as MolToSequence
+from rdkit.Chem.rdmolfiles import MolToSmarts as MolToSmarts
+from rdkit.Chem.rdmolfiles import MolToSmiles as MolToSmiles
+from rdkit.Chem.rdmolfiles import MolToTPLBlock as MolToTPLBlock
+from rdkit.Chem.rdmolfiles import MolToTPLFile as MolToTPLFile
+from rdkit.Chem.rdmolfiles import MolToV2KMolBlock as MolToV2KMolBlock
+from rdkit.Chem.rdmolfiles import MolToV3KMolBlock as MolToV3KMolBlock
+from rdkit.Chem.rdmolfiles import MolToV3KMolFile as MolToV3KMolFile
+from rdkit.Chem.rdmolfiles import MolToXYZBlock as MolToXYZBlock
+from rdkit.Chem.rdmolfiles import MolToXYZFile as MolToXYZFile
+from rdkit.Chem.rdmolfiles import MolsFromCDXML as MolsFromCDXML
+from rdkit.Chem.rdmolfiles import MolsFromCDXMLFile as MolsFromCDXMLFile
+from rdkit.Chem.rdmolfiles import MolsFromPNGFile as MolsFromPNGFile
+from rdkit.Chem.rdmolfiles import MolsFromPNGString as MolsFromPNGString
+from rdkit.Chem.rdMolInterchange import MolsToJSON as MolsToJSON
+from rdkit.Chem.rdmolops import MurckoDecompose as MurckoDecompose
+from rdkit.Chem.rdmolops import NeedsHs as NeedsHs
+from rdkit.Chem.rdmolops import ParseMolQueryDefFile as ParseMolQueryDefFile
+from rdkit.Chem.rdmolops import PathToSubmol as PathToSubmol
+from rdkit.Chem.rdmolops import PatternFingerprint as PatternFingerprint
+from rdkit.Chem.rdmolops import RDKFingerprint as RDKFingerprint
+from rdkit.Chem.rdmolops import ReapplyMolBlockWedging as ReapplyMolBlockWedging
+from rdkit.Chem.rdmolops import RemoveAllHs as RemoveAllHs
+from rdkit.Chem.rdmolops import RemoveHs as RemoveHs
+from rdkit.Chem.rdmolops import RemoveNonExplicit3DChirality as RemoveNonExplicit3DChirality
+from rdkit.Chem.rdmolops import RemoveStereochemistry as RemoveStereochemistry
+from rdkit.Chem.rdmolops import RenumberAtoms as RenumberAtoms
+from rdkit.Chem.rdmolops import ReplaceCore as ReplaceCore
+from rdkit.Chem.rdmolops import ReplaceSidechains as ReplaceSidechains
+from rdkit.Chem.rdmolops import ReplaceSubstructs as ReplaceSubstructs
+from rdkit.Chem.rdmolops import SanitizeMol as SanitizeMol
+from rdkit.Chem.rdmolops import SetAllowNontetrahedralChirality as SetAllowNontetrahedralChirality
+from rdkit.Chem.rdmolops import SetAromaticity as SetAromaticity
+from rdkit.Chem.rdchem import SetAtomAlias as SetAtomAlias
+from rdkit.Chem.rdchem import SetAtomRLabel as SetAtomRLabel
+from rdkit.Chem.rdchem import SetAtomValue as SetAtomValue
+from rdkit.Chem.rdmolops import SetBondStereoFromDirections as SetBondStereoFromDirections
+from rdkit.Chem.rdmolops import SetConjugation as SetConjugation
+from rdkit.Chem.rdchem import SetDefaultPickleProperties as SetDefaultPickleProperties
+from rdkit.Chem.rdmolops import SetDoubleBondNeighborDirections as SetDoubleBondNeighborDirections
+from rdkit.Chem.rdmolops import SetGenericQueriesFromProperties as SetGenericQueriesFromProperties
+from rdkit.Chem.rdmolops import SetHybridization as SetHybridization
+from rdkit.Chem.rdchem import SetSupplementalSmilesLabel as SetSupplementalSmilesLabel
+from rdkit.Chem.rdmolops import SetTerminalAtomCoords as SetTerminalAtomCoords
+from rdkit.Chem.rdmolops import SetUseLegacyStereoPerception as SetUseLegacyStereoPerception
+from rdkit.Chem.rdmolops import SimplifyEnhancedStereo as SimplifyEnhancedStereo
+from rdkit.Chem.rdmolfiles import SmilesMolSupplierFromText as SmilesMolSupplierFromText
+from rdkit.Chem.rdmolops import SortMatchesByDegreeOfCoreSubstitution as SortMatchesByDegreeOfCoreSubstitution
+from rdkit.Chem.rdmolops import SplitMolByPDBChainId as SplitMolByPDBChainId
+from rdkit.Chem.rdmolops import SplitMolByPDBResidues as SplitMolByPDBResidues
+from rdkit.Chem.rdmolops import TranslateChiralFlagToStereoGroups as TranslateChiralFlagToStereoGroups
+from rdkit.Chem.rdmolops import UnfoldedRDKFingerprintCountBased as UnfoldedRDKFingerprintCountBased
+from rdkit.Chem.rdmolops import WedgeBond as WedgeBond
+from rdkit.Chem.rdmolops import WedgeMolBonds as WedgeMolBonds
+from . import inchi as inchi
+from rdkit.Chem.rdmolops import molzip as molzip
+from rdkit.Chem.rdmolops import molzipFragments as molzipFragments
+from . import rdCIPLabeler as rdCIPLabeler
+from . import rdCoordGen as rdCoordGen
+from . import rdMolInterchange as rdMolInterchange
+from . import rdchem as rdchem
+from . import rdinchi as rdinchi
+from . import rdmolfiles as rdmolfiles
+from . import rdmolops as rdmolops
+from rdkit.Chem.rdchem import tossit as tossit

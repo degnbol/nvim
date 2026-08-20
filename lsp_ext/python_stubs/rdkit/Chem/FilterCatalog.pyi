@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 from rdkit import Chem
 import rdkit.Chem.rdfiltercatalog
@@ -70,3 +70,9 @@ class FilterMatcher(rdkit.Chem.rdfiltercatalog.PythonFilterMatcher):
         """
     def __init__(self, name = 'Unamed FilterMatcher'):
         ...
+
+# present at runtime, absent from the generated stub:
+from rdkit.Chem.rdfiltercatalog import FilterCatalogCanSerialize as FilterCatalogCanSerialize
+from rdkit.Chem.rdfiltercatalog import GetFlattenedFunctionalGroupHierarchy as GetFlattenedFunctionalGroupHierarchy
+from rdkit.Chem.rdfiltercatalog import GetFunctionalGroupHierarchy as GetFunctionalGroupHierarchy
+from rdkit.Chem.rdfiltercatalog import RunFilterCatalog as RunFilterCatalog

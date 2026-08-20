@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Hybrid EState-VSA descriptors (like the MOE VSA descriptors)
 
@@ -75,3 +75,45 @@ def _descriptor_VSA_EState(nbin):
     ...
 estateBins: list = [-0.39, 0.29, 0.717, 1.165, 1.54, 1.807, 2.05, 4.69, 9.17, 15.0]
 vsaBins: list = [4.78, 5.0, 5.41, 5.74, 6.0, 6.07, 6.45, 7.0, 11.0]
+
+# present at runtime, absent from the generated stub:
+def VSA_EState1(mol):
+    r"""
+    VSA EState Descriptor 1 (-inf < x <  4.78)
+    """
+def VSA_EState10(mol):
+    r"""
+    VSA EState Descriptor 10 ( 11.00 <= x < inf)
+    """
+def VSA_EState2(mol):
+    r"""
+    VSA EState Descriptor 2 ( 4.78 <= x <  5.00)
+    """
+def VSA_EState3(mol):
+    r"""
+    VSA EState Descriptor 3 ( 5.00 <= x <  5.41)
+    """
+def VSA_EState4(mol):
+    r"""
+    VSA EState Descriptor 4 ( 5.41 <= x <  5.74)
+    """
+def VSA_EState5(mol):
+    r"""
+    VSA EState Descriptor 5 ( 5.74 <= x <  6.00)
+    """
+def VSA_EState6(mol):
+    r"""
+    VSA EState Descriptor 6 ( 6.00 <= x <  6.07)
+    """
+def VSA_EState7(mol):
+    r"""
+    VSA EState Descriptor 7 ( 6.07 <= x <  6.45)
+    """
+def VSA_EState8(mol):
+    r"""
+    VSA EState Descriptor 8 ( 6.45 <= x <  7.00)
+    """
+def VSA_EState9(mol):
+    r"""
+    VSA EState Descriptor 9 ( 7.00 <= x <  11.00)
+    """

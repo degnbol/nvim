@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Contains an implementation of Atom-pair fingerprints, as
 described in:
@@ -106,3 +106,15 @@ _maxPathLen: int = 31
 fpLen: int = 8388608
 numFpBits: int = 23
 numPathBits: int = 5
+
+# present at runtime, absent from the generated stub:
+from rdkit.Chem.rdMolDescriptors import GetAtomPairFingerprint as GetAtomPairFingerprint
+def GetAtomPairFingerprintAsIntVect(*args, **kwargs):
+    r"""
+    GetAtomPairFingerprint( (Mol)mol [, (int)minLength=1 [, (int)maxLength=30 [, (AtomPairsParameters)fromAtoms=0 [, (AtomPairsParameters)ignoreAtoms=0 [, (AtomPairsParameters)atomInvariants=0 [, (bool)includeChirality=False [, (bool)use2D=True [, (int)confId=-1]]]]]]]]) -> IntSparseIntVect :
+        Returns the atom-pair fingerprint for a molecule as an IntSparseIntVect
+
+        C++ signature :
+            RDKit::SparseIntVect<int>* GetAtomPairFingerprint(RDKit::ROMol [,unsigned int=1 [,unsigned int=30 [,boost::python::api::object=0 [,boost::python::api::object=0 [,boost::python::api::object=0 [,bool=False [,bool=True [,int=-1]]]]]]]])
+    """
+from rdkit.Chem.rdMolDescriptors import GetHashedAtomPairFingerprint as GetHashedAtomPairFingerprint

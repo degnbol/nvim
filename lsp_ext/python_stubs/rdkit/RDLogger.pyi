@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import sys as sys
 import traceback as traceback
@@ -24,3 +24,8 @@ ERROR: int = 3
 INFO: int = 1
 WARNING: int = 2
 _levels: list = ['rdApp.debug', 'rdApp.info', 'rdApp.warning', 'rdApp.error']
+
+# present at runtime, absent from the generated stub:
+from rdkit.rdBase import DisableLog as DisableLog
+from rdkit.rdBase import EnableLog as EnableLog
+from rdkit.rdBase import LogMessage as LogMessage

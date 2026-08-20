@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Implementation of the RECAP algorithm from Lewell et al. JCICS *38* 511-522 (1998)
 

@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import math as math
 from rdkit import Chem
@@ -210,3 +210,13 @@ def ExplainAtomCode(code, branchSubtract = 0, includeChirality = False):
     """
 def _runDoctests(verbose = None):
     ...
+
+# present at runtime, absent from the generated stub:
+def GetAtomCode(*args, **kwargs):
+    r"""
+    GetAtomPairAtomCode( (Atom)atom [, (int)branchSubtract=0 [, (bool)includeChirality=False]]) -> int :
+        Returns the atom code (hash) for an atom
+
+        C++ signature :
+            unsigned int GetAtomPairAtomCode(RDKit::Atom const* [,unsigned int=0 [,bool=False]])
+    """

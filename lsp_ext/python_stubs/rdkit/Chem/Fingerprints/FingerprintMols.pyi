@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  utility functionality for fingerprinting sets of molecules
  includes a command line app for working with fingerprints

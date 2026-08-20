@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Interface to the C++ Murtagh hierarchic clustering code
 
@@ -60,3 +60,7 @@ SLINK: int = 2
 UPGMA: int = 4
 WARDS: int = 1
 methods: list = [("Ward's Minimum Variance", 1, "Ward's Minimum Variance"), ('Average Linkage', 4, 'Group Average Linkage (UPGMA)'), ('Single Linkage', 2, 'Single Linkage (SLINK)'), ('Complete Linkage', 3, 'Complete Linkage (CLINK)'), ('Centroid', 7, 'Centroid method')]
+
+# present at runtime, absent from the generated stub:
+from rdkit.ML.Cluster.Clustering import MurtaghCluster as MurtaghCluster
+from rdkit.ML.Cluster.Clustering import MurtaghDistCluster as MurtaghDistCluster

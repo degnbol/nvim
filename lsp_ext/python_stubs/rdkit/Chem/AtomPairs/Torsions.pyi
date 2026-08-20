@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 
 Contains an implementation of Topological-torsion fingerprints, as
@@ -103,4 +103,16 @@ def pyScorePath(mol, path, size, atomCodes = None):
       1
     
       
+    """
+
+# present at runtime, absent from the generated stub:
+from rdkit.Chem.rdMolDescriptors import GetHashedTopologicalTorsionFingerprint as GetHashedTopologicalTorsionFingerprint
+from rdkit.Chem.rdMolDescriptors import GetTopologicalTorsionFingerprint as GetTopologicalTorsionFingerprint
+def GetTopologicalTorsionFingerprintAsIntVect(*args, **kwargs):
+    r"""
+    GetTopologicalTorsionFingerprint( (Mol)mol [, (int)targetSize=4 [, (AtomPairsParameters)fromAtoms=0 [, (AtomPairsParameters)ignoreAtoms=0 [, (AtomPairsParameters)atomInvariants=0 [, (bool)includeChirality=False]]]]]) -> LongSparseIntVect :
+        Returns the topological-torsion fingerprint for a molecule as a LongIntSparseIntVect
+
+        C++ signature :
+            RDKit::SparseIntVect<long long>* GetTopologicalTorsionFingerprint(RDKit::ROMol [,unsigned int=4 [,boost::python::api::object=0 [,boost::python::api::object=0 [,boost::python::api::object=0 [,bool=False]]]]])
     """

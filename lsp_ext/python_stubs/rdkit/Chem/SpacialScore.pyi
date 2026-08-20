@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 
 Spacial score (SPS) is an empirical scoring system to express the spacial complexity of a compound

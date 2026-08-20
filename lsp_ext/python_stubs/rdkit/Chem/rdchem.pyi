@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing the core chemistry functionality of the RDKit
 """
@@ -1825,7 +1825,7 @@ class Mol(Boost.Python.instance):
             
         
         """
-    def GetAtoms(self) -> typing.Iterable[Atom]:
+    def GetAtoms(self) -> rdkit.Chem._GetAtomsIterator:
         """
         returns an iterator over the atoms in the molecule
         """
@@ -1861,7 +1861,7 @@ class Mol(Boost.Python.instance):
             
         
         """
-    def GetBonds(self) -> typing.Iterable[Bond]:
+    def GetBonds(self) -> rdkit.Chem._GetBondsIterator:
         """
         returns an iterator over the bonds in the molecule
         """

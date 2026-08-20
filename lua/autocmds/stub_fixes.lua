@@ -16,7 +16,7 @@ local M = {}
 --- @class StubFix
 --- @field pkg string import name; gates the buffer scan and names `<package>-stubs`
 --- @field probe string path inside the stub tree whose head carries the marker
---- @field marker string comment the script writes at the head of each file it rewrote
+--- @field marker string head of each rewritten file, `<marker> <package> <version> <sha>`, `<sha>` being the first 8 of the script's own sha256
 --- @field script string fixer, run as `<env python> <script> <package> --in-place`
 
 --- @class StubFix.Env
@@ -107,17 +107,29 @@ function M.patch(fix, env, client)
         end)
 end
 
---- Offer to patch an environment's stubs unless the fixer's marker is already there.
+--- Whether a stub tree's head comment records a patch by the fixer as it stands.
+--- The marker rather than leftover defects, because the fixer legitimately leaves
+--- some behind (properties it cannot type). It still self-heals when a reinstall
+--- restores the bad stubs, which drops the marker with them. Comparing the digest
+--- as well re-offers every environment whenever the fixer itself changes. The
+--- package version in the marker is not checked here, since only the environment
+--- knows which one it holds.
+--- @param head string first line of the probed stub file
+--- @param fix StubFix
+--- @return boolean
+function M.patched_by_current(head, fix)
+    local script = util.readtext(fix.script)
+    return vim.startswith(head, fix.marker) and script ~= nil
+        and head:match("(%S+)%s*$") == vim.fn.sha256(script):sub(1, 8)
+end
+
+--- Offer to patch an environment's stubs unless the current fixer already did.
 --- @param fix StubFix
 --- @param env StubFix.Env
 --- @param client vim.lsp.Client
 local function consider(fix, env, client)
     local probe = util.readtext(env.stubs .. "/" .. fix.probe)
-    -- No stubs, or the fixer's own record of having rewritten them, is nothing to
-    -- do. The marker rather than leftover defects, because the fixer legitimately
-    -- leaves some behind (properties it cannot type); it still self-heals when a
-    -- reinstall restores the bad stubs, which drops the marker with them.
-    if not probe or vim.startswith(probe, fix.marker) then
+    if not probe or M.patched_by_current(probe:match("^[^\n]*"), fix) then
         state[env.stubs] = "ok"
         return
     end

@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing functions for calculating molecular interaction fields (MIFs)
   NOTE: This functionality is experimental and the API and/or results may change in future releases.

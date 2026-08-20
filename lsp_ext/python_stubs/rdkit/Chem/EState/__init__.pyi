@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  A module for Kier and Hall's EState Descriptors
 
@@ -24,3 +24,8 @@ from .AtomTypes import *
 from .EState import *
 __all__: list[str] = ['AtomTypes', 'BuildPatts', 'Chem', 'EState', 'EStateIndices', 'GetPrincipleQuantumNumber', 'MaxAbsEStateIndex', 'MaxEStateIndex', 'MinAbsEStateIndex', 'MinEStateIndex', 'TypeAtoms', 'esPatterns', 'numpy', 'sys']
 esPatterns = None
+
+# present at runtime, absent from the generated stub:
+from . import AtomTypes as AtomTypes
+from . import EState as EState
+from . import EState_VSA as EState_VSA

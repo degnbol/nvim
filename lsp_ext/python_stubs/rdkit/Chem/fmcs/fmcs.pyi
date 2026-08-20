@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 FMCS - Find Maximum Common Substructure
 
@@ -627,3 +627,7 @@ value_pat: re.Pattern  # value = re.compile('(\\d+)')
 EnumerationMolecule = Molecule
 default_atom_typer = atom_typer_elements
 default_bond_typer = bond_typer_bondtypes
+
+# present at runtime, absent from the generated stub:
+def tiebreaker():
+    ...

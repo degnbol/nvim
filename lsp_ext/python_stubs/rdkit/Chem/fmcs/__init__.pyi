@@ -1,4 +1,4 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Actual implementation of the FMCS algorithm
 This code should be used by importing rdkit.Chem.MCS
@@ -107,3 +107,6 @@ eleno: int = 52
 range_pat: re.Pattern  # value = re.compile('(\\d+)-(\\d*)')
 structure_format_functions: dict = {'fragment-smiles': fmcs.make_fragment_smiles, 'fragment-sdf': fmcs.make_fragment_sdf, 'complete-sdf': fmcs.make_complete_sdf}
 value_pat: re.Pattern  # value = re.compile('(\\d+)')
+
+# present at runtime, absent from the generated stub:
+from rdkit.Chem.fmcs.fmcs import tiebreaker as tiebreaker

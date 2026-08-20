@@ -1,9 +1,10 @@
-# fix_pybind_stubs: rdkit 2026.3.5
+# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing basic definitions for wrapped C++ code
 
 """
 from __future__ import annotations
+import rdkit
 import typing
 __all__: list[str] = ['AttachFileToLog', 'BlockLogs', 'CaptureErrorLog', 'DisableLog', 'EnableLog', 'LogDebugMsg', 'LogErrorMsg', 'LogInfoMsg', 'LogMessage', 'LogStatus', 'LogToCppStreams', 'LogToPythonLogger', 'LogToPythonStderr', 'LogWarningMsg', 'MatchTypeVect', 'SeedRandomNumberGenerator', 'UnsignedLong_Vect', 'VectSizeT', 'VectorOfStringVectors', 'WrapLogs', 'boostVersion', 'ostream', 'rdkitBuild', 'rdkitVersion', 'std_ostream', 'streambuf']
 class BlockLogs(Boost.Python.instance):
@@ -52,8 +53,7 @@ class CaptureErrorLog(Boost.Python.instance):
         """Messages captured from rdErrorLog. (default: '')"""
 class MatchTypeVect(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -83,8 +83,7 @@ class MatchTypeVect(Boost.Python.instance):
         """
 class UnsignedLong_Vect(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -114,8 +113,7 @@ class UnsignedLong_Vect(Boost.Python.instance):
         """
 class VectSizeT(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -145,8 +143,7 @@ class VectSizeT(Boost.Python.instance):
         """
 class VectorOfStringVectors(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -176,8 +173,7 @@ class VectorOfStringVectors(Boost.Python.instance):
         """
 class _listNSt3__16vectorIiNS_9allocatorIiEEEE(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -201,8 +197,7 @@ class _listNSt3__16vectorIiNS_9allocatorIiEEEE(Boost.Python.instance):
         """
 class _listNSt3__16vectorIjNS_9allocatorIjEEEE(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -226,8 +221,7 @@ class _listNSt3__16vectorIjNS_9allocatorIjEEEE(Boost.Python.instance):
         """
 class _listi(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -251,8 +245,7 @@ class _listi(Boost.Python.instance):
         """
 class _vectNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEE(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -282,8 +275,7 @@ class _vectNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEE(Boost.
         """
 class _vectNSt3__16vectorIdNS_9allocatorIdEEEE(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -313,8 +305,7 @@ class _vectNSt3__16vectorIdNS_9allocatorIdEEEE(Boost.Python.instance):
         """
 class _vectNSt3__16vectorIiNS_9allocatorIiEEEE(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -344,8 +335,7 @@ class _vectNSt3__16vectorIiNS_9allocatorIiEEEE(Boost.Python.instance):
         """
 class _vectNSt3__16vectorIjNS_9allocatorIjEEEE(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -375,8 +365,7 @@ class _vectNSt3__16vectorIjNS_9allocatorIjEEEE(Boost.Python.instance):
         """
 class _vectd(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -406,8 +395,7 @@ class _vectd(Boost.Python.instance):
         """
 class _vecti(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -437,8 +425,7 @@ class _vecti(Boost.Python.instance):
         """
 class _vectj(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
-    @staticmethod
-    def __iter__(vect):
+    def __iter__(self) -> rdkit.VectIter:
         ...
     @staticmethod
     def __reduce__(*args, **kwargs):
