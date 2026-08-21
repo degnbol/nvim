@@ -874,6 +874,13 @@ describe("zsh injections", function()
             assert_parses('sqlite3 db.sqlite ""')
         end)
 
+        -- #trim! clamps both ends to the node's own bytes, so a node too short
+        -- to hold the trims yields an empty region instead of the delimiter.
+        it("does not inject the delimiter of an unterminated quote", function()
+            assert.is_false(has_text(injections_for([[nvim -c "]], "vim"), [["]]))
+            assert.is_false(has_text(injections_for("nvim -c '", "vim"), "'"))
+        end)
+
         it("still injects a non-empty single-quoted string", function()
             assert_injection("zsh -c 'echo hi'", "zsh", "echo hi")
         end)

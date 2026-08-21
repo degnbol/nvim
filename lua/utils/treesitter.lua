@@ -51,8 +51,10 @@ end
 ---range stays valid when the node spans lines — or when error recovery of an
 ---unterminated string ends the node at column 0, where `#offset!`'s naive
 ---(row+drow, col+dcol) arithmetic would emit a negative column and crash
----`set_included_ranges` ("Range value out of bounds"). A degenerate result
----(end before start) drops the injection.
+---`set_included_ranges` ("Range value out of bounds"). Both walks are clamped to
+---the node's own bytes, so trimming more than the node holds yields a
+---zero-length range at the trim start — an empty injected region — rather than a
+---range reaching past the node.
 ---@param match table<integer, TSNode[]>
 ---@param _ integer pattern index (unused)
 ---@param source integer|string buffer or string
@@ -67,9 +69,9 @@ function M.trim_directive(match, _, source, pred, metadata)
     local node = nodes[1]
     local sr, sc, sb = node:range(true)
     local text = vim.treesitter.get_node_text(node, source)
-    local keep = #text - suffix_bytes
-    if keep < prefix_bytes then return end -- nothing left after trimming
-    local new_sr, new_sc, new_sb = advance_bytes(text, prefix_bytes, sr, sc, sb)
+    local prefix = math.min(prefix_bytes, #text)
+    local keep = math.max(#text - suffix_bytes, prefix)
+    local new_sr, new_sc, new_sb = advance_bytes(text, prefix, sr, sc, sb)
     local new_er, new_ec, new_eb = advance_bytes(text, keep, sr, sc, sb)
     if not metadata[capture_id] then metadata[capture_id] = {} end
     metadata[capture_id].range = { new_sr, new_sc, new_sb, new_er, new_ec, new_eb }
