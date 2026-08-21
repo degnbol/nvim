@@ -79,10 +79,17 @@ local function has_text(entries, want)
 end
 
 --- Assert at least one injection of the given language contains the expected text.
-local function assert_injection(src, expected_lang, expected_text)
+--- `expected_count`, when given, pins the exact number of regions injected for
+--- `expected_lang`.
+local function assert_injection(src, expected_lang, expected_text, expected_count)
     local inj = injections_for(src, expected_lang)
     assert.is_true(#inj >= 1,
         "expected at least 1 " .. expected_lang .. " injection, got 0")
+    if expected_count then
+        assert.are.equal(expected_count, #inj,
+            "expected " .. expected_count .. " " .. expected_lang
+            .. " injections, got " .. #inj)
+    end
     if has_text(inj, expected_text) then return end
     local got = {}
     for _, e in ipairs(inj) do got[#got + 1] = vim.inspect(e.text) end
@@ -358,6 +365,17 @@ describe("zsh injections", function()
             assert_injection("env zsh -c 'echo hello'", "zsh", "echo hello")
         end)
 
+        it("injects a double-quoted $var arg as one region", function()
+            assert_injection('zsh -c "echo $HOME; ls"', "zsh",
+                "echo $HOME; ls", 1)
+        end)
+
+        it("injects zsh into each fragment of concatenated strings", function()
+            local inj = injections_for('zsh -c "prefix="$ROOT";suffix"', "zsh")
+            assert.is_true(has_text(inj, "prefix="))
+            assert.is_true(has_text(inj, ";suffix"))
+        end)
+
         it("injects zsh into each fragment of concatenated raw_strings", function()
             -- nvim's injection processor trims leading whitespace from
             -- injected content, so use content without leading spaces.
@@ -385,6 +403,11 @@ describe("zsh injections", function()
             assert_injection('jq ".a"', "jq", ".a")
         end)
 
+        it("injects a double-quoted $var filter as one region", function()
+            assert_injection('jq ".a | .$key | .b"', "jq",
+                ".a | .$key | .b", 1)
+        end)
+
         it("injects jq with flags before filter", function()
             assert_injection("jq -r '.items[]'", "jq", ".items[]")
         end)
@@ -405,6 +428,53 @@ describe("zsh injections", function()
 
         it("does not inject for unrelated commands", function()
             assert_no_injection("echo '.a'", "jq")
+        end)
+    end)
+
+    describe("sqlite3", function()
+        it("injects sql into a single-quoted query", function()
+            assert_injection("sqlite3 db.sqlite 'select 1'", "sql", "select 1")
+        end)
+
+        it("injects sql into a double-quoted query", function()
+            assert_injection('sqlite3 db.sqlite "select 1"', "sql", "select 1")
+        end)
+
+        it("injects a double-quoted $var query as one region", function()
+            assert_injection([[sqlite3 db.sqlite "select $col from t"]], "sql",
+                "select $col from t", 1)
+        end)
+
+        it("injects past flags before the database path", function()
+            assert_injection("sqlite3 -json db.sqlite 'select 1'",
+                "sql", "select 1")
+        end)
+
+        it("does not inject the database path alone", function()
+            assert_no_injection("sqlite3 db.sqlite", "sql")
+        end)
+
+        -- The db path is commonly quoted, so a lone quoted argument must not be
+        -- read as SQL — including when a wrapper's own tokens precede it, where
+        -- counting raw sibling arguments would find a spurious "db path".
+        it("does not inject a quoted database path alone", function()
+            assert_no_injection([[sqlite3 "file:db.sqlite?immutable=1"]], "sql")
+        end)
+
+        it("does not inject a quoted database path preceding the query", function()
+            local inj = injections_for("sqlite3 'db.sqlite' 'select 1'", "sql")
+            assert.is_true(has_text(inj, "select 1"))
+            assert.is_false(has_text(inj, "db.sqlite"))
+        end)
+
+        it("does not inject a quoted database path behind a wrapper", function()
+            assert_no_injection('sudo sqlite3 "$DB"', "sql")
+            assert_no_injection('command sqlite3 "$HOME/db.sqlite"', "sql")
+            assert_no_injection('timeout 5 sqlite3 "$DB"', "sql")
+        end)
+
+        it("injects the query after a quoted db path behind a wrapper", function()
+            assert_injection([[sudo sqlite3 "$DB" 'select 1']], "sql", "select 1")
         end)
     end)
 
@@ -462,8 +532,17 @@ describe("zsh injections", function()
             assert_injection('nvim -c "set number"', "vim", "set number")
         end)
 
+        it("injects a double-quoted $var -c arg as one region", function()
+            assert_injection('nvim -c "set ft=$ft | echo 1"', "vim",
+                "set ft=$ft | echo 1", 1)
+        end)
+
         it("injects vim for + form", function()
             assert_injection("nvim +'set number'", "vim", "set number")
+        end)
+
+        it("injects vim for double-quoted + form", function()
+            assert_injection('nvim +"set number"', "vim", "set number")
         end)
 
         it("injects vim for --cmd form", function()
@@ -489,6 +568,12 @@ describe("zsh injections", function()
         it("injects lua directly for multi-line + form +'lua\\n...\\n'",
             function()
                 local src = "nvim +'lua\nprint(1)\n'"
+                assert_injection(src, "lua", "print(1)")
+            end)
+
+        it("injects lua directly for multi-line double-quoted + form",
+            function()
+                local src = 'nvim +"lua\nprint(1)\n"'
                 assert_injection(src, "lua", "print(1)")
             end)
     end)
@@ -689,6 +774,50 @@ describe("zsh injections", function()
         end)
     end)
 
+    -- `#command-is?` resolves wrapper prefixes, so these are language-agnostic:
+    -- one case per wrapper shape rather than per injected language.
+    describe("wrapper-prefixed commands", function()
+        it("sees through command", function()
+            assert_injection("command jq '.a'", "jq", ".a")
+        end)
+
+        it("sees through sudo", function()
+            assert_injection("sudo sqlite3 db.sqlite 'select 1'",
+                "sql", "select 1")
+        end)
+
+        it("sees through env with an assignment", function()
+            assert_injection("env A=1 mlr put '$x = 1'", "miller", "$x = 1")
+        end)
+
+        it("sees through timeout's numeric duration", function()
+            assert_injection("timeout 5 jq '.a'", "jq", ".a")
+        end)
+
+        it("sees through nice's flag and value", function()
+            assert_injection("nice -n 10 jq '.a'", "jq", ".a")
+        end)
+
+        it("sees through nested wrappers", function()
+            assert_injection("command command jq '.a'", "jq", ".a")
+        end)
+
+        -- The walk has no per-wrapper knowledge of which options take a value,
+        -- so it resolves to the value (`me`, `5s`) and matches nothing. Failing
+        -- closed like this is what makes one generic walk acceptable.
+        it("does not inject for a value-taking option: sudo -u me", function()
+            assert_no_injection("sudo -u me jq '.a'", "jq")
+        end)
+
+        it("does not inject for a non-numeric duration: timeout 5s", function()
+            assert_no_injection("timeout 5s jq '.a'", "jq")
+        end)
+
+        it("still injects for a bare variable_assignment prefix", function()
+            assert_injection("A=1 jq '.a'", "jq", ".a")
+        end)
+    end)
+
     -- Long commands must not silently starve their injection. The interpreter
     -- query is O(1) in concurrent partial matches; the old floating @_interp
     -- capture was O(command length) and dropped past tree-sitter's match_limit
@@ -735,6 +864,14 @@ describe("zsh injections", function()
             assert_parses("jq ''")
             assert_parses("mlr put ''")
             assert_parses("sqlite3 db.sqlite ''")
+        end)
+
+        it("parses empty and unterminated double quotes", function()
+            assert_parses('zsh -c ""')
+            assert_parses('zsh -c "')
+            assert_parses('jq ""')
+            assert_parses('nvim -c "')
+            assert_parses('sqlite3 db.sqlite ""')
         end)
 
         it("still injects a non-empty single-quoted string", function()

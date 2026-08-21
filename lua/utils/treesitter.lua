@@ -98,6 +98,15 @@ function M.inject_by_ext_directive(match, _, source, pred, metadata)
     metadata["injection.language"] = vim.treesitter.language.get_lang(ft) or ft
 end
 
+---Basename of `node`'s text — any leading `dir/` components stripped, so
+---`.venv/bin/python` yields `python`.
+---@param node TSNode
+---@param source integer|string buffer or string
+---@return string
+local function basename(node, source)
+    return (vim.treesitter.get_node_text(node, source):gsub(".*/", ""))
+end
+
 ---Interpreter basename → { command-flag char, injection language }. The `char`
 ---is the getopt command flag that makes the interpreter read its next arg as
 ---code (`-c` for shells/python, `-e` for julia/node/lua/R); it gates against a
@@ -121,8 +130,7 @@ local INTERPRETERS = {
 ---stdin marker) to the interpreter token, and return its INTERPRETERS entry (or
 ---nil if no non-flag token is reached or its basename is off-table). `node` is
 ---the token adjacent to the code: a `-c`/`-e` flag's previous sibling, or a
----command's last argument. Any leading `dir/` on the interpreter is stripped
----before the lookup, so `.venv/bin/python` resolves as `python`.
+---command's last argument.
 ---@param node TSNode|nil
 ---@param source integer|string buffer or string
 ---@return { char: string, lang: string }|nil
@@ -131,7 +139,58 @@ local function resolve_interp(node, source)
         node = node:prev_named_sibling()
     end
     if not node then return end
-    return INTERPRETERS[vim.treesitter.get_node_text(node, source):gsub(".*/", "")]
+    return INTERPRETERS[basename(node, source)]
+end
+
+---Commands that run another command named by their first non-option argument.
+---@type table<string, true>
+local WRAPPERS = {
+    command = true, builtin = true, exec = true, eval = true,
+    nohup = true, setsid = true, time = true,
+    sudo = true, doas = true, env = true, xargs = true,
+    timeout = true, nice = true, ionice = true, stdbuf = true, unbuffer = true,
+}
+
+---True when `node` could name a command — false for the tokens a wrapper puts
+---before the wrapped name: options, a `timeout`/`nice` numeric argument, and
+---`env`-style `NAME=value` assignments.
+---@param node TSNode
+---@param source integer|string buffer or string
+---@return boolean
+local function may_be_command(node, source)
+    if node:type() == "number" then return false end
+    local text = vim.treesitter.get_node_text(node, source)
+    return text:sub(1, 1) ~= "-" and text:match("^[%w_]+=") == nil
+end
+
+---Resolve the command a token actually invokes, seeing through wrapper
+---prefixes: `command grep`, `sudo grep`, `env A=1 grep` and `timeout 5 grep`
+---all resolve to the `grep` node. This is the forward counterpart of
+---`resolve_interp`, which walks *backward* to the interpreter.
+---
+---tree-sitter-zsh keeps wrapped commands flat — the wrapper is the
+---`command_name` and the wrapped command an ordinary `word` argument — so the
+---walk advances over named siblings to the first that `may_be_command`, and
+---repeats while that token is itself a wrapper.
+---
+---May return a token that is no command at all: the walk holds no per-wrapper
+---knowledge of which options take a value, so `sudo -u me grep` yields `me` and
+---`timeout 5s grep` yields `5s`. Such a token matches no command name, so
+---name-based tests fail closed rather than matching the wrong command. Preserve
+---that property when extending WRAPPERS.
+---@param node TSNode a `command_name` or argument token
+---@param source integer|string buffer or string
+---@return TSNode
+local function effective_command(node, source)
+    while WRAPPERS[basename(node, source)] do
+        local arg = node:next_named_sibling()
+        while arg and not may_be_command(arg, source) do
+            arg = arg:next_named_sibling()
+        end
+        if not arg then return node end
+        node = arg
+    end
+    return node
 end
 
 ---Query directive `(#inject-interp! @flag)` — resolve an interpreter injection
@@ -194,25 +253,50 @@ function M.inject_interp_cmd_directive(match, _, source, pred, metadata)
     if interp then metadata["injection.language"] = interp.lang end
 end
 
----Query predicate `(#any-basename-of? @cap "name" ...)` — like `#any-of?` but
----compares the *basename* of @cap, so a path-prefixed interpreter such as
----`.venv/bin/python` or `/usr/bin/python3` matches the bare name (`python`,
----`python3`). Any leading `dir/` components are stripped before the test.
+---Query predicate `(#command-is? @cap "name" ...)` — true when the command @cap
+---invokes is one of the listed names. @cap is a `(command_name)` node. Wrapper
+---prefixes are resolved first (`effective_command`, so `sudo grep` counts as
+---`grep`), then the basename is compared, so a path-prefixed command such as
+---`.venv/bin/python` or `/usr/bin/python3` matches the bare name.
 ---@param match table<integer, TSNode[]>
 ---@param _ integer pattern index (unused)
 ---@param source integer|string buffer or string
 ---@param pred any[]
 ---@return boolean
-function M.any_basename_of(match, _, source, pred)
-    local nodes = match[pred[2]]
-    if not nodes or #nodes == 0 then return true end
-    for _, node in ipairs(nodes) do
-        local basename = vim.treesitter.get_node_text(node, source):gsub(".*/", "")
+function M.command_is(match, _, source, pred)
+    for _, node in ipairs(match[pred[2]] or {}) do
+        local name = basename(effective_command(node, source), source)
         for i = 3, #pred do
-            if basename == pred[i] then return true end
+            if name == pred[i] then return true end
         end
     end
     return false
+end
+
+---Query predicate `(#arg-after? @cap @cmd N)` — true when @cap is at least the
+---Nth argument (1-indexed) of the command @cmd invokes. @cmd is a
+---`(command_name)` node; wrapper prefixes are resolved first
+---(`effective_command`), so the wrapper's own tokens do not fill argument slots
+---and `sudo sqlite3 db 'sql'` counts `db` as argument 1 exactly as the
+---unwrapped form does. Options count as arguments — the point is to require
+---*some* preceding argument, not to model any command's option grammar.
+---@param match table<integer, TSNode[]>
+---@param _ integer pattern index (unused)
+---@param source integer|string buffer or string
+---@param pred any[]
+---@return boolean
+function M.arg_after(match, _, source, pred)
+    local caps, cmds = match[pred[2]], match[pred[3]]
+    if not caps or not caps[1] or not cmds or not cmds[1] then return false end
+    local arg = effective_command(cmds[1], source):next_named_sibling()
+    for _ = 2, tonumber(pred[4]) or 1 do
+        if not arg then return false end
+        arg = arg:next_named_sibling()
+    end
+    if not arg then return false end
+    local _, _, cap_byte = caps[1]:start()
+    local _, _, arg_byte = arg:start()
+    return cap_byte >= arg_byte
 end
 
 ---Query directive `(#head! @cap N)` — narrow @cap to its first N bytes.

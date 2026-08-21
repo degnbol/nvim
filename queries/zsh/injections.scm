@@ -1,5 +1,30 @@
 ; extends
 
+; -----------------------------------------------------------------------------
+; Quoted-string captures: match the whole (raw_string) / (string) node with
+; `#trim!` + include-children, never `(string (string_content))`. A `"…$var…"`
+; is parsed by tree-sitter-zsh as string_content + variable_ref siblings, so a
+; string_content capture matches once per fragment and injects each as its own
+; broken sub-tree; the whole node is one contiguous tree instead. Both quote
+; styles delimit with one byte per side, so where double quotes are wanted the
+; two node types collapse into `[(raw_string) (string)]` — mlr and awk stay
+; raw_string-only on purpose (see their own comments).
+;
+; `$var` / `${var}` bytes keep their zsh colours: after/queries/zsh/highlights.scm
+; re-asserts the base zsh captures over the injected region at priority 101
+; (they would otherwise take the injected language's colour). `$(…)` is not
+; covered there, so a command substitution inside an injected string takes the
+; injected language's colours.
+;
+; Every command-name gate below is `#command-is?` (see lua/utils/treesitter.lua),
+; which resolves wrapper prefixes, so `command jq` / `sudo sqlite3` /
+; `env A=1 mlr` count as the wrapped command. tree-sitter-zsh keeps those flat,
+; so a wrapper's own tokens become `argument:` siblings of the same `(command)`:
+; a pattern that keys off argument *content* is unaffected, but one that counts
+; preceding arguments must count from the effective command (`#arg-after?`, used
+; by the sqlite3 pattern) rather than from a bare `argument: (_)`.
+; -----------------------------------------------------------------------------
+
 ; Inject miller DSL into single-quoted strings after put/filter/tee verbs
 ; in mlr commands. Only raw_string (single-quoted) — double-quoted strings
 ; have zsh variable expansion which conflicts with miller's $ field refs.
@@ -8,7 +33,7 @@
   argument: (word) @_verb
   .
   argument: (raw_string) @injection.content
-  (#any-basename-of? @_cmd "mlr")
+  (#command-is? @_cmd "mlr")
   (#any-of? @_verb "filter" "put" "tee")
   (#trim! @injection.content 1 1)
   (#set! injection.language "miller")
@@ -26,7 +51,7 @@
   argument: (word) @_flag
   .
   argument: (raw_string) @injection.content
-  (#any-basename-of? @_cmd "mlr")
+  (#command-is? @_cmd "mlr")
   (#any-of? @_verb "filter" "put" "tee")
   (#lua-match? @_flag "^%-")
   (#not-any-of? @_flag "-f" "-s")
@@ -80,30 +105,12 @@
 ; #inject-by-ext!). That lets `nvim -c` / `sqlite3 db 'sql'` / `grep -e` fall
 ; through to their own patterns or to no injection.
 ;
-; raw_string (single-quoted) and string (double-quoted) need separate patterns
-; (differing #trim! handling), plus the `'a'$var'b'` concatenation form.
-;
-; The double-quoted pattern captures the whole (string) node (not its
-; string_content children) and trims the two `"`. A `"…$var…"` is parsed by
-; tree-sitter-zsh as string_content + variable_ref fragments; capturing
-; string_content would inject each fragment as its own broken sub-tree, so
-; capture the whole node with include-children instead — one contiguous tree.
-; The $expansion bytes keep their zsh colours: after/queries/zsh/highlights.scm
-; re-asserts the base zsh captures over the injected region at priority 101
-; (they would otherwise take the injected language's colour).
+; The `'a'$var'b'` concatenation form needs its own pattern (below).
 ; -----------------------------------------------------------------------------
 (command
   argument: (word) @_flag
   .
-  argument: (raw_string) @injection.content
-  (#inject-interp! @_flag)
-  (#trim! @injection.content 1 1)
-  (#set! injection.include-children))
-
-(command
-  argument: (word) @_flag
-  .
-  argument: (string) @injection.content
+  argument: [(raw_string) (string)] @injection.content
   (#inject-interp! @_flag)
   (#trim! @injection.content 1 1)
   (#set! injection.include-children))
@@ -116,24 +123,16 @@
   argument: (word) @_flag
   .
   argument: (concatenation
-    (raw_string) @injection.content)
+    [(raw_string) (string)] @injection.content)
   (#inject-interp! @_flag)
   (#trim! @injection.content 1 1)
-  (#set! injection.include-children))
-
-(command
-  argument: (word) @_flag
-  .
-  argument: (concatenation
-    (string (string_content) @injection.content))
-  (#inject-interp! @_flag)
   (#set! injection.include-children))
 
 ; Inject awk into the first raw_string argument of awk/gawk/mawk
 (command
   name: (command_name) @_cmd
   argument: (raw_string) @injection.content
-  (#any-basename-of? @_cmd "awk" "gawk" "mawk")
+  (#command-is? @_cmd "awk" "gawk" "mawk")
   (#trim! @injection.content 1 1)
   (#set! injection.language "awk")
   (#set! injection.include-children))
@@ -144,16 +143,9 @@
 ; without breaking, so highlighting them as jq is harmless.
 (command
   name: (command_name) @_cmd
-  argument: (raw_string) @injection.content
-  (#any-basename-of? @_cmd "jq" "gojq")
+  argument: [(raw_string) (string)] @injection.content
+  (#command-is? @_cmd "jq" "gojq")
   (#trim! @injection.content 1 1)
-  (#set! injection.language "jq")
-  (#set! injection.include-children))
-
-(command
-  name: (command_name) @_cmd
-  argument: (string (string_content) @injection.content)
-  (#any-basename-of? @_cmd "jq" "gojq")
   (#set! injection.language "jq")
   (#set! injection.include-children))
 
@@ -171,40 +163,24 @@
   name: (command_name) @_cmd
   argument: (word) @_flag
   .
-  argument: (raw_string) @injection.content
-  (#any-basename-of? @_cmd "nvim" "vim")
+  argument: [(raw_string) (string)] @injection.content
+  (#command-is? @_cmd "nvim" "vim")
   (#any-of? @_flag "-c" "--cmd")
-  (#not-lua-match? @injection.content "^'lua\n")
+  (#not-lua-match? @injection.content "^['\"]lua\n")
   (#trim! @injection.content 1 1)
-  (#set! injection.language "vim"))
-
-(command
-  name: (command_name) @_cmd
-  argument: (word) @_flag
-  .
-  argument: (string (string_content) @injection.content)
-  (#any-basename-of? @_cmd "nvim" "vim")
-  (#any-of? @_flag "-c" "--cmd")
-  (#not-lua-match? @injection.content "^lua\n")
-  (#set! injection.language "vim"))
+  (#set! injection.language "vim")
+  (#set! injection.include-children))
 
 ; +'...' / +"..." form: concatenation(word("+"), string/raw_string).
 (command
   name: (command_name) @_cmd
-  argument: (concatenation (word) @_plus (raw_string) @injection.content)
-  (#any-basename-of? @_cmd "nvim" "vim")
+  argument: (concatenation (word) @_plus [(raw_string) (string)] @injection.content)
+  (#command-is? @_cmd "nvim" "vim")
   (#eq? @_plus "+")
-  (#not-lua-match? @injection.content "^'lua\n")
+  (#not-lua-match? @injection.content "^['\"]lua\n")
   (#trim! @injection.content 1 1)
-  (#set! injection.language "vim"))
-
-(command
-  name: (command_name) @_cmd
-  argument: (concatenation (word) @_plus (string (string_content) @injection.content))
-  (#any-basename-of? @_cmd "nvim" "vim")
-  (#eq? @_plus "+")
-  (#not-lua-match? @injection.content "^lua\n")
-  (#set! injection.language "vim"))
+  (#set! injection.language "vim")
+  (#set! injection.include-children))
 
 ; Multi-line lua: `nvim -c 'lua\nCODE\n'` and `nvim +"lua\nCODE\n"` etc.
 ; #trim! is a custom directive (see plugin/treesitter.lua) that skips a
@@ -213,32 +189,17 @@
 ; because it does naive (row+drow, col+dcol) arithmetic and the col delta
 ; needed to reach column 0 of the next line varies with the surrounding text.
 ;
-; raw_string `'lua\n...\n'` — skip 5 bytes (`'lua\n`), strip 1 byte (`'`).
-(command
-  name: (command_name) @_cmd
-  argument: (word) @_flag
-  .
-  argument: (raw_string) @injection.content
-  (#any-basename-of? @_cmd "nvim" "vim")
-  (#any-of? @_flag "-c" "--cmd")
-  (#lua-match? @injection.content "^'lua\n")
-  (#trim! @injection.content 5 1)
-  (#set! injection.language "lua"))
-
-; double-quoted `"lua\n...\n"` — tree-sitter-zsh splits this into multiple
-; `string_content` nodes with `"`s as siblings, so capturing string_content
-; directly only sees one line at a time. Match the whole `string` node and
-; trim 5 bytes (`"lua\n`) from start, 1 byte (`"`) from end.
+; Skip 5 bytes (`'lua\n` / `"lua\n`), strip the 1-byte closing quote.
 ; `include-children` keeps the metadata.range from #trim! intact (otherwise
 ; the range gets masked by the inner string_content/`"` children).
 (command
   name: (command_name) @_cmd
   argument: (word) @_flag
   .
-  argument: (string) @injection.content
-  (#any-basename-of? @_cmd "nvim" "vim")
+  argument: [(raw_string) (string)] @injection.content
+  (#command-is? @_cmd "nvim" "vim")
   (#any-of? @_flag "-c" "--cmd")
-  (#lua-match? @injection.content "^\"lua\n")
+  (#lua-match? @injection.content "^['\"]lua\n")
   (#trim! @injection.content 5 1)
   (#set! injection.language "lua")
   (#set! injection.include-children))
@@ -246,19 +207,10 @@
 ; +'lua\n...\n' concatenation form
 (command
   name: (command_name) @_cmd
-  argument: (concatenation (word) @_plus (raw_string) @injection.content)
-  (#any-basename-of? @_cmd "nvim" "vim")
+  argument: (concatenation (word) @_plus [(raw_string) (string)] @injection.content)
+  (#command-is? @_cmd "nvim" "vim")
   (#eq? @_plus "+")
-  (#lua-match? @injection.content "^'lua\n")
-  (#trim! @injection.content 5 1)
-  (#set! injection.language "lua"))
-
-(command
-  name: (command_name) @_cmd
-  argument: (concatenation (word) @_plus (string) @injection.content)
-  (#any-basename-of? @_cmd "nvim" "vim")
-  (#eq? @_plus "+")
-  (#lua-match? @injection.content "^\"lua\n")
+  (#lua-match? @injection.content "^['\"]lua\n")
   (#trim! @injection.content 5 1)
   (#set! injection.language "lua")
   (#set! injection.include-children))
@@ -340,7 +292,7 @@
     .
     argument: (word) @_stdin)
   (heredoc_redirect (heredoc_body) @injection.content)
-  (#any-basename-of? @_cmd "nvim" "vim")
+  (#command-is? @_cmd "nvim" "vim")
   (#eq? @_lflag "-l")
   (#any-of? @_stdin "/dev/stdin" "-")
   (#set! injection.language "lua"))
@@ -350,27 +302,20 @@
 ;
 ; sqlite3's invocation is `sqlite3 [flags...] <database> <sql>` — the SQL is
 ; always the LAST argument, preceded by the database path (e.g.
-; `"file:zotero.sqlite?immutable=1"`). Matching the last argument (trailing `.`)
-; that is itself preceded by another argument injects only the SQL and never the
-; db path or a lone `sqlite3 <db>` (interactive) invocation. The preceding
-; `argument: (_)` must NOT be anchored adjacent — an anchor binds it to the
-; first argument and fails when flags (`-readonly`, `-json`, …) precede the db.
+; `"file:zotero.sqlite?immutable=1"`), which is itself frequently quoted. So a
+; quoted last argument is the SQL only when the db path precedes it:
+; `#arg-after? … 2` requires it to be at least sqlite3's second argument, which
+; drops a lone `sqlite3 '<db>'` (interactive) invocation. Counting from the
+; *effective* command is what keeps the flag position-independent — a plain
+; `argument: (_)` would be filled by a `sudo`/`timeout` wrapper's own tokens, and
+; anchoring it adjacent would break on sqlite3's own flags (`-readonly`, `-json`).
 ; -----------------------------------------------------------------------------
 (command
   name: (command_name) @_cmd
-  argument: (_)
-  argument: (raw_string) @injection.content
+  argument: [(raw_string) (string)] @injection.content
   .
-  (#any-basename-of? @_cmd "sqlite3")
+  (#command-is? @_cmd "sqlite3")
+  (#arg-after? @injection.content @_cmd 2)
   (#trim! @injection.content 1 1)
-  (#set! injection.language "sql")
-  (#set! injection.include-children))
-
-(command
-  name: (command_name) @_cmd
-  argument: (_)
-  argument: (string (string_content) @injection.content)
-  .
-  (#any-basename-of? @_cmd "sqlite3")
   (#set! injection.language "sql")
   (#set! injection.include-children))

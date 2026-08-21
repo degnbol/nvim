@@ -39,7 +39,9 @@ vim.treesitter.query.add_directive(
 vim.treesitter.query.add_directive(
     "inject-interp-cmd!", ts_utils.inject_interp_cmd_directive, { force = true })
 vim.treesitter.query.add_predicate(
-    "any-basename-of?", ts_utils.any_basename_of, { force = true })
+    "command-is?", ts_utils.command_is, { force = true })
+vim.treesitter.query.add_predicate(
+    "arg-after?", ts_utils.arg_after, { force = true })
 
 -- Element colours ride on the highlighter's own decision rather than restating
 -- it: 'ts_highlight' is false for a largefile buffer and for the filetypes
