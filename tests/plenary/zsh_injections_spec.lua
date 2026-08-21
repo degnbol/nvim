@@ -478,6 +478,137 @@ describe("zsh injections", function()
         end)
     end)
 
+    describe("grep / rg", function()
+        it("injects a bare rg pattern", function()
+            assert_injection("rg 'a+b'", "regex", "a+b")
+        end)
+
+        it("injects an ERE pattern for -E and egrep", function()
+            assert_injection("grep -E '(a|b)+' f", "regex", "(a|b)+")
+            assert_injection("egrep '(a|b)+' f", "regex", "(a|b)+")
+        end)
+
+        it("injects a PCRE pattern for grep -P", function()
+            assert_injection("grep -P '\\d{3}' f", "regex", "\\d{3}")
+        end)
+
+        it("injects past a clustered short flag", function()
+            assert_injection("grep -qE 'ERROR' f", "regex", "ERROR")
+        end)
+
+        it("injects an -e value", function()
+            assert_injection("rg -e 'a+'", "regex", "a+")
+        end)
+
+        it("injects an attached value", function()
+            assert_injection("grep -E --regexp='a+' f", "regex", "a+")
+            assert_injection("grep -E -e'a+' f", "regex", "a+")
+        end)
+
+        it("injects a double-quoted pattern", function()
+            assert_injection('rg "a+b"', "regex", "a+b")
+        end)
+
+        -- BRE bails on the seven metacharacters it spells differently, but most
+        -- real BRE patterns use none of them.
+        it("injects BRE patterns that are dialect-agnostic", function()
+            assert_injection("grep '^$' f", "regex", "^$")
+            assert_injection("grep -v '^#' f", "regex", "^#")
+            assert_injection("grep -o '[^:]*$' f", "regex", "[^:]*$")
+        end)
+
+        it("does not inject BRE metacharacters", function()
+            assert_no_injection("grep '(ab)+' f", "regex")
+            assert_no_injection("grep -G '\\(a\\)' f", "regex")
+            -- A dialect flag does not make the command's own default ERE.
+            assert_no_injection("grep --regexp='a+' f", "regex")
+        end)
+
+        -- Anchors are positional in BRE, and a bracket expression shifts no
+        -- position: `[0-9]^a` and `a$[0-9]` match those characters literally.
+        it("does not inject a mid-pattern anchor under BRE", function()
+            assert_no_injection("grep 'a^b' f", "regex")
+            assert_no_injection("grep '[0-9]^a' f", "regex")
+            assert_no_injection("grep 'a$[0-9]' f", "regex")
+        end)
+
+        -- The grammar renders these as an inert escaped literal, which is what
+        -- grep does with them too, so the ERE gate must not bail on them.
+        it("injects escapes the grammar and grep agree on", function()
+            assert_injection("grep -E 'a\\h' f", "regex", "a\\h")
+            assert_injection("grep -E 'a\\\\d' f", "regex", "a\\\\d")
+        end)
+
+        it("does not inject a PCRE-only escape without -P", function()
+            assert_no_injection("grep -E '\\d' f", "regex")
+            assert_no_injection("grep '\\d' f", "regex")
+        end)
+
+        it("does not inject fixed strings", function()
+            assert_no_injection("grep -F 'a+b' f", "regex")
+            assert_no_injection("rg -F 'a+b'", "regex")
+            assert_no_injection("fgrep 'a+b' f", "regex")
+        end)
+
+        it("does not inject a -f pattern file", function()
+            assert_no_injection("grep -f 'patterns.txt' f", "regex")
+        end)
+
+        it("does not inject what the grammar cannot parse", function()
+            assert_no_injection("grep '*foo' f", "regex")
+            assert_no_injection("grep '' f", "regex")
+            assert_no_injection("grep 'a+", "regex")
+        end)
+
+        -- The glob must parse as a regex on its own (a leading `*` would be
+        -- rejected by the error gate whether or not -g consumed it), so that
+        -- the assertion pins the argument walk rather than the error gate.
+        it("does not inject an rg glob value", function()
+            local inj = injections_for("rg -g 'x*.lua' 'pat'", "regex")
+            assert.is_true(has_text(inj, "pat"))
+            assert.is_false(has_text(inj, "x*.lua"))
+            assert_injection("rg 'x*.lua'", "regex", "x*.lua")
+        end)
+
+        it("injects past a detached long flag's value", function()
+            assert_injection("rg --glob 'x*.lua' 'a+'", "regex", "a+", 1)
+        end)
+
+        it("injects every -e value", function()
+            local inj = injections_for("grep -E -e'a+' -e'b+' f", "regex")
+            assert.is_true(has_text(inj, "a+"))
+            assert.is_true(has_text(inj, "b+"))
+        end)
+
+        it("injects past a detached non-pattern value", function()
+            -- The value may parse as (number), so the walk must classify by
+            -- flag, not by node type.
+            assert_injection("grep -A 2 'x' f", "regex", "x")
+            assert_injection("rg -d 3 'a+'", "regex", "a+")
+            assert_injection("rg -E utf8 'a+'", "regex", "a+")
+        end)
+
+        it("injects a pattern preceding its matcher flag", function()
+            -- getopt permutes unless POSIXLY_CORRECT, so `-E` still applies.
+            assert_injection("grep 'a+b' -E f", "regex", "a+b")
+        end)
+
+        it("does not inject when the pattern is inside the flag token", function()
+            -- `-eE` is one word: `E` is -e's value, so the pattern has no node
+            -- of its own and 'x' is the file.
+            assert_no_injection("grep -eE 'x' f", "regex")
+        end)
+
+        it("treats a token after -- as positional, not as a flag", function()
+            assert_injection("grep -E -- '(a|b)+' f", "regex", "(a|b)+")
+            assert_no_injection("grep -E -- -E '(a|b)+'", "regex")
+        end)
+
+        it("does not inject for unrelated commands", function()
+            assert_no_injection("echo 'a+b'", "regex")
+        end)
+    end)
+
     describe("nvim lua", function()
         it("injects lua into single-quoted nvim -c 'lua ...'", function()
             assert_injection(

@@ -16,8 +16,9 @@
 ; covered there, so a command substitution inside an injected string takes the
 ; injected language's colours.
 ;
-; Every command-name gate below is `#command-is?` (see lua/utils/treesitter.lua),
-; which resolves wrapper prefixes, so `command jq` / `sudo sqlite3` /
+; Command-name gates are `#command-is?` (see lua/utils/treesitter.lua) — bar the
+; grep patterns, whose predicate resolves the name itself — and it
+; resolves wrapper prefixes, so `command jq` / `sudo sqlite3` /
 ; `env A=1 mlr` count as the wrapped command. tree-sitter-zsh keeps those flat,
 ; so a wrapper's own tokens become `argument:` siblings of the same `(command)`:
 ; a pattern that keys off argument *content* is unaffected, but one that counts
@@ -213,6 +214,40 @@
   (#lua-match? @injection.content "^['\"]lua\n")
   (#trim! @injection.content 5 1)
   (#set! injection.language "lua")
+  (#set! injection.include-children))
+
+; -----------------------------------------------------------------------------
+; Inject regex into the pattern argument of grep / egrep / ggrep / fgrep / rg.
+;
+; #regex-pattern? (see lua/utils/treesitter.lua) carries the whole decision: it
+; resolves the command (so this needs no `#command-is?` duplicating the name
+; list, and no @_cmd capture), walks the argument list getopt-style to tell a
+; pattern from a glob or a filename, and rejects a pattern whose meaning the
+; grammar gets wrong — it models PCRE, so BRE metacharacters and `\d`-style
+; escapes read as something else entirely.
+;
+; A predicate rather than this file's usual `#inject-*!` directive because the
+; injected language really is static; a boolean reads better than a directive
+; that only ever sets one value.
+;
+; `grep $'\t…'` is an `ansi_c_string`, a node type the alternation leaves out.
+; -----------------------------------------------------------------------------
+(command
+  argument: [(raw_string) (string)] @injection.content
+  (#regex-pattern? @injection.content)
+  (#trim! @injection.content 1 1)
+  (#set! injection.language "regex")
+  (#set! injection.include-children))
+
+; Attached-value form: `grep --regexp='a+'` / `grep -e'a+'` parse as
+; concatenation(word, raw_string), so the quoted node is no `argument:` of the
+; command. Also catches the fragments of a concatenated pattern (`grep 'a'$x'b'`).
+(command
+  argument: (concatenation
+    [(raw_string) (string)] @injection.content)
+  (#regex-pattern? @injection.content)
+  (#trim! @injection.content 1 1)
+  (#set! injection.language "regex")
   (#set! injection.include-children))
 
 ; -----------------------------------------------------------------------------

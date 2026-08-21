@@ -42,6 +42,8 @@ vim.treesitter.query.add_predicate(
     "command-is?", ts_utils.command_is, { force = true })
 vim.treesitter.query.add_predicate(
     "arg-after?", ts_utils.arg_after, { force = true })
+vim.treesitter.query.add_predicate(
+    "regex-pattern?", ts_utils.is_regex_pattern, { force = true })
 
 -- Element colours ride on the highlighter's own decision rather than restating
 -- it: 'ts_highlight' is false for a largefile buffer and for the filetypes

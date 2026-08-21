@@ -301,6 +301,255 @@ function M.arg_after(match, _, source, pred)
     return cap_byte >= arg_byte
 end
 
+---A pattern-matching command's argument grammar and its regex dialects, both
+---taken from the command's own `--help`. `value_chars` are the short flags that
+---take a value and `value_flags` the long flags whose value may be a separate
+---token — the `--flag=value` form needs no entry, and grep's `--color[=WHEN]` is
+---absent because an optional-argument flag only ever takes an attached value.
+---`flavours` maps a matcher flag to the dialect it selects,
+---`default_flavour` is the dialect with no such flag given. All four are
+---per-command because the same letter differs between them: `-E` is grep's
+---extended-regexp but rg's `--encoding`, which takes a value.
+---@class MatcherSpec
+---@field value_chars string
+---@field value_flags string[]
+---@field flavours table<string, string>
+---@field default_flavour string
+
+---@type MatcherSpec
+local GREP = {
+    value_chars = "efmABCDd",
+    value_flags = { "--regexp", "--file", "--max-count", "--binary-files",
+        "--devices", "--directories", "--include", "--exclude", "--exclude-dir",
+        "--exclude-from", "--label", "--group-separator", "--after-context",
+        "--before-context", "--context" },
+    flavours = {
+        ["-E"] = "ere", ["--extended-regexp"] = "ere",
+        ["-G"] = "bre", ["--basic-regexp"] = "bre",
+        ["-P"] = "pcre", ["--perl-regexp"] = "pcre",
+        ["-F"] = "fixed", ["--fixed-strings"] = "fixed",
+    },
+    default_flavour = "bre",
+}
+
+---@type table<string, MatcherSpec>
+local MATCHERS = {
+    grep = GREP,
+    ggrep = GREP,
+    egrep = vim.tbl_deep_extend("force", GREP, { default_flavour = "ere" }),
+    fgrep = vim.tbl_deep_extend("force", GREP, { default_flavour = "fixed" }),
+    rg = {
+        value_chars = "efEmjgdtTABCMr",
+        value_flags = { "--regexp", "--file", "--glob", "--iglob", "--type",
+            "--type-not", "--type-add", "--type-clear", "--ignore-file",
+            "--replace", "--max-count", "--max-depth", "--max-columns",
+            "--max-filesize", "--threads", "--encoding", "--engine", "--pre",
+            "--pre-glob", "--sort", "--sortr", "--color", "--colors",
+            "--after-context", "--before-context", "--context",
+            "--context-separator", "--field-context-separator",
+            "--field-match-separator", "--path-separator", "--hyperlink-format",
+            "--hostname-bin", "--generate", "--dfa-size-limit",
+            "--regex-size-limit" },
+        flavours = { ["-F"] = "fixed", ["--fixed-strings"] = "fixed" },
+        -- rg's default engine is Rust regex, not PCRE: it rejects the
+        -- lookaround and backreferences the grammar parses happily. Colouring
+        -- a construct rg would refuse is the lesser evil over not colouring.
+        default_flavour = "pcre",
+    },
+}
+
+---Flags whose value is a pattern, and flags that source the patterns elsewhere
+---so that no positional argument is one.
+local PATTERN_FLAGS = { ["-e"] = true, ["--regexp"] = true }
+local FILE_FLAGS = { ["-f"] = true, ["--file"] = true }
+
+---One parsed argument. `flag` is nil for a positional. `value` is the token
+---holding the argument's payload — the positional itself, the separate token a
+---flag's value lives in, or the flag's own token when the value is attached to
+---it (`-e'a+'`, `--regexp='a+'`) — and nil for a flag that takes no value.
+---@class GetoptArg
+---@field flag? string
+---@field value? TSNode
+
+---Parse the arguments following `cmd` getopt-style, in left-to-right order:
+---single-dash clusters are split, so `-qE` yields `-q` then `-E`, and `--`
+---switches the remainder to positional. Holds no knowledge of what any flag
+---means beyond `spec`.
+---@param cmd TSNode the command token the arguments follow — `effective_command`'s
+---result, so a wrapper's own tokens fill no argument slot
+---@param source integer|string buffer or string
+---@param spec MatcherSpec
+---@return GetoptArg[]
+local function getopt(cmd, source, spec)
+    local node = cmd:next_named_sibling()
+    local args = {}
+    local positional_only = false
+    while node do
+        local token = node
+        node = node:next_named_sibling()
+        local text = vim.treesitter.get_node_text(token, source)
+        local long = text:match("^%-%-[%w-]+")
+        if positional_only or not text:match("^%-.") then
+            args[#args + 1] = { value = token }
+        elseif text == "--" then
+            positional_only = true
+        elseif long then
+            if text:sub(#long + 1, #long + 1) == "=" then
+                args[#args + 1] = { flag = long, value = token }
+            elseif vim.list_contains(spec.value_flags, long) then
+                args[#args + 1] = { flag = long, value = node }
+                node = node and node:next_named_sibling()
+            else
+                args[#args + 1] = { flag = long }
+            end
+        else
+            for i = 2, #text do
+                local char = text:sub(i, i)
+                if not spec.value_chars:find(char, 1, true) then
+                    args[#args + 1] = { flag = "-" .. char }
+                elseif i < #text then
+                    args[#args + 1] = { flag = "-" .. char, value = token }
+                    break
+                else
+                    args[#args + 1] = { flag = "-" .. char, value = node }
+                    node = node and node:next_named_sibling()
+                    break
+                end
+            end
+        end
+    end
+    return args
+end
+
+---True when `node` is the payload of argument token `token`: either the token
+---itself, or its quoted child for an attached value (`--regexp='a+'`), which
+---tree-sitter-zsh parses as `concatenation(word, raw_string)`.
+---@param token TSNode|nil
+---@param node TSNode
+---@return boolean
+local function holds(token, node)
+    if not token then return false end
+    local parent = node:parent()
+    return token:equal(node) or (parent ~= nil and token:equal(parent))
+end
+
+---True when `node` holds one of the patterns among `args`: the value of
+---`-e`/`--regexp`, or the first positional argument when neither those nor
+---`-f`/`--file` supplied the patterns.
+---@param args GetoptArg[]
+---@param node TSNode
+---@return boolean
+local function is_pattern_arg(args, node)
+    local positional
+    local from_flag = false
+    for _, arg in ipairs(args) do
+        if not arg.flag then
+            positional = positional or arg.value
+        elseif PATTERN_FLAGS[arg.flag] then
+            if holds(arg.value, node) then return true end
+            from_flag = true
+        elseif FILE_FLAGS[arg.flag] then
+            from_flag = true
+        end
+    end
+    return not from_flag and holds(positional, node)
+end
+
+---The regex dialect `args` select. The last matcher flag wins; GNU grep rejects
+---two conflicting ones outright, so the order is moot.
+---@param args GetoptArg[]
+---@param spec MatcherSpec
+---@return string
+local function matcher_flavour(args, spec)
+    local flavour = spec.default_flavour
+    for _, arg in ipairs(args) do
+        local selected = arg.flag and spec.flavours[arg.flag]
+        if selected then flavour = selected end
+    end
+    return flavour
+end
+
+---True when the `regex` grammar reads `text` the way `flavour` does. The
+---grammar models PCRE/ECMAScript syntax (its README also claims POSIX, but the
+---only POSIX-specific rule is `[[:alpha:]]`, which every dialect shares) and so
+---diverges along two axes, both silently — it reports no error either way:
+---
+---* `\d`/`\D`/`\p`/`\P` are literal to grep in both BRE and ERE (`ggrep -E '\d'`
+---  warns "stray \ before d" and matches `d`), yet the grammar emits
+---  `character_class_escape`. Only `grep -P` and rg genuinely have them. The
+---  rest of PCRE's letter escapes (`\h`, `\A`, `\z`, `\R`, …) are exempt: the
+---  grammar renders them as an inert `identity_escape`, which is grep's reading
+---  too — the same agreement that makes GNU's `\<`/`\>` safe.
+---* BRE spells grouping, alternation and the `+ ? {…}` quantifiers with a
+---  backslash, so `\(ab\)\+` is a group in BRE but three inert escapes to the
+---  grammar, while `(ab)+` is literal in BRE and a group to the grammar. `^`
+---  anchors only at the start and `$` only at the end, so `a^b` is literal in
+---  BRE and an assertion to the grammar. Bracket expressions are exempt on both
+---  counts — `[^:]` negates and `[+]` is literal in either reading — so they are
+---  masked rather than removed, which keeps the anchor positions intact.
+---
+---`fixed` never matches — the pattern is not a regex at all.
+---@param flavour string
+---@param text string pattern with its quotes stripped
+---@return boolean
+local function grammar_models_flavour(flavour, text)
+    if flavour == "fixed" then return false end
+    -- An escaped backslash is a literal one, not the escape of what follows.
+    local escapes = text:gsub("\\\\", "")
+    if flavour ~= "pcre" and escapes:find("\\[dDpP]") then return false end
+    if flavour == "bre" then
+        local bare = text:gsub("%[%^?%]?[^%]]*%]",
+            function(s) return ("x"):rep(#s) end)
+        if bare:find("[(){}+?|]") then return false end
+        if bare:sub(2):find("%^") or bare:sub(1, -2):find("%$") then return false end
+    end
+    return true
+end
+
+---Query predicate `(#regex-pattern? @cap)` — true when @cap is a pattern
+---argument of a grep-family command and the `regex` parser reads it the way
+---that command does. Gates in order: the command must be in MATCHERS (so this
+---fails closed for every other command and no `#command-is?` need repeat the
+---list), @cap must sit in a pattern slot rather than being a glob, filename or
+---context value, the dialect in effect must be one the grammar models, and the
+---pattern must parse at all. That last gate rejects what the grammar cannot
+---read (`*foo`, an empty pattern, an unexpanded `${var}`) and is not subsumed
+---by the dialect tests — `\d` and `a^b` parse cleanly, just wrongly.
+---
+---The parser is loaded through `language.add`, which reports a missing one
+---instead of raising: an error thrown from a predicate propagates out of
+---`parser:parse()` and leaves the whole buffer unhighlighted, which is far more
+---than this injection is worth.
+---@param match table<integer, TSNode[]>
+---@param _ integer pattern index (unused)
+---@param source integer|string buffer or string
+---@param pred any[]
+---@return boolean
+function M.is_regex_pattern(match, _, source, pred)
+    local node = (match[pred[2]] or {})[1]
+    if not node then return false end
+    local invocation = M.ancestor("command", node)
+    local name = invocation and invocation:field("name")[1]
+    if not name then return false end
+    local cmd = effective_command(name, source)
+    local spec = MATCHERS[basename(cmd, source)]
+    if not spec then return false end
+    local args = getopt(cmd, source, spec)
+    if not is_pattern_arg(args, node) then return false end
+    local text = vim.treesitter.get_node_text(node, source)
+        :gsub("^['\"]", ""):gsub("['\"]$", "")
+    if not grammar_models_flavour(matcher_flavour(args, spec), text) then
+        return false
+    end
+    local ok, err = vim.treesitter.language.add("regex")
+    if not ok then
+        vim.notify_once("no regex injection: " .. tostring(err), vim.log.levels.WARN)
+        return false
+    end
+    return not vim.treesitter.get_string_parser(text, "regex")
+        :parse()[1]:root():has_error()
+end
+
 ---Query directive `(#head! @cap N)` — narrow @cap to its first N bytes.
 ---Assumes the first N bytes do not span a newline.
 ---@param match table<integer, TSNode[]>
