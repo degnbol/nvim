@@ -13,11 +13,6 @@ vim.treesitter.language.register("json", "jsonl")
 -- both filetypes. Also makes ```smiles fences resolve, since language.get_lang
 -- consults the same alias table.
 vim.treesitter.language.register("smarts", "smiles")
--- Beside the parser wiring rather than in an ftplugin: a ```smiles fence in a
--- markdown buffer is coloured by the buffer's own attach below but has no
--- filetype of its own, so an ftplugin would leave the groups undefined.
-local chem = require "chem/highlight"
-chem.setup()
 -- typc = typst code mode. tinymist tags hover/completion code fences ```typc;
 -- no typc parser exists, so map it to the typst parser for markdown injection
 -- (e.g. LSP hover floats). Caveat: the typst grammar parses markup-first, so
@@ -25,13 +20,15 @@ chem.setup()
 -- expressions and the hex constant get captured.
 vim.treesitter.language.register("typst", "typc")
 
-local ts_utils = require("utils.treesitter")
+local ts_utils = require "utils/treesitter"
 vim.treesitter.query.add_directive(
     "trim!", ts_utils.trim_directive, { force = true })
 vim.treesitter.query.add_directive(
     "head!", ts_utils.head_directive, { force = true })
 vim.treesitter.query.add_directive(
     "tail!", ts_utils.tail_directive, { force = true })
+vim.treesitter.query.add_directive(
+    "unquote!", ts_utils.unquote_directive, { force = true })
 vim.treesitter.query.add_directive(
     "inject-by-ext!", ts_utils.inject_by_ext_directive, { force = true })
 vim.treesitter.query.add_directive(
@@ -44,13 +41,39 @@ vim.treesitter.query.add_predicate(
     "arg-after?", ts_utils.arg_after, { force = true })
 vim.treesitter.query.add_predicate(
     "regex-pattern?", ts_utils.is_regex_pattern, { force = true })
+-- Registered here with the rest and not in plugin/chem.lua, because a query
+-- naming a predicate no one has registered does not degrade: the parse throws
+-- and the buffer goes unhighlighted.
+vim.treesitter.query.add_predicate(
+    "chem-column?", require("chem/tsv").is_chem_column, { force = true })
 
--- Element colours ride on the highlighter's own decision rather than restating
--- it: 'ts_highlight' is false for a largefile buffer and for the filetypes
--- disabled below, and the initial repaint covers the whole buffer.
+local disabled = {
+    -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$,
+    "latex", "plaintex", "tex",
+}
+local additional_vim_regex_highlighting = {
+    "vimdoc",   -- treesitter version doesn't contain useful colors from :h group-name
+    "sh", "bash", "sh.zsh",
+    "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
+    -- Semicolon isn't currently highlighted in all cases by TS so we want to incl vim regex hl for jl.
+    -- However, jl can get slowed down a lot in certain files from the syntax hl. The solution:
+    -- We enable it, but avoid any default syntax hl and only set custom syntax hl in syntax/julia.vim.
+    "julia",
+    "sql",  -- custom postgres highlight in syntax/sql.vim
+    "wgsl", -- custom in syntax/wgsl.vim
+}
+
+--- Start treesitter highlighting on a buffer, and announce that it did.
+--- @param buf integer
 local function start_treesitter(buf)
-    pcall(vim.treesitter.start, buf)
-    if vim.b[buf].ts_highlight then chem.attach(buf) end
+    -- Most filetypes have no grammar, which is a capability and not an error, so
+    -- ask for the parser rather than catch a throw. With one built, start cannot
+    -- fail: it is get_parser plus highlighter.new.
+    if not vim.treesitter.get_parser(buf) then return end
+    vim.treesitter.start(buf)
+    vim.api.nvim_exec_autocmds("User", {
+        pattern = "TSHighlightStart", data = { buf = buf }, modeline = false,
+    })
 end
 
 -- start treesitter for each new filetype
@@ -58,33 +81,27 @@ vim.api.nvim_create_autocmd("FileType", {
     pattern = "*",
     group = vim.api.nvim_create_augroup("start_treesitter", { clear = false }),
     callback = function(args)
-        local disabled = {
-            -- messes with vimtex in lots of ways, e.g. conceal, detection of mathzone, cycling with ts$,
-            "latex", "plaintex", "tex",
-        }
-        local additional_vim_regex_highlighting = {
-            "vimdoc",   -- treesitter version doesn't contain useful colors from :h group-name
-            "sh", "bash", "sh.zsh",
-            "markdown", -- my custom comment syntax matches in after/syntax/markdown.vim
-            -- Semicolon isn't currently highlighted in all cases by TS so we want to incl vim regex hl for jl.
-            -- However, jl can get slowed down a lot in certain files from the syntax hl. The solution:
-            -- We enable it, but avoid any default syntax hl and only set custom syntax hl in syntax/julia.vim.
-            "julia",
-            "sql",  -- custom postgres highlight in syntax/sql.vim
-            "wgsl", -- custom in syntax/wgsl.vim
-        }
         if vim.b[args.buf].largefile then return end
-        if not vim.list_contains(disabled, vim.bo.filetype) then
-            -- WORKAROUND: nvim 0.12 bundled markdown parser crashes during initial load.
-            -- Delay treesitter.start for markdown to after buffer is fully set up.
-            if vim.bo.filetype == "markdown" then
-                vim.schedule(function() start_treesitter(args.buf) end)
-            else
-                start_treesitter(args.buf)
-            end
-            if vim.list_contains(additional_vim_regex_highlighting, vim.bo.filetype) then
-                vim.bo[args.buf].syntax = 'on'
-            end
+        -- A plugin that highlights a buffer itself claims it by setting
+        -- 'ts_highlight' before it sets 'filetype' — see the OPTIM comment in
+        -- snacks.nvim's win.lua, which goes on to highlight the language it means
+        -- rather than the one its scratch filetype names. Leave the buffer to it,
+        -- vim regex syntax included: setting 'syntax' here would stop it too.
+        if vim.b[args.buf].ts_highlight then return end
+        if vim.list_contains(disabled, args.match) then return end
+        -- WORKAROUND: nvim 0.12 bundled markdown parser crashes during initial load.
+        -- Delay treesitter.start for markdown to after buffer is fully set up.
+        if args.match == "markdown" then
+            vim.schedule(function()
+                -- The buffer can be gone by the time this runs, and get_parser
+                -- throws on an invalid one.
+                if vim.api.nvim_buf_is_valid(args.buf) then start_treesitter(args.buf) end
+            end)
+        else
+            start_treesitter(args.buf)
+        end
+        if vim.list_contains(additional_vim_regex_highlighting, args.match) then
+            vim.bo[args.buf].syntax = 'on'
         end
     end
 })

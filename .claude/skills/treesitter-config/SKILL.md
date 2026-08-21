@@ -1,6 +1,6 @@
 ---
 name: treesitter-config
-description: This config's tree-sitter setup — the custom miller, pymol_select and smarts grammars, the dedicated zsh parser and sh.zsh filetype wiring, and their highlight/injection queries. Use when editing modules/tree-sitter-*, plugin/treesitter.lua, lua/plugins/treesitter.lua, lua/chem/*, queries under those grammars, ftplugin/python.lua pymol injection, or zsh filetype/parser behaviour. For grammar authoring (grammar.js, lexer conflicts) see the global treesitter skill; for nvim treesitter internals see the neovim skill's treesitter-integration.md.
+description: This config's tree-sitter setup — the custom miller, pymol_select and smarts grammars, the dedicated zsh parser and sh.zsh filetype wiring, and their highlight/injection queries. Use when editing modules/tree-sitter-*, plugin/treesitter.lua, lua/plugins/treesitter.lua, lua/chem/*, queries under those grammars or under queries/tsv/, ftplugin/python.lua pymol injection, or zsh filetype/parser behaviour. For grammar authoring (grammar.js, lexer conflicts) see the global treesitter skill; for nvim treesitter internals see the neovim skill's treesitter-integration.md.
 ---
 
 # Tree-sitter (this config)
@@ -116,8 +116,46 @@ suspect symbols with no isolable compound. Rerun it after `symbols.js` changes;
 `tests/plenary/smarts_spec.lua` fails when the two files disagree.
 
 `lua/chem/highlight.lua` both defines the `@chem.*` groups and paints the marks.
-`plugin/treesitter.lua` calls its `setup()` — a plugin rather than an ftplugin, so
-fenced structures with no filetype of their own still find the groups defined —
-and its `attach()` beside `vim.treesitter.start`, gated on `vim.b.ts_highlight` so
-the `largefile` and disabled-filetype policies are inherited rather than
-restated.
+`plugin/chem.lua` calls its `setup()` — a plugin rather than an ftplugin, so
+fenced structures with no filetype of their own still find the groups defined.
+`setup()` subscribes `attach()` to `User TSHighlightStart`, which
+`plugin/treesitter.lua` fires for every buffer it starts highlighting: the parser
+is known to exist, and the `largefile`, disabled-filetype and
+claimed-by-another-plugin policies are inherited rather than restated.
+
+Marks are cleared **by range**, never by row: a TSV row with two chemical
+columns holds two regions on one line, and each is repainted from its own
+`on_changedtree`. Two range subtleties the tests pin down
+(`tests/plenary/tsv_spec.lua`, `smarts_spec.lua`):
+
+- The repainted part of a region is the change's *rows* intersected with the
+  region's *columns*. Whole rows because a mark moves with the buffer edit, not
+  with the bytes tree-sitter calls changed — `nvim_buf_set_lines` over a line
+  collapses every mark on it to the start of the next line, past the last line
+  when there is none.
+- `on_child_removed` clears off the removed tree's `included_regions()`, not its
+  trees: `invalidate(true)` (which `chem/tsv.lua` calls after a mark changes)
+  empties `_trees` before the reparse that drops the language.
+
+### Chemical columns in a TSV
+
+`queries/tsv/injections.scm` parses the cells of a chemical column as a
+structure, gated on `#chem-column?` (`lua/chem/tsv.lua`, registered in
+`plugin/treesitter.lua`). One predicate and a constant `injection.language`
+rather than a directive: SMILES and SMARTS share the one parser.
+`chem/notation.lua` holds the exact set of header names, `smiles`|`smarts`
+per name because `chem_draw` needs the notation and not a boolean;
+`<localleader>c` marks a column the set does not name.
+
+`queries/tsv/highlights.scm` is **not** an `; extends` file — it replaces
+nvim-treesitter's, which gives every cell `@string` over the injected structure.
+The first non-extending file in runtimepath order is the whole base query, so the
+config's beats the site directory the parser's queries are symlinked into. Side
+effect: `csv` inherits `tsv`, so a csv buffer keeps only its commas.
+
+Columns are counted in **tabs off the buffer line**, not in `field` siblings: the
+tsv grammar drops an empty cell instead of noding it (`x<TAB><TAB>y` is two
+fields), and a row whose first cell is empty merges into the row above. Rows
+still come from the tree — which one is the header, which are comments. Counting
+tabs is what makes a table with missing values work at all, and the header/data
+field-count guard splits the two lines for the same reason.

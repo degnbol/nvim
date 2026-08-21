@@ -84,6 +84,7 @@ return {
                     "javascript",
                     "scala",
                     "sql",
+                    "tsv", -- also .tab and .bed; the csv parser requires it too
                     "graphql", --ext .gql, e.g. schema for graph databases
                     -- "qf",      -- see below. Run :TSInstall qf
                     "yaml",

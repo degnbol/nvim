@@ -16,6 +16,7 @@
 local M = {}
 
 local hi = require "utils/highlights"
+local util = require "utils/init"
 local elements = require "chem/elements"
 
 local ns = vim.api.nvim_create_namespace("chem.elements")
@@ -52,63 +53,124 @@ local groups = element_groups()
 --- @alias ChemHighlight [integer, integer, integer, integer, string]
 --- start row, start column, end row, end column, highlight group
 
---- Where the atoms of a row range are, and which element each one spells.
+--- True when a position is within a range, both ends included — the same
+--- containment `nvim_buf_get_extmarks` applies to a mark's start, so what
+--- `clear` removes is exactly what `paint` puts back.
+--- @param range Range4
+--- @param row integer
+--- @param col integer
+--- @return boolean
+local function within(range, row, col)
+    return not util.before(row, col, range[1], range[2])
+        and not util.before(range[3], range[4], row, col)
+end
+
+--- Where the atoms of a range are, and which element each one spells.
 --- @param buf integer buffer the tree was parsed from
 --- @param root TSNode root of a smarts tree
---- @param srow integer first row to search, 0-based
---- @param erow integer row to stop before
+--- @param range Range4
 --- @return ChemHighlight[]
-local function element_highlights(buf, root, srow, erow)
+local function element_highlights(buf, root, range)
     local query = assert(vim.treesitter.query.get("smarts", "atoms"))
     local highlights = {}
-    for _, node in query:iter_captures(root, buf, srow, erow) do
+    local erow = math.min(range[3] + 1, vim.api.nvim_buf_line_count(buf))
+    for _, node in query:iter_captures(root, buf, range[1], erow) do
         local group = groups[vim.treesitter.get_node_text(node, buf)]
-        if group then
-            local r1, c1, r2, c2 = node:range()
+        local r1, c1, r2, c2 = node:range()
+        if group and within(range, r1, c1) then
             highlights[#highlights + 1] = { r1, c1, r2, c2, group }
         end
     end
     return highlights
 end
 
---- The rows one tree covers, as a range clamped to the buffer.
---- @param buf integer
---- @param tree TSTree
---- @return integer srow first row, 0-based
---- @return integer erow row after the last
-local function tree_rows(buf, tree)
-    local ranges = tree:included_ranges(false)
-    return ranges[1][1],
-        math.min(ranges[#ranges][3] + 1, vim.api.nvim_buf_line_count(buf))
+--- The part of a tree's range one change touched: the change's rows, but the
+--- range's own columns, so that a sibling region on the same row keeps its
+--- marks. Whole rows because a change is bytes, while the atom a mark colours is
+--- the unit being repainted; a region spanning one row — a TSV cell — is
+--- therefore repainted whole.
+--- @param range Range4
+--- @param change Range6
+--- @return Range4|nil touched nil when the change is outside the range
+local function changed_part(range, change)
+    local srow, scol, erow, ecol = range[1], range[2], range[3], range[4]
+    if change[4] < srow or erow < change[1] then return end
+    if change[1] > srow then srow, scol = change[1], 0 end
+    -- The start of the row after the change is the end of the change's last row.
+    if change[4] < erow then erow, ecol = change[4] + 1, 0 end
+    return { srow, scol, erow, ecol }
 end
 
---- Replace the element marks of a row range with one tree's.
+--- Drop the element marks of a range, and any invalidated mark just past it. By
+--- range and not by row, because two structures can share a row — a TSV row with
+--- two chemical columns — as separate regions, and a row-wide clear would wipe
+--- the other one's marks.
+---
+--- The invalid ones are the marks of text an edit deleted wholesale:
+--- `nvim_buf_set_lines` over a line collapses every mark on it to the start of
+--- the next line, outside the columns of every region on the line it came from.
+--- That position is indistinguishable from a live mark in the first column of
+--- the next row, so 'invalidate' is what tells the two apart.
 --- @param buf integer
---- @param tree TSTree
---- @param srow integer first row to paint, 0-based
---- @param erow integer row to stop before
-local function paint(buf, tree, srow, erow)
-    vim.api.nvim_buf_clear_namespace(buf, ns, srow, erow)
-    for _, mark in ipairs(element_highlights(buf, tree:root(), srow, erow)) do
+--- @param range Range4
+local function clear(buf, range)
+    for _, mark in ipairs(vim.api.nvim_buf_get_extmarks(
+        buf, ns, { range[1], range[2] }, { range[3] + 1, 0 }, { details = true })) do
+        if assert(mark[4]).invalid or within(range, mark[2], mark[3]) then
+            vim.api.nvim_buf_del_extmark(buf, ns, mark[1])
+        end
+    end
+end
+
+--- Drop the element marks of every smarts region at or below a language tree.
+--- Off the regions and not the trees, because `invalidate(true)` clears the
+--- trees of every tree it is about to reparse: a language dropped by that
+--- reparse then reports no tree to take the rows from, and its regions are the
+--- only record left of where it was.
+--- @param buf integer
+--- @param ltree vim.treesitter.LanguageTree
+local function clear_regions(buf, ltree)
+    if ltree:lang() == "smarts" then
+        for _, region in ipairs(ltree:included_regions()) do
+            for _, range in ipairs(region) do
+                clear(buf, { range[1], range[2], range[4], range[5] })
+            end
+        end
+    end
+    for _, child in pairs(ltree:children()) do clear_regions(buf, child) end
+end
+
+--- Replace the element marks of a range with the atoms one tree holds there.
+--- @param buf integer
+--- @param root TSNode root of a smarts tree
+--- @param range Range4
+local function paint(buf, root, range)
+    clear(buf, range)
+    for _, mark in ipairs(element_highlights(buf, root, range)) do
         vim.api.nvim_buf_set_extmark(buf, ns, mark[1], mark[2], {
             end_row = mark[3], end_col = mark[4],
             hl_group = mark[5], priority = PRIORITY,
+            -- Not to hide the mark, which has nothing left to colour anyway, but
+            -- so that `clear` can recognise one whose text is gone.
+            invalidate = true,
         })
     end
 end
 
---- Repaint the rows a parse reported changed in one tree.
+--- Repaint the part of one tree's ranges that a parse reported changed.
 --- @param buf integer
 --- @param tree TSTree the tree as just parsed
 --- @param changes Range6[]
 local function repaint(buf, tree, changes)
-    local tstart, tend = tree_rows(buf, tree)
-    for _, change in ipairs(changes) do
-        -- A newly created tree reports the whole document, spelled as a sentinel
-        -- end row (highlighter.lua reads the same one), so the tree's own rows
-        -- are what bound the work: a sibling region keeps its marks.
-        local srow, erow = math.max(change[1], tstart), math.min(change[4] + 1, tend)
-        if srow < erow then paint(buf, tree, srow, erow) end
+    for _, range in ipairs(tree:included_ranges(false)) do
+        for _, change in ipairs(changes) do
+            -- A newly created tree reports the whole document, spelled as a
+            -- sentinel end row (highlighter.lua reads the same one), so the
+            -- tree's own ranges are what bound the work: a sibling region keeps
+            -- its marks.
+            local changed = changed_part(range, change)
+            if changed then paint(buf, tree:root(), changed) end
+        end
     end
 end
 
@@ -140,7 +202,9 @@ function M.attach(buf)
         -- Whatever is already parsed reports no change, and a buffer nvim has
         -- drawn once is parsed before any FileType handler runs.
         for _, tree in pairs(ltree:trees()) do
-            paint(buf, tree, tree_rows(buf, tree))
+            for _, range in ipairs(tree:included_ranges(false)) do
+                paint(buf, tree:root(), range)
+            end
         end
     end
 
@@ -152,18 +216,19 @@ function M.attach(buf)
         on_child_added = watch,
         -- The child is unlinked before this fires and nothing will report its
         -- rows again, so its marks have to go here.
-        on_child_removed = function(child)
-            child:for_each_tree(function(tree, ltree)
-                if ltree:lang() ~= "smarts" then return end
-                local srow, erow = tree_rows(buf, tree)
-                vim.api.nvim_buf_clear_namespace(buf, ns, srow, erow)
-            end)
-        end,
+        on_child_removed = function(child) clear_regions(buf, child) end,
     }, true)
 end
 
---- Define the groups, and redefine them on every later colorscheme change.
+--- Define the groups, and attach to every buffer treesitter highlights.
 function M.setup()
+    -- Fired by plugin/treesitter.lua once a buffer's parser exists, so attach
+    -- inherits which buffers get highlighted at all without restating the policy.
+    vim.api.nvim_create_autocmd("User", {
+        pattern = "TSHighlightStart",
+        group = vim.api.nvim_create_augroup("chem.elements", { clear = true }),
+        callback = function(args) M.attach(args.data.buf) end,
+    })
     hi.onColorScheme(function()
         hi.set("@chem.reaction", { reverse = true })
         hi.set("@chem.bond", { bold = true })

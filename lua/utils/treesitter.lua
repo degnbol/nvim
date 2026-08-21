@@ -550,6 +550,26 @@ function M.is_regex_pattern(match, _, source, pred)
         :parse()[1]:root():has_error()
 end
 
+---Query directive `(#unquote! @cap)` — narrow @cap to its content when its text
+---is wrapped in double quotes, and leave it as it is otherwise. That is
+---`(#trim! @cap 1 1)` conditioned on the quotes being there, for a node type
+---whose text may or may not carry them — a csv/tsv cell.
+---
+---A `""` inside the quotes stands for one quote and stays doubled: a range
+---selects buffer text and cannot rewrite it.
+---@param match table<integer, TSNode[]>
+---@param pattern integer pattern index
+---@param source integer|string buffer or string
+---@param pred any[]
+---@param metadata vim.treesitter.query.TSMetadata
+function M.unquote_directive(match, pattern, source, pred, metadata)
+    local nodes = match[pred[2]]
+    if not nodes or #nodes == 0 then return end
+    local text = vim.treesitter.get_node_text(nodes[1], source)
+    if #text < 2 or text:sub(1, 1) ~= '"' or text:sub(-1) ~= '"' then return end
+    M.trim_directive(match, pattern, source, { pred[1], pred[2], 1, 1 }, metadata)
+end
+
 ---Query directive `(#head! @cap N)` — narrow @cap to its first N bytes.
 ---Assumes the first N bytes do not span a newline.
 ---@param match table<integer, TSNode[]>
