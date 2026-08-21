@@ -69,7 +69,6 @@ vim.pack.add({
     gh("OmniSharp/omnisharp-vim"),
     gh("nvim-neorg/neorg"),
     gh("kaarmu/typst.vim"),
-    gh("fladson/vim-kitty"),
     gh("udalov/kotlin-vim"),
     gh("OXY2DEV/helpview.nvim"),
     gh("mityu/vim-applescript"),

@@ -1,6 +1,14 @@
 local util = require "utils/init"
 local hi = require "utils/highlights"
 
+-- kitty.conf highlighting is neovim's builtin syntax/kitty.vim, so there is no
+-- plugin spec to hang this on. It links every option name to Keyword, and
+-- italic is for the small set of rarely used keywords in most languages, not
+-- for the hundreds of options in a kitty.conf.
+hi.onColorScheme(function()
+    hi.set("kittyOptionName", { italic = false, fg = hi.fg("Keyword") })
+end)
+
 return {
     -- julia support, colors and unicode substitution. CANNOT use ft=julia
     {
@@ -139,25 +147,6 @@ return {
         end,
     },
     -- "MrPicklePinosaur/typst-conceal.vim",
-
-    -- syntax highlights for kitty conf
-    {
-        "vim-kitty",
-        ft = "kitty",
-        after = function ()
-            hi.onColorScheme(function()
-                -- Italic is for the small set of rarely used keywords in most
-                -- languages, not for the large amount of "keywords" in some
-                -- language like the kitty.conf.
-                -- There's also kittyKW, why do both exist? They're both from this plugin.
-                hi.set("kittyKeyword", { italic = false, fg=hi.fg("Keyword") })
-                -- Maybe fine to leave italic?
-                -- hi.link("kittyMap", "kittyKeyword")
-                -- Was linked to Keyword
-                hi.link("kittyInclude", "Include")
-            end)
-        end,
-    },
 
     -- basic kotlin support
     { "kotlin-vim" },
