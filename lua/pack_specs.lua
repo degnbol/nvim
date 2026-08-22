@@ -76,9 +76,14 @@ vim.pack.add({
     { src = gh("gert7/srt.nvim"), version = "main" },
     gh("pxwg/math-conceal.nvim"),
     gh("goerz/jupytext.vim"),
+    gh("KeitaNakamura/tex-conceal.vim"),
+    gh("lervag/vimtex"),
 
     -- Formatting
     gh("stevearc/conform.nvim"),
+
+    -- Code actions-ish
+    { src = gh("jeangiraldoo/codedocs.nvim"), version = "v0.6.0" },
 
     -- Fuzzy finders
     gh("folke/snacks.nvim"),
@@ -136,13 +141,6 @@ vim.pack.add({
     gh("sgur/vim-textobj-parameter"),
     gh("flwyd/vim-conjoin"),
 
-    -- TeX
-    gh("KeitaNakamura/tex-conceal.vim"),
-    gh("lervag/vimtex"),
-
-    -- Tree
-    gh("nvim-tree/nvim-tree.lua"),
-
     -- Treesitter
     { src = gh("nvim-treesitter/nvim-treesitter"), version = "main" },
     { src = gh("nvim-treesitter/nvim-treesitter-textobjects"), version = "main" },
@@ -154,6 +152,7 @@ vim.pack.add({
     gh("A7Lavinraj/fyler.nvim"),
     gh("jake-stewart/auto-cmdheight.nvim"),
     gh("b0o/incline.nvim"),
+    gh("nvim-tree/nvim-tree.lua"),
 
     -- Completion (blink.cmp + compat sources)
     { src = gh("saghen/blink.cmp"), version = vim.version.range("1") },
