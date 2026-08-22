@@ -2,7 +2,7 @@
 
 `~/nvim` = `~/.config/nvim` = `~/dotfiles/config/nvim` (symlinks). All the same directory.
 
-Config in Lua 5.1, not vimscript or newer Lua versions.
+Config in Lua (LuaJIT 2.1 — 5.1 plus `goto`/labels), not vimscript.
 
 Config-specific detail lives in local skills (auto-loaded by description), not here:
 `plugins`, `blink`, `snippets`, `lsp`, `treesitter-config`, `math-images`,

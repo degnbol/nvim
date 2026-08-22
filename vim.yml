@@ -1,6 +1,11 @@
 ---
 base: lua51
 name: vim
+# nvim embeds LuaJIT 2.1, which is 5.1 plus backported 5.2 syntax (goto/labels).
+# Needs a selene built with `--features selene-lib/luajit`; a default build errors
+# "lua version luajit ... feature for it is not enabled" and skips the whole file.
+lua_versions:
+  - luajit
 globals:
   vim:
     any: true
