@@ -1,10 +1,11 @@
 ---@diagnostic disable: undefined-global
 -- Tests for the smarts grammar's nvim wiring: plugin/ftdetect.lua,
--- plugin/treesitter.lua and modules/tree-sitter-smarts.
+-- plugin/treesitter.lua, plugin/chem.lua and modules/tree-sitter-smarts.
 
 -- plugin/* isn't reliably sourced before PlenaryBustedFile runs.
 vim.cmd.source(vim.fn.getcwd() .. "/plugin/ftdetect.lua")
 vim.cmd.source(vim.fn.getcwd() .. "/plugin/treesitter.lua")
+vim.cmd.source(vim.fn.getcwd() .. "/plugin/chem.lua")
 
 local chem = require "chem/highlight"
 -- Same call the module makes, so the same id: nvim_create_namespace is a lookup
@@ -245,6 +246,19 @@ describe("element layer", function()
         end)
     end)
 
+    -- A root smarts tree covers the whole document as one range whose end row is
+    -- a sentinel far past the buffer, and a reparse of it still has to clear
+    -- what it is about to repaint.
+    it("replaces the marks of a reparsed root structure", function()
+        with_buffer({ "CCO" }, "smiles", function(buf, parser)
+            chem.attach(buf)
+            parser:parse()
+            parser:invalidate(true)
+            parser:parse()
+            assert.are.equal(3, #vim.api.nvim_buf_get_extmarks(buf, ns, 0, -1, {}))
+        end)
+    end)
+
     -- A fence has no filetype of its own, so an ftplugin would not reach it.
     it("reaches a markdown fence, groups and all", function()
         assert.are.same({ "chem.element.oxygen" }, fenced_groups("CCO")["O"])
@@ -291,5 +305,43 @@ describe("element layer", function()
             assert.are.equal(aromatic[element.symbol:lower()], element.aromatic,
                 element.name .. " disagrees with the grammar about an aromatic spelling")
         end
+    end)
+end)
+
+--- Whether setting a filetype makes plugin/treesitter.lua announce that it
+--- started treesitter highlighting — the event the element layer attaches on.
+--- @param filetype string
+--- @param claimed boolean whether another plugin marks the buffer as its own first
+--- @return boolean
+local function announces(filetype, claimed)
+    local buffers = {}
+    local id = vim.api.nvim_create_autocmd("User", {
+        pattern = "TSHighlightStart",
+        callback = function(args) buffers[#buffers + 1] = args.data.buf end,
+    })
+    local buf = vim.api.nvim_create_buf(false, true)
+    if claimed then vim.b[buf].ts_highlight = true end
+    vim.bo[buf].filetype = filetype
+    vim.api.nvim_del_autocmd(id)
+    local announced = vim.list_contains(buffers, buf)
+    vim.api.nvim_buf_delete(buf, { force = true })
+    return announced
+end
+
+describe("treesitter highlighting", function()
+    it("announces the buffers it starts", function()
+        assert.is_true(announces("smiles", false))
+    end)
+
+    -- Most filetypes have no grammar, and the scratch filetypes of a plugin's
+    -- own windows are the ones that reach here most often.
+    it("stays quiet about a filetype with no parser", function()
+        assert.is_false(announces("snacks_layout_box", false))
+    end)
+
+    -- snacks.win sets 'ts_highlight' before 'filetype' precisely so that
+    -- FileType handlers leave the buffer to it.
+    it("stays quiet about a buffer another plugin has claimed", function()
+        assert.is_false(announces("smiles", true))
     end)
 end)

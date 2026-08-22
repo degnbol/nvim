@@ -9,6 +9,7 @@
 -- `x<TAB><TAB>y` is two fields, so `y` would count as column 2 and every column
 -- right of a missing value would shift left. Rows come from the tree, which is
 -- what it is good for.
+local highlight = require "chem/highlight"
 local notation = require "chem/notation"
 local map = require "utils/keymap"
 local util = require "utils/init"
@@ -177,6 +178,10 @@ function M.toggle_column()
     -- The injection query only runs again on a reparse, and the mark changes
     -- nothing about the text that would prompt one.
     assert(vim.treesitter.get_parser(0)):invalidate(true)
+    -- After the invalidate, not before: it reports every tree it is about to
+    -- discard as changed, which paints the unmarked column's atoms one last
+    -- time. What the reparse finds is chemical is painted again from there.
+    highlight.drop_marks(0)
 end
 
 --- Bind the mark keymap in every TSV buffer, and forget a buffer's header when

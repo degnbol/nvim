@@ -114,8 +114,12 @@ end
 --- @param buf integer
 --- @param range Range4
 local function clear(buf, range)
+    -- A root tree's range ends at a sentinel row past any buffer, and
+    -- nvim_buf_get_extmarks answers a row that large with a single mark instead
+    -- of clamping it: 2^32-1 returns one where 2^31-1 returns all of them.
+    local erow = math.min(range[3] + 1, vim.api.nvim_buf_line_count(buf))
     for _, mark in ipairs(vim.api.nvim_buf_get_extmarks(
-        buf, ns, { range[1], range[2] }, { range[3] + 1, 0 }, { details = true })) do
+        buf, ns, { range[1], range[2] }, { erow, 0 }, { details = true })) do
         if assert(mark[4]).invalid or within(range, mark[2], mark[3]) then
             vim.api.nvim_buf_del_extmark(buf, ns, mark[1])
         end
@@ -180,6 +184,15 @@ end
 local function walk(ltree, fn)
     fn(ltree)
     for _, child in pairs(ltree:children()) do walk(child, fn) end
+end
+
+--- Drop every element mark in a buffer, for a change in what counts as a
+--- structure rather than a change in the text. Pair it with a reparse, which
+--- repaints the regions that are still chemical: a region that stopped being one
+--- is gone from the tree, and nothing left reports its rows.
+--- @param buf integer
+function M.drop_marks(buf)
+    vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
 end
 
 --- Colour the atoms of a buffer, and recolour them after every later reparse.

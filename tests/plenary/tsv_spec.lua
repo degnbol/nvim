@@ -405,6 +405,20 @@ describe("chemical column mark", function()
             assert.are.same({}, structures(buf, parser))
         end)
     end)
+
+    -- Unmarking one of two chemical columns leaves the language in place, so no
+    -- child is removed and nothing reports the dropped column's rows again.
+    it("drops the marks of the column it unmarks", function()
+        with_tsv({ "smiles\tnote", "CCO\t[Fe]" }, function(buf, parser)
+            toggle_at(buf, 2, 4)
+            assert.are.same({ "CCO", "[Fe]" }, structures(buf, parser))
+            toggle_at(buf, 2, 4)
+            assert.are.same({ "CCO" }, structures(buf, parser))
+            assert.are.same(
+                { "@chem.element.carbon", "@chem.element.oxygen" },
+                element_groups(buf))
+        end)
+    end)
 end)
 
 describe("tsv highlights", function()
