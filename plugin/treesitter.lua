@@ -79,7 +79,10 @@ end
 -- start treesitter for each new filetype
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "*",
-    group = vim.api.nvim_create_augroup("start_treesitter", { clear = false }),
+    -- Cleared, so that re-sourcing this file — which the specs do, for the
+    -- directives and predicates registered above — leaves one handler rather
+    -- than two starting the highlighter twice over every buffer.
+    group = vim.api.nvim_create_augroup("start_treesitter", { clear = true }),
     callback = function(args)
         if vim.b[args.buf].largefile then return end
         -- A plugin that highlights a buffer itself claims it by setting
