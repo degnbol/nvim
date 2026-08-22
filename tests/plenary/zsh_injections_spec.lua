@@ -9,6 +9,9 @@ vim.treesitter.language.register("zsh", "sh.zsh")
 vim.treesitter.language.register("zsh", "bash")
 vim.treesitter.language.register("zsh", "sh")
 vim.cmd.source(vim.fn.getcwd() .. "/plugin/treesitter.lua")
+-- minimal_init.lua only adds the config dir to rtp, not its after/ subdir, where
+-- the nested injections of the injected languages live (perl pattern -> regex).
+vim.opt.runtimepath:append(vim.fn.getcwd() .. "/after")
 
 --- Parse source as zsh and return a table of injected language names.
 --- Each entry is { lang = "...", text = "..." } for the injected region.
@@ -257,6 +260,48 @@ describe("zsh injections", function()
 
         it("does not inject for other commands", function()
             assert_no_injection("echo -e 'println(1)'", "julia")
+        end)
+    end)
+
+    describe("perl", function()
+        it("injects perl into single-quoted perl -e", function()
+            assert_injection("perl -e 'print 1'", "perl", "print 1")
+        end)
+
+        it("injects perl into double-quoted perl -e", function()
+            assert_injection('perl -e "print 1"', "perl", "print 1")
+        end)
+
+        it("injects a substitution one-liner: perl -pi -e", function()
+            assert_injection(
+                [[perl -pi -e 's/(`[\w\/.-]+\.(?:lua|md)):[\d,-]+`/$1`/g' file]],
+                "perl", [[s/(`[\w\/.-]+\.(?:lua|md)):[\d,-]+`/$1`/g]]
+            )
+        end)
+
+        it("injects for a clustered flag: perl -pe", function()
+            assert_injection("perl -pe 's/a/b/' file", "perl", "s/a/b/")
+        end)
+
+        it("works wrapped: timeout 60 perl -pe", function()
+            assert_injection(
+                "timeout 60 perl -pe 's/a/b/'", "perl", "s/a/b/"
+            )
+        end)
+
+        it("nests regex in the pattern of an injected one-liner", function()
+            assert_injection(
+                [[perl -pi -e 's/(`[\w\/.-]+\.(?:lua|md)):[\d,-]+`/$1`/g' file]],
+                "regex", [[(`[\w\/.-]+\.(?:lua|md)):[\d,-]+`]]
+            )
+        end)
+
+        it("does not inject without -e flag", function()
+            assert_no_injection("perl script.pl", "perl")
+        end)
+
+        it("does not inject for other commands", function()
+            assert_no_injection("echo -e 's/a/b/'", "perl")
         end)
     end)
 
@@ -793,6 +838,10 @@ describe("zsh injections", function()
         it("injects gnuplot for gnuplot <<EOF", function()
             assert_injection(heredoc("gnuplot", "plot sin(x)"),
                 "gnuplot", "plot sin(x)")
+        end)
+
+        it("injects perl for perl <<EOF", function()
+            assert_injection(heredoc("perl", "print 1;"), "perl", "print 1;")
         end)
 
         it("does not inject for an off-table command: cat <<EOF", function()

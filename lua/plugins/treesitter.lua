@@ -55,6 +55,7 @@ return {
                     "json",
                     "python",
                     "julia",
+                    "perl", -- one-liners injected from zsh (`perl -pe '…'`)
                     "matlab",
                     "latex",
                     "typst",

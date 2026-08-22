@@ -121,6 +121,7 @@ local INTERPRETERS = {
     bash    = { char = "c", lang = "zsh" },
     zsh     = { char = "c", lang = "zsh" },
     julia   = { char = "e", lang = "julia" },
+    perl    = { char = "e", lang = "perl" },
     node    = { char = "e", lang = "javascript" },
     lua     = { char = "e", lang = "lua" },
     R       = { char = "e", lang = "r" },
