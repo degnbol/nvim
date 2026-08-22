@@ -259,6 +259,23 @@ describe("element layer", function()
         end)
     end)
 
+    -- A region is reported changed whenever the region list it sits in changes,
+    -- with the text it holds untouched — which one scrolled line does to every
+    -- injected region on screen. The cases above assert positions, which come
+    -- out the same either way; the ids say whether the marks were replaced.
+    it("keeps the marks of a reparse over unchanged text", function()
+        with_buffer({ "CCO" }, "smiles", function(buf, parser)
+            chem.attach(buf)
+            parser:parse()
+            local before = vim.api.nvim_buf_get_extmarks(buf, ns, 0, -1, {})
+            assert.are.equal(3, #before)
+            parser:invalidate(true)
+            parser:parse()
+            assert.are.same(
+                before, vim.api.nvim_buf_get_extmarks(buf, ns, 0, -1, {}))
+        end)
+    end)
+
     -- A fence has no filetype of its own, so an ftplugin would not reach it.
     it("reaches a markdown fence, groups and all", function()
         assert.are.same({ "chem.element.oxygen" }, fenced_groups("CCO")["O"])

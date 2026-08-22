@@ -101,6 +101,20 @@ local function changed_part(range, change)
     return { srow, scol, erow, ecol }
 end
 
+--- Every element mark a repaint of a range has to look at: the ones inside it,
+--- and whatever else lies between its end and the end of the row after.
+--- @param buf integer
+--- @param range Range4
+--- @return vim.api.keyset.get_extmark_item[]
+local function marks_of(buf, range)
+    -- A root tree's range ends at a sentinel row past any buffer, and
+    -- nvim_buf_get_extmarks answers a row that large with a single mark instead
+    -- of clamping it: 2^32-1 returns one where 2^31-1 returns all of them.
+    local erow = math.min(range[3] + 1, vim.api.nvim_buf_line_count(buf))
+    return vim.api.nvim_buf_get_extmarks(
+        buf, ns, { range[1], range[2] }, { erow, 0 }, { details = true })
+end
+
 --- Drop the element marks of a range, and any invalidated mark just past it. By
 --- range and not by row, because two structures can share a row — a TSV row with
 --- two chemical columns — as separate regions, and a row-wide clear would wipe
@@ -114,12 +128,7 @@ end
 --- @param buf integer
 --- @param range Range4
 local function clear(buf, range)
-    -- A root tree's range ends at a sentinel row past any buffer, and
-    -- nvim_buf_get_extmarks answers a row that large with a single mark instead
-    -- of clamping it: 2^32-1 returns one where 2^31-1 returns all of them.
-    local erow = math.min(range[3] + 1, vim.api.nvim_buf_line_count(buf))
-    for _, mark in ipairs(vim.api.nvim_buf_get_extmarks(
-        buf, ns, { range[1], range[2] }, { erow, 0 }, { details = true })) do
+    for _, mark in ipairs(marks_of(buf, range)) do
         if assert(mark[4]).invalid or within(range, mark[2], mark[3]) then
             vim.api.nvim_buf_del_extmark(buf, ns, mark[1])
         end
@@ -144,13 +153,56 @@ local function clear_regions(buf, ltree)
     for _, child in pairs(ltree:children()) do clear_regions(buf, child) end
 end
 
---- Replace the element marks of a range with the atoms one tree holds there.
+--- What the element marks of a range draw, or nil when one of them has lost its
+--- text: an invalidated mark is no longer at the position it was set at, so no
+--- atom describes it and only a repaint can take it away.
+--- @param buf integer
+--- @param range Range4
+--- @return ChemHighlight[]|nil
+local function mark_highlights(buf, range)
+    local highlights = {}
+    for _, mark in ipairs(marks_of(buf, range)) do
+        local details = assert(mark[4])
+        if details.invalid then return end
+        if within(range, mark[2], mark[3]) then
+            highlights[#highlights + 1] = {
+                mark[2], mark[3], assert(details.end_row),
+                assert(details.end_col), assert(details.hl_group),
+            }
+        end
+    end
+    return highlights
+end
+
+--- One comparable string per highlight, sorted. Sorted rather than compared in
+--- place because `nvim_buf_get_extmarks` answers in traversal order and
+--- `iter_captures` in match order, and dropping the duplicates instead would
+--- lose one of two atoms that draw the same thing in one range.
+--- @param highlights ChemHighlight[]
+--- @return string[]
+local function signatures(highlights)
+    local sorted = vim.tbl_map(
+        function(highlight) return table.concat(highlight, ",") end, highlights)
+    table.sort(sorted)
+    return sorted
+end
+
+--- Replace the element marks of a range with the atoms one tree holds there,
+--- unless they already are those atoms. A region is reported changed whenever
+--- the region list it sits in changes — which one scrolled line does to every
+--- region on screen, and one edit to every region after it — and the marks such
+--- a repaint removes are the ones it puts back.
 --- @param buf integer
 --- @param root TSNode root of a smarts tree
 --- @param range Range4
 local function paint(buf, root, range)
+    local painted = element_highlights(buf, root, range)
+    local current = mark_highlights(buf, range)
+    if current and vim.deep_equal(signatures(current), signatures(painted)) then
+        return
+    end
     clear(buf, range)
-    for _, mark in ipairs(element_highlights(buf, root, range)) do
+    for _, mark in ipairs(painted) do
         vim.api.nvim_buf_set_extmark(buf, ns, mark[1], mark[2], {
             end_row = mark[3], end_col = mark[4],
             hl_group = mark[5], priority = PRIORITY,
