@@ -1,8 +1,7 @@
 vim.cmd([[syntax region @variable matchgroup=Operator start=/`/ end=/`/]])
 
-local map = require "utils/keymap"
-
 -- Errors.
 vim.diagnostic.enable(false)
 
-map.buf('n', '<leader>cc', '<Cmd>!Rscript %<CR>', "Run this script")
+-- Fallback for <leader>cc when the script has no shebang.
+vim.b.interpreter = 'Rscript'

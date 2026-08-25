@@ -51,17 +51,30 @@ map.n('<leader>cc', function()
 		return
 	end
 	local first_line = vim.api.nvim_buf_get_lines(0, 0, 1, false)[1] or ''
-	if not first_line:match('^#!') then
-		vim.notify("No compiler for filetype: " .. vim.bo.filetype, vim.log.levels.WARN)
+	local has_shebang = first_line:match('^#!') ~= nil
+	if not has_shebang and vim.b.interpreter == nil then
+		vim.notify("No shebang and no b:interpreter for filetype: " .. vim.bo.filetype,
+			vim.log.levels.WARN)
 		return
 	end
 	vim.cmd.write({ mods = { silent = true } })
-	if vim.fn.executable(file) == 0 then
-		vim.fn.system({ 'chmod', '+x', file })
+	-- A shebang wins over b:interpreter: it may name a wrapper such as `uv run`
+	-- that supplies deps the bare interpreter can't see.
+	local interpreter = nil
+	if has_shebang then
+		if not vim.uv.fs_access(file, 'X') then
+			-- Mask off the file-type bits; chmod is only specified for 07777.
+			local mode = bit.band(vim.uv.fs_stat(file).mode, tonumber('7777', 8))
+			local ok, err = vim.uv.fs_chmod(file, bit.bor(mode, tonumber('111', 8)))
+			if not ok then
+				vim.notify("chmod +x failed: " .. err, vim.log.levels.ERROR)
+				return
+			end
+		end
+	else
+		interpreter = vim.b.interpreter
 	end
-	local dir = vim.fn.fnameescape(vim.fs.dirname(file))
-	local name = vim.fn.fnameescape(vim.fs.basename(file))
-	vim.cmd('!cd ' .. dir .. ' && ./' .. name)
+	vim.cmd('!' .. util.script_command(file, interpreter))
 end, "Run script")
 
 

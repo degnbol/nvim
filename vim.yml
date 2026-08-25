@@ -9,3 +9,6 @@ lua_versions:
 globals:
   vim:
     any: true
+  # LuaJIT's bitop library; stands in for 5.3's & | ~ << >> operators.
+  bit:
+    any: true

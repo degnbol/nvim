@@ -12,7 +12,8 @@ vim.opt.formatoptions = "jwcrql"
 vim.opt.concealcursor = ""
 vim.opt.list = false
 
-map.buf('n', '<leader>cc', '<Cmd>!python %<CR>', "Run this script")
+-- Fallback for <leader>cc when the script has no shebang.
+vim.b.interpreter = 'python'
 
 local hi = require "utils/highlights"
 

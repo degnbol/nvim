@@ -410,4 +410,17 @@ function M.read_query(lang, query_name)
     return table.concat(sources, '\n')
 end
 
+---Build a shell command running a script from the directory it lives in.
+---Escaped for `:!`, so paths containing spaces, `;`, `(`, `!` or `%` are safe.
+---@param file string Absolute path to the script
+---@param interpreter string|nil Command to run it with; nil executes the script
+---  itself, relying on its shebang
+---@return string Shell command
+function M.script_command(file, interpreter)
+    local name = vim.fs.basename(file)
+    local run = interpreter and interpreter .. ' ' .. vim.fn.shellescape(name, true)
+        or vim.fn.shellescape('./' .. name, true)
+    return 'cd ' .. vim.fn.shellescape(vim.fs.dirname(file), true) .. ' && ' .. run
+end
+
 return M

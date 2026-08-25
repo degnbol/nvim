@@ -18,7 +18,8 @@ vim.opt_local.concealcursor = "nvc"
 
 vim.opt_local.list = false
 
-map.buf('n', '<leader>cc', '<Cmd>!julia %<CR>', "Run this script")
+-- Fallback for <leader>cc when the script has no shebang.
+vim.b.interpreter = 'julia'
 
 -- using blink.cmp instead
 -- require"completion.plotlyjs.cmp_plotlyjs".setup()
