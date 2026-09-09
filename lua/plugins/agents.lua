@@ -46,6 +46,19 @@ return {
                     },
                 },
                 acp_providers = {
+                    ["claude-agent-acp"] = {
+                        env = {
+                            -- Opt out of the bash-first experiment. Under auto
+                            -- and bypass modes the SDK otherwise attaches a
+                            -- system reminder telling the agent to read and
+                            -- edit files through cat/sed/heredocs instead of
+                            -- Read/Edit/Write. The flag is a tri-bool read
+                            -- straight off the environment, ahead of the
+                            -- cohort assignment.
+                            CLAUDE_CODE_THRIFTY_SONIC = "0",
+                        },
+                    },
+
                     ["opencode-acp"] = {
                         env = {
                             OPENAI_BASE_URL = "https://litellm.svc.xyme.cloud/",
