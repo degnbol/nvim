@@ -1,10 +1,9 @@
 ---@diagnostic disable: undefined-global
--- Tests for lua/path_highlight.lua (anchored-path detection + prose gate +
--- existence resolution) and utils.paths.resolve_path (pure single-candidate
--- resolution). The decoration provider's extmark placement is not exercised
--- here — headless has no redraw to drive it — but every piece it composes is.
+-- Tests for lua/path_highlight.lua: anchored-path detection, the prose gate,
+-- and existence resolution. The decoration provider's extmark placement is not
+-- exercised here — headless has no redraw to drive it — but every piece it
+-- composes is. utils.paths itself is covered by paths_spec.lua.
 
-local paths = require("utils.paths")
 local ph = require("path_highlight")
 
 --- Fresh scratch buffer with the given lines, filetype markdown, parser primed
@@ -16,41 +15,6 @@ local function md_buf(src)
     vim.treesitter.get_parser(buf, "markdown"):parse(true)
     return buf
 end
-
-describe("utils.paths.resolve_path", function()
-    it("returns an absolute token normalized", function()
-        assert.are.equal("/etc/hosts", paths.resolve_path("/etc/hosts", 0))
-    end)
-
-    it("expands ~ to the home directory", function()
-        assert.are.equal(vim.env.HOME .. "/x", paths.resolve_path("~/x", 0))
-    end)
-
-    it("expands $ENV", function()
-        assert.are.equal(vim.env.HOME .. "/x", paths.resolve_path("$HOME/x", 0))
-    end)
-
-    it("anchors a relative token to the buffer's own directory", function()
-        local buf = vim.api.nvim_create_buf(false, true)
-        vim.api.nvim_buf_set_name(buf, "/tmp/somedir/note.md")
-        assert.are.equal("/tmp/somedir/sib.lua", paths.resolve_path("./sib.lua", buf))
-    end)
-
-    it("resolves .. against the buffer's directory", function()
-        local buf = vim.api.nvim_create_buf(false, true)
-        vim.api.nvim_buf_set_name(buf, "/tmp/a/b/note.md")
-        assert.are.equal("/tmp/a/sib.lua", paths.resolve_path("../sib.lua", buf))
-    end)
-
-    it("anchors a relative token to cwd for a nameless buffer", function()
-        local buf = vim.api.nvim_create_buf(false, true)
-        assert.are.equal(vim.uv.cwd() .. "/sib.lua", paths.resolve_path("./sib.lua", buf))
-    end)
-
-    it("returns nil for an empty token", function()
-        assert.is_nil(paths.resolve_path("", 0))
-    end)
-end)
 
 describe("path_highlight.scan", function()
     local function tokens(line)

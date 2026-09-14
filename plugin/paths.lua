@@ -18,6 +18,7 @@ vim.env.PATH = vim.env.HOME
 -- not PYTHONPATH — global PYTHONPATH breaks the real pymol binary.
 
 local paths = require("utils.paths")
+local util = require("utils.init")
 local git_root = paths.git_root
 
 -- Like git_root but filters to .git *directories*, which means it skips
@@ -49,14 +50,20 @@ if roottop and roottop ~= root then
 	vim.opt.path:append(roottop)
 end
 
--- gf with $(git root) / $VAR / buffer-local var expansion (resolver in
--- utils.paths). `normal! gf` stays as the final net — it covers includeexpr and
--- other edge cases the resolver doesn't, so this is a strict superset.
+-- gf with $(git root) / $VAR / buffer-local var expansion and a :lnum[:col]
+-- suffix to land on (resolver in utils.paths). `normal! gf` stays as the final
+-- net for what the resolver leaves: includeexpr and the count'th match in
+-- 'path' (:h gf).
 vim.keymap.set("n", "gf", function()
-	local p = paths.resolve_path_under_cursor(0)
-	if p then
-		vim.cmd.edit(vim.fn.fnameescape(p))
-	else
-		vim.cmd("normal! gf")
+	local path, lnum, col = paths.resolve_location_under_cursor(0)
+	if not path then
+		vim.cmd("normal! " .. vim.v.count1 .. "gf")
+		return
 	end
-end, { desc = "gf with $(git root), $VAR, buffer var expansion" })
+	util.jumplist_add()
+	util.edit(path)
+	if lnum then
+		vim.fn.cursor(lnum, col or 1) -- clamps; nvim_win_set_cursor would throw
+		vim.cmd("normal! zv") -- the target may sit inside a closed fold
+	end
+end, { desc = "gf with $(git root), $VAR, buffer var, :lnum" })

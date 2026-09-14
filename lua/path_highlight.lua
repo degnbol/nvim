@@ -15,10 +15,12 @@ local ns = vim.api.nvim_create_namespace("path_highlight")
 -- hit is impossible). Cleared on BufWritePost / FocusGained in setup().
 local exists_cache = {}
 
+-- Upvalue: scan() runs per visible line per redraw.
+local PATH_RUN = paths.PATH_RUN
+
 -- A maximal run of path characters is a candidate iff it starts with a real
 -- anchor (/, ./, ../, ~/, $VAR/) followed by at least one more char — so a
 -- lone "/" or "and/or" in prose is not a path.
-local PATH_RUN = "[%w/%._%-+~=@#%%$]+"
 local function is_anchored(tok)
     return tok:match("^%.?%.?/.") or tok:match("^~/.") or tok:match("^%$[%w_]+/.")
 end

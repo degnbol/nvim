@@ -22,6 +22,23 @@ function M.strip(text)
     return text:match("^[\t%s]*(.-)[\t%s]*$")
 end
 
+---Scan `s` left to right for non-overlapping matches of `pattern` and return
+---the one covering `pos`, or nil if none does. A match starting inside an
+---earlier match is never reached — as in `string.gmatch`.
+---@param s string
+---@param pos integer 1-indexed byte position
+---@param pattern string lua pattern
+---@return string|nil match
+function M.match_covering(s, pos, pattern)
+    local start = 1
+    while true do
+        local s1, e1 = s:find(pattern, start)
+        if not s1 then return nil end
+        if pos >= s1 and pos <= e1 then return s:sub(s1, e1) end
+        start = math.max(s1, e1) + 1 -- max: an empty match ends before it starts
+    end
+end
+
 ---Repeat calls to a given function as many times as the vim count value (default once).
 ---Optionally pass arguments.
 ---@param fn function
@@ -226,16 +243,26 @@ function M.jumplist_add()
     vim.cmd "normal! m`"
 end
 
----Jump to position in specific file.
+---Edit a file unless it is already the current buffer.
+---Both sides of that test go through `resolve()`, since a path that has not had
+---its symlinks resolved (/tmp/x vs /private/tmp/x) otherwise misses the guard
+---and re-edits the current buffer, which is E37 once it is modified.
 ---@param filepath string
----@param lnum integer 0-indexed
----@param col integer 0-indexed
-function M.jump(filepath, lnum, col)
-    M.jumplist_add()
-    if filepath ~= vim.api.nvim_buf_get_name(0) then
-        vim.cmd.edit(filepath)
+function M.edit(filepath)
+    if vim.fn.resolve(filepath) == vim.fn.resolve(vim.api.nvim_buf_get_name(0)) then
+        return
     end
-    vim.api.nvim_win_set_cursor(0, {lnum+1, col})
+    vim.cmd.edit(vim.fn.fnameescape(filepath))
+end
+
+---Jump to position in specific file, leaving the departure in the jumplist.
+---@param filepath string
+---@param row integer 0-indexed
+---@param col integer 0-indexed
+function M.jump(filepath, row, col)
+    M.jumplist_add()
+    M.edit(filepath)
+    M.set_cursor(row, col)
 end
 
 

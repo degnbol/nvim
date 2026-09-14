@@ -42,9 +42,13 @@ Tests should avoid triggering the full plugin/ftplugin machinery where possible,
 
 ## Gotchas
 
-### Plugin/ftplugin files still load
+### `ftplugin/` loads, `plugin/` does not
 
-Because `minimal_init.lua` adds the config dir to runtimepath, `plugin/` and `ftplugin/` files execute (with errors for missing plugin dependencies, which are non-fatal). This means filetype detection and autocmds from the config are active. For example, setting `vim.bo.filetype = "zsh"` on a buffer will get overridden to `"sh.zsh"` by the config's filetype machinery.
+`PlenaryBustedDirectory` (the `make test` target) spawns one nvim per spec file with `--noplugin` (`plenary/test_harness.lua:44,90`), so nothing in `plugin/` runs — a mapping, command or autocmd defined there is simply absent. Source what a spec needs in its describe body: `vim.cmd.runtime("plugin/paths.lua")`.
+
+`PlenaryBustedFile` instead runs in the current nvim, which started without `--noplugin` and so has `plugin/` loaded. A spec that depends on it passes there and fails under `make test`.
+
+`ftplugin/` and the config's filetype detection do apply either way: setting `vim.bo.filetype = "zsh"` gets overridden to `"sh.zsh"`. So setting a filetype can pull in an ftplugin that requires a plugin the harness does not install (`ftplugin/markdown.lua` → `mini.hipatterns`) — `vim.cmd("filetype plugin off")` in the spec avoids that.
 
 ### Tree-sitter in tests
 
