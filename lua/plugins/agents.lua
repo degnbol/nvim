@@ -43,6 +43,8 @@ return {
                 keymaps = {
                     prompts = {
                         ["<localLeader>y"] = "Go ahead.",
+                        ["<localLeader>P"] = "Spawn the plan reviewer.",
+                        ["<localLeader>C"] = "Spawn the code and docstring reviewers on your implementation.",
                     },
                 },
                 acp_providers = {
