@@ -106,6 +106,21 @@ The hook should ignore them.
 `getftype`, `resolve`, `simplify`, `pathshorten`, `executable`,
 `exepath`, `environ`, `getenv`, `setenv`.
 
+## Ex commands with API equivalents
+
+`vim.cmd.<name>` re-parses its argument as an Ex command line, so paths need
+`fnameescape`. Opening a file — `vim.cmd.edit(p)` vs `vim.fn.bufadd(p)` +
+`nvim_win_set_buf` — is otherwise equivalent down to the autocmd sequence
+(measured, 0.12.1), except (documentation, not hook data):
+
+- `bufadd` does not expand `~` (use `vim.fs.normalize`), and leaves the buffer
+  unlisted.
+- `bufadd` returns the buffer already holding the file, symlinks resolved: the
+  same-file test is a bufnr comparison, and there is no `E37`.
+- Re-showing the current buffer drops the cursor column.
+
+`utils.edit` wraps all three; `utils.jump` adds the cursor and the jumplist.
+
 ## Audit log
 
 ### 0.12.1 (2026-04-13) — initial audit
