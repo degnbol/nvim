@@ -231,9 +231,10 @@ describe("gf mapping", function()
     end)
 
     it("opens a name holding # and %", function()
-        -- Unescaped, the Ex command reads them as the alternate and current
-        -- file. The :lnum keeps this on the resolver branch, where the
-        -- escaping is ours; a bare name would fall through to built-in gf.
+        -- Both are Ex-command metacharacters (alternate and current file), so
+        -- the name has to reach the buffer without going through one. The
+        -- :lnum keeps this on the resolver branch; a bare name would fall
+        -- through to built-in gf and prove nothing about ours.
         local path = gf_from(":3", "a#b%c.lua")
         local name, r = gf()
         assert.are.equal(vim.fn.resolve(path), name)
@@ -256,9 +257,9 @@ describe("gf mapping", function()
 
     it("jumps within the current buffer without reloading it", function()
         -- The fixture points at itself, and `dir` is under a symlinked /tmp or
-        -- /var, so the resolved path never matches the buffer name literally.
-        -- Reloading a modified buffer is E37, and <C-o> only comes back from
-        -- the same buffer if the departure was recorded by hand.
+        -- /var, so the path never matches the buffer name literally. Opening
+        -- the file a second time would lose the edit below, and <C-o> only
+        -- comes back from the same buffer if the departure was recorded.
         local path = dir .. "/self.lua"
         assert.are.equal(0, vim.fn.writefile(fixture_lines(path .. ":4"), path))
         vim.cmd.edit(path)

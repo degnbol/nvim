@@ -243,16 +243,19 @@ function M.jumplist_add()
     vim.cmd "normal! m`"
 end
 
----Edit a file unless it is already the current buffer.
----Both sides of that test go through `resolve()`, since a path that has not had
----its symlinks resolved (/tmp/x vs /private/tmp/x) otherwise misses the guard
----and re-edits the current buffer, which is E37 once it is modified.
+---Show a file in the current window, loading it if it is not loaded yet.
+---`bufadd` maps the path onto the buffer already holding it where there is one,
+---resolving symlinks on the way (/tmp/x finds a buffer named /private/tmp/x),
+---so the identity test below is exact and a file is never opened twice. It does
+---not expand `~` — hence the normalize, which `:edit` would have done itself.
 ---@param filepath string
 function M.edit(filepath)
-    if vim.fn.resolve(filepath) == vim.fn.resolve(vim.api.nvim_buf_get_name(0)) then
-        return
+    local bufnr = vim.fn.bufadd(vim.fs.normalize(filepath))
+    vim.bo[bufnr].buflisted = true -- bufadd() leaves a new buffer unlisted
+    -- Re-showing the current buffer is not free: it drops the cursor column.
+    if bufnr ~= vim.api.nvim_get_current_buf() then
+        vim.api.nvim_win_set_buf(0, bufnr)
     end
-    vim.cmd.edit(vim.fn.fnameescape(filepath))
 end
 
 ---Jump to position in specific file, leaving the departure in the jumplist.
