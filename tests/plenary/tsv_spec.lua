@@ -148,10 +148,12 @@ describe("vim.NIL in buffer variables", function()
         assert.is_not_nil(retrieved[1])
         assert.are_not.equal(nil, retrieved[1])
 
-        -- vim.NIL cannot be indexed (would error)
+        -- vim.NIL cannot be indexed. The message is nvim's own and has already
+        -- changed once ("index a userdata value" -> "index vim.NIL" in 0.12),
+        -- so assert the error, not its wording.
         assert.has_error(function()
             local _ = retrieved[1][1]
-        end, "attempt to index a userdata value")
+        end)
 
         vim.api.nvim_buf_delete(buf, { force = true })
     end)
