@@ -1,6 +1,6 @@
 PEP 561 stub packages from PyPI (`scipy-stubs`, `pandas-stubs`, ...).
 Complements `../python_stubs/` (stubgen for C-extension packages without PyPI
-stubs — gemmi, gudhi, freesasa, biopython, pyrosetta).
+stubs — gudhi, freesasa, pyrosetta).
 
 Run `./RUNME.sh` to install or upgrade. Installs into a uv venv at
 `~/.local/share/python-stubs/` (not git-tracked). basedpyright finds them via

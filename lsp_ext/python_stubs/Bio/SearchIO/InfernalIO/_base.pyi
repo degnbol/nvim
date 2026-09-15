@@ -1,3 +1,0 @@
-from Bio.SearchIO._model import Hit as Hit
-
-class _BaseInfernalParser: ...

@@ -4,13 +4,12 @@
 set -euo pipefail
 cd $0:h
 
-# stub [--skip mod1,mod2] [--static] <package> --with dep [--with ...]
+# stub [--skip mod1,mod2] <package> --with dep [--with ...]
 stub() {
-  local skip="" mode="--inspect-mode" uv_args=() pkg=""
+  local skip="" uv_args=() pkg=""
   while (( $# )); do
     case $1 in
       --skip)   skip=$2; shift 2 ;;
-      --static) mode=""; shift ;;
       --with)   uv_args+=(--with $2); shift 2 ;;
       *)        pkg=$1; shift ;;
     esac
@@ -27,17 +26,18 @@ for _, name, _ in pkgutil.walk_packages(pkg.__path__, '$pkg.'):
 "))
     local m_args=(-m $pkg)
     for m in $mods; do m_args+=(-m $m); done
-    uv run --no-project --with mypy $uv_args stubgen $mode --out . $m_args
+    uv run --no-project --with mypy $uv_args stubgen --inspect-mode --out . $m_args
   else
-    uv run --no-project --with mypy $uv_args stubgen $mode --out . --package $pkg
+    uv run --no-project --with mypy $uv_args stubgen --inspect-mode --out . --package $pkg
   fi
 }
 
-stub gemmi    --with gemmi
+# Only packages shipping neither `.pyi` nor `py.typed`: stubPath outranks a
+# package's own inline stubs, so stubbing a typed one replaces its real
+# signatures with stubgen's untyped `(*args, **kwargs)` forms.
 stub freesasa --with freesasa
 stub gudhi    --with gudhi --with scikit-learn --with matplotlib --with pot \
               --skip gudhi.tensorflow
-stub Bio      --with biopython --static
 
 # rdkit ships official (typed) pybind11-stubgen stubs bundled as rdkit-stubs/.
 # Vendor them as a complete package (so this copy wins over any rdkit-stubs

@@ -1,6 +1,0 @@
-import abc
-from Bio.SearchIO._index import SearchIndexer as SearchIndexer
-
-class _BaseHmmerTextIndexer(SearchIndexer, metaclass=abc.ABCMeta):
-    def __init__(self, *args, **kwargs) -> None: ...
-    def get_raw(self, offset): ...

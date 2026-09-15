@@ -1,2 +1,0 @@
-from .infernal_tab import InfernalTabIndexer as InfernalTabIndexer, InfernalTabParser as InfernalTabParser
-from .infernal_text import InfernalTextIndexer as InfernalTextIndexer, InfernalTextParser as InfernalTextParser

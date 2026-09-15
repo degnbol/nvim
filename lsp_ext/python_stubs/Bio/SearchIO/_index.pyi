@@ -1,6 +1,0 @@
-import abc
-from Bio.File import _IndexedSeqFileProxy
-
-class SearchIndexer(_IndexedSeqFileProxy, metaclass=abc.ABCMeta):
-    def __init__(self, filename, **kwargs) -> None: ...
-    def get(self, offset): ...

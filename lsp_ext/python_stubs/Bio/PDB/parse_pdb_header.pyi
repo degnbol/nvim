@@ -1,3 +1,0 @@
-from Bio import File as File
-
-def parse_pdb_header(infile): ...
