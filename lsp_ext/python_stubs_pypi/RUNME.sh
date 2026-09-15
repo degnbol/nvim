@@ -1,8 +1,10 @@
 #!/usr/bin/env zsh
-# PEP 561 stub packages from PyPI (scipy-stubs, pandas-stubs, ...) installed
-# into a uv venv at ~/.local/share/python-stubs/. basedpyright picks them up
-# via extraPaths in lsp/basedpyright.lua.
-# Rerun this script to install or upgrade stubs.
+# Types for third-party imports in Python files that have no project venv:
+# PEP 561 stub packages (scipy-stubs, ...) and typed runtime packages
+# (typed-argument-parser). Installed into a uv venv at
+# ~/.local/share/python-stubs/, which basedpyright picks up via extraPaths in
+# lsp/basedpyright.lua.
+# Rerun this script to install or upgrade.
 
 set -euo pipefail
 
@@ -10,4 +12,5 @@ VENV=~/.local/share/python-stubs
 uv venv --allow-existing "$VENV"
 uv pip install --python "$VENV/bin/python" --upgrade \
     scipy-stubs \
-    pandas-stubs
+    pandas-stubs \
+    typed-argument-parser

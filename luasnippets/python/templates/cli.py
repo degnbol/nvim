@@ -28,6 +28,8 @@ def f(v: str) -> str:
     return v
 
 class Args(Tap):
+    # Attribute docstrings become --help text. One non-ASCII character in any
+    # of them silently drops the help for every argument in the class.
     cool_value: str = "foo"
     "Name of column with cool value."
 
