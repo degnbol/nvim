@@ -37,7 +37,7 @@ class Args(Tap):
     def configure(self) -> None:
         self.add_argument("-v", "--cool-value")
 
-def main() -> None:
+if __name__ == "__main__":
     args = Args(
         underscores_to_dashes=True,
         description=__doc__,
