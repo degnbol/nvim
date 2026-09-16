@@ -1,4 +1,5 @@
 local util = require "utils/init"
+local read_lines = require("utils.file").read_lines
 local map = require "utils/keymap"
 local ts = require "utils/treesitter"
 
@@ -426,32 +427,44 @@ end
 
 local PEEK_LINES = 500
 
--- Peek a file in a hover-style float, PEEK_LINES lines from `lnum` (default
--- the top) — more than fills the float. Everything up to `lnum` is read and
--- measured, so the cost scales with the line number, not with the file.
--- Highlighting via the matched filetype as the float's 'syntax'. ponytail:
--- regex syntax is enough — add vim.treesitter.start if it ever matters.
+-- Marks the peek float for open_floating_preview, which uses it to focus a
+-- float that is already up instead of building a second one — the KK round
+-- trip that :h vim.lsp.buf.hover gets from focus_id = "textDocument/hover".
+local PEEK_FOCUS = "peek_file"
+
+--- Peek a file in a hover-style float, opening on `lnum` and showing
+--- PEEK_LINES lines from there — more than fills the float. An out-of-reach
+--- `lnum`, whether past EOF (a stale grep hit) or too deep to read, warns and
+--- falls back to the top. Highlighting is the matched filetype as the float's
+--- 'syntax'. ponytail: regex syntax is enough — add vim.treesitter.start if it
+--- ever matters.
 ---@param path string
----@param lnum integer|nil 1-based line to put at the top of the float
+---@param lnum integer|nil 1-based line to show first, default the top
 local function peek_file(path, lnum)
-    local lines = vim.fn.readfile(path, "", (lnum or 1) + PEEK_LINES - 1)
+    local lines = read_lines(path, lnum or 1, PEEK_LINES)
+    local missed = lnum ~= nil and #lines == 0
+    if missed then lines = read_lines(path, 1, PEEK_LINES) end
     -- A zero-byte file: open_floating_preview throws "Invalid 'width'" on it.
     if #lines == 0 then
-        vim.notify(path .. " is empty", vim.log.levels.WARN)
+        vim.notify(("%s is empty"):format(vim.fs.basename(path)), vim.log.levels.WARN)
         return
     end
-    local ft = vim.filetype.match({ filename = path }) or ""
-    local buf, win = vim.lsp.util.open_floating_preview(lines, ft, {})
+    if missed then
+        vim.notify(("%s: line %d is past the end of the file or the read cap")
+            :format(vim.fs.basename(path), lnum), vim.log.levels.WARN)
+    end
+    -- The compression is not the content: a .tsv.gz highlights as a tsv.
+    local ft = vim.filetype.match({ filename = (path:gsub("%.gz$", "")) }) or ""
+    local buf, win = vim.lsp.util.open_floating_preview(lines, ft, { focus_id = PEEK_FOCUS })
+    -- The float was already up and open_floating_preview moved the cursor into
+    -- it rather than filling a new buffer; its lines are these ones already.
+    if win == vim.api.nvim_get_current_win() then return end
     -- open_floating_preview rewrites its contents — trimempty for a plain
-    -- syntax, _normalize_markdown for markdown — and either shifts the lines
-    -- off their file line numbers. Restore the lines as read.
+    -- syntax, _normalize_markdown for markdown — either of which would shift
+    -- `lnum` off the top of the float.
     vim.bo[buf].modifiable = true
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
     vim.bo[buf].modifiable = false
-    -- Past EOF (a stale grep hit) leaves the view at the top.
-    if lnum and lnum <= #lines then
-        util.set_view({ winid = win, topline = lnum })
-    end
 end
 
 local function lsp_hover_capable(bufnr)
@@ -466,6 +479,13 @@ end
 -- LspAttach) so it works in no-LSP buffers — the primary use case — and so the
 -- LspAttach default sees a K mapping and skips installing its own.
 map.n("K", function()
+    -- Inside the peek float, K hands focus back to the window it was opened
+    -- from, closing the KK round trip. open_floating_preview does this itself,
+    -- but only on its way to a float it would then refill with the wrong lines.
+    if vim.w[0][PEEK_FOCUS] then
+        vim.cmd("wincmd p")
+        return
+    end
     local path, lnum = require("utils.paths").resolve_location_under_cursor(0)
     local stat = path and vim.uv.fs_stat(path)
     if path and stat and stat.type == "file" then -- dirs (case 1) fall to hover
