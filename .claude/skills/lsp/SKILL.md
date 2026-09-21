@@ -15,6 +15,8 @@ In-process LSP working examples in this config: `modules/kitty-conf.nvim`
 (hover + completion), `modules/agentic.nvim/lua/agentic/completion/lsp_server.lua`
 (trigger-character completion for `/` and `@`).
 
+Inspecting a server's replies: [references/probing.md](references/probing.md).
+
 ## `lsp_ext/` — external sources and stubs
 
 Extra type information for basedpyright, shared between neovim and the Claude
