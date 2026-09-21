@@ -78,50 +78,67 @@ the first overload only, hovering a call that binds to a later overload returns
 the signature and nothing else. basedpyright does not fall back to a sibling
 overload, which is why typeshed repeats the text on both `str.upper` overloads.
 
-### Why not `docify`
+### docify does the defs; two things have to be added
 
-`docify` produces basedpyright's typeshed and was the obvious candidate. Measured
-against numpy 2.5.3:
+`docify` is the tool that produces basedpyright's typeshed, and it covers the
+`def` half of the rule. Out of the box it writes nothing into
+`numpy/__init__.pyi` and aborts the run; both causes are small and were closed by
+a driver that patches docify in-process before calling `docify.main()`:
 
-1. **It writes nothing into `numpy/__init__.pyi`** — 0 docstrings before and
-   after — and aborts with a bare `TypeError`. Both `libcst` and the stdlib `ast`
-   parse that file, so this is a docify defect, not a syntax limit. That file
-   holds `ndarray`, `generic` and all 106 ufuncs.
-2. It depends on `libcst`, a native extension, so it cannot be injected by
-   `PYTHONPATH` into an arbitrary target interpreter the way prior art is.
+- **A member of a PEP 695 *generic class* crashes it.** libcst puts an
+  `AnnotationScope` between the class scope and the global scope, and
+  `docify.py:80`'s `get_qualname` raises a bare `TypeError` on any scope that is
+  neither `GlobalScope` nor `ClassScope`. A generic *method* is fine; the
+  reproducer is `class Gen[T]: def __new__(cls) -> Gen[T]: ...` with a documented
+  runtime counterpart. `numpy/dtypes.pyi` alone has 34 such classes, which is
+  where the run died. `AnnotationScope` is not re-exported by
+  `libcst.metadata` (1.9.0) — import it from `libcst.metadata.scope_provider`.
+- **A stub-only class cannot be reflected.** 35 names are reachable only through
+  `_ArrayOrScalarCommon` (`T`, `clip`, `round`, `conj`, `tobytes`, `flags`,
+  `dump`, `argsort`, …). Binding `numpy._ArrayOrScalarCommon = numpy.ndarray` on
+  the module before docify runs is enough; no synthetic class is needed. It is
+  also the base of `generic`, so this puts the array text on scalar members —
+  wanted, since the runtime's own `'Scalar method identical to
+  \`ndarray.sum\`.'` is just another pointer.
 
-An earlier draft blamed the miss on `sum` living in the stub-only class
-`_ArrayOrScalarCommon`. That is wrong: `ndarray` overrides `sum` with 16
-declarations of its own against that class's 3, and the live hover binds to an
-`ndarray` one. Plain reflection reaches it. The alias is still needed, for the 35
-names reachable only through `_ArrayOrScalarCommon` (`T`, `clip`, `round`,
-`conj`, `tobytes`, `flags`, `dump`, `argsort`, …).
+Both patches must run in the same process as the insertion: docify's pool
+re-imports docify in spawned workers, losing them and failing with
+`BrokenProcessPool`. Pass `--workers 1`. The whole tree then takes 17 s.
 
-`_ArrayOrScalarCommon` is also the base of `generic`, so the single alias puts the
-array text on scalar members. That is wanted: the runtime's own
-`'Scalar method identical to \`ndarray.sum\`.'` is another pointer, and the array
-text is the useful one.
+What docify structurally does not do is the annotated-assignment half — its
+visitors are `ClassDef`, `FunctionDef` and `Module` only, so all 106 ufuncs stay
+bare. That pass is ours.
+
+An earlier draft blamed the miss on `sum` living in `_ArrayOrScalarCommon`. That
+is wrong: `ndarray` overrides `sum` with 16 declarations of its own against that
+class's 3, and the live hover binds to an `ndarray` one.
 
 ### Measured cost
 
-numpy 2.5.3, applying the rule (1648 declarations in `__init__.pyi` alone):
+numpy 2.5.3, measured by running the patched driver over an installed copy:
 
 | | `numpy/__init__.pyi` | whole tree |
 | --- | --- | --- |
 | pristine | 278 kB | 1922 kB (275 files, 111 of them unimportable test fixtures) |
-| + this pass | ~515 kB | ~3252 kB (2323 declarations) |
+| + docify with both patches | 553 kB (1552 docstrings) | 8966 kB |
 
-Hover latency against a tree this pass produced is **not yet measured** — an
-earlier figure was taken against a tree whose `__init__.pyi` was untouched, so it
-measured nothing. Measure it as a validation step.
+The ufunc pass adds to that. 9 MB vendored sits between rdkit's 2.9 MB and
+pyrosetta's 18 MB, so it fits the precedent, but it is the figure to revisit if
+the tree turns out to cost analysis time.
+
+Hover latency against such a tree is **not yet measured** — an earlier figure was
+taken against a tree whose `__init__.pyi` was untouched, so it measured nothing.
+Measure it as a validation step.
 
 ## Changes
 
 ### New `lsp_ext/python_stubs/fix_stub_docstrings.py`
 
-Stdlib only, `<env python> fix_stub_docstrings.py <package> [--out DIR | --in-place]`,
-matching prior art so `RUNME.sh` and `stub_fixes.lua` drive it the same way. Head
-marker `# fix_stub_docstrings: <package> <version> <sha>`.
+Runs as `fix_stub_docstrings.py <package> [--out DIR | --in-place]`, matching
+prior art so `RUNME.sh` and `stub_fixes.lua` drive it the same way. Needs `docify`
+importable, so `RUNME.sh` invokes it under `uv run --no-project --with docify`,
+as it already does for `stubgen`. Head marker
+`# fix_stub_docstrings: <package> <version> <sha>`.
 
 ```python
 CLASS_ALIASES: dict[tuple[str, str], str] = {
@@ -130,41 +147,41 @@ CLASS_ALIASES: dict[tuple[str, str], str] = {
     ("numpy", "_ArrayOrScalarCommon"): "ndarray",
 }
 
-def runtime_docstring(obj) -> str | None:
-    """Docstring of an object with no Python source, else None.
+def patch_docify() -> None:
+    """Teach docify 1.2.1's qualname walk to step over an AnnotationScope.
 
-    The condition is `inspect.getsourcefile` raising: where it succeeds,
-    basedpyright reads the docstring from there already.
+    A PEP 695 generic class puts one between the class scope and the global
+    scope, which `get_qualname` answers with a bare TypeError.
     """
 
-def document_stub(text: str, module) -> str:
-    """Every ...-bodied def and annotated assignment gets its runtime docstring.
+def bind_aliases(module, aliases: dict[str, str]) -> None:
+    """Bind each stub-only class to the runtime class that stands for it, so
+    docify's reflection can reach its members."""
 
-    Every declaration of a name, not the first: overloads do not inherit.
+def document_assignments(text: str, module) -> str:
+    """Give every annotated assignment its runtime docstring, as a string
+    literal on the following line — the shape docify has no visitor for.
+
     Emitted as r\"\"\"...\"\"\" so the 230 numpy docstrings containing backslashes
-    survive; a docstring containing \"\"\" (3 in numpy) is skipped.
-    Idempotent: a declaration already carrying a docstring is left alone.
+    survive; a docstring containing \"\"\" (3 in numpy) is skipped. Idempotent.
     """
 
 def stub_root(package: str) -> pathlib.Path:
     """`<package>-stubs` where it exists, the package's own directory otherwise
     — the precedence pyright applies."""
-
-def patch_dir(root: pathlib.Path, package: str) -> None:
-    """Rewrite in place. Not prior art's `patch_staged`, which renames the tree
-    aside: for inline stubs that would rename the live `numpy/` package with its
-    loaded .so files."""
 ```
 
-Behaviour carried over from prior art, each for a reason measured in numpy:
+`main` binds the aliases, patches docify, calls `docify.main()` with
+`--if-needed --workers 1`, then runs `document_assignments` over the result.
+`--if-needed` is what keeps basedpyright's own source fallback in front, and
+`--workers 1` is required: docify's pool re-imports docify in spawned workers,
+losing both patches and failing with `BrokenProcessPool`.
+
+Behaviour to carry over from prior art, each for a reason measured in numpy:
 
 - `redirect_stdout(devnull)` around introspection — attribute access while
   walking numpy prints f2py's ~150-line usage banner, and `stub_fixes.lua:104`
   appends stdout to its notification.
-- `side_effect_free`, **parameterised** as `side_effect_free(parts, patterns)`
-  with each fixer owning its tuple: 111 of numpy's 275 `.pyi` files are
-  type-check fixtures under `numpy/typing/tests/data/` with no importable module,
-  and prior art's pattern list is rdkit-tuned.
 - explicit `encoding="utf-8"` — 42 numpy docstrings are non-ASCII.
 - strip a previous marker line before prepending the new one.
 - write only files that changed, so skipped fixtures and all-Python modules stay
@@ -179,9 +196,10 @@ Two helpers are unusable by a second caller and must be parameterised:
 match `stub_fixes.patched_by_current`, which hashes `fix.script` — so every
 environment would be re-offered forever. → `script_fingerprint(script)`,
 `marker_line(prefix, package, script)`. `test_fix_pybind_stubs.py` asserts the
-current no-arg forms and changes with them. Lift these plus `module_name`,
-`introspection_order`, `side_effect_free`, `package_version` and `stub_root` into
-a `stub_tools.py` sibling both fixers import.
+current no-arg forms and changes with them. Lift these plus `package_version` and
+`stub_root` into a `stub_tools.py` sibling both fixers import. The tree-walking
+helpers stay where they are — docify does its own walking, so the new fixer has
+no use for `module_name`, `introspection_order` or `side_effect_free`.
 
 ### `lsp_ext/python_stubs/RUNME.sh`
 
@@ -190,7 +208,8 @@ A numpy entry beside the rdkit one, vendoring a documented copy:
 ```zsh
 # numpy's ndarray methods and its 106 ufuncs are C objects behind a .pyi, so
 # basedpyright has no source to read their docstrings from.
-uv run --no-project --with numpy python3 fix_stub_docstrings.py numpy --out numpy
+uv run --no-project --with numpy --with docify python3 \
+  fix_stub_docstrings.py numpy --out numpy
 ```
 
 ### `lua/autocmds/stub_fixes.lua`
@@ -212,6 +231,13 @@ uv run --no-project --with numpy python3 fix_stub_docstrings.py numpy --out nump
   `tests/plenary/stub_fixes_spec.lua`.
 - New `M.fixes` entry for numpy: `probe = "__init__.pyi"`,
   `marker = "# fix_stub_docstrings:"`, pointing at the new script.
+- **The fallback needs docify in the environment it is patching**, which
+  `M.patch`'s bare `<env python> <script>` does not provide. Change the command to
+  `uv run --python <env python> --with docify <script> …` and verify that uv
+  layers the overlay onto that interpreter's own site-packages rather than
+  replacing it — the package being documented has to stay importable. If it does
+  not, this path degrades to the annotated-assignment pass alone, which is
+  stdlib-only; say so in the module docstring rather than failing silently.
 
 ### Tests
 
