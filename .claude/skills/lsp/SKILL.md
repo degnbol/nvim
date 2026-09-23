@@ -1,6 +1,6 @@
 ---
 name: lsp
-description: This config's LSP setup — lsp_ext/ external type sources and stubs for basedpyright, per-script clients for PEP 723 uv scripts, the R languageserver `...`-forwarding patch, and the mason-lspconfig field-override workaround. Use when editing lsp/*.lua, lua/plugins/lsp.lua, files under lsp_ext/, or configuring basedpyright/ruff/r_language_server/tinymist.
+description: This config's LSP setup — lsp_ext/ external type sources and stubs for basedpyright, per-script clients for PEP 723 uv scripts, the R languageserver `...`-forwarding patch, and the mason-lspconfig field-override workaround. Use when editing lsp/*.lua, lua/plugins/lsp.lua, files under lsp_ext/, or configuring basedpyright/ruff/r_language_server/tinymist/clangd/clice, or C/C++ compile flags / missing headers.
 ---
 
 # LSP (this config)
@@ -16,6 +16,8 @@ In-process LSP working examples in this config: `modules/kitty-conf.nvim`
 (trigger-character completion for `/` and `@`).
 
 Inspecting a server's replies: [references/probing.md](references/probing.md).
+
+C/C++ compile flags for clangd and clice: [references/c-cpp.md](references/c-cpp.md).
 
 ## `lsp_ext/` — external sources and stubs
 
