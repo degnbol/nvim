@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing functions to compute atomic coordinates in 3D using distance geometry
 """
@@ -63,152 +62,212 @@ class EmbedParameters(Boost.Python.instance):
     def ETversion(self) -> int:
         """version of the experimental torsion-angle preferences (default: 2)"""
     @ETversion.setter
-    def ETversion(self, value: int) -> None: ...
+    def ETversion(self, value: int) -> None:
+        """version of the experimental torsion-angle preferences"""
+        ...
     @property
     def basinThresh(self) -> float:
         """set the basin threshold for the DGeom force field. (default: 5.0)"""
     @basinThresh.setter
-    def basinThresh(self, value: float) -> None: ...
+    def basinThresh(self, value: float) -> None:
+        """set the basin threshold for the DGeom force field."""
+        ...
     @property
     def boundsMatForceScaling(self) -> float:
         """scale the weights of the atom pair distance restraints relative to the other types of restraints (default: 1.0)"""
     @boundsMatForceScaling.setter
-    def boundsMatForceScaling(self, value: float) -> None: ...
+    def boundsMatForceScaling(self, value: float) -> None:
+        """scale the weights of the atom pair distance restraints relative to the other types of restraints"""
+        ...
     @property
     def boxSizeMult(self) -> float:
         """determines the size of the box used for random coordinates (default: 2.0)"""
     @boxSizeMult.setter
-    def boxSizeMult(self, value: float) -> None: ...
+    def boxSizeMult(self, value: float) -> None:
+        """determines the size of the box used for random coordinates"""
+        ...
     @property
     def clearConfs(self) -> bool:
         """clear all existing conformations on the molecule (default: True)"""
     @clearConfs.setter
-    def clearConfs(self, value: bool) -> None: ...
+    def clearConfs(self, value: bool) -> None:
+        """clear all existing conformations on the molecule"""
+        ...
     @property
     def embedFragmentsSeparately(self) -> bool:
         """split the molecule into fragments and embed them separately (default: True)"""
     @embedFragmentsSeparately.setter
-    def embedFragmentsSeparately(self, value: bool) -> None: ...
+    def embedFragmentsSeparately(self, value: bool) -> None:
+        """split the molecule into fragments and embed them separately"""
+        ...
     @property
     def enableSequentialRandomSeeds(self) -> bool:
         """handle random number seeds so that conformer generation can be restarted (default: False)"""
     @enableSequentialRandomSeeds.setter
-    def enableSequentialRandomSeeds(self, value: bool) -> None: ...
+    def enableSequentialRandomSeeds(self, value: bool) -> None:
+        """handle random number seeds so that conformer generation can be restarted"""
+        ...
     @property
     def enforceChirality(self) -> bool:
         """enforce correct chirilaty if chiral centers are present (default: True)"""
     @enforceChirality.setter
-    def enforceChirality(self, value: bool) -> None: ...
+    def enforceChirality(self, value: bool) -> None:
+        """enforce correct chirilaty if chiral centers are present"""
+        ...
     @property
     def forceTransAmides(self) -> bool:
         """constrain amide bonds to be trans (default: True)"""
     @forceTransAmides.setter
-    def forceTransAmides(self, value: bool) -> None: ...
+    def forceTransAmides(self, value: bool) -> None:
+        """constrain amide bonds to be trans"""
+        ...
     @property
     def ignoreSmoothingFailures(self) -> bool:
         """try and embed the molecule if if triangle smoothing of the bounds matrix fails (default: False)"""
     @ignoreSmoothingFailures.setter
-    def ignoreSmoothingFailures(self, value: bool) -> None: ...
+    def ignoreSmoothingFailures(self, value: bool) -> None:
+        """try and embed the molecule if if triangle smoothing of the bounds matrix fails"""
+        ...
     @property
     def maxIterations(self) -> int:
         """maximum number of embedding attempts to use for a single conformation (default: 0)"""
     @maxIterations.setter
-    def maxIterations(self, value: int) -> None: ...
+    def maxIterations(self, value: int) -> None:
+        """maximum number of embedding attempts to use for a single conformation"""
+        ...
     @property
     def numThreads(self) -> int:
         """number of threads to use when embedding multiple conformations (default: 1)"""
     @numThreads.setter
-    def numThreads(self, value: int) -> None: ...
+    def numThreads(self, value: int) -> None:
+        """number of threads to use when embedding multiple conformations"""
+        ...
     @property
     def numZeroFail(self) -> int:
         """fail embedding if we have at least this many zero eigenvalues (default: 1)"""
     @numZeroFail.setter
-    def numZeroFail(self, value: int) -> None: ...
+    def numZeroFail(self, value: int) -> None:
+        """fail embedding if we have at least this many zero eigenvalues"""
+        ...
     @property
     def onlyHeavyAtomsForRMS(self) -> bool:
         """Only consider heavy atoms when doing RMS filtering (default: True)"""
     @onlyHeavyAtomsForRMS.setter
-    def onlyHeavyAtomsForRMS(self, value: bool) -> None: ...
+    def onlyHeavyAtomsForRMS(self, value: bool) -> None:
+        """Only consider heavy atoms when doing RMS filtering"""
+        ...
     @property
     def optimizerForceTol(self) -> float:
         """the tolerance to be used during the distance-geometry force field minimization (default: 0.001)"""
     @optimizerForceTol.setter
-    def optimizerForceTol(self, value: float) -> None: ...
+    def optimizerForceTol(self, value: float) -> None:
+        """the tolerance to be used during the distance-geometry force field minimization"""
+        ...
     @property
     def pruneRmsThresh(self) -> float:
         """used to filter multiple conformations: keep only conformations that are at least this far apart from each other (default: -1.0)"""
     @pruneRmsThresh.setter
-    def pruneRmsThresh(self, value: float) -> None: ...
+    def pruneRmsThresh(self, value: float) -> None:
+        """used to filter multiple conformations: keep only conformations that are at least this far apart from each other"""
+        ...
     @property
     def randNegEig(self) -> bool:
         """if the embedding yields a negative eigenvalue, pick coordinates that correspond to this component at random (default: True)"""
     @randNegEig.setter
-    def randNegEig(self, value: bool) -> None: ...
+    def randNegEig(self, value: bool) -> None:
+        """if the embedding yields a negative eigenvalue, pick coordinates that correspond to this component at random"""
+        ...
     @property
     def randomSeed(self) -> int:
         """seed for the random number generator (default: -1)"""
     @randomSeed.setter
-    def randomSeed(self, value: int) -> None: ...
+    def randomSeed(self, value: int) -> None:
+        """seed for the random number generator"""
+        ...
     @property
     def symmetrizeConjugatedTerminalGroupsForPruning(self) -> bool:
         """symmetrize terminal conjugated groups for RMSD pruning (default: True)"""
     @symmetrizeConjugatedTerminalGroupsForPruning.setter
-    def symmetrizeConjugatedTerminalGroupsForPruning(self, value: bool) -> None: ...
+    def symmetrizeConjugatedTerminalGroupsForPruning(self, value: bool) -> None:
+        """symmetrize terminal conjugated groups for RMSD pruning"""
+        ...
     @property
     def timeout(self) -> int:
         """maximum time in seconds to generate a conformer for a single molecule fragment. If set to 0, no timeout is set (default: 0)"""
     @timeout.setter
-    def timeout(self, value: int) -> None: ...
+    def timeout(self, value: int) -> None:
+        """maximum time in seconds to generate a conformer for a single molecule fragment. If set to 0, no timeout is set"""
+        ...
     @property
     def trackFailures(self) -> bool:
         """keep track of which checks during the embedding process fail (default: False)"""
     @trackFailures.setter
-    def trackFailures(self, value: bool) -> None: ...
+    def trackFailures(self, value: bool) -> None:
+        """keep track of which checks during the embedding process fail"""
+        ...
     @property
     def useBasicKnowledge(self) -> bool:
         """impose basic-knowledge constraints such as flat rings (default: False)"""
     @useBasicKnowledge.setter
-    def useBasicKnowledge(self, value: bool) -> None: ...
+    def useBasicKnowledge(self, value: bool) -> None:
+        """impose basic-knowledge constraints such as flat rings"""
+        ...
     @property
     def useExpTorsionAnglePrefs(self) -> bool:
         """impose experimental torsion angle preferences (default: False)"""
     @useExpTorsionAnglePrefs.setter
-    def useExpTorsionAnglePrefs(self, value: bool) -> None: ...
+    def useExpTorsionAnglePrefs(self, value: bool) -> None:
+        """impose experimental torsion angle preferences"""
+        ...
     @property
     def useLegacyImplementation(self) -> bool:
         """Whether to use the combined minimization approach (default: True)"""
     @useLegacyImplementation.setter
-    def useLegacyImplementation(self, value: bool) -> None: ...
+    def useLegacyImplementation(self, value: bool) -> None:
+        """Whether to use the combined minimization approach"""
+        ...
     @property
     def useMacrocycle14config(self) -> bool:
         """use the 1-4 distance bounds from ETKDGv3 (default: False)"""
     @useMacrocycle14config.setter
-    def useMacrocycle14config(self, value: bool) -> None: ...
+    def useMacrocycle14config(self, value: bool) -> None:
+        """use the 1-4 distance bounds from ETKDGv3"""
+        ...
     @property
     def useMacrocycleTorsions(self) -> bool:
         """impose macrocycle torsion angle preferences (default: False)"""
     @useMacrocycleTorsions.setter
-    def useMacrocycleTorsions(self, value: bool) -> None: ...
+    def useMacrocycleTorsions(self, value: bool) -> None:
+        """impose macrocycle torsion angle preferences"""
+        ...
     @property
     def useRandomCoords(self) -> bool:
         """start the embedding from random coordinates instead of using eigenvalues of the distance matrix (default: False)"""
     @useRandomCoords.setter
-    def useRandomCoords(self, value: bool) -> None: ...
+    def useRandomCoords(self, value: bool) -> None:
+        """start the embedding from random coordinates instead of using eigenvalues of the distance matrix"""
+        ...
     @property
     def useSmallRingTorsions(self) -> bool:
         """impose small ring torsion angle preferences (default: False)"""
     @useSmallRingTorsions.setter
-    def useSmallRingTorsions(self, value: bool) -> None: ...
+    def useSmallRingTorsions(self, value: bool) -> None:
+        """impose small ring torsion angle preferences"""
+        ...
     @property
     def useSymmetryForPruning(self) -> bool:
         """use molecule symmetry when doing the RMSD pruning. Note that this option automatically also sets onlyHeavyAtomsForRMS to true. (default: True)"""
     @useSymmetryForPruning.setter
-    def useSymmetryForPruning(self, value: bool) -> None: ...
+    def useSymmetryForPruning(self, value: bool) -> None:
+        """use molecule symmetry when doing the RMSD pruning. Note that this option automatically also sets onlyHeavyAtomsForRMS to true."""
+        ...
     @property
     def verbose(self) -> bool:
         """be verbose about configuration (default: False)"""
     @verbose.setter
-    def verbose(self, value: bool) -> None: ...
+    def verbose(self, value: bool) -> None:
+        """be verbose about configuration"""
+        ...
 def DG() -> EmbedParameters:
     """
         Returns an EmbedParameters object for plain distance geometry.

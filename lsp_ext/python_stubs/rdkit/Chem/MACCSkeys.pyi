@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  SMARTS definitions for the publicly available MACCS keys
 and a MACCS fingerprinter

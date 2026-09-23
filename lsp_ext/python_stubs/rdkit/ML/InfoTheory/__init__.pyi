@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Information Theory functionality
 
@@ -15,6 +14,8 @@ CHISQUARE: rdInfoTheory.InfoType  # value = rdkit.ML.InfoTheory.rdInfoTheory.Inf
 ENTROPY: rdInfoTheory.InfoType  # value = rdkit.ML.InfoTheory.rdInfoTheory.InfoType.ENTROPY
 
 # present at runtime, absent from the generated stub:
+from . import BitClusterer as BitClusterer
+from . import BitRank as BitRank
 from rdkit.ML.InfoTheory.rdInfoTheory import ChiSquare as ChiSquare
 from rdkit.ML.InfoTheory.rdInfoTheory import InfoEntropy as InfoEntropy
 from rdkit.ML.InfoTheory.rdInfoTheory import InfoGain as InfoGain

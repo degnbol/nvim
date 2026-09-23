@@ -91,9 +91,8 @@ local function finish(env, out)
     if out.code == 0 then
         M.state[env.stubs] = "patched"
         M.notify_changed(env.stubs)
-        local unimportable = vim.trim(out.stdout or "")
-        vim.notify("Patched " .. env.stubs
-            .. (unimportable ~= "" and "\nintrospection skipped (import failed):\n" .. unimportable or ""))
+        local skipped = vim.trim(out.stdout or "")
+        vim.notify("Patched " .. env.stubs .. (skipped ~= "" and "\nskipped:\n" .. skipped or ""))
     elseif out.code == NOTHING_WRITTEN then
         M.state[env.stubs] = "ok"
     else

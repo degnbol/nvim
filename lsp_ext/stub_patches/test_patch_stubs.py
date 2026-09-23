@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import sys
 
+import libcst as cst
 import patch_pybind_stubs
 import patch_stubs
 import pytest
@@ -60,7 +61,7 @@ def tree(site, tmp_path):
 
 
 def test_documents_a_stubs_root(tree):
-    assert patch_stubs.patch(tree) == []
+    assert patch_stubs.patch(tree) == {}
     text = (tree / "__init__.pyi").read_text()
     assert head(tree / "__init__.pyi").startswith("# patch_stubs: fakepkg unknown ")
     assert str(math.sqrt.__doc__).split("\n")[0] in text
@@ -69,7 +70,7 @@ def test_documents_a_stubs_root(tree):
 def test_documents_a_single_module_stub(site, tmp_path):
     write(site / "fakemod.py", RUNTIME)
     stub = write(tmp_path / "stubs" / "fakemod.pyi", STUB)
-    assert patch_stubs.patch(stub) == []
+    assert patch_stubs.patch(stub) == {}
     assert head(stub).startswith("# patch_stubs: fakemod ")
     assert ast.get_docstring(ast.parse(stub.read_text()).body[0]) == math.sqrt.__doc__
 
@@ -80,7 +81,7 @@ def test_a_package_directory_keeps_its_other_files(site):
     write(package / "__init__.pyi", STUB)
     write(package / "native.so", "\x7fELF")
     before = snapshot(package)
-    assert patch_stubs.patch(package) == []
+    assert patch_stubs.patch(package) == {}
     after = snapshot(package)
     assert after.pop(pathlib.Path("__init__.pyi")) != before.pop(pathlib.Path("__init__.pyi"))
     assert {k: v for k, v in after.items() if k.parts[0] != "__pycache__"} == before
@@ -122,6 +123,34 @@ def test_nothing_to_document_writes_only_the_marker(site, tmp_path):
     assert patch_stubs.patch(root) is None
     assert (root / "__init__.pyi").read_text().split("\n", 1)[1] == "def py_func(x): ...\n"
     assert head(root / "__init__.pyi").startswith("# patch_stubs:")
+
+
+def error_types(skipped):
+    return {module: type(e) for module, e in skipped.items()}
+
+
+def test_a_stub_that_does_not_parse_is_skipped_and_the_tree_marked(tree):
+    write(tree / "other.pyi", "def f(a=1, b): ...\n")
+    assert error_types(patch_stubs.patch(tree)) == {"fakepkg.other": cst.ParserSyntaxError}
+    assert head(tree / "__init__.pyi").startswith("# patch_stubs:")
+    assert str(math.sqrt.__doc__).split("\n")[0] in (tree / "__init__.pyi").read_text()
+
+
+def test_a_failed_import_is_reported_when_nothing_else_changed(site, tmp_path):
+    write(site / "fakepkg" / "__init__.py", RUNTIME)
+    write(site / "fakepkg" / "broken.py", "raise ImportError('no')\n")
+    root = write(tmp_path / "fakepkg-stubs" / "__init__.pyi", "def py_func(x): ...\n").parent
+    write(root / "broken.pyi", "x: int\n")
+    assert error_types(patch_stubs.patch(root)) == {"fakepkg.broken": ImportError}
+
+
+def test_a_package_that_does_not_import_fails_unmarked(site, tree):
+    write(site / "fakepkg" / "__init__.py", "raise ImportError('broken')\n")
+    before = snapshot(tree)
+    for _ in range(2):
+        with pytest.raises(SystemExit, match="fakepkg does not import: broken"):
+            patch_stubs.patch(tree)
+        assert snapshot(tree) == before
 
 
 def dist_info(site, version):
@@ -169,19 +198,27 @@ def test_sources_skip_tests_and_dotfiles(tmp_path):
     assert [p.name for p in patch_stubs.sources(tmp_path)] == ["a.py", "requirements.txt"]
 
 
+def run_main(site, target):
+    """patch_stubs.py run on a target, with site importable."""
+    return subprocess.run([sys.executable, str(patch_stubs.__file__), target],
+                          env={**os.environ, "PYTHONPATH": str(site)},
+                          capture_output=True, text=True)
+
+
 def test_main_exit_statuses(site, tree):
-    script = pathlib.Path(str(patch_stubs.__file__))
-    env = {**os.environ, "PYTHONPATH": str(site)}
-
-    def run(target):
-        return subprocess.run([sys.executable, script, target], env=env,
-                              capture_output=True, text=True)
-
-    assert run(tree).returncode == 0
-    assert run(tree).returncode == patch_stubs.NOTHING_WRITTEN
-    failed = run(tree.parent / "missing-stubs")
+    assert run_main(site, tree).returncode == 0
+    assert run_main(site, tree).returncode == patch_stubs.NOTHING_WRITTEN
+    failed = run_main(site, tree.parent / "missing-stubs")
     assert failed.returncode not in (0, patch_stubs.NOTHING_WRITTEN)
     assert "missing-stubs" in failed.stderr
+
+
+def test_main_prints_one_line_per_skipped_module(site, tree):
+    write(site / "fakepkg" / "other.py", "raise ImportError('first\\nsecond')\n")
+    write(site / "fakepkg" / "exits.py", "raise SystemExit\n")
+    write(tree / "exits.pyi", "x: int\n")
+    assert run_main(site, tree).stdout == (
+        "fakepkg.exits (SystemExit)\nfakepkg.other (ImportError: first)\n")
 
 
 _TYPED_PROPERTY = re.compile(r"@property\n    def (\w+)\(self\) -> (?:bool|int|float|str):")

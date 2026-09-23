@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 
 PDFgen is a library to generate PDF files containing text and graphics.  It is the
@@ -58,8 +57,8 @@ from builtins import code as CodeType
 from builtins import coroutine as CoroutineType
 from builtins import ellipsis as EllipsisType
 from builtins import frame as FrameType
-from builtins import function as LambdaType
 from builtins import function as FunctionType
+from builtins import function as LambdaType
 from builtins import generator as GeneratorType
 from builtins import getset_descriptor as GetSetDescriptorType
 from builtins import mappingproxy as MappingProxyType

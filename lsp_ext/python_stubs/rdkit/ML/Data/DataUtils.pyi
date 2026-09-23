@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Utilities for data manipulation
 
@@ -169,10 +168,12 @@ def RandomizeActivities(dataSet, shuffle = 0, runDetails = None):
     
           **Arguments**
     
-            - dataSet: a _ML.Data.MLQuantDataSet_, the activities here will be randomized
+            - dataSet: a _ML.Data.MLQuantDataSet_, the activities here will be
+              randomized
     
-            - shuffle: an optional toggle. If this is set, the activity values
-              will be shuffled (so the number in each class remains constant)
+            - shuffle: an optional toggle. If this is set, the activity values will
+              be shuffled (so the number in each class remains constant). Otherwise
+              random values between the min and max of the dataset will be assigned
     
             - runDetails: an optional CompositeRun object
     

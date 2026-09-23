@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  utility functionality for molecular similarity
  includes a command line app for screening databases
@@ -19,7 +18,8 @@ from rdkit.DataStructs.TopNContainer import TopNContainer
 import rdkit.Dbase.DbConnection
 from rdkit.Dbase.DbConnection import DbConnect
 from rdkit.Dbase import DbModule
-__all__: list[str] = ['Chem', 'DataStructs', 'DbConnect', 'DbFpSupplier', 'DbModule', 'FingerprintMols', 'GetFingerprints', 'ScreenFingerprints', 'ScreenFromDetails', 'ScreenInDb', 'TopNContainer', 'pickle']
+from rdkit.Dbase import DbResultSet
+__all__: list[str] = ['Chem', 'DataStructs', 'DbConnect', 'DbFpSupplier', 'DbModule', 'DbResultSet', 'FingerprintMols', 'GetFingerprints', 'ScreenFingerprints', 'ScreenFromDetails', 'ScreenInDb', 'TopNContainer', 'pickle']
 def GetFingerprints(details):
     """
      returns an iterable sequence of fingerprints

@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing an assortment of functionality for basic data structures.
 
@@ -57,6 +56,9 @@ from rdkit.DataStructs.cDataStructs import AllProbeBitsMatch as AllProbeBitsMatc
 from rdkit.DataStructs.cDataStructs import AsymmetricSimilarity as AsymmetricSimilarity
 from rdkit.DataStructs.cDataStructs import AsymmetricSimilarityNeighbors as AsymmetricSimilarityNeighbors
 from rdkit.DataStructs.cDataStructs import AsymmetricSimilarityNeighbors_sparse as AsymmetricSimilarityNeighbors_sparse
+from . import BitEnsemble as BitEnsemble
+from . import BitEnsembleDb as BitEnsembleDb
+from . import BitUtils as BitUtils
 from rdkit.DataStructs.cDataStructs import BitVectToBinaryText as BitVectToBinaryText
 from rdkit.DataStructs.cDataStructs import BitVectToFPSText as BitVectToFPSText
 from rdkit.DataStructs.cDataStructs import BitVectToText as BitVectToText
@@ -93,6 +95,7 @@ from rdkit.DataStructs.cDataStructs import InitFromDaylightString as InitFromDay
 from rdkit.DataStructs.cDataStructs import KulczynskiSimilarity as KulczynskiSimilarity
 from rdkit.DataStructs.cDataStructs import KulczynskiSimilarityNeighbors as KulczynskiSimilarityNeighbors
 from rdkit.DataStructs.cDataStructs import KulczynskiSimilarityNeighbors_sparse as KulczynskiSimilarityNeighbors_sparse
+from . import LazySignature as LazySignature
 from rdkit.DataStructs.cDataStructs import McConnaugheySimilarity as McConnaugheySimilarity
 from rdkit.DataStructs.cDataStructs import McConnaugheySimilarityNeighbors as McConnaugheySimilarityNeighbors
 from rdkit.DataStructs.cDataStructs import McConnaugheySimilarityNeighbors_sparse as McConnaugheySimilarityNeighbors_sparse
@@ -114,5 +117,7 @@ from rdkit.DataStructs.cDataStructs import SokalSimilarityNeighbors_sparse as So
 from rdkit.DataStructs.cDataStructs import TanimotoSimilarity as TanimotoSimilarity
 from rdkit.DataStructs.cDataStructs import TanimotoSimilarityNeighbors as TanimotoSimilarityNeighbors
 from rdkit.DataStructs.cDataStructs import TanimotoSimilarityNeighbors_sparse as TanimotoSimilarityNeighbors_sparse
+from . import TopNContainer as TopNContainer
 from rdkit.DataStructs.cDataStructs import TverskySimilarity as TverskySimilarity
+from . import VectCollection as VectCollection
 from . import cDataStructs as cDataStructs

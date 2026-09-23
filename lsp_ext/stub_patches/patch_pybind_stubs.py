@@ -45,6 +45,7 @@ import re
 import shutil
 import sys
 import textwrap
+import tokenize
 import types
 
 from stub_tree import (
@@ -591,29 +592,37 @@ def patch_dir(stub_root, package):
 
     stub_root: directory holding the stub tree.
     package: import prefix the tree describes (e.g. ``rdkit``).
-    Returns the dotted module names whose import failed, leaving them with the
-    text cleanups alone. ``SystemExit`` counts as a failed import too, which
+    Returns {dotted module name: error} for the modules skipped: one whose stub
+    does not parse is left untouched, one whose import failed gets the text
+    cleanups alone. ``SystemExit`` counts as a failed import too, which
     otherwise ends the whole run.
     """
     root = stub_root.resolve()
-    unimportable = []
+    skipped = {}
     for p in introspection_order(root):
+        name = module_name(p, root, package)
         # Explicit encoding: a few stubs are non-ASCII and the locale is the
         # caller's (an editor's environment), not necessarily UTF-8.
-        text = clean(p.read_text(encoding="utf-8"))
-        name = module_name(p, root, package)
+        original = p.read_text(encoding="utf-8")
+        # Parsed as given, so a SyntaxError from clean's own rewrites stays a bug.
+        try:
+            ast.parse(comment_keyword_targets(original))
+        except (SyntaxError, tokenize.TokenError) as e:
+            skipped[name] = e
+            continue
+        text = clean(original)
         # Every module is introspected, so every importable one is imported.
         if side_effect_free(p.relative_to(root).with_suffix("").parts):
             try:
                 module = importlib.import_module(name)
             except (Exception, SystemExit) as e:
-                unimportable.append(f"{name} ({e})")
+                skipped[name] = e
             else:
                 text = type_properties(text, module)
                 text = type_boost_overrides(text, module)
                 text = declare_missing_names(text, module)
         p.write_text(text, encoding="utf-8")
-    return unimportable
+    return skipped
 
 
 def stubs_path(package):

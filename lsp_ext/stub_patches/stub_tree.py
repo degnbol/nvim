@@ -98,6 +98,9 @@ def comment_keyword_targets(text: str) -> str:
 
     Returns:
         The source with such lines prefixed by ``# ``.
+
+    Raises:
+        SyntaxError, tokenize.TokenError: text does not tokenize.
     """
     prose = string_literal_lines(text)
     out = [

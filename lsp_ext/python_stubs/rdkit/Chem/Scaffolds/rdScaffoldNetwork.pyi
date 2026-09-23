@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing functions for creating a Scaffold Network
 """
@@ -145,57 +144,79 @@ class ScaffoldNetworkParams(Boost.Python.instance):
     def collectMolCounts(self) -> bool:
         """keep track of the number of molecules each scaffold was found in (default: True)"""
     @collectMolCounts.setter
-    def collectMolCounts(self, value: bool) -> None: ...
+    def collectMolCounts(self, value: bool) -> None:
+        """keep track of the number of molecules each scaffold was found in"""
+        ...
     @property
     def flattenChirality(self) -> bool:
         """remove chirality and bond stereo when flattening (default: True)"""
     @flattenChirality.setter
-    def flattenChirality(self, value: bool) -> None: ...
+    def flattenChirality(self, value: bool) -> None:
+        """remove chirality and bond stereo when flattening"""
+        ...
     @property
     def flattenIsotopes(self) -> bool:
         """remove isotopes when flattening (default: True)"""
     @flattenIsotopes.setter
-    def flattenIsotopes(self, value: bool) -> None: ...
+    def flattenIsotopes(self, value: bool) -> None:
+        """remove isotopes when flattening"""
+        ...
     @property
     def flattenKeepLargest(self) -> bool:
         """keep only the largest fragment when doing flattening (default: True)"""
     @flattenKeepLargest.setter
-    def flattenKeepLargest(self, value: bool) -> None: ...
+    def flattenKeepLargest(self, value: bool) -> None:
+        """keep only the largest fragment when doing flattening"""
+        ...
     @property
     def includeGenericBondScaffolds(self) -> bool:
         """include scaffolds with all bonds replaced by single bonds (default: False)"""
     @includeGenericBondScaffolds.setter
-    def includeGenericBondScaffolds(self, value: bool) -> None: ...
+    def includeGenericBondScaffolds(self, value: bool) -> None:
+        """include scaffolds with all bonds replaced by single bonds"""
+        ...
     @property
     def includeGenericScaffolds(self) -> bool:
         """include scaffolds with all atoms replaced by dummies (default: True)"""
     @includeGenericScaffolds.setter
-    def includeGenericScaffolds(self, value: bool) -> None: ...
+    def includeGenericScaffolds(self, value: bool) -> None:
+        """include scaffolds with all atoms replaced by dummies"""
+        ...
     @property
     def includeNames(self) -> bool:
         """Include molecules names of the input molecules (default: False)"""
     @includeNames.setter
-    def includeNames(self, value: bool) -> None: ...
+    def includeNames(self, value: bool) -> None:
+        """Include molecules names of the input molecules"""
+        ...
     @property
     def includeScaffoldsWithAttachments(self) -> bool:
         """Include the version of the scaffold with attachment points (default: True)"""
     @includeScaffoldsWithAttachments.setter
-    def includeScaffoldsWithAttachments(self, value: bool) -> None: ...
+    def includeScaffoldsWithAttachments(self, value: bool) -> None:
+        """Include the version of the scaffold with attachment points"""
+        ...
     @property
     def includeScaffoldsWithoutAttachments(self) -> bool:
         """remove attachment points from scaffolds and include the result (default: True)"""
     @includeScaffoldsWithoutAttachments.setter
-    def includeScaffoldsWithoutAttachments(self, value: bool) -> None: ...
+    def includeScaffoldsWithoutAttachments(self, value: bool) -> None:
+        """remove attachment points from scaffolds and include the result"""
+        ...
     @property
     def keepOnlyFirstFragment(self) -> bool:
         """keep only the first fragment from the bond breaking rule (default: True)"""
     @keepOnlyFirstFragment.setter
-    def keepOnlyFirstFragment(self, value: bool) -> None: ...
+    def keepOnlyFirstFragment(self, value: bool) -> None:
+        """keep only the first fragment from the bond breaking rule"""
+        ...
     @property
     def pruneBeforeFragmenting(self) -> bool:
         """Do a pruning/flattening step before starting fragmenting (default: True)"""
     @pruneBeforeFragmenting.setter
-    def pruneBeforeFragmenting(self, value: bool) -> None: ...
+    def pruneBeforeFragmenting(self, value: bool) -> None:
+        """Do a pruning/flattening step before starting fragmenting"""
+        ...
 def BRICSScaffoldParams() -> ScaffoldNetworkParams:
     """
         Returns parameters for generating scaffolds using BRICS fragmentation rules

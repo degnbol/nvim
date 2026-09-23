@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Calculation of topological/topochemical descriptors.
 
@@ -11,8 +10,8 @@ import numpy as numpy
 from rdkit import Chem
 from rdkit.Chem import Graphs
 from rdkit.Chem import rdMolDescriptors
-from rdkit.Chem import rdchem
 import rdkit.Chem.rdchem
+from rdkit.Chem import rdchem
 from rdkit.ML.InfoTheory import entropy
 __all__: list[str] = ['AvgIpc', 'BalabanJ', 'BertzCT', 'Chem', 'Chi0', 'Chi1', 'Graphs', 'Ipc', 'entropy', 'hallKierAlphas', 'math', 'numpy', 'ptable', 'rdMolDescriptors', 'rdchem']
 def AvgIpc(mol, dMat = None, forceDMat = False):

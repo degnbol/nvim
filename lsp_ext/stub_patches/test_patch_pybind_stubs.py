@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import types
+from unittest import mock
 
 import patch_pybind_stubs as v
 
@@ -324,11 +325,35 @@ def test_runtime_passes_leave_the_tree_byte_identical_on_a_second_run():
     # The property that re-patching an environment's tree rests on.
     with importable_stub_tree() as root:
         pyi = root / "Chem" / "rdmolfiles.pyi"
-        assert v.patch_dir(root, "runtime") == []
+        assert v.patch_dir(root, "runtime") == {}
         once = pyi.read_text()
         assert "def MolWt(*x, **y):" in once
         v.patch_dir(root, "runtime")
         assert pyi.read_text() == once
+
+
+def test_a_stub_that_does_not_parse_is_returned_and_left_alone():
+    with importable_stub_tree() as root:
+        broken = root / "Chem" / "broken.pyi"
+        broken.write_text("def f(a=1, b): ...\n")
+        skipped = v.patch_dir(root, "runtime")
+        assert {m: type(e) for m, e in skipped.items()} == {"runtime.Chem.broken": SyntaxError}
+        assert broken.read_text() == "def f(a=1, b): ...\n"
+        assert "void __init__" not in (root / "Chem" / "rdmolfiles.pyi").read_text()
+
+
+def test_a_drifted_class_override_still_raises():
+    with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(sys.modules):
+        root = pathlib.Path(tmp) / "rdkit-stubs"
+        (root / "Chem").mkdir(parents=True)
+        (root / "Chem" / "__init__.pyi").write_text("class Mol: ...\n")
+        fake_module("rdkit.Chem", _GetRDKitObjIterator=object)
+        raised = False
+        try:
+            v.patch_dir(root, "rdkit")
+        except KeyError:
+            raised = True
+        assert raised
 
 
 PROBE = '''\

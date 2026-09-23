@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing implementation of Gaussian-based shape overlay and scoring.NOTE: This functionality is experimental and the API and/or results may change in future releases.
 """
@@ -106,7 +105,9 @@ class ShapeInputOptions(Boost.Python.instance):
     def allCarbonRadii(self) -> bool:
         """Whether to use the same radius, appropriate for Carbon, for all atoms.  There is a slight accuracy penalty but significant speed gain if used.  Default=True. (default: True)"""
     @allCarbonRadii.setter
-    def allCarbonRadii(self, value: bool) -> None: ...
+    def allCarbonRadii(self, value: bool) -> None:
+        """Whether to use the same radius, appropriate for Carbon, for all atoms.  There is a slight accuracy penalty but significant speed gain if used.  Default=True."""
+        ...
     @property
     def atomRadii(*args, **kwargs):
         """
@@ -114,6 +115,7 @@ class ShapeInputOptions(Boost.Python.instance):
         """
     @atomRadii.setter
     def atomRadii(*args, **kwargs):
+        """Non-standard radii to use for the atoms specified by their indices in the molecule.  Not all atoms need have a radius specified.  A list of tuples of [int, float]."""
         ...
     @property
     def atomSubset(*args, **kwargs):
@@ -122,6 +124,7 @@ class ShapeInputOptions(Boost.Python.instance):
         """
     @atomSubset.setter
     def atomSubset(*args, **kwargs):
+        """If not empty, use just these atoms in the molecule to form the ShapeInput object."""
         ...
     @property
     def customFeatures(*args, **kwargs):
@@ -130,27 +133,36 @@ class ShapeInputOptions(Boost.Python.instance):
         """
     @customFeatures.setter
     def customFeatures(*args, **kwargs):
+        """Custom features for the shape.  Requires a list of lists of tuples of int (the feature type), Point3D (the coordinates), float (the radius) and optionally a list of indices of the atoms that the feature was derived from."""
         ...
     @property
     def includeDummies(self) -> bool:
         """Whether to include dummy atoms in the shape or not.  Default=True. (default: True)"""
     @includeDummies.setter
-    def includeDummies(self, value: bool) -> None: ...
+    def includeDummies(self, value: bool) -> None:
+        """Whether to include dummy atoms in the shape or not.  Default=True."""
+        ...
     @property
     def shapePruneThreshold(self) -> float:
         """If there is more than 1 conformer for the input molecule, prune the shapes so that none of them are more similar to each other than the threshold.  Default -1.0 means no pruning. (default: -1.0)"""
     @shapePruneThreshold.setter
-    def shapePruneThreshold(self, value: float) -> None: ...
+    def shapePruneThreshold(self, value: float) -> None:
+        """If there is more than 1 conformer for the input molecule, prune the shapes so that none of them are more similar to each other than the threshold.  Default -1.0 means no pruning."""
+        ...
     @property
     def sortShapes(self) -> bool:
         """If True (the default), the shapes are sorted into descending order of total volume. (default: True)"""
     @sortShapes.setter
-    def sortShapes(self, value: bool) -> None: ...
+    def sortShapes(self, value: bool) -> None:
+        """If True (the default), the shapes are sorted into descending order of total volume."""
+        ...
     @property
     def useColors(self) -> bool:
         """Whether to use color features in overlay.  Default=True. (default: True)"""
     @useColors.setter
-    def useColors(self, value: bool) -> None: ...
+    def useColors(self, value: bool) -> None:
+        """Whether to use color features in overlay.  Default=True."""
+        ...
 class ShapeOverlayOptions(Boost.Python.instance):
     """
     ShapeOverlayOptions - options for controlling the shape overlay process.
@@ -169,22 +181,30 @@ class ShapeOverlayOptions(Boost.Python.instance):
     def distCutoff(self) -> float:
         """If using a distance cutoff, this is the value used.  Default=4.5 of whatever units the coordinates are in. (default: 4.5)"""
     @distCutoff.setter
-    def distCutoff(self, value: float) -> None: ...
+    def distCutoff(self, value: float) -> None:
+        """If using a distance cutoff, this is the value used.  Default=4.5 of whatever units the coordinates are in."""
+        ...
     @property
     def nSteps(self) -> int:
         """Maximum number of steps for the shape overlay process. Default=100. (default: 100)"""
     @nSteps.setter
-    def nSteps(self, value: int) -> None: ...
+    def nSteps(self, value: int) -> None:
+        """Maximum number of steps for the shape overlay process. Default=100."""
+        ...
     @property
     def normalize(self) -> bool:
         """Whether to normalize the shapes before overlay by putting them into their canonical orientation (centred on the origin, aligned along its principal axes.  Default=True. (default: True)"""
     @normalize.setter
-    def normalize(self, value: bool) -> None: ...
+    def normalize(self, value: bool) -> None:
+        """Whether to normalize the shapes before overlay by putting them into their canonical orientation (centred on the origin, aligned along its principal axes.  Default=True."""
+        ...
     @property
     def optParam(self) -> float:
         """If using colors, the relative weights of the shape and color scores, as a fraction of 1.  Default=0.5. (default: 0.5)"""
     @optParam.setter
-    def optParam(self, value: float) -> None: ...
+    def optParam(self, value: float) -> None:
+        """If using colors, the relative weights of the shape and color scores, as a fraction of 1.  Default=0.5."""
+        ...
     @property
     def optimMode(*args, **kwargs):
         """
@@ -192,22 +212,29 @@ class ShapeOverlayOptions(Boost.Python.instance):
         """
     @optimMode.setter
     def optimMode(*args, **kwargs):
+        """Optimisation mode, controlling what parameters are used to drive the overlay.  Default=SHAPE_PLUS_COLOR_SCORE which optimises using just the overlap of shape, but uses the color to decide which is the best overlay.  Other options are SHAPE_ONLY and SHAPE_AND_COLOR with the latter using the overlap of color features as well. """
         ...
     @property
     def shapeConvergenceCriterion(self) -> float:
         """Optimisation stops when the shape Tversky score changes by less than this amount after an optimisation step.  A larger number is faster but gives less precise overlays.  Default=0.001. (default: 0.001)"""
     @shapeConvergenceCriterion.setter
-    def shapeConvergenceCriterion(self, value: float) -> None: ...
+    def shapeConvergenceCriterion(self, value: float) -> None:
+        """Optimisation stops when the shape Tversky score changes by less than this amount after an optimisation step.  A larger number is faster but gives less precise overlays.  Default=0.001."""
+        ...
     @property
     def simAlpha(self) -> float:
         """When doing a Tversky similarity, the alpha value.  If alpha and beta are both the default 1.0, it's a Tanimoto similarity.  A high alpha and low beta emphasize the fit volume in the similarity and vice versa. Tversky is O / (A * (R - O) + B * (F - O) + O) where O is the overlap volume, R is the reference's volume and F is the fit's volume.  This is different from that used by OpenEye (O / (A * R + B * F)). (default: 1.0)"""
     @simAlpha.setter
-    def simAlpha(self, value: float) -> None: ...
+    def simAlpha(self, value: float) -> None:
+        """When doing a Tversky similarity, the alpha value.  If alpha and beta are both the default 1.0, it's a Tanimoto similarity.  A high alpha and low beta emphasize the fit volume in the similarity and vice versa. Tversky is O / (A * (R - O) + B * (F - O) + O) where O is the overlap volume, R is the reference's volume and F is the fit's volume.  This is different from that used by OpenEye (O / (A * R + B * F))."""
+        ...
     @property
     def simBeta(self) -> float:
         """When doing a Tversky similarity, the beta value. (default: 1.0)"""
     @simBeta.setter
-    def simBeta(self, value: float) -> None: ...
+    def simBeta(self, value: float) -> None:
+        """When doing a Tversky similarity, the beta value."""
+        ...
     @property
     def startMode(*args, **kwargs):
         """
@@ -215,12 +242,15 @@ class ShapeOverlayOptions(Boost.Python.instance):
         """
     @startMode.setter
     def startMode(*args, **kwargs):
+        """Start modes for optimisation.  Default is A_LA_PUBCHEM - as used by the PubChem code - either ROTATE_180_WIGGLE or ROTATE_45 depending on the shape of the two molecules.  ROTATE_180_WIGGLE means 180 rotations about the x, y and z axes, then a small rotation about each axis from that point, using the best scoring one of those. ROTATE_180 uses 180 degree rotations for 4 start points, ROTATE_45 uses 45 degree rotations for 9 start points and ROTATE_0 leaves the relative orientations of the 2 molecules as passed in before optimisation.  There are also ROTATE_0_FRAGMENT, ROTATE_45_FRAGMENT and ROTATE_180_FRAGMENT that as well as the above move the fit molecule to the ends of each of the principal axes and then does the appropriate rotations.  This is useful when the fit molecule is a lot smaller than the reference molecule, but requires a large number of optimisations so is relatively slow."""
         ...
     @property
     def useDistCutoff(self) -> bool:
         """Whether to use distance cutoff when calculating the shape volumes.  If used, there will be a small penalty in accuracy but a significant increase in speed.  Default=True. (default: True)"""
     @useDistCutoff.setter
-    def useDistCutoff(self, value: bool) -> None: ...
+    def useDistCutoff(self, value: bool) -> None:
+        """Whether to use distance cutoff when calculating the shape volumes.  If used, there will be a small penalty in accuracy but a significant increase in speed.  Default=True."""
+        ...
 class StartMode(Boost.Python.enum):
     A_LA_PUBCHEM: typing.ClassVar[StartMode]  # value = rdkit.Chem.rdGaussianShape.StartMode.A_LA_PUBCHEM
     ROTATE_0: typing.ClassVar[StartMode]  # value = rdkit.Chem.rdGaussianShape.StartMode.ROTATE_0

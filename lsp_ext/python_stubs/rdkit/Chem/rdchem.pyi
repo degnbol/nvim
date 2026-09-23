@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing the core chemistry functionality of the RDKit
 """
@@ -623,17 +622,23 @@ class AtomCoordsMatcher(Boost.Python.instance):
     def queryConfId(self) -> int:
         """query conformer ID (default: -1)"""
     @queryConfId.setter
-    def queryConfId(self, value: int) -> None: ...
+    def queryConfId(self, value: int) -> None:
+        """query conformer ID"""
+        ...
     @property
     def refConfId(self) -> int:
         """reference conformer ID (default: -1)"""
     @refConfId.setter
-    def refConfId(self, value: int) -> None: ...
+    def refConfId(self, value: int) -> None:
+        """reference conformer ID"""
+        ...
     @property
     def tol2(self) -> float:
         """squared distance tolerance (default: 1e-08)"""
     @tol2.setter
-    def tol2(self, value: float) -> None: ...
+    def tol2(self, value: float) -> None:
+        """squared distance tolerance"""
+        ...
 class AtomKekulizeException(AtomSanitizeException):
     pass
 class AtomMonomerInfo(Boost.Python.instance):
@@ -3504,7 +3509,9 @@ class StereoInfo(Boost.Python.instance):
     def centeredOn(self) -> int:
         """index of the item the stereo concerns (default: 4294967295)"""
     @centeredOn.setter
-    def centeredOn(self, value: int) -> None: ...
+    def centeredOn(self, value: int) -> None:
+        """index of the item the stereo concerns"""
+        ...
     @property
     def controllingAtoms(*args, **kwargs):
         """
@@ -3517,12 +3524,15 @@ class StereoInfo(Boost.Python.instance):
         """
     @descriptor.setter
     def descriptor(*args, **kwargs):
+        """stereo descriptor"""
         ...
     @property
     def permutation(self) -> int:
         """permutation index (used for non-tetrahedral chirality) (default: 0)"""
     @permutation.setter
-    def permutation(self, value: int) -> None: ...
+    def permutation(self, value: int) -> None:
+        """permutation index (used for non-tetrahedral chirality)"""
+        ...
     @property
     def specified(*args, **kwargs):
         """
@@ -3530,6 +3540,7 @@ class StereoInfo(Boost.Python.instance):
         """
     @specified.setter
     def specified(*args, **kwargs):
+        """whether or not it is specified"""
         ...
     @property
     def type(*args, **kwargs):
@@ -3538,6 +3549,7 @@ class StereoInfo(Boost.Python.instance):
         """
     @type.setter
     def type(*args, **kwargs):
+        """the type of stereo"""
         ...
 class StereoSpecified(Boost.Python.enum):
     Specified: typing.ClassVar[StereoSpecified]  # value = rdkit.Chem.rdchem.StereoSpecified.Specified
@@ -3923,12 +3935,16 @@ class SubstructMatchParameters(Boost.Python.instance):
     def aromaticMatchesConjugated(self) -> bool:
         """aromatic and conjugated bonds match each other (default: False)"""
     @aromaticMatchesConjugated.setter
-    def aromaticMatchesConjugated(self, value: bool) -> None: ...
+    def aromaticMatchesConjugated(self, value: bool) -> None:
+        """aromatic and conjugated bonds match each other"""
+        ...
     @property
     def aromaticMatchesSingleOrDouble(self) -> bool:
         """aromatic and single or double bonds match each other (default: False)"""
     @aromaticMatchesSingleOrDouble.setter
-    def aromaticMatchesSingleOrDouble(self, value: bool) -> None: ...
+    def aromaticMatchesSingleOrDouble(self, value: bool) -> None:
+        """aromatic and single or double bonds match each other"""
+        ...
     @property
     def atomProperties(*args, **kwargs):
         """
@@ -3936,6 +3952,7 @@ class SubstructMatchParameters(Boost.Python.instance):
         """
     @atomProperties.setter
     def atomProperties(*args, **kwargs):
+        """atom properties that must be equivalent in order to match."""
         ...
     @property
     def bondProperties(*args, **kwargs):
@@ -3944,67 +3961,92 @@ class SubstructMatchParameters(Boost.Python.instance):
         """
     @bondProperties.setter
     def bondProperties(*args, **kwargs):
+        """bond properties that must be equivalent in order to match."""
         ...
     @property
     def extraAtomCheckOverridesDefaultCheck(self) -> bool:
         """if set, only the extraAtomCheck will be used to determine whether or not atoms match (default: False)"""
     @extraAtomCheckOverridesDefaultCheck.setter
-    def extraAtomCheckOverridesDefaultCheck(self, value: bool) -> None: ...
+    def extraAtomCheckOverridesDefaultCheck(self, value: bool) -> None:
+        """if set, only the extraAtomCheck will be used to determine whether or not atoms match"""
+        ...
     @property
     def extraBondCheckOverridesDefaultCheck(self) -> bool:
         """if set, only the extraBondCheck will be used to determine whether or not bonds match (default: False)"""
     @extraBondCheckOverridesDefaultCheck.setter
-    def extraBondCheckOverridesDefaultCheck(self, value: bool) -> None: ...
+    def extraBondCheckOverridesDefaultCheck(self, value: bool) -> None:
+        """if set, only the extraBondCheck will be used to determine whether or not bonds match"""
+        ...
     @property
     def maxMatches(self) -> int:
         """maximum number of matches to return (default: 1000)"""
     @maxMatches.setter
-    def maxMatches(self, value: int) -> None: ...
+    def maxMatches(self, value: int) -> None:
+        """maximum number of matches to return"""
+        ...
     @property
     def maxRecursiveMatches(self) -> int:
         """maximum number of recursive matches to find (default: 1000)"""
     @maxRecursiveMatches.setter
-    def maxRecursiveMatches(self, value: int) -> None: ...
+    def maxRecursiveMatches(self, value: int) -> None:
+        """maximum number of recursive matches to find"""
+        ...
     @property
     def numThreads(self) -> int:
         """number of threads to use when multi-threading is possible.0 selects the number of concurrent threads supported by thehardware. negative values are added to the number of concurrentthreads supported by the hardware. (default: 1)"""
     @numThreads.setter
-    def numThreads(self, value: int) -> None: ...
+    def numThreads(self, value: int) -> None:
+        """number of threads to use when multi-threading is possible.0 selects the number of concurrent threads supported by thehardware. negative values are added to the number of concurrentthreads supported by the hardware."""
+        ...
     @property
     def recursionPossible(self) -> bool:
         """Allow recursive queries (default: True)"""
     @recursionPossible.setter
-    def recursionPossible(self, value: bool) -> None: ...
+    def recursionPossible(self, value: bool) -> None:
+        """Allow recursive queries"""
+        ...
     @property
     def specifiedStereoQueryMatchesUnspecified(self) -> bool:
         """If set, query atoms and bonds with specified stereochemistry will match atoms and bonds with unspecified stereochemistry. (default: False)"""
     @specifiedStereoQueryMatchesUnspecified.setter
-    def specifiedStereoQueryMatchesUnspecified(self, value: bool) -> None: ...
+    def specifiedStereoQueryMatchesUnspecified(self, value: bool) -> None:
+        """If set, query atoms and bonds with specified stereochemistry will match atoms and bonds with unspecified stereochemistry."""
+        ...
     @property
     def uniquify(self) -> bool:
         """uniquify (by atom index) match results (default: True)"""
     @uniquify.setter
-    def uniquify(self, value: bool) -> None: ...
+    def uniquify(self, value: bool) -> None:
+        """uniquify (by atom index) match results"""
+        ...
     @property
     def useChirality(self) -> bool:
         """Use chirality in determining whether or not atoms/bonds match (default: False)"""
     @useChirality.setter
-    def useChirality(self, value: bool) -> None: ...
+    def useChirality(self, value: bool) -> None:
+        """Use chirality in determining whether or not atoms/bonds match"""
+        ...
     @property
     def useEnhancedStereo(self) -> bool:
         """take enhanced stereochemistry into account while doing the match. This only has an effect if useChirality is also True. (default: False)"""
     @useEnhancedStereo.setter
-    def useEnhancedStereo(self, value: bool) -> None: ...
+    def useEnhancedStereo(self, value: bool) -> None:
+        """take enhanced stereochemistry into account while doing the match. This only has an effect if useChirality is also True."""
+        ...
     @property
     def useGenericMatchers(self) -> bool:
         """use generic groups (=homology groups) as a post-filtering step (if any are present in the molecule) (default: False)"""
     @useGenericMatchers.setter
-    def useGenericMatchers(self, value: bool) -> None: ...
+    def useGenericMatchers(self, value: bool) -> None:
+        """use generic groups (=homology groups) as a post-filtering step (if any are present in the molecule)"""
+        ...
     @property
     def useQueryQueryMatches(self) -> bool:
         """Consider query-query matches, not just simple matches (default: False)"""
     @useQueryQueryMatches.setter
-    def useQueryQueryMatches(self, value: bool) -> None: ...
+    def useQueryQueryMatches(self, value: bool) -> None:
+        """Consider query-query matches, not just simple matches"""
+        ...
 class ValenceType(Boost.Python.enum):
     EXPLICIT: typing.ClassVar[ValenceType]  # value = rdkit.Chem.rdchem.ValenceType.EXPLICIT
     IMPLICIT: typing.ClassVar[ValenceType]  # value = rdkit.Chem.rdchem.ValenceType.IMPLICIT

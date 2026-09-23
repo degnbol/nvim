@@ -10,7 +10,10 @@ same name.
 1. the docstring pass (`docify_stubs.py`), on every package,
 2. the package's repair, if `REPAIRS` names one (rdkit: `patch_pybind_stubs.py`),
 
-then writes the changed files back, the marker file last. The marker is the
+then writes the changed files back, the marker file last. A module a pass
+cannot parse gets no more from it than commented keyword targets, and is
+reported with its error. A
+package that does not import fails the run, unmarked. The marker is the
 head line of the top-level `__init__.pyi` (or of a single-module stub):
 `# patch_stubs: <package> <version> <digest>`, the digest covering every
 script here and `requirements.txt`. Changing any of them, or the installed
@@ -36,11 +39,11 @@ so in practice only compiled implementations are documented.
 ## docify's gaps
 
 [docify](https://github.com/AThePeanut4/docify), pinned in `requirements.txt`,
-writes basedpyright's docified typeshed. `docify_stubs.patch_docify` rebinds
-two of its module globals to close three gaps on third-party trees:
+writes basedpyright's docified typeshed. On third-party trees it has three
+gaps:
 
 - `get_qualname` raises on a member of a PEP 695 generic class, whose scope
-  chain holds a libcst `AnnotationScope`.
+  chain holds a libcst `AnnotationScope`. `docify_stubs.patch_docify` rebinds it.
 - A class that exists only in the stub has no runtime object. `CLASS_ALIASES`
   in `patch_stubs.py` binds it on its module to the runtime class standing for
   it (numpy's `_ArrayOrScalarCommon` → `ndarray`).

@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import math as math
 import numpy as numpy
@@ -9,8 +8,8 @@ from rdkit.Chem.Pharm3D import ExcludedVolume
 from rdkit.Chem import rdDistGeom as MolDG
 from rdkit import DistanceGeometry as DG
 from rdkit.ML.Data import Stats
-import rdkit.RDLogger
 from rdkit import RDLogger as logging
+import rdkit.RDLogger
 import sys as sys
 import time as time
 __all__: list[str] = ['AddExcludedVolumes', 'Check2DBounds', 'Chem', 'ChemicalFeatures', 'ChemicalForceFields', 'CoarseScreenPharmacophore', 'CombiEnum', 'ComputeChiralVolume', 'ConstrainedEnum', 'DG', 'DownsampleBoundsMatrix', 'EmbedMol', 'EmbedOne', 'EmbedPharmacophore', 'ExcludedVolume', 'GetAllPharmacophoreMatches', 'GetAtomHeavyNeighbors', 'MatchFeatsToMol', 'MatchPharmacophore', 'MatchPharmacophoreToMol', 'MolDG', 'OptimizeMol', 'ReplaceGroup', 'Stats', 'UpdatePharmacophoreBounds', 'defaultFeatLength', 'isNaN', 'logger', 'logging', 'math', 'numpy', 'sys', 'time']

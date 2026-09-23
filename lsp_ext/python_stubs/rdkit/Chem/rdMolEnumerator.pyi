@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing classes and functions for enumerating molecules
 """
@@ -40,22 +39,30 @@ class MolEnumeratorParams(Boost.Python.instance):
     def doRandom(self) -> bool:
         """do random enumeration (not yet implemented (default: False)"""
     @doRandom.setter
-    def doRandom(self, value: bool) -> None: ...
+    def doRandom(self, value: bool) -> None:
+        """do random enumeration (not yet implemented"""
+        ...
     @property
     def maxToEnumerate(self) -> int:
         """maximum number of molecules to enumerate (default: 1000)"""
     @maxToEnumerate.setter
-    def maxToEnumerate(self, value: int) -> None: ...
+    def maxToEnumerate(self, value: int) -> None:
+        """maximum number of molecules to enumerate"""
+        ...
     @property
     def randomSeed(self) -> int:
         """seed for the random enumeration (not yet implemented (default: -1)"""
     @randomSeed.setter
-    def randomSeed(self, value: int) -> None: ...
+    def randomSeed(self, value: int) -> None:
+        """seed for the random enumeration (not yet implemented"""
+        ...
     @property
     def sanitize(self) -> bool:
         """sanitize molecules after enumeration (default: False)"""
     @sanitize.setter
-    def sanitize(self, value: bool) -> None: ...
+    def sanitize(self, value: bool) -> None:
+        """sanitize molecules after enumeration"""
+        ...
 @typing.overload
 def Enumerate(mol: Mol, maxPerOperation: int = 0) -> rdkit.Chem.MolBundle:
     """

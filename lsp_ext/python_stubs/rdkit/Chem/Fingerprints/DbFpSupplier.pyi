@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Supplies a class for working with fingerprints from databases
 #DOC

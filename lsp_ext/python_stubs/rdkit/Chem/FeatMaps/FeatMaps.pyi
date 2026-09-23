@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import math as math
 from rdkit.Chem.FeatMaps.FeatMapPoint import FeatMapPoint

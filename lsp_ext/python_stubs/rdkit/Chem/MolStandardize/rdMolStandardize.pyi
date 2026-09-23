@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing tools for normalizing molecules defined by SMARTS patterns
 """
@@ -55,77 +54,107 @@ class CleanupParameters(Boost.Python.instance):
     def acidbaseFile(self) -> str:
         """file containing the acid and base definitions (default: '')"""
     @acidbaseFile.setter
-    def acidbaseFile(self, value: str) -> None: ...
+    def acidbaseFile(self, value: str) -> None:
+        """file containing the acid and base definitions"""
+        ...
     @property
     def doCanonical(self) -> bool:
         """apply atom-order dependent normalizations (like uncharging) in a canonical order (default: True)"""
     @doCanonical.setter
-    def doCanonical(self, value: bool) -> None: ...
+    def doCanonical(self, value: bool) -> None:
+        """apply atom-order dependent normalizations (like uncharging) in a canonical order"""
+        ...
     @property
     def fragmentFile(self) -> str:
         """file containing the acid and base definitions (default: '')"""
     @fragmentFile.setter
-    def fragmentFile(self, value: str) -> None: ...
+    def fragmentFile(self, value: str) -> None:
+        """file containing the acid and base definitions"""
+        ...
     @property
     def largestFragmentChooserCountHeavyAtomsOnly(self) -> bool:
         """whether LargestFragmentChooser should only count heavy atoms (defaults to False) (default: False)"""
     @largestFragmentChooserCountHeavyAtomsOnly.setter
-    def largestFragmentChooserCountHeavyAtomsOnly(self, value: bool) -> None: ...
+    def largestFragmentChooserCountHeavyAtomsOnly(self, value: bool) -> None:
+        """whether LargestFragmentChooser should only count heavy atoms (defaults to False)"""
+        ...
     @property
     def largestFragmentChooserUseAtomCount(self) -> bool:
         """Whether LargestFragmentChooser should use atom count as main criterion before MW (defaults to True) (default: True)"""
     @largestFragmentChooserUseAtomCount.setter
-    def largestFragmentChooserUseAtomCount(self, value: bool) -> None: ...
+    def largestFragmentChooserUseAtomCount(self, value: bool) -> None:
+        """Whether LargestFragmentChooser should use atom count as main criterion before MW (defaults to True)"""
+        ...
     @property
     def maxRestarts(self) -> int:
         """maximum number of restarts (default: 200)"""
     @maxRestarts.setter
-    def maxRestarts(self, value: int) -> None: ...
+    def maxRestarts(self, value: int) -> None:
+        """maximum number of restarts"""
+        ...
     @property
     def maxTautomers(self) -> int:
         """maximum number of tautomers to generate (defaults to 1000) (default: 1000)"""
     @maxTautomers.setter
-    def maxTautomers(self, value: int) -> None: ...
+    def maxTautomers(self, value: int) -> None:
+        """maximum number of tautomers to generate (defaults to 1000)"""
+        ...
     @property
     def maxTransforms(self) -> int:
         """maximum number of transforms to apply during tautomer enumeration (defaults to 1000) (default: 1000)"""
     @maxTransforms.setter
-    def maxTransforms(self, value: int) -> None: ...
+    def maxTransforms(self, value: int) -> None:
+        """maximum number of transforms to apply during tautomer enumeration (defaults to 1000)"""
+        ...
     @property
     def normalizationsFile(self) -> str:
         """file containing the normalization transformations (default: '')"""
     @normalizationsFile.setter
-    def normalizationsFile(self, value: str) -> None: ...
+    def normalizationsFile(self, value: str) -> None:
+        """file containing the normalization transformations"""
+        ...
     @property
     def preferOrganic(self) -> bool:
         """prefer organic fragments to inorganic ones when deciding what to keep (default: False)"""
     @preferOrganic.setter
-    def preferOrganic(self, value: bool) -> None: ...
+    def preferOrganic(self, value: bool) -> None:
+        """prefer organic fragments to inorganic ones when deciding what to keep"""
+        ...
     @property
     def tautomerReassignStereo(self) -> bool:
         """call AssignStereochemistry on all generated tautomers (defaults to True) (default: True)"""
     @tautomerReassignStereo.setter
-    def tautomerReassignStereo(self, value: bool) -> None: ...
+    def tautomerReassignStereo(self, value: bool) -> None:
+        """call AssignStereochemistry on all generated tautomers (defaults to True)"""
+        ...
     @property
     def tautomerRemoveBondStereo(self) -> bool:
         """remove stereochemistry from double bonds involved in tautomerism (defaults to True) (default: True)"""
     @tautomerRemoveBondStereo.setter
-    def tautomerRemoveBondStereo(self, value: bool) -> None: ...
+    def tautomerRemoveBondStereo(self, value: bool) -> None:
+        """remove stereochemistry from double bonds involved in tautomerism (defaults to True)"""
+        ...
     @property
     def tautomerRemoveIsotopicHs(self) -> bool:
         """remove isotopic Hs from centers involved in tautomerism (defaults to True) (default: True)"""
     @tautomerRemoveIsotopicHs.setter
-    def tautomerRemoveIsotopicHs(self, value: bool) -> None: ...
+    def tautomerRemoveIsotopicHs(self, value: bool) -> None:
+        """remove isotopic Hs from centers involved in tautomerism (defaults to True)"""
+        ...
     @property
     def tautomerRemoveSp3Stereo(self) -> bool:
         """remove stereochemistry from sp3 centers involved in tautomerism (defaults to True) (default: True)"""
     @tautomerRemoveSp3Stereo.setter
-    def tautomerRemoveSp3Stereo(self, value: bool) -> None: ...
+    def tautomerRemoveSp3Stereo(self, value: bool) -> None:
+        """remove stereochemistry from sp3 centers involved in tautomerism (defaults to True)"""
+        ...
     @property
     def tautomerTransformsFile(self) -> str:
         """file containing the tautomer transformations (default: '')"""
     @tautomerTransformsFile.setter
-    def tautomerTransformsFile(self, value: str) -> None: ...
+    def tautomerTransformsFile(self, value: str) -> None:
+        """file containing the tautomer transformations"""
+        ...
 class DisallowedAtomsValidation(ValidationMethod):
     @staticmethod
     def __reduce__(*args, **kwargs):
@@ -374,22 +403,30 @@ class MetalDisconnectorOptions(Boost.Python.instance):
     def adjustCharges(self) -> bool:
         """Whether to adjust charges on ligand atoms.  Default true. (default: True)"""
     @adjustCharges.setter
-    def adjustCharges(self, value: bool) -> None: ...
+    def adjustCharges(self, value: bool) -> None:
+        """Whether to adjust charges on ligand atoms.  Default true."""
+        ...
     @property
     def removeHapticDummies(self) -> bool:
         """Whether to remove the dummy atoms representing haptic bonds.  Such dummies are bonded to the metal with a bond that has the MolFileBondEndPts prop set.  Default false. (default: False)"""
     @removeHapticDummies.setter
-    def removeHapticDummies(self, value: bool) -> None: ...
+    def removeHapticDummies(self, value: bool) -> None:
+        """Whether to remove the dummy atoms representing haptic bonds.  Such dummies are bonded to the metal with a bond that has the MolFileBondEndPts prop set.  Default false."""
+        ...
     @property
     def splitAromaticC(self) -> bool:
         """Whether to split metal-aromatic C bonds.  Default false. (default: False)"""
     @splitAromaticC.setter
-    def splitAromaticC(self, value: bool) -> None: ...
+    def splitAromaticC(self, value: bool) -> None:
+        """Whether to split metal-aromatic C bonds.  Default false."""
+        ...
     @property
     def splitGrignards(self) -> bool:
         """Whether to split Grignard-type complexes. Default false. (default: False)"""
     @splitGrignards.setter
-    def splitGrignards(self, value: bool) -> None: ...
+    def splitGrignards(self, value: bool) -> None:
+        """Whether to split Grignard-type complexes. Default false."""
+        ...
 class MolVSValidation(ValidationMethod):
     __instance_size__: typing.ClassVar[int] = 56
     @staticmethod

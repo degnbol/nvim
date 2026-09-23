@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import copy as copy
 import math as math
@@ -199,6 +198,6 @@ def GetTTFingerprint(mol, atomId = -1, fpType = 'normal', nBits = 2048, targetSi
     """
 def _DeleteFpInfoAttr(mol):
     ...
-apDict: dict  # value = {'normal': <function <lambda> at 0x104bd63e0>, 'hashed': <function <lambda> at 0x104bd6480>, 'bv': <function <lambda> at 0x104bd6520>}
+apDict: dict  # value = {'normal': <function <lambda> at 0x1047be160>, 'hashed': <function <lambda> at 0x1047be200>, 'bv': <function <lambda> at 0x1047be2a0>}
 cm = None
-ttDict: dict  # value = {'normal': <function <lambda> at 0x104bd6660>, 'hashed': <function <lambda> at 0x104bd6700>, 'bv': <function <lambda> at 0x104bd67a0>}
+ttDict: dict  # value = {'normal': <function <lambda> at 0x1047be3e0>, 'hashed': <function <lambda> at 0x1047be480>, 'bv': <function <lambda> at 0x1047be520>}

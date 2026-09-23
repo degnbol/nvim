@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing functions for working with groups of molecules
 """
@@ -23,32 +22,44 @@ class SupplierOptions(Boost.Python.instance):
     def confId2D(self) -> int:
         """used for TDT files (default: -1)"""
     @confId2D.setter
-    def confId2D(self, value: int) -> None: ...
+    def confId2D(self, value: int) -> None:
+        """used for TDT files"""
+        ...
     @property
     def confId3D(self) -> int:
         """used for TDT files (default: 0)"""
     @confId3D.setter
-    def confId3D(self, value: int) -> None: ...
+    def confId3D(self, value: int) -> None:
+        """used for TDT files"""
+        ...
     @property
     def delimiter(self) -> str:
         """used for SMILES files (default: '\t')"""
     @delimiter.setter
-    def delimiter(self, value: str) -> None: ...
+    def delimiter(self, value: str) -> None:
+        """used for SMILES files"""
+        ...
     @property
     def nameColumn(self) -> int:
         """used for SMILES files (default: 1)"""
     @nameColumn.setter
-    def nameColumn(self, value: int) -> None: ...
+    def nameColumn(self, value: int) -> None:
+        """used for SMILES files"""
+        ...
     @property
     def nameRecord(self) -> str:
         """used for TDT files (default: '')"""
     @nameRecord.setter
-    def nameRecord(self, value: str) -> None: ...
+    def nameRecord(self, value: str) -> None:
+        """used for TDT files"""
+        ...
     @property
     def numThreads(self) -> int:
         """the number of threads to use while working (default: 0)"""
     @numThreads.setter
-    def numThreads(self, value: int) -> None: ...
+    def numThreads(self, value: int) -> None:
+        """the number of threads to use while working"""
+        ...
     @property
     def removeHs(self) -> bool:
         """default: True"""
@@ -63,7 +74,9 @@ class SupplierOptions(Boost.Python.instance):
     def smilesColumn(self) -> int:
         """used for SMILES files (default: 0)"""
     @smilesColumn.setter
-    def smilesColumn(self, value: int) -> None: ...
+    def smilesColumn(self, value: int) -> None:
+        """used for SMILES files"""
+        ...
     @property
     def strictParsing(self) -> bool:
         """default: True"""
@@ -73,7 +86,9 @@ class SupplierOptions(Boost.Python.instance):
     def titleLine(self) -> bool:
         """used for SMILES files (default: True)"""
     @titleLine.setter
-    def titleLine(self, value: bool) -> None: ...
+    def titleLine(self, value: bool) -> None:
+        """used for SMILES files"""
+        ...
 @typing.overload
 def GetFingerprintsForMolsInFile(filename: str, generator: typing.Any = None, options: SupplierOptions = ...) -> tuple:
     """

@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing interface to the CoordGen library.
 """
@@ -33,22 +32,30 @@ class CoordGenParams(Boost.Python.instance):
     def coordgenScaling(self) -> float:
         """scaling factor for a single bond (default: 50.0)"""
     @coordgenScaling.setter
-    def coordgenScaling(self, value: float) -> None: ...
+    def coordgenScaling(self, value: float) -> None:
+        """scaling factor for a single bond"""
+        ...
     @property
     def dbg_useConstrained(self) -> bool:
         """for debugging use (default: True)"""
     @dbg_useConstrained.setter
-    def dbg_useConstrained(self, value: bool) -> None: ...
+    def dbg_useConstrained(self, value: bool) -> None:
+        """for debugging use"""
+        ...
     @property
     def dbg_useFixed(self) -> bool:
         """for debugging use (default: False)"""
     @dbg_useFixed.setter
-    def dbg_useFixed(self, value: bool) -> None: ...
+    def dbg_useFixed(self, value: bool) -> None:
+        """for debugging use"""
+        ...
     @property
     def minimizerPrecision(self) -> float:
         """controls sketcher precision (default: 0.009999999776482582)"""
     @minimizerPrecision.setter
-    def minimizerPrecision(self, value: float) -> None: ...
+    def minimizerPrecision(self, value: float) -> None:
+        """controls sketcher precision"""
+        ...
     @property
     def sketcherBestPrecision(self) -> float:
         """highest quality (and slowest) precision setting (default: 3.0)"""
@@ -65,7 +72,9 @@ class CoordGenParams(Boost.Python.instance):
     def templateFileDir(self) -> str:
         """directory containing the templates.mae file (default: '')"""
     @templateFileDir.setter
-    def templateFileDir(self, value: str) -> None: ...
+    def templateFileDir(self, value: str) -> None:
+        """directory containing the templates.mae file"""
+        ...
     @property
     def treatNonterminalBondsToMetalAsZOBs(self) -> bool:
         """default: False"""

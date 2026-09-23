@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 from rdkit.ForceField import rdForceField
 from rdkit.ForceField.rdForceField import ForceField

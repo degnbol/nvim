@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  descriptor calculator for compounds defined by a composition alone
   (only the composition is required)

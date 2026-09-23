@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 
 Spacial score (SPS) is an empirical scoring system to express the spacial complexity of a compound
@@ -37,7 +36,7 @@ class _SpacialScore:
     """
     Class intended for calculating spacial score (SPS) and size-normalised SPS (nSPS) for small organic molecules
     """
-    _hybridisations: typing.ClassVar[collections.defaultdict]  # value = defaultdict(<function _SpacialScore.<lambda> at 0x103797600>, {rdkit.Chem.rdchem.HybridizationType.SP: 1, rdkit.Chem.rdchem.HybridizationType.SP2: 2, rdkit.Chem.rdchem.HybridizationType.SP3: 3})
+    _hybridisations: typing.ClassVar[collections.defaultdict]  # value = defaultdict(<function _SpacialScore.<lambda> at 0x1030679c0>, {rdkit.Chem.rdchem.HybridizationType.SP: 1, rdkit.Chem.rdchem.HybridizationType.SP2: 2, rdkit.Chem.rdchem.HybridizationType.SP3: 3})
     def __init__(self, mol, normalize = True):
         ...
     def _accountForHybridisation(self, atom):

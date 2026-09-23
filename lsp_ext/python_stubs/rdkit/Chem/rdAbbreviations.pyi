@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing functions for working with molecular abbreviations
 """
@@ -20,22 +19,30 @@ class AbbreviationDefinition(Boost.Python.instance):
     def displayLabel(self) -> str:
         """the label in a drawing when the bond comes from the right (default: '')"""
     @displayLabel.setter
-    def displayLabel(self, value: str) -> None: ...
+    def displayLabel(self, value: str) -> None:
+        """the label in a drawing when the bond comes from the right"""
+        ...
     @property
     def displayLabelW(self) -> str:
         """the label in a drawing when the bond comes from the west (default: '')"""
     @displayLabelW.setter
-    def displayLabelW(self, value: str) -> None: ...
+    def displayLabelW(self, value: str) -> None:
+        """the label in a drawing when the bond comes from the west"""
+        ...
     @property
     def includesXBonds(self) -> bool:
         """whether or not the abbreviation definition includes bonds to non-abbreviation atoms (default: True)"""
     @includesXBonds.setter
-    def includesXBonds(self, value: bool) -> None: ...
+    def includesXBonds(self, value: bool) -> None:
+        """whether or not the abbreviation definition includes bonds to non-abbreviation atoms"""
+        ...
     @property
     def label(self) -> str:
         """the label (default: '')"""
     @label.setter
-    def label(self, value: str) -> None: ...
+    def label(self, value: str) -> None:
+        """the label"""
+        ...
     @property
     def mol(*args, **kwargs):
         """
@@ -43,6 +50,7 @@ class AbbreviationDefinition(Boost.Python.instance):
         """
     @mol.setter
     def mol(*args, **kwargs):
+        """the query molecule (should have a dummy as the first atom if includesXBonds is true)"""
         ...
 class _vectN5RDKit13Abbreviations22AbbreviationDefinitionE(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48

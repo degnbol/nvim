@@ -10,9 +10,10 @@ then reads
 ``# patch_stubs: <package> <version> <digest>``, the digest covering every
 patch script.
 
-Exit status: 0 patched, with the unimportable modules on stdout; 3
-(``NOTHING_WRITTEN``) current, not applicable, or only the marker written;
-anything else failed, with the reason on stderr.
+Exit status: 0 when files were patched or modules skipped, each skipped module
+on its own stdout line with its error. 3 (``NOTHING_WRITTEN``) when the stub is
+current, not applicable, or got only the marker. Anything else is a failure,
+with the reason on stderr.
 """
 from __future__ import annotations
 
@@ -33,11 +34,11 @@ from collections.abc import Callable, Iterator, Sequence
 import patch_pybind_stubs
 from stub_tree import introspection_order, module_name, side_effect_free
 
-REPAIRS: dict[str, Callable[[pathlib.Path, str], list[str]]] = {
+REPAIRS: dict[str, Callable[[pathlib.Path, str], dict[str, BaseException]]] = {
     "rdkit": patch_pybind_stubs.patch_dir,
 }
 """Package -> repair run on its documented stub tree, given the tree's root and
-the package, returning the modules it could not import."""
+the package, returning the modules it skipped, each with its error."""
 
 CLASS_ALIASES: dict[tuple[str, str], str] = {
     ("numpy", "_ArrayOrScalarCommon"): "ndarray",
@@ -252,7 +253,7 @@ def write_back(staged: pathlib.Path, target: pathlib.Path) -> int:
     return changed
 
 
-def patch(target: pathlib.Path) -> list[str] | None:
+def patch(target: pathlib.Path) -> dict[str, BaseException] | None:
     """Run the sequence on a stub.
 
     Args:
@@ -263,11 +264,12 @@ def patch(target: pathlib.Path) -> list[str] | None:
     process, with every thread's traceback on stderr.
 
     Returns:
-        The modules that could not be imported, each with its error, or None when
-        nothing but at most the marker was written.
+        {module: error} for the modules either pass skipped, or None when no
+        module was skipped and at most the marker was written.
 
     Raises:
-        SystemExit: the stub has no marker file.
+        SystemExit: the stub has no marker file, or the package does not import,
+            which leaves the stub unwritten.
     """
     package = target.name.removesuffix("-stubs") if target.is_dir() else target.stem
     if not marker_file(target).is_file():
@@ -284,14 +286,15 @@ def patch(target: pathlib.Path) -> list[str] | None:
             remove_stale_temps(target)
             with tempfile.TemporaryDirectory() as tmp:
                 staged = pathlib.Path(tmp)
-                unimportable = _patch_staged(staged, target, package)
+                skipped = _patch_staged(staged, target, package)
                 changed = write_back(staged, target)
         finally:
             faulthandler.cancel_dump_traceback_later()
-    return list(dict.fromkeys(unimportable)) if changed else None
+    return skipped if skipped or changed else None
 
 
-def _patch_staged(staged: pathlib.Path, target: pathlib.Path, package: str) -> list[str]:
+def _patch_staged(staged: pathlib.Path, target: pathlib.Path,
+                  package: str) -> dict[str, BaseException]:
     """Stage a stub, run the sequence on the copy and stamp its marker.
 
     Args:
@@ -300,7 +303,10 @@ def _patch_staged(staged: pathlib.Path, target: pathlib.Path, package: str) -> l
         package: import name the stub describes.
 
     Returns:
-        The modules either pass could not import.
+        {module: error} for the modules either pass skipped.
+
+    Raises:
+        SystemExit: the package does not import, naming it and the error.
     """
     # Deferred: docify and libcst are only worth importing for a stub needing a run.
     import docify_stubs
@@ -317,20 +323,28 @@ def _patch_staged(staged: pathlib.Path, target: pathlib.Path, package: str) -> l
     repair = REPAIRS.get(package)
     # Some modules print on import.
     with open(os.devnull, "w") as quiet, contextlib.redirect_stdout(quiet):
-        unimportable = docify_stubs.document(modules, side_effect_free, aliases)
+        # Else every module would be skipped with the same error.
+        try:
+            importlib.import_module(package)
+        except (Exception, SystemExit) as e:
+            raise SystemExit(f"{package} does not import: {e}") from e
+        skipped = docify_stubs.document(modules, side_effect_free, aliases)
         if repair:
-            unimportable += repair(staged, package)
+            skipped |= repair(staged, package)
     marked = staged / marker_file(target).relative_to(_stub_root(target))
     marked.write_text(_marker(package) + marked.read_text(encoding="utf-8"), encoding="utf-8")
-    return unimportable
+    return skipped
 
 
 def main() -> None:
-    unimportable = patch(pathlib.Path(sys.argv[1]).absolute())
-    if unimportable is None:
+    skipped = patch(pathlib.Path(sys.argv[1]).absolute())
+    if skipped is None:
         sys.exit(NOTHING_WRITTEN)
-    for module in unimportable:
-        print(module)
+    for module, e in skipped.items():
+        # libcst's and some import errors span several lines.
+        message = str(e).partition("\n")[0]
+        print(f"{module} ({type(e).__name__}: {message})" if message
+              else f"{module} ({type(e).__name__})")
 
 
 if __name__ == "__main__":

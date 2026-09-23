@@ -1,9 +1,10 @@
 """Write runtime docstrings into a stub tree with docify.
 
 docify (https://github.com/AThePeanut4/docify) produces basedpyright's docified
-typeshed. On a third-party tree it has three gaps, closed by ``patch_docify``:
-it raises on a member of a PEP 695 generic class, it cannot reflect a class
-that exists only in the stub, and it has no visitor for annotated assignments.
+typeshed. On a third-party tree it has three gaps: it raises on a member of a
+PEP 695 generic class (closed by ``patch_docify``), it cannot reflect a class
+that exists only in the stub (closed by ``document``'s aliases), and it has no
+visitor for annotated assignments (closed by this module's ``Transformer``).
 """
 from __future__ import annotations
 
@@ -12,13 +13,15 @@ import importlib.metadata
 import inspect
 import pathlib
 import re
+import tokenize
+import types
+import warnings
 from collections.abc import Callable, Mapping, Sequence
 
 import docify
 import libcst as cst
 import libcst.matchers as m
 import libcst.metadata as meta
-
 from stub_tree import comment_keyword_targets
 
 _REQUIREMENTS = pathlib.Path(__file__).with_name("requirements.txt")
@@ -27,10 +30,10 @@ _DOCSTRING = m.SimpleStatementLine([m.Expr(m.SimpleString()), m.ZeroOrMore()])
 
 
 def patch_docify() -> None:
-    """Rebind ``docify.get_qualname`` and ``docify.Transformer`` to this module's.
+    """Make docify's ``Transformer`` use this module's ``get_qualname``.
 
-    Idempotent. The rebindings replace docify internals, so they are only
-    trusted on the version ``requirements.txt`` pins.
+    Idempotent. It rebinds ``docify.get_qualname``, a docify internal, so it is
+    only trusted on the version ``requirements.txt`` pins.
 
     Raises:
         AssertionError: ``requirements.txt`` pins no docify, or the installed
@@ -42,7 +45,6 @@ def patch_docify() -> None:
     installed = importlib.metadata.version("docify")
     assert installed == pinned, f"docify {installed} installed, {pinned} pinned"
     docify.get_qualname = get_qualname
-    docify.Transformer = Transformer
 
 
 def get_qualname(scope: meta.Scope, name: str) -> str:
@@ -172,12 +174,13 @@ def document(
     modules: Sequence[tuple[str, pathlib.Path]],
     safe: Callable[[Sequence[str]], bool],
     aliases: Mapping[tuple[str, str], str],
-) -> list[str]:
+) -> dict[str, BaseException]:
     """Document stub files in place from their imported runtime modules.
 
-    Every stub has its keyword-named assignment targets commented out, including
-    the stubs of modules not safe to import. Calls ``patch_docify``, and binds
-    each alias as an attribute of its imported module.
+    Every stub that tokenizes has its keyword-named assignment targets commented
+    out, including the stubs of modules not safe to import. Calls
+    ``patch_docify``, binds each alias as an attribute of its imported module,
+    and ignores the warnings importing and reading the runtime raise.
 
     Args:
         modules: (dotted module name, stub path) pairs, parents first.
@@ -187,24 +190,57 @@ def document(
             module standing for it.
 
     Returns:
-        The modules that could not be imported, each with its error.
+        {module: error} for each module skipped. A stub that does not tokenize
+        is left untouched. One whose module fails to import, or that libcst
+        cannot parse, gets its keyword targets commented and nothing else.
     """
     patch_docify()
-    unimportable = []
-    for name, path in modules:
-        # libcst rejects a keyword target (`None: T`) and docify then skips the
-        # whole module.
-        path.write_text(comment_keyword_targets(path.read_text(encoding="utf-8")),
-                        encoding="utf-8")
-        if not safe(name.split(".")[1:]):
-            continue
-        try:
-            module = importlib.import_module(name)
-        except (Exception, SystemExit) as e:
-            unimportable.append(f"{name} ({e})")
-            continue
-        for (owner, stub_class), runtime_class in aliases.items():
-            if owner == name:
-                setattr(module, stub_class, getattr(module, runtime_class))
-        docify.run_one((name, path, path), if_needed=True)
-    return unimportable
+    skipped = {}
+    # Importing and reading the runtime warns (deprecations, mostly), about
+    # packages nothing here can act on.
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        for name, path in modules:
+            try:
+                # libcst rejects a keyword target (`None: T`).
+                text = comment_keyword_targets(path.read_text(encoding="utf-8"))
+            except (SyntaxError, tokenize.TokenError) as e:
+                skipped[name] = e
+                continue
+            path.write_text(text, encoding="utf-8")
+            if not safe(name.split(".")[1:]):
+                continue
+            try:
+                module = importlib.import_module(name)
+            except (Exception, SystemExit) as e:
+                skipped[name] = e
+                continue
+            for (owner, stub_class), runtime_class in aliases.items():
+                if owner == name:
+                    setattr(module, stub_class, getattr(module, runtime_class))
+            try:
+                path.write_text(with_docstrings(text, name, module), encoding="utf-8")
+            except cst.ParserSyntaxError as e:
+                skipped[name] = e
+    return skipped
+
+
+def with_docstrings(text: str, name: str, module: types.ModuleType) -> str:
+    """A stub's source with docstrings written in from its runtime module.
+
+    Only what ``inspect.getsourcefile`` cannot find the source of is documented
+    (docify's ``if_needed``).
+
+    Args:
+        text: stub source.
+        name: dotted name of the module the stub describes.
+        module: that module, imported.
+
+    Returns:
+        The documented source.
+
+    Raises:
+        libcst.ParserSyntaxError: libcst cannot parse text.
+    """
+    tree = cst.parse_module(text)
+    return cst.MetadataWrapper(tree).visit(Transformer(name, module, True)).code

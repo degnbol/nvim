@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing RDKit functionality for manipulating molecules.
 """
@@ -20,22 +19,30 @@ class AddHsParameters(Boost.Python.instance):
     def addCoords(self) -> bool:
         """add coordinates for the Hs (default: False)"""
     @addCoords.setter
-    def addCoords(self, value: bool) -> None: ...
+    def addCoords(self, value: bool) -> None:
+        """add coordinates for the Hs"""
+        ...
     @property
     def addResidueInfo(self) -> bool:
         """add residue info to the Hs (default: False)"""
     @addResidueInfo.setter
-    def addResidueInfo(self, value: bool) -> None: ...
+    def addResidueInfo(self, value: bool) -> None:
+        """add residue info to the Hs"""
+        ...
     @property
     def explicitOnly(self) -> bool:
         """only add explict Hs (default: False)"""
     @explicitOnly.setter
-    def explicitOnly(self, value: bool) -> None: ...
+    def explicitOnly(self, value: bool) -> None:
+        """only add explict Hs"""
+        ...
     @property
     def skipQueries(self) -> bool:
         """do not add Hs to query atoms or atoms with query bonds (default: False)"""
     @skipQueries.setter
-    def skipQueries(self, value: bool) -> None: ...
+    def skipQueries(self, value: bool) -> None:
+        """do not add Hs to query atoms or atoms with query bonds"""
+        ...
 class AdjustQueryParameters(Boost.Python.instance):
     """
     Parameters controlling which components of the query atoms/bonds are adjusted.
@@ -69,97 +76,135 @@ class AdjustQueryParameters(Boost.Python.instance):
     def adjustConjugatedFiveRings(self) -> bool:
         """set bond queries in conjugated five-rings to SINGLE|DOUBLE|AROMATIC (default: False)"""
     @adjustConjugatedFiveRings.setter
-    def adjustConjugatedFiveRings(self, value: bool) -> None: ...
+    def adjustConjugatedFiveRings(self, value: bool) -> None:
+        """set bond queries in conjugated five-rings to SINGLE|DOUBLE|AROMATIC"""
+        ...
     @property
     def adjustDegree(self) -> bool:
         """add degree queries (default: True)"""
     @adjustDegree.setter
-    def adjustDegree(self, value: bool) -> None: ...
+    def adjustDegree(self, value: bool) -> None:
+        """add degree queries"""
+        ...
     @property
     def adjustDegreeFlags(self) -> int:
         """controls which atoms have their degree queries changed (default: 3)"""
     @adjustDegreeFlags.setter
-    def adjustDegreeFlags(self, value: int) -> None: ...
+    def adjustDegreeFlags(self, value: int) -> None:
+        """controls which atoms have their degree queries changed"""
+        ...
     @property
     def adjustHeavyDegree(self) -> bool:
         """adjust the heavy-atom degree (default: False)"""
     @adjustHeavyDegree.setter
-    def adjustHeavyDegree(self, value: bool) -> None: ...
+    def adjustHeavyDegree(self, value: bool) -> None:
+        """adjust the heavy-atom degree"""
+        ...
     @property
     def adjustHeavyDegreeFlags(self) -> int:
         """controls which atoms have their heavy-atom degree queries changed (default: 3)"""
     @adjustHeavyDegreeFlags.setter
-    def adjustHeavyDegreeFlags(self, value: int) -> None: ...
+    def adjustHeavyDegreeFlags(self, value: int) -> None:
+        """controls which atoms have their heavy-atom degree queries changed"""
+        ...
     @property
     def adjustRingChain(self) -> bool:
         """add ring-chain queries to atoms (default: False)"""
     @adjustRingChain.setter
-    def adjustRingChain(self, value: bool) -> None: ...
+    def adjustRingChain(self, value: bool) -> None:
+        """add ring-chain queries to atoms"""
+        ...
     @property
     def adjustRingChainFlags(self) -> int:
         """controls which atoms have ring-chain queries added (default: 0)"""
     @adjustRingChainFlags.setter
-    def adjustRingChainFlags(self, value: int) -> None: ...
+    def adjustRingChainFlags(self, value: int) -> None:
+        """controls which atoms have ring-chain queries added"""
+        ...
     @property
     def adjustRingCount(self) -> bool:
         """add ring-count queries (default: False)"""
     @adjustRingCount.setter
-    def adjustRingCount(self, value: bool) -> None: ...
+    def adjustRingCount(self, value: bool) -> None:
+        """add ring-count queries"""
+        ...
     @property
     def adjustRingCountFlags(self) -> int:
         """controls which atoms have ring-count queries added (default: 3)"""
     @adjustRingCountFlags.setter
-    def adjustRingCountFlags(self, value: int) -> None: ...
+    def adjustRingCountFlags(self, value: int) -> None:
+        """controls which atoms have ring-count queries added"""
+        ...
     @property
     def adjustSingleBondsBetweenAromaticAtoms(self) -> bool:
         """sets non-ring single bonds between two aromatic or conjugated atoms to SINGLE|AROMATIC (default: False)"""
     @adjustSingleBondsBetweenAromaticAtoms.setter
-    def adjustSingleBondsBetweenAromaticAtoms(self, value: bool) -> None: ...
+    def adjustSingleBondsBetweenAromaticAtoms(self, value: bool) -> None:
+        """sets non-ring single bonds between two aromatic or conjugated atoms to SINGLE|AROMATIC"""
+        ...
     @property
     def adjustSingleBondsToDegreeOneNeighbors(self) -> bool:
         """set single bonds bewteen aromatic or conjugated atoms and degree-one neighbors to SINGLE|AROMATIC (default: False)"""
     @adjustSingleBondsToDegreeOneNeighbors.setter
-    def adjustSingleBondsToDegreeOneNeighbors(self, value: bool) -> None: ...
+    def adjustSingleBondsToDegreeOneNeighbors(self, value: bool) -> None:
+        """set single bonds bewteen aromatic or conjugated atoms and degree-one neighbors to SINGLE|AROMATIC"""
+        ...
     @property
     def aromatizeIfPossible(self) -> bool:
         """perceive and set aromaticity (default: True)"""
     @aromatizeIfPossible.setter
-    def aromatizeIfPossible(self, value: bool) -> None: ...
+    def aromatizeIfPossible(self, value: bool) -> None:
+        """perceive and set aromaticity"""
+        ...
     @property
     def makeAtomsGeneric(self) -> bool:
         """convert atoms to generic queries (any atoms) (default: False)"""
     @makeAtomsGeneric.setter
-    def makeAtomsGeneric(self, value: bool) -> None: ...
+    def makeAtomsGeneric(self, value: bool) -> None:
+        """convert atoms to generic queries (any atoms)"""
+        ...
     @property
     def makeAtomsGenericFlags(self) -> int:
         """controls which atoms are converted to generic queries (default: 0)"""
     @makeAtomsGenericFlags.setter
-    def makeAtomsGenericFlags(self, value: int) -> None: ...
+    def makeAtomsGenericFlags(self, value: int) -> None:
+        """controls which atoms are converted to generic queries"""
+        ...
     @property
     def makeBondsGeneric(self) -> bool:
         """converts bonds to generic queries (any bonds) (default: False)"""
     @makeBondsGeneric.setter
-    def makeBondsGeneric(self, value: bool) -> None: ...
+    def makeBondsGeneric(self, value: bool) -> None:
+        """converts bonds to generic queries (any bonds)"""
+        ...
     @property
     def makeBondsGenericFlags(self) -> int:
         """controls which bonds are converted to generic queries (default: 0)"""
     @makeBondsGenericFlags.setter
-    def makeBondsGenericFlags(self, value: int) -> None: ...
+    def makeBondsGenericFlags(self, value: int) -> None:
+        """controls which bonds are converted to generic queries"""
+        ...
     @property
     def makeDummiesQueries(self) -> bool:
         """convert dummy atoms without isotope labels to any-atom queries (default: True)"""
     @makeDummiesQueries.setter
-    def makeDummiesQueries(self, value: bool) -> None: ...
+    def makeDummiesQueries(self, value: bool) -> None:
+        """convert dummy atoms without isotope labels to any-atom queries"""
+        ...
     @property
     def setMDLFiveRingAromaticity(self) -> bool:
         """uses the 5-ring aromaticity behavior of the (former) MDL software as documented in the Chemical Representation Guide (default: False)"""
     @setMDLFiveRingAromaticity.setter
-    def setMDLFiveRingAromaticity(self, value: bool) -> None: ...
+    def setMDLFiveRingAromaticity(self, value: bool) -> None:
+        """uses the 5-ring aromaticity behavior of the (former) MDL software as documented in the Chemical Representation Guide"""
+        ...
     @property
     def useStereoCareForBonds(self) -> bool:
         """if this is set sterochemistry information will be removed from double bonds that do not have the stereoCare property set (default: False)"""
     @useStereoCareForBonds.setter
-    def useStereoCareForBonds(self, value: bool) -> None: ...
+    def useStereoCareForBonds(self, value: bool) -> None:
+        """if this is set sterochemistry information will be removed from double bonds that do not have the stereoCare property set"""
+        ...
 class AdjustQueryWhichFlags(Boost.Python.enum):
     ADJUST_IGNOREALL: typing.ClassVar[AdjustQueryWhichFlags]  # value = rdkit.Chem.rdmolops.AdjustQueryWhichFlags.ADJUST_IGNOREALL
     ADJUST_IGNORECHAINS: typing.ClassVar[AdjustQueryWhichFlags]  # value = rdkit.Chem.rdmolops.AdjustQueryWhichFlags.ADJUST_IGNORECHAINS
@@ -200,7 +245,16 @@ class BondWedgingParameters(Boost.Python.instance):
             3. bonds separated by more than 120 degrees will not be
                 wedged (default: False)"""
     @wedgeTwoBondsIfPossible.setter
-    def wedgeTwoBondsIfPossible(self, value: bool) -> None: ...
+    def wedgeTwoBondsIfPossible(self, value: bool) -> None:
+        """
+        If this is enabled then two bonds will be wedged at chiral
+        centers subject to the following constraints:
+          1. ring bonds will not be wedged
+          2. bonds to chiral centers will not be wedged
+          3. bonds separated by more than 120 degrees will not be
+              wedged
+        """
+        ...
 class BoolVector(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
     @staticmethod
@@ -281,19 +335,34 @@ class MolzipParams(Boost.Python.instance):
         """if true and the input fragments have coordinates, the fragments
         will be aligned along connection vectors in the output molecule (default: False)"""
     @alignCoordinates.setter
-    def alignCoordinates(self, value: bool) -> None: ...
+    def alignCoordinates(self, value: bool) -> None:
+        """
+        if true and the input fragments have coordinates, the fragments
+        will be aligned along connection vectors in the output molecule
+        """
+        ...
     @property
     def enforceValenceRules(self) -> bool:
         """If true (default) enforce valences after zipping
         Setting this to false allows assembling chemically incorrect fragments. (default: True)"""
     @enforceValenceRules.setter
-    def enforceValenceRules(self, value: bool) -> None: ...
+    def enforceValenceRules(self, value: bool) -> None:
+        """
+        If true (default) enforce valences after zipping
+        Setting this to false allows assembling chemically incorrect fragments.
+        """
+        ...
     @property
     def generateCoordinates(self) -> bool:
         """If true will add depiction coordinates to input molecules and
         zipped molecule (for molzipFragments only) (default: False)"""
     @generateCoordinates.setter
-    def generateCoordinates(self, value: bool) -> None: ...
+    def generateCoordinates(self, value: bool) -> None:
+        """
+        If true will add depiction coordinates to input molecules and
+        zipped molecule (for molzipFragments only)
+        """
+        ...
     @property
     def label(*args, **kwargs):
         """
@@ -301,6 +370,7 @@ class MolzipParams(Boost.Python.instance):
         """
     @label.setter
     def label(*args, **kwargs):
+        """Set the atom labeling system to zip together"""
         ...
 class RemoveHsParameters(Boost.Python.instance):
     """
@@ -316,82 +386,114 @@ class RemoveHsParameters(Boost.Python.instance):
     def removeAndTrackIsotopes(self) -> bool:
         """hydrogens with non-default isotopes and store them in the _isotopicHs atom property such that AddHs() can add the same isotope at a later stage (default: False)"""
     @removeAndTrackIsotopes.setter
-    def removeAndTrackIsotopes(self, value: bool) -> None: ...
+    def removeAndTrackIsotopes(self, value: bool) -> None:
+        """hydrogens with non-default isotopes and store them in the _isotopicHs atom property such that AddHs() can add the same isotope at a later stage"""
+        ...
     @property
     def removeDefiningBondStereo(self) -> bool:
         """hydrogens defining bond stereochemistry (default: False)"""
     @removeDefiningBondStereo.setter
-    def removeDefiningBondStereo(self, value: bool) -> None: ...
+    def removeDefiningBondStereo(self, value: bool) -> None:
+        """hydrogens defining bond stereochemistry"""
+        ...
     @property
     def removeDegreeZero(self) -> bool:
         """hydrogens that have no bonds (default: False)"""
     @removeDegreeZero.setter
-    def removeDegreeZero(self, value: bool) -> None: ...
+    def removeDegreeZero(self, value: bool) -> None:
+        """hydrogens that have no bonds"""
+        ...
     @property
     def removeDummyNeighbors(self) -> bool:
         """hydrogens with at least one dummy-atom neighbor (default: False)"""
     @removeDummyNeighbors.setter
-    def removeDummyNeighbors(self, value: bool) -> None: ...
+    def removeDummyNeighbors(self, value: bool) -> None:
+        """hydrogens with at least one dummy-atom neighbor"""
+        ...
     @property
     def removeHigherDegrees(self) -> bool:
         """hydrogens with two (or more) bonds (default: False)"""
     @removeHigherDegrees.setter
-    def removeHigherDegrees(self, value: bool) -> None: ...
+    def removeHigherDegrees(self, value: bool) -> None:
+        """hydrogens with two (or more) bonds"""
+        ...
     @property
     def removeHydrides(self) -> bool:
         """hydrogens with formal charge -1 (default: False)"""
     @removeHydrides.setter
-    def removeHydrides(self, value: bool) -> None: ...
+    def removeHydrides(self, value: bool) -> None:
+        """hydrogens with formal charge -1"""
+        ...
     @property
     def removeInSGroups(self) -> bool:
         """hydrogens involved in SubstanceGroups (default: True)"""
     @removeInSGroups.setter
-    def removeInSGroups(self, value: bool) -> None: ...
+    def removeInSGroups(self, value: bool) -> None:
+        """hydrogens involved in SubstanceGroups"""
+        ...
     @property
     def removeIsotopes(self) -> bool:
         """hydrogens with non-default isotopes (default: False)"""
     @removeIsotopes.setter
-    def removeIsotopes(self, value: bool) -> None: ...
+    def removeIsotopes(self, value: bool) -> None:
+        """hydrogens with non-default isotopes"""
+        ...
     @property
     def removeMapped(self) -> bool:
         """mapped hydrogens (default: True)"""
     @removeMapped.setter
-    def removeMapped(self, value: bool) -> None: ...
+    def removeMapped(self, value: bool) -> None:
+        """mapped hydrogens"""
+        ...
     @property
     def removeNonimplicit(self) -> bool:
         """DEPRECATED (default: True)"""
     @removeNonimplicit.setter
-    def removeNonimplicit(self, value: bool) -> None: ...
+    def removeNonimplicit(self, value: bool) -> None:
+        """DEPRECATED"""
+        ...
     @property
     def removeNontetrahedralNeighbors(self) -> bool:
         """hydrogens with neighbors that have non-tetrahedral stereochemistry (default: False)"""
     @removeNontetrahedralNeighbors.setter
-    def removeNontetrahedralNeighbors(self, value: bool) -> None: ...
+    def removeNontetrahedralNeighbors(self, value: bool) -> None:
+        """hydrogens with neighbors that have non-tetrahedral stereochemistry"""
+        ...
     @property
     def removeOnlyHNeighbors(self) -> bool:
         """hydrogens with bonds only to other hydrogens (default: False)"""
     @removeOnlyHNeighbors.setter
-    def removeOnlyHNeighbors(self, value: bool) -> None: ...
+    def removeOnlyHNeighbors(self, value: bool) -> None:
+        """hydrogens with bonds only to other hydrogens"""
+        ...
     @property
     def removeWithQuery(self) -> bool:
         """hydrogens with queries defined (default: False)"""
     @removeWithQuery.setter
-    def removeWithQuery(self, value: bool) -> None: ...
+    def removeWithQuery(self, value: bool) -> None:
+        """hydrogens with queries defined"""
+        ...
     @property
     def removeWithWedgedBond(self) -> bool:
         """hydrogens with wedged bonds to them (default: True)"""
     @removeWithWedgedBond.setter
-    def removeWithWedgedBond(self, value: bool) -> None: ...
+    def removeWithWedgedBond(self, value: bool) -> None:
+        """hydrogens with wedged bonds to them"""
+        ...
     @property
     def showWarnings(self) -> bool:
         """display warning messages for some classes of removed Hs (default: True)"""
     @showWarnings.setter
-    def showWarnings(self, value: bool) -> None: ...
+    def showWarnings(self, value: bool) -> None:
+        """display warning messages for some classes of removed Hs"""
+        ...
     @property
     def updateExplicitCount(self) -> bool:
         """DEPRECATED (default: False)"""
     @updateExplicitCount.setter
-    def updateExplicitCount(self, value: bool) -> None: ...
+    def updateExplicitCount(self, value: bool) -> None:
+        """DEPRECATED"""
+        ...
 class SanitizeFlags(Boost.Python.enum):
     SANITIZE_ADJUSTHS: typing.ClassVar[SanitizeFlags]  # value = rdkit.Chem.rdmolops.SanitizeFlags.SANITIZE_ADJUSTHS
     SANITIZE_ALL: typing.ClassVar[SanitizeFlags]  # value = rdkit.Chem.rdmolops.SanitizeFlags.SANITIZE_ALL
@@ -448,6 +550,7 @@ class SubsetInfo(Boost.Python.instance):
         """
     @atomMapping.setter
     def atomMapping(*args, **kwargs):
+        """mapping from the original atom index to the subset atom index"""
         ...
     @property
     def bondMapping(*args, **kwargs):
@@ -456,6 +559,7 @@ class SubsetInfo(Boost.Python.instance):
         """
     @bondMapping.setter
     def bondMapping(*args, **kwargs):
+        """mapping from the original bond index to the subset bond index"""
         ...
 class SubsetMethod(Boost.Python.enum):
     BONDS: typing.ClassVar[SubsetMethod]  # value = rdkit.Chem.rdmolops.SubsetMethod.BONDS
@@ -474,22 +578,30 @@ class SubsetOptions(Boost.Python.instance):
     def clearComputedProps(self) -> bool:
         """clear all computed props on the subsetted molecule (default: False)"""
     @clearComputedProps.setter
-    def clearComputedProps(self, value: bool) -> None: ...
+    def clearComputedProps(self, value: bool) -> None:
+        """clear all computed props on the subsetted molecule"""
+        ...
     @property
     def conformerIdx(self) -> int:
         """What conformer idx to use for the coordinates default is -1 (default: 4294967295)"""
     @conformerIdx.setter
-    def conformerIdx(self, value: int) -> None: ...
+    def conformerIdx(self, value: int) -> None:
+        """What conformer idx to use for the coordinates default is -1"""
+        ...
     @property
     def copyAsQuery(self) -> bool:
         """Return the subset as a query (default: False)"""
     @copyAsQuery.setter
-    def copyAsQuery(self, value: bool) -> None: ...
+    def copyAsQuery(self, value: bool) -> None:
+        """Return the subset as a query"""
+        ...
     @property
     def copyCoordinates(self) -> bool:
         """Copy the active coordinates from the molecule (default: True)"""
     @copyCoordinates.setter
-    def copyCoordinates(self, value: bool) -> None: ...
+    def copyCoordinates(self, value: bool) -> None:
+        """Copy the active coordinates from the molecule"""
+        ...
     @property
     def method(*args, **kwargs):
         """
@@ -497,12 +609,15 @@ class SubsetOptions(Boost.Python.instance):
         """
     @method.setter
     def method(*args, **kwargs):
+        """Subsetting method to use"""
         ...
     @property
     def sanitize(self) -> bool:
         """Sanitize the resulting subset (default: False)"""
     @sanitize.setter
-    def sanitize(self, value: bool) -> None: ...
+    def sanitize(self, value: bool) -> None:
+        """Sanitize the resulting subset"""
+        ...
 class UIntUIntMap(Boost.Python.instance):
     __instance_size__: typing.ClassVar[int] = 48
     @staticmethod

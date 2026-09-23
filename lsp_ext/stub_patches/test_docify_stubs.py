@@ -7,11 +7,12 @@ import importlib
 import math
 import sys
 import textwrap
+import tokenize
 
 import docify
-import pytest
-
 import docify_stubs
+import libcst as cst
+import pytest
 from stub_tree import side_effect_free
 
 RUNTIME = '''\
@@ -91,9 +92,9 @@ def documented(site, tmp_path):
     """The fixture stub after the docstring pass, and what it returned."""
     write(site / "fakepkg" / "__init__.py", RUNTIME)
     stub = write(tmp_path / "stubs" / "__init__.pyi", STUB)
-    unimportable = docify_stubs.document([("fakepkg", stub)], side_effect_free,
-                                         {("fakepkg", "_Common"): "Array"})
-    return stub.read_text(), unimportable
+    skipped = docify_stubs.document([("fakepkg", stub)], side_effect_free,
+                                    {("fakepkg", "_Common"): "Array"})
+    return stub.read_text(), skipped
 
 
 def docstrings(source):
@@ -153,9 +154,9 @@ def test_backslashes_survive(documented):
 
 
 def test_a_keyword_target_is_commented_and_its_module_documented(documented):
-    text, unimportable = documented
+    text, skipped = documented
     assert "#     None: int\n" in text
-    assert unimportable == []
+    assert skipped == {}
 
 
 def test_second_pass_changes_nothing(documented, tmp_path):
@@ -169,24 +170,57 @@ def test_a_module_failing_safe_is_not_imported(site, tmp_path):
     write(site / "fakepkg" / "__init__.py", "")
     write(site / "fakepkg" / "tests" / "__init__.py", "raise RuntimeError('imported')\n")
     stub = write(tmp_path / "tests.pyi", "def f(): ...\n")
-    assert docify_stubs.document([("fakepkg.tests", stub)], side_effect_free, {}) == []
+    assert docify_stubs.document([("fakepkg.tests", stub)], side_effect_free, {}) == {}
     assert "fakepkg.tests" not in sys.modules
 
 
-def test_a_module_raising_systemexit_is_returned_as_unimportable(site, tmp_path):
+def error_types(skipped):
+    return {module: type(e) for module, e in skipped.items()}
+
+
+def test_a_module_raising_systemexit_is_returned_as_skipped(site, tmp_path):
     write(site / "fakepkg" / "__init__.py", "")
     write(site / "fakepkg" / "exits.py", "raise SystemExit(2)\n")
     stub = write(tmp_path / "exits.pyi", "def f(): ...\n")
-    assert docify_stubs.document([("fakepkg.exits", stub)], side_effect_free, {}) == [
-        "fakepkg.exits (2)"]
+    skipped = docify_stubs.document([("fakepkg.exits", stub)], side_effect_free, {})
+    assert error_types(skipped) == {"fakepkg.exits": SystemExit}
+
+
+@pytest.fixture
+def two_modules(site, tmp_path):
+    """Two importable modules with a C function each, and their stubs."""
+    write(site / "fakepkg" / "__init__.py", "")
+    for name in ("first", "second"):
+        write(site / "fakepkg" / f"{name}.py", "from math import sqrt\n")
+    return {name: write(tmp_path / f"{name}.pyi", "def sqrt(x: float) -> float: ...\n")
+            for name in ("first", "second")}
+
+
+def test_a_stub_libcst_rejects_is_returned_and_keeps_its_comments(two_modules):
+    first = two_modules["first"]
+    first.write_text(first.read_text() + "def f(a=1, b): ...\nclass Mode:\n    None: int\n")
+    skipped = docify_stubs.document(
+        [(f"fakepkg.{name}", path) for name, path in two_modules.items()], side_effect_free, {})
+    assert error_types(skipped) == {"fakepkg.first": cst.ParserSyntaxError}
+    assert first.read_text() == ("def sqrt(x: float) -> float: ...\n"
+                                 "def f(a=1, b): ...\nclass Mode:\n#     None: int\n")
+    assert docstrings(two_modules["second"].read_text())["sqrt"] == [math.sqrt.__doc__]
+
+
+def test_a_stub_that_does_not_tokenize_is_returned_and_left_alone(two_modules):
+    first = two_modules["first"]
+    first.write_text('x = """unterminated\n')
+    skipped = docify_stubs.document(
+        [(f"fakepkg.{name}", path) for name, path in two_modules.items()], side_effect_free, {})
+    assert error_types(skipped) == {"fakepkg.first": tokenize.TokenError}
+    assert first.read_text() == 'x = """unterminated\n'
+    assert docstrings(two_modules["second"].read_text())["sqrt"] == [math.sqrt.__doc__]
 
 
 def test_patch_docify_is_idempotent():
     docify_stubs.patch_docify()
-    bound = docify.get_qualname, docify.Transformer
     docify_stubs.patch_docify()
-    assert (docify.get_qualname, docify.Transformer) == bound
-    assert bound == (docify_stubs.get_qualname, docify_stubs.Transformer)
+    assert docify.get_qualname is docify_stubs.get_qualname
 
 
 def test_multiline_doc_is_indented_to_its_block(site, tmp_path):

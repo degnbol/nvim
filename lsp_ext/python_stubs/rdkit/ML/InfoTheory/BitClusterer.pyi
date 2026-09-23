@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 from rdkit import DataStructs
 from rdkit.SimDivFilters import rdSimDivPickers as rdsimdiv

@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 import unittest.case
 from _typeshed import Incomplete
 from rdkit.Chem.rdmolfiles import SDWriter as SDWriter

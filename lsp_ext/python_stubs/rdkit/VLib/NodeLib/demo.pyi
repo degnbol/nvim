@@ -1,23 +1,22 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import _io
 from _io import StringIO
 import os as os
 from rdkit import Chem
 from rdkit import RDConfig
-import rdkit.VLib.Filter
 from rdkit.VLib import Filter
+import rdkit.VLib.Filter
 from rdkit.VLib.NodeLib import SDSupply
 import rdkit.VLib.NodeLib.SmartsMolFilter
 from rdkit.VLib.NodeLib import SmartsMolFilter
-from rdkit.VLib.NodeLib import SmartsRemover
 import rdkit.VLib.NodeLib.SmartsRemover
-import rdkit.VLib.NodeLib.SmilesDupeFilter
+from rdkit.VLib.NodeLib import SmartsRemover
 from rdkit.VLib.NodeLib import SmilesDupeFilter
-from rdkit.VLib.NodeLib import SmilesOutput
+import rdkit.VLib.NodeLib.SmilesDupeFilter
 import rdkit.VLib.NodeLib.SmilesOutput
-from rdkit.VLib import Supply
+from rdkit.VLib.NodeLib import SmilesOutput
 import rdkit.VLib.Supply
+from rdkit.VLib import Supply
 __all__: list[str] = ['Chem', 'Filter', 'RDConfig', 'SDSupply', 'SmartsMolFilter', 'SmartsRemover', 'SmilesDupeFilter', 'SmilesOutput', 'StringIO', 'Supply', 'atsFilter', 'dupeFilter', 'i', 'io', 'metals', 'mols', 'os', 'output', 'remover', 'salts', 'smaFilter', 'smis', 'supplier']
 atsFilter: rdkit.VLib.Filter.FilterNode  # value = <rdkit.VLib.Filter.FilterNode object>
 dupeFilter: rdkit.VLib.NodeLib.SmilesDupeFilter.DupeFilter  # value = <rdkit.VLib.NodeLib.SmilesDupeFilter.DupeFilter object>

@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  A module for Kier and Hall's EState Descriptors
 
@@ -29,3 +28,4 @@ esPatterns = None
 from . import AtomTypes as AtomTypes
 from . import EState as EState
 from . import EState_VSA as EState_VSA
+from . import Fingerprinter as Fingerprinter

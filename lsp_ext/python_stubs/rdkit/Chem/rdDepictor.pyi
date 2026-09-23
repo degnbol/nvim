@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing the functionality to compute 2D coordinates for a molecule
 """
@@ -23,37 +22,51 @@ class ConstrainedDepictionParams(Boost.Python.instance):
     def acceptFailure(self) -> bool:
         """if False (default), a DepictException is thrown if the molecule does not have a substructure match to the reference; if True, an unconstrained depiction will be generated (default: False)"""
     @acceptFailure.setter
-    def acceptFailure(self, value: bool) -> None: ...
+    def acceptFailure(self, value: bool) -> None:
+        """if False (default), a DepictException is thrown if the molecule does not have a substructure match to the reference; if True, an unconstrained depiction will be generated"""
+        ...
     @property
     def adjustMolBlockWedging(self) -> bool:
         """if True (default), existing wedging information will be updated or cleared as required; if False, existing molblock wedging information will always be preserved (default: True)"""
     @adjustMolBlockWedging.setter
-    def adjustMolBlockWedging(self, value: bool) -> None: ...
+    def adjustMolBlockWedging(self, value: bool) -> None:
+        """if True (default), existing wedging information will be updated or cleared as required; if False, existing molblock wedging information will always be preserved"""
+        ...
     @property
     def alignOnly(self) -> bool:
         """if False (default), a part of the molecule is hard-constrained to have the same coordinates as the reference, and the rest of the molecule is built around it; if True, coordinates from conformation existingConfId are preserved (if they exist) or generated without constraints (if they do not exist), then the conformation is rigid-body aligned to the reference (default: False)"""
     @alignOnly.setter
-    def alignOnly(self, value: bool) -> None: ...
+    def alignOnly(self, value: bool) -> None:
+        """if False (default), a part of the molecule is hard-constrained to have the same coordinates as the reference, and the rest of the molecule is built around it; if True, coordinates from conformation existingConfId are preserved (if they exist) or generated without constraints (if they do not exist), then the conformation is rigid-body aligned to the reference"""
+        ...
     @property
     def allowRGroups(self) -> bool:
         """if True, terminal dummy atoms in the reference are ignored if they match an implicit hydrogen in the molecule or if they are attached top a query atom; defaults to False (default: False)"""
     @allowRGroups.setter
-    def allowRGroups(self, value: bool) -> None: ...
+    def allowRGroups(self, value: bool) -> None:
+        """if True, terminal dummy atoms in the reference are ignored if they match an implicit hydrogen in the molecule or if they are attached top a query atom; defaults to False"""
+        ...
     @property
     def existingConfId(self) -> int:
         """conformation id whose 2D coordinates should be rigid-body aligned to the reference (if alignOnly is True), or used to determine whether existing molblock wedging information can be preserved following the constrained depiction (if adjustMolBlockWedging is True (default: -1)"""
     @existingConfId.setter
-    def existingConfId(self, value: int) -> None: ...
+    def existingConfId(self, value: int) -> None:
+        """conformation id whose 2D coordinates should be rigid-body aligned to the reference (if alignOnly is True), or used to determine whether existing molblock wedging information can be preserved following the constrained depiction (if adjustMolBlockWedging is True"""
+        ...
     @property
     def forceRDKit(self) -> bool:
         """if True, use RDKit to generate coordinates even if preferCoordGen is set to True; defaults to False (default: False)"""
     @forceRDKit.setter
-    def forceRDKit(self, value: bool) -> None: ...
+    def forceRDKit(self, value: bool) -> None:
+        """if True, use RDKit to generate coordinates even if preferCoordGen is set to True; defaults to False"""
+        ...
     @property
     def useRingTemplates(self) -> bool:
         """use templates to generate coordinates of complex ring systems (default: False)"""
     @useRingTemplates.setter
-    def useRingTemplates(self, value: bool) -> None: ...
+    def useRingTemplates(self, value: bool) -> None:
+        """use templates to generate coordinates of complex ring systems"""
+        ...
 class UsingCoordGen(Boost.Python.instance):
     """
     Context manager to temporarily set CoordGen library preference in RDKit depiction.

@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing RDKit functionality for working with molecular file formats.
 """
@@ -38,17 +37,22 @@ class CDXMLParserParams(Boost.Python.instance):
         """
     @format.setter
     def format(*args, **kwargs):
+        """ChemDraw format One of Auto, CDXML, CDX.  For data streams, Auto defaults to CDXML"""
         ...
     @property
     def removeHs(self) -> bool:
         """controls whether or not Hs are removed before the molecule is returned (default: True)"""
     @removeHs.setter
-    def removeHs(self, value: bool) -> None: ...
+    def removeHs(self, value: bool) -> None:
+        """controls whether or not Hs are removed before the molecule is returned"""
+        ...
     @property
     def sanitize(self) -> bool:
         """controls whether or not the molecule is sanitized before being returned (default: True)"""
     @sanitize.setter
-    def sanitize(self, value: bool) -> None: ...
+    def sanitize(self, value: bool) -> None:
+        """controls whether or not the molecule is sanitized before being returned"""
+        ...
 class CXSmilesFields(Boost.Python.enum):
     CX_ALL: typing.ClassVar[CXSmilesFields]  # value = rdkit.Chem.rdmolfiles.CXSmilesFields.CX_ALL
     CX_ALL_BUT_COORDS: typing.ClassVar[CXSmilesFields]  # value = rdkit.Chem.rdmolfiles.CXSmilesFields.CX_ALL_BUT_COORDS
@@ -344,7 +348,9 @@ class MolFromSCSRParams(Boost.Python.instance):
     def includeLeavingGroups(self) -> bool:
         """include leaving groups atoms if not substited at that position (default: True)"""
     @includeLeavingGroups.setter
-    def includeLeavingGroups(self, value: bool) -> None: ...
+    def includeLeavingGroups(self, value: bool) -> None:
+        """include leaving groups atoms if not substited at that position"""
+        ...
     @property
     def scsrBaseHbondOptions(*args, **kwargs):
         """
@@ -352,6 +358,7 @@ class MolFromSCSRParams(Boost.Python.instance):
         """
     @scsrBaseHbondOptions.setter
     def scsrBaseHbondOptions(*args, **kwargs):
+        """One of Ignore, UseSapAll(default) , UseSapOne, Auto"""
         ...
     @property
     def scsrTemplateNames(*args, **kwargs):
@@ -360,6 +367,7 @@ class MolFromSCSRParams(Boost.Python.instance):
         """
     @scsrTemplateNames.setter
     def scsrTemplateNames(*args, **kwargs):
+        """If True, the first template name in the Sgroup is used as the Sgroup label"""
         ...
 class MolWriterParams(Boost.Python.instance):
     """
@@ -379,22 +387,30 @@ class MolWriterParams(Boost.Python.instance):
     def forceV3000(self) -> bool:
         """force generation a V3000 mol block (happens automatically with more than 999 atoms or bonds)(default=False) (default: False)"""
     @forceV3000.setter
-    def forceV3000(self, value: bool) -> None: ...
+    def forceV3000(self, value: bool) -> None:
+        """force generation a V3000 mol block (happens automatically with more than 999 atoms or bonds)(default=False)"""
+        ...
     @property
     def includeStereo(self) -> bool:
         """toggles inclusion of stereochemistry information (default=True) (default: True)"""
     @includeStereo.setter
-    def includeStereo(self, value: bool) -> None: ...
+    def includeStereo(self, value: bool) -> None:
+        """toggles inclusion of stereochemistry information (default=True)"""
+        ...
     @property
     def kekulize(self) -> bool:
         """triggers kekulization of the molecule before it is written (default=True) (default: True)"""
     @kekulize.setter
-    def kekulize(self, value: bool) -> None: ...
+    def kekulize(self, value: bool) -> None:
+        """triggers kekulization of the molecule before it is written (default=True)"""
+        ...
     @property
     def precision(self) -> int:
         """precision of coordinates (only available in V3000)(default=false) (default: 6)"""
     @precision.setter
-    def precision(self, value: int) -> None: ...
+    def precision(self, value: int) -> None:
+        """precision of coordinates (only available in V3000)(default=false)"""
+        ...
 class MultithreadedSDMolSupplier(Boost.Python.instance):
     """
     A class which concurrently supplies molecules from a text file.
@@ -609,27 +625,37 @@ class PNGMetadataParams(Boost.Python.instance):
     def cxSmilesFlags(self) -> int:
         """choose CXSMILES fields to be included in the CXSMILES string (default=rdkit.Chem.rdmolfiles.CXSmilesFields.CX_ALL) (default: 2147483647)"""
     @cxSmilesFlags.setter
-    def cxSmilesFlags(self, value: int) -> None: ...
+    def cxSmilesFlags(self, value: int) -> None:
+        """choose CXSMILES fields to be included in the CXSMILES string (default=rdkit.Chem.rdmolfiles.CXSmilesFields.CX_ALL)"""
+        ...
     @property
     def includeMol(self) -> bool:
         """toggles inclusion of molecule molblock (default=False) (default: False)"""
     @includeMol.setter
-    def includeMol(self, value: bool) -> None: ...
+    def includeMol(self, value: bool) -> None:
+        """toggles inclusion of molecule molblock (default=False)"""
+        ...
     @property
     def includePkl(self) -> bool:
         """toggles inclusion of molecule pickle (default=True) (default: True)"""
     @includePkl.setter
-    def includePkl(self, value: bool) -> None: ...
+    def includePkl(self, value: bool) -> None:
+        """toggles inclusion of molecule pickle (default=True)"""
+        ...
     @property
     def includeSmiles(self) -> bool:
         """toggles inclusion of molecule CXSMILES (default=True) (default: True)"""
     @includeSmiles.setter
-    def includeSmiles(self, value: bool) -> None: ...
+    def includeSmiles(self, value: bool) -> None:
+        """toggles inclusion of molecule CXSMILES (default=True)"""
+        ...
     @property
     def propertyFlags(self) -> int:
         """choose properties to be included in the pickle (default=rdkit.Chem.rdchem.PropertyPickleOptions.NoProps) (default: 0)"""
     @propertyFlags.setter
-    def propertyFlags(self, value: int) -> None: ...
+    def propertyFlags(self, value: int) -> None:
+        """choose properties to be included in the pickle (default=rdkit.Chem.rdchem.PropertyPickleOptions.NoProps)"""
+        ...
     @property
     def restoreBondDirs(*args, **kwargs):
         """
@@ -637,6 +663,7 @@ class PNGMetadataParams(Boost.Python.instance):
         """
     @restoreBondDirs.setter
     def restoreBondDirs(*args, **kwargs):
+        """choose what to do with bond dirs in the CXSMILES string (default=rdkit.Chem.rdmolfiles.RestoreBondDirOption.RestoreBondDirOptionClear)"""
         ...
     @property
     def smilesWriteParams(*args, **kwargs):
@@ -645,6 +672,7 @@ class PNGMetadataParams(Boost.Python.instance):
         """
     @smilesWriteParams.setter
     def smilesWriteParams(*args, **kwargs):
+        """choose SmilesWriteParams for the CXSMILES string (default=rdkit.Chem.rdmolfiles.SmilesWriteParams())"""
         ...
 class RestoreBondDirOption(Boost.Python.enum):
     RestoreBondDirOptionClear: typing.ClassVar[RestoreBondDirOption]  # value = rdkit.Chem.rdmolfiles.RestoreBondDirOption.RestoreBondDirOptionClear
@@ -916,27 +944,37 @@ class SmartsParserParams(Boost.Python.instance):
     def allowCXSMILES(self) -> bool:
         """controls whether or not the CXSMILES extensions are parsed (default: True)"""
     @allowCXSMILES.setter
-    def allowCXSMILES(self, value: bool) -> None: ...
+    def allowCXSMILES(self, value: bool) -> None:
+        """controls whether or not the CXSMILES extensions are parsed"""
+        ...
     @property
     def debugParse(self) -> int:
         """controls the amount of debugging information produced (default: 0)"""
     @debugParse.setter
-    def debugParse(self, value: int) -> None: ...
+    def debugParse(self, value: int) -> None:
+        """controls the amount of debugging information produced"""
+        ...
     @property
     def mergeHs(self) -> bool:
         """toggles merging H atoms in the SMARTS into neighboring atoms (default: False)"""
     @mergeHs.setter
-    def mergeHs(self, value: bool) -> None: ...
+    def mergeHs(self, value: bool) -> None:
+        """toggles merging H atoms in the SMARTS into neighboring atoms"""
+        ...
     @property
     def parseName(self) -> bool:
         """controls whether or not the molecule name is also parsed (default: True)"""
     @parseName.setter
-    def parseName(self, value: bool) -> None: ...
+    def parseName(self, value: bool) -> None:
+        """controls whether or not the molecule name is also parsed"""
+        ...
     @property
     def strictCXSMILES(self) -> bool:
         """controls whether or not problems in CXSMILES parsing causes molecule parsing to fail (default: True)"""
     @strictCXSMILES.setter
-    def strictCXSMILES(self, value: bool) -> None: ...
+    def strictCXSMILES(self, value: bool) -> None:
+        """controls whether or not problems in CXSMILES parsing causes molecule parsing to fail"""
+        ...
 class SmilesMolSupplier(Boost.Python.instance):
     """
     A class which supplies molecules from a text file.
@@ -1037,32 +1075,44 @@ class SmilesParserParams(Boost.Python.instance):
     def allowCXSMILES(self) -> bool:
         """controls whether or not the CXSMILES extensions are parsed (default: True)"""
     @allowCXSMILES.setter
-    def allowCXSMILES(self, value: bool) -> None: ...
+    def allowCXSMILES(self, value: bool) -> None:
+        """controls whether or not the CXSMILES extensions are parsed"""
+        ...
     @property
     def debugParse(self) -> int:
         """controls the amount of debugging information produced (default: 0)"""
     @debugParse.setter
-    def debugParse(self, value: int) -> None: ...
+    def debugParse(self, value: int) -> None:
+        """controls the amount of debugging information produced"""
+        ...
     @property
     def parseName(self) -> bool:
         """controls whether or not the molecule name is also parsed (default: True)"""
     @parseName.setter
-    def parseName(self, value: bool) -> None: ...
+    def parseName(self, value: bool) -> None:
+        """controls whether or not the molecule name is also parsed"""
+        ...
     @property
     def removeHs(self) -> bool:
         """controls whether or not Hs are removed before the molecule is returned (default: True)"""
     @removeHs.setter
-    def removeHs(self, value: bool) -> None: ...
+    def removeHs(self, value: bool) -> None:
+        """controls whether or not Hs are removed before the molecule is returned"""
+        ...
     @property
     def sanitize(self) -> bool:
         """controls whether or not the molecule is sanitized before being returned (default: True)"""
     @sanitize.setter
-    def sanitize(self, value: bool) -> None: ...
+    def sanitize(self, value: bool) -> None:
+        """controls whether or not the molecule is sanitized before being returned"""
+        ...
     @property
     def strictCXSMILES(self) -> bool:
         """controls whether or not problems in CXSMILES parsing causes molecule parsing to fail (default: True)"""
     @strictCXSMILES.setter
-    def strictCXSMILES(self, value: bool) -> None: ...
+    def strictCXSMILES(self, value: bool) -> None:
+        """controls whether or not problems in CXSMILES parsing causes molecule parsing to fail"""
+        ...
 class SmilesWriteParams(Boost.Python.instance):
     """
     Parameters controlling SMILES writing
@@ -1081,52 +1131,72 @@ class SmilesWriteParams(Boost.Python.instance):
     def allBondsExplicit(self) -> bool:
         """include symbols for all bonds (default: False)"""
     @allBondsExplicit.setter
-    def allBondsExplicit(self, value: bool) -> None: ...
+    def allBondsExplicit(self, value: bool) -> None:
+        """include symbols for all bonds"""
+        ...
     @property
     def allHsExplicit(self) -> bool:
         """provide hydrogen counts for every atom (default: False)"""
     @allHsExplicit.setter
-    def allHsExplicit(self, value: bool) -> None: ...
+    def allHsExplicit(self, value: bool) -> None:
+        """provide hydrogen counts for every atom"""
+        ...
     @property
     def canonical(self) -> bool:
         """generate canonical SMILES (default: True)"""
     @canonical.setter
-    def canonical(self, value: bool) -> None: ...
+    def canonical(self, value: bool) -> None:
+        """generate canonical SMILES"""
+        ...
     @property
     def cleanStereo(self) -> bool:
         """chiral centers are removed if they have duplicate sidechains (default: True)"""
     @cleanStereo.setter
-    def cleanStereo(self, value: bool) -> None: ...
+    def cleanStereo(self, value: bool) -> None:
+        """chiral centers are removed if they have duplicate sidechains"""
+        ...
     @property
     def doIsomericSmiles(self) -> bool:
         """include stereochemistry and isotope information (default: True)"""
     @doIsomericSmiles.setter
-    def doIsomericSmiles(self, value: bool) -> None: ...
+    def doIsomericSmiles(self, value: bool) -> None:
+        """include stereochemistry and isotope information"""
+        ...
     @property
     def doKekule(self) -> bool:
         """kekulize the molecule before generating the SMILES and output single/double bonds. NOTE that the output is not canonical and that this will thrown an exception if the molecule cannot be kekulized (default: False)"""
     @doKekule.setter
-    def doKekule(self, value: bool) -> None: ...
+    def doKekule(self, value: bool) -> None:
+        """kekulize the molecule before generating the SMILES and output single/double bonds. NOTE that the output is not canonical and that this will thrown an exception if the molecule cannot be kekulized"""
+        ...
     @property
     def doRandom(self) -> bool:
         """randomize the output order. The resulting SMILES is not canonical (default: False)"""
     @doRandom.setter
-    def doRandom(self, value: bool) -> None: ...
+    def doRandom(self, value: bool) -> None:
+        """randomize the output order. The resulting SMILES is not canonical"""
+        ...
     @property
     def ignoreAtomMapNumbers(self) -> bool:
         """ignore atom map numbers when canonicalizing the molecule (default: False)"""
     @ignoreAtomMapNumbers.setter
-    def ignoreAtomMapNumbers(self, value: bool) -> None: ...
+    def ignoreAtomMapNumbers(self, value: bool) -> None:
+        """ignore atom map numbers when canonicalizing the molecule"""
+        ...
     @property
     def includeDativeBonds(self) -> bool:
         """include the RDKit extension for dative bonds. Otherwise dative bonds will be written as single bonds (default: True)"""
     @includeDativeBonds.setter
-    def includeDativeBonds(self, value: bool) -> None: ...
+    def includeDativeBonds(self, value: bool) -> None:
+        """include the RDKit extension for dative bonds. Otherwise dative bonds will be written as single bonds"""
+        ...
     @property
     def rootedAtAtom(self) -> int:
         """make sure the SMILES starts at the specified atom. The resulting SMILES is not canonical (default: -1)"""
     @rootedAtAtom.setter
-    def rootedAtAtom(self, value: int) -> None: ...
+    def rootedAtAtom(self, value: int) -> None:
+        """make sure the SMILES starts at the specified atom. The resulting SMILES is not canonical"""
+        ...
 class SmilesWriter(Boost.Python.instance):
     """
     A class for writing molecules to text files.

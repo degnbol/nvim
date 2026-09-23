@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 from rdkit.SimDivFilters.rdSimDivPickers import ClusterMethod
 from rdkit.SimDivFilters.rdSimDivPickers import HierarchicalClusterPicker
@@ -16,4 +15,5 @@ UPGMA: rdSimDivPickers.ClusterMethod  # value = rdkit.SimDivFilters.rdSimDivPick
 WARD: rdSimDivPickers.ClusterMethod  # value = rdkit.SimDivFilters.rdSimDivPickers.ClusterMethod.WARD
 
 # present at runtime, absent from the generated stub:
+from . import SimilarityPickers as SimilarityPickers
 from . import rdSimDivPickers as rdSimDivPickers

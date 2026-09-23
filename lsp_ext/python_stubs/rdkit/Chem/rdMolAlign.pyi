@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing functions to align a molecule to a second molecule
 """
@@ -23,7 +22,9 @@ class BestAlignmentParams(Boost.Python.instance):
     def ignoreHs(self) -> bool:
         """if true, hydrogens will be ignored in the alignment (default: True)"""
     @ignoreHs.setter
-    def ignoreHs(self, value: bool) -> None: ...
+    def ignoreHs(self, value: bool) -> None:
+        """if true, hydrogens will be ignored in the alignment"""
+        ...
     @property
     def map(*args, **kwargs):
         """
@@ -31,22 +32,29 @@ class BestAlignmentParams(Boost.Python.instance):
         """
     @map.setter
     def map(*args, **kwargs):
+        """the atom-atom mapping(s) used in the alignment"""
         ...
     @property
     def maxMatches(self) -> int:
         """maximum number of substructure matches to consider (default: 1000000)"""
     @maxMatches.setter
-    def maxMatches(self, value: int) -> None: ...
+    def maxMatches(self, value: int) -> None:
+        """maximum number of substructure matches to consider"""
+        ...
     @property
     def numThreads(self) -> int:
         """number of threads to use (default: 1)"""
     @numThreads.setter
-    def numThreads(self, value: int) -> None: ...
+    def numThreads(self, value: int) -> None:
+        """number of threads to use"""
+        ...
     @property
     def symmetrizeConjugatedTerminalGroups(self) -> bool:
         """if true, conjugated terminal functional groups (like nitro or carboxylate) will be considered symmetrically. (default: True)"""
     @symmetrizeConjugatedTerminalGroups.setter
-    def symmetrizeConjugatedTerminalGroups(self, value: bool) -> None: ...
+    def symmetrizeConjugatedTerminalGroups(self, value: bool) -> None:
+        """if true, conjugated terminal functional groups (like nitro or carboxylate) will be considered symmetrically."""
+        ...
     @property
     def weights(*args, **kwargs):
         """
@@ -54,6 +62,7 @@ class BestAlignmentParams(Boost.Python.instance):
         """
     @weights.setter
     def weights(*args, **kwargs):
+        """the weights used in the alignment"""
         ...
 class O3A(Boost.Python.instance):
     """

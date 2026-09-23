@@ -1,11 +1,10 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem.ChemUtils.AlignDepict import AlignDepict
 from rdkit.Chem import Crippen
-from rdkit import RDLogger as logging
 import rdkit.RDLogger
+from rdkit import RDLogger as logging
 import sys as sys
 __all__: list[str] = ['AlignDepict', 'AllChem', 'Chem', 'ConstructSidechains', 'Crippen', 'Explode', 'MoveDummyNeighborsToBeginning', 'Usage', 'logger', 'logging', 'nDumped', 'sys']
 def ConstructSidechains(suppl, sma = None, replace = True, useAll = False):

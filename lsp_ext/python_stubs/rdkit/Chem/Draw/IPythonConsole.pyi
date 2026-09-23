@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 import rdkit.Chem.Draw.rdMolDraw2D
 from _typeshed import Incomplete
 from rdkit.Chem.Draw.rdMolDraw2D import drawOptions as drawOptions

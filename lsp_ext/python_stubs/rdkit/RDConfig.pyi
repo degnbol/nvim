@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Configuration for the RDKit Python code
 
@@ -23,7 +22,7 @@ RDTestDatabase: str = '/Users/runner/work/rdkit-pypi/rdkit-pypi/build/temp.macos
 defaultDBPassword: str = 'masterkey'
 defaultDBUser: str = 'sysdba'
 molViewer: str = 'PYMOL'
-pythonExe: str = '/private/var/folders/_5/zjnzxgh147qcg3bb5cg2wvqw0000gn/T/cibw-run-ao3r2yhe/cp311-macosx_arm64/build/venv/bin/python3.11'
+pythonExe: str = '/private/var/folders/_5/zjnzxgh147qcg3bb5cg2wvqw0000gn/T/cibw-run-7985woa5/cp311-macosx_arm64/build/venv/bin/python3.11'
 pythonTestCommand: str = 'python'
 rpcTestPort: int = 8423
 usePgSQL: bool = False

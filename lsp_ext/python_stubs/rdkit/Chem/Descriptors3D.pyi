@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Descriptors derived from a molecule's 3D structure
 
@@ -27,7 +26,7 @@ def CalcMolDescriptors3D(mol, confId = -1):
     """
 def _setupDescriptors(namespace):
     ...
-descList: list  # value = [('PMI1', <function <lambda> at 0x104ae7d80>), ('PMI2', <function <lambda> at 0x104ae76a0>), ('PMI3', <function <lambda> at 0x104ae7560>), ('NPR1', <function <lambda> at 0x104ae74c0>), ('NPR2', <function <lambda> at 0x104ae7420>), ('RadiusOfGyration', <function <lambda> at 0x104ae7380>), ('InertialShapeFactor', <function <lambda> at 0x104ae72e0>), ('Eccentricity', <function <lambda> at 0x104ae7240>), ('Asphericity', <function <lambda> at 0x104ae71a0>), ('SpherocityIndex', <function <lambda> at 0x104ae7100>), ('PBF', <function <lambda> at 0x104ae7060>)]
+descList: list  # value = [('PMI1', <function <lambda> at 0x102b85a80>), ('PMI2', <function <lambda> at 0x102b87b00>), ('PMI3', <function <lambda> at 0x102b879c0>), ('NPR1', <function <lambda> at 0x102b85440>), ('NPR2', <function <lambda> at 0x102b87920>), ('RadiusOfGyration', <function <lambda> at 0x102b87880>), ('InertialShapeFactor', <function <lambda> at 0x102b877e0>), ('Eccentricity', <function <lambda> at 0x102b87740>), ('Asphericity', <function <lambda> at 0x102b876a0>), ('SpherocityIndex', <function <lambda> at 0x102b87600>), ('PBF', <function <lambda> at 0x102b87560>)]
 
 # present at runtime, absent from the generated stub:
 def Asphericity(*x, **y):

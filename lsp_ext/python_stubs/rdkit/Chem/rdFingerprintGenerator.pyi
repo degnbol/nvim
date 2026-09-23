@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import typing
 __all__: list[str] = ['AdditionalOutput', 'AtomInvariantsGenerator', 'AtomPairFP', 'AtomPairFingerprintOptions', 'BondInvariantsGenerator', 'FPType', 'FingerprintGenerator32', 'FingerprintGenerator64', 'FingerprintGeneratorFromJSON', 'FingerprintOptions', 'GetAtomPairAtomInvGen', 'GetAtomPairGenerator', 'GetCountFPs', 'GetFPs', 'GetMorganAtomInvGen', 'GetMorganBondInvGen', 'GetMorganFeatureAtomInvGen', 'GetMorganGenerator', 'GetRDKitAtomInvGen', 'GetRDKitFPGenerator', 'GetSparseCountFPs', 'GetSparseFPs', 'GetTopologicalTorsionGenerator', 'MorganFP', 'MorganFingerprintOptions', 'RDKitFP', 'RDKitFingerprintOptions', 'TopologicalTorsionFP', 'TopologicalTorsionFingerprintOptions']
@@ -101,6 +100,7 @@ class AtomPairFingerprintOptions(FingerprintOptions):
         """
     @maxDistance.setter
     def maxDistance(*args, **kwargs):
+        """maximum distance to be included"""
         ...
     @property
     def minDistance(*args, **kwargs):
@@ -109,6 +109,7 @@ class AtomPairFingerprintOptions(FingerprintOptions):
         """
     @minDistance.setter
     def minDistance(*args, **kwargs):
+        """minimum distance to be included"""
         ...
     @property
     def use2D(*args, **kwargs):
@@ -117,6 +118,7 @@ class AtomPairFingerprintOptions(FingerprintOptions):
         """
     @use2D.setter
     def use2D(*args, **kwargs):
+        """use 2D distances"""
         ...
 class BondInvariantsGenerator(Boost.Python.instance):
     @staticmethod
@@ -152,8 +154,8 @@ class FingerprintGenerator32(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -171,8 +173,8 @@ class FingerprintGenerator32(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -203,8 +205,8 @@ class FingerprintGenerator32(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -222,8 +224,8 @@ class FingerprintGenerator32(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -268,8 +270,8 @@ class FingerprintGenerator32(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -300,8 +302,8 @@ class FingerprintGenerator32(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -347,8 +349,8 @@ class FingerprintGenerator64(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -366,8 +368,8 @@ class FingerprintGenerator64(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -398,8 +400,8 @@ class FingerprintGenerator64(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -417,8 +419,8 @@ class FingerprintGenerator64(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -463,8 +465,8 @@ class FingerprintGenerator64(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -495,8 +497,8 @@ class FingerprintGenerator64(Boost.Python.instance):
             
               ARGUMENTS:
                 - mol: molecule to be fingerprinted
-                - fromAtoms: indices of atoms to use while generating the fingerprint
-                - ignoreAtoms: indices of atoms to exclude while generating the fingerprint
+                - fromAtoms: only environments starting at or centered on these atoms will be included
+                - ignoreAtoms: environments including these atoms will be excluded
                 - confId: 3D confirmation to use, only used by AtomPair fingerprint
                 - customAtomInvariants: custom atom invariants to be used, overrides invariants from the invariant generator
                 - customBondInvariants: custom bond invariants to be used, overrides invariants from the invariant generator
@@ -548,6 +550,7 @@ class FingerprintOptions(Boost.Python.instance):
         """
     @countSimulation.setter
     def countSimulation(*args, **kwargs):
+        """use count simulation"""
         ...
     @property
     def fpSize(*args, **kwargs):
@@ -556,6 +559,7 @@ class FingerprintOptions(Boost.Python.instance):
         """
     @fpSize.setter
     def fpSize(*args, **kwargs):
+        """size of the fingerprints created"""
         ...
     @property
     def includeChirality(*args, **kwargs):
@@ -564,6 +568,7 @@ class FingerprintOptions(Boost.Python.instance):
         """
     @includeChirality.setter
     def includeChirality(*args, **kwargs):
+        """include chirality in atom invariants (not for all fingerprints)"""
         ...
     @property
     def numBitsPerFeature(*args, **kwargs):
@@ -572,6 +577,7 @@ class FingerprintOptions(Boost.Python.instance):
         """
     @numBitsPerFeature.setter
     def numBitsPerFeature(*args, **kwargs):
+        """number of bits to set for each feature"""
         ...
 class MorganFingerprintOptions(FingerprintOptions):
     @staticmethod
@@ -590,6 +596,7 @@ class MorganFingerprintOptions(FingerprintOptions):
         """
     @includeRedundantEnvironments.setter
     def includeRedundantEnvironments(*args, **kwargs):
+        """include redundant environments in the fingerprint"""
         ...
     @property
     def onlyNonzeroInvariants(*args, **kwargs):
@@ -598,6 +605,7 @@ class MorganFingerprintOptions(FingerprintOptions):
         """
     @onlyNonzeroInvariants.setter
     def onlyNonzeroInvariants(*args, **kwargs):
+        """use include atoms which have nonzero invariants"""
         ...
     @property
     def radius(*args, **kwargs):
@@ -606,6 +614,7 @@ class MorganFingerprintOptions(FingerprintOptions):
         """
     @radius.setter
     def radius(*args, **kwargs):
+        """the radius of the fingerprints to generate"""
         ...
 class RDKitFingerprintOptions(FingerprintOptions):
     @staticmethod
@@ -624,6 +633,7 @@ class RDKitFingerprintOptions(FingerprintOptions):
         """
     @branchedPaths.setter
     def branchedPaths(*args, **kwargs):
+        """generate branched subgraphs, not just linear ones"""
         ...
     @property
     def maxPath(*args, **kwargs):
@@ -632,6 +642,7 @@ class RDKitFingerprintOptions(FingerprintOptions):
         """
     @maxPath.setter
     def maxPath(*args, **kwargs):
+        """maximum path length (in bonds) to be included"""
         ...
     @property
     def minPath(*args, **kwargs):
@@ -640,6 +651,7 @@ class RDKitFingerprintOptions(FingerprintOptions):
         """
     @minPath.setter
     def minPath(*args, **kwargs):
+        """minimum path length (in bonds) to be included"""
         ...
     @property
     def useBondOrder(*args, **kwargs):
@@ -648,6 +660,7 @@ class RDKitFingerprintOptions(FingerprintOptions):
         """
     @useBondOrder.setter
     def useBondOrder(*args, **kwargs):
+        """include bond orders in the path hashes"""
         ...
     @property
     def useHs(*args, **kwargs):
@@ -656,6 +669,7 @@ class RDKitFingerprintOptions(FingerprintOptions):
         """
     @useHs.setter
     def useHs(*args, **kwargs):
+        """use explicit Hs in the paths (if molecule has explicit Hs)"""
         ...
 class TopologicalTorsionFingerprintOptions(FingerprintOptions):
     @staticmethod
@@ -674,6 +688,7 @@ class TopologicalTorsionFingerprintOptions(FingerprintOptions):
         """
     @onlyShortestPaths.setter
     def onlyShortestPaths(*args, **kwargs):
+        """whether or not to only include paths which are the shortest path between the start and end atoms"""
         ...
     @property
     def torsionAtomCount(*args, **kwargs):
@@ -682,6 +697,7 @@ class TopologicalTorsionFingerprintOptions(FingerprintOptions):
         """
     @torsionAtomCount.setter
     def torsionAtomCount(*args, **kwargs):
+        """number of atoms to be included in the paths"""
         ...
 def FingerprintGeneratorFromJSON(jsonString: str) -> FingerprintGenerator64:
     """

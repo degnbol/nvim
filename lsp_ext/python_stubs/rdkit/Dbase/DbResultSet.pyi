@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  defines class _DbResultSet_ for lazy interactions with Db query results
 

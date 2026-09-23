@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing a C++ implementation of the FMCS algorithm
 """
@@ -83,37 +82,51 @@ class MCSAtomCompareParameters(Boost.Python.instance):
     def CompleteRingsOnly(self) -> bool:
         """results cannot include lone ring atoms (default: False)"""
     @CompleteRingsOnly.setter
-    def CompleteRingsOnly(self, value: bool) -> None: ...
+    def CompleteRingsOnly(self, value: bool) -> None:
+        """results cannot include lone ring atoms"""
+        ...
     @property
     def MatchChiralTag(self) -> bool:
         """include atom chirality in the match (default: False)"""
     @MatchChiralTag.setter
-    def MatchChiralTag(self, value: bool) -> None: ...
+    def MatchChiralTag(self, value: bool) -> None:
+        """include atom chirality in the match"""
+        ...
     @property
     def MatchFormalCharge(self) -> bool:
         """include formal charge in the match (default: False)"""
     @MatchFormalCharge.setter
-    def MatchFormalCharge(self, value: bool) -> None: ...
+    def MatchFormalCharge(self, value: bool) -> None:
+        """include formal charge in the match"""
+        ...
     @property
     def MatchIsotope(self) -> bool:
         """use isotope atom queries in MCSResults (default: False)"""
     @MatchIsotope.setter
-    def MatchIsotope(self, value: bool) -> None: ...
+    def MatchIsotope(self, value: bool) -> None:
+        """use isotope atom queries in MCSResults"""
+        ...
     @property
     def MatchValences(self) -> bool:
         """include atom valences in the match (default: False)"""
     @MatchValences.setter
-    def MatchValences(self, value: bool) -> None: ...
+    def MatchValences(self, value: bool) -> None:
+        """include atom valences in the match"""
+        ...
     @property
     def MaxDistance(self) -> float:
         """Require atoms to be within this many angstroms in 3D (default: -1.0)"""
     @MaxDistance.setter
-    def MaxDistance(self, value: float) -> None: ...
+    def MaxDistance(self, value: float) -> None:
+        """Require atoms to be within this many angstroms in 3D"""
+        ...
     @property
     def RingMatchesRingOnly(self) -> bool:
         """ring atoms are only allowed to match other ring atoms (default: False)"""
     @RingMatchesRingOnly.setter
-    def RingMatchesRingOnly(self, value: bool) -> None: ...
+    def RingMatchesRingOnly(self, value: bool) -> None:
+        """ring atoms are only allowed to match other ring atoms"""
+        ...
 class MCSBondCompare(Boost.Python.instance):
     """
     Base class. Subclass and override MCSBondCompare.__call__() to define custom bond compare functions, then set MCSParameters.BondTyper to an instance of the subclass
@@ -157,27 +170,37 @@ class MCSBondCompareParameters(Boost.Python.instance):
     def CompleteRingsOnly(self) -> bool:
         """results cannot include partial rings (default: False)"""
     @CompleteRingsOnly.setter
-    def CompleteRingsOnly(self, value: bool) -> None: ...
+    def CompleteRingsOnly(self, value: bool) -> None:
+        """results cannot include partial rings"""
+        ...
     @property
     def MatchFusedRings(self) -> bool:
         """enforce check on ring fusion, i.e. alpha-methylnaphthalene won't match beta-methylnaphtalene, but decalin will match cyclodecane unless MatchFusedRingsStrict is True (default: False)"""
     @MatchFusedRings.setter
-    def MatchFusedRings(self, value: bool) -> None: ...
+    def MatchFusedRings(self, value: bool) -> None:
+        """enforce check on ring fusion, i.e. alpha-methylnaphthalene won't match beta-methylnaphtalene, but decalin will match cyclodecane unless MatchFusedRingsStrict is True"""
+        ...
     @property
     def MatchFusedRingsStrict(self) -> bool:
         """only enforced if MatchFusedRings is True; the ring fusion must be the same in both query and target, i.e. decalin won't match cyclodecane (default: False)"""
     @MatchFusedRingsStrict.setter
-    def MatchFusedRingsStrict(self, value: bool) -> None: ...
+    def MatchFusedRingsStrict(self, value: bool) -> None:
+        """only enforced if MatchFusedRings is True; the ring fusion must be the same in both query and target, i.e. decalin won't match cyclodecane"""
+        ...
     @property
     def MatchStereo(self) -> bool:
         """include bond stereo in the comparison (default: False)"""
     @MatchStereo.setter
-    def MatchStereo(self, value: bool) -> None: ...
+    def MatchStereo(self, value: bool) -> None:
+        """include bond stereo in the comparison"""
+        ...
     @property
     def RingMatchesRingOnly(self) -> bool:
         """ring bonds are only allowed to match other ring bonds (default: False)"""
     @RingMatchesRingOnly.setter
-    def RingMatchesRingOnly(self, value: bool) -> None: ...
+    def RingMatchesRingOnly(self, value: bool) -> None:
+        """ring bonds are only allowed to match other ring bonds"""
+        ...
 class MCSFinalMatchCheck(Boost.Python.instance):
     """
     Base class. Subclass and override MCSFinalMatchCheck.__call__() to define a custom boolean callback function. Returning True will cause the growing seed to be accepted, False to be rejected
@@ -214,6 +237,7 @@ class MCSParameters(Boost.Python.instance):
         """
     @AtomCompareParameters.setter
     def AtomCompareParameters(*args, **kwargs):
+        """parameters for comparing atoms"""
         ...
     @property
     def AtomTyper(*args, **kwargs):
@@ -222,6 +246,7 @@ class MCSParameters(Boost.Python.instance):
         """
     @AtomTyper.setter
     def AtomTyper(*args, **kwargs):
+        """atom typer to be used. Must be one of the members of the rdFMCS.AtomCompare class or an instance of a user-defined subclass of rdFMCS.MCSAtomCompare"""
         ...
     @property
     def BondCompareParameters(*args, **kwargs):
@@ -230,6 +255,7 @@ class MCSParameters(Boost.Python.instance):
         """
     @BondCompareParameters.setter
     def BondCompareParameters(*args, **kwargs):
+        """parameters for comparing bonds"""
         ...
     @property
     def BondTyper(*args, **kwargs):
@@ -238,6 +264,7 @@ class MCSParameters(Boost.Python.instance):
         """
     @BondTyper.setter
     def BondTyper(*args, **kwargs):
+        """bond typer to be used. Must be one of the members of the rdFMCS.BondCompare class or an instance of a user-defined subclass of rdFMCS.MCSBondCompare"""
         ...
     @property
     def FinalMatchChecker(*args, **kwargs):
@@ -246,17 +273,22 @@ class MCSParameters(Boost.Python.instance):
         """
     @FinalMatchChecker.setter
     def FinalMatchChecker(*args, **kwargs):
+        """seed final match checker callback class. Must be a user-defined subclass of rdFMCS.MCSFinalMatchCheck"""
         ...
     @property
     def InitialSeed(self) -> str:
         """SMILES string to be used as the seed of the MCS (default: '')"""
     @InitialSeed.setter
-    def InitialSeed(self, value: str) -> None: ...
+    def InitialSeed(self, value: str) -> None:
+        """SMILES string to be used as the seed of the MCS"""
+        ...
     @property
     def MaximizeBonds(self) -> bool:
         """toggles maximizing the number of bonds (instead of the number of atoms) (default: True)"""
     @MaximizeBonds.setter
-    def MaximizeBonds(self, value: bool) -> None: ...
+    def MaximizeBonds(self, value: bool) -> None:
+        """toggles maximizing the number of bonds (instead of the number of atoms)"""
+        ...
     @property
     def ProgressCallback(*args, **kwargs):
         """
@@ -264,6 +296,7 @@ class MCSParameters(Boost.Python.instance):
         """
     @ProgressCallback.setter
     def ProgressCallback(*args, **kwargs):
+        """progress callback class. Must be a user-defined subclass of rdFMCS.Progress"""
         ...
     @property
     def ShouldAcceptMCS(*args, **kwargs):
@@ -272,27 +305,36 @@ class MCSParameters(Boost.Python.instance):
         """
     @ShouldAcceptMCS.setter
     def ShouldAcceptMCS(*args, **kwargs):
+        """MCS acceptance callback class. Must be a user-defined subclass of rdFMCS.MCSAcceptance"""
         ...
     @property
     def StoreAll(self) -> bool:
         """toggles storage of degenerate MCSs (default: False)"""
     @StoreAll.setter
-    def StoreAll(self, value: bool) -> None: ...
+    def StoreAll(self, value: bool) -> None:
+        """toggles storage of degenerate MCSs"""
+        ...
     @property
     def Threshold(self) -> float:
         """fraction of the dataset that must contain the MCS (default: 1.0)"""
     @Threshold.setter
-    def Threshold(self, value: float) -> None: ...
+    def Threshold(self, value: float) -> None:
+        """fraction of the dataset that must contain the MCS"""
+        ...
     @property
     def Timeout(self) -> int:
         """timeout (in seconds) for the calculation (default: 0)"""
     @Timeout.setter
-    def Timeout(self, value: int) -> None: ...
+    def Timeout(self, value: int) -> None:
+        """timeout (in seconds) for the calculation"""
+        ...
     @property
     def Verbose(self) -> bool:
         """toggles verbose mode (default: False)"""
     @Verbose.setter
-    def Verbose(self, value: bool) -> None: ...
+    def Verbose(self, value: bool) -> None:
+        """toggles verbose mode"""
+        ...
 class MCSProgress(Boost.Python.instance):
     """
     Base class. Subclass and override MCSProgress.__call__() to define a custom callback function

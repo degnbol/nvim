@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing a C++ implementation of 2D molecule drawing
 """
@@ -33,6 +32,7 @@ class ContourParams(Boost.Python.instance):
         """
     @colourMap.setter
     def colourMap(*args, **kwargs):
+        """the color map to use when filling the grid"""
         ...
     @property
     def contourColour(*args, **kwargs):
@@ -41,67 +41,92 @@ class ContourParams(Boost.Python.instance):
         """
     @contourColour.setter
     def contourColour(*args, **kwargs):
+        """the color to use for drawing the contours"""
         ...
     @property
     def contourWidth(self) -> float:
         """line width of the contours (default: 1.0)"""
     @contourWidth.setter
-    def contourWidth(self, value: float) -> None: ...
+    def contourWidth(self, value: float) -> None:
+        """line width of the contours"""
+        ...
     @property
     def coordScaleForQuantization(self) -> float:
         """scaling factor used to convert coordinates to ints when forming the continuous lines (default: 1000.0)"""
     @coordScaleForQuantization.setter
-    def coordScaleForQuantization(self, value: float) -> None: ...
+    def coordScaleForQuantization(self, value: float) -> None:
+        """scaling factor used to convert coordinates to ints when forming the continuous lines"""
+        ...
     @property
     def dashNegative(self) -> bool:
         """use a dashed line for negative contours (default: True)"""
     @dashNegative.setter
-    def dashNegative(self, value: bool) -> None: ...
+    def dashNegative(self, value: bool) -> None:
+        """use a dashed line for negative contours"""
+        ...
     @property
     def drawAsLines(self) -> bool:
         """draw the contours as continuous lines isntead of line segments (default: True)"""
     @drawAsLines.setter
-    def drawAsLines(self, value: bool) -> None: ...
+    def drawAsLines(self, value: bool) -> None:
+        """draw the contours as continuous lines isntead of line segments"""
+        ...
     @property
     def extraGridPadding(self) -> float:
         """extra space (in molecule coords) around the grid (default: 0.0)"""
     @extraGridPadding.setter
-    def extraGridPadding(self, value: float) -> None: ...
+    def extraGridPadding(self, value: float) -> None:
+        """extra space (in molecule coords) around the grid"""
+        ...
     @property
     def fillGrid(self) -> bool:
         """colors the grid in addition to drawing contours (default: False)"""
     @fillGrid.setter
-    def fillGrid(self, value: bool) -> None: ...
+    def fillGrid(self, value: bool) -> None:
+        """colors the grid in addition to drawing contours"""
+        ...
     @property
     def fillThreshold(self) -> float:
         """magnitude threshold to determine if a grid point is filled (default: 0.01)"""
     @fillThreshold.setter
-    def fillThreshold(self, value: float) -> None: ...
+    def fillThreshold(self, value: float) -> None:
+        """magnitude threshold to determine if a grid point is filled"""
+        ...
     @property
     def fillThresholdIsFraction(self) -> bool:
         """if true, fillThreshold is a fraction of the range of the data (default: True)"""
     @fillThresholdIsFraction.setter
-    def fillThresholdIsFraction(self, value: bool) -> None: ...
+    def fillThresholdIsFraction(self, value: bool) -> None:
+        """if true, fillThreshold is a fraction of the range of the data"""
+        ...
     @property
     def gridResolution(self) -> float:
         """set the resolution of the grid (default: 0.15)"""
     @gridResolution.setter
-    def gridResolution(self, value: float) -> None: ...
+    def gridResolution(self, value: float) -> None:
+        """set the resolution of the grid"""
+        ...
     @property
     def isovalScaleForQuantization(self) -> float:
         """scaling factor used to convert isovalues to ints when forming the continuous lines (default: 1000000.0)"""
     @isovalScaleForQuantization.setter
-    def isovalScaleForQuantization(self, value: float) -> None: ...
+    def isovalScaleForQuantization(self, value: float) -> None:
+        """scaling factor used to convert isovalues to ints when forming the continuous lines"""
+        ...
     @property
     def setScale(self) -> bool:
         """set the scale of the drawing object (useful if you draw the grid/contours first) (default: True)"""
     @setScale.setter
-    def setScale(self, value: bool) -> None: ...
+    def setScale(self, value: bool) -> None:
+        """set the scale of the drawing object (useful if you draw the grid/contours first)"""
+        ...
     @property
     def useFillThreshold(self) -> bool:
         """use a magnitude threshold to determine if a grid point is filled (default: False)"""
     @useFillThreshold.setter
-    def useFillThreshold(self, value: bool) -> None: ...
+    def useFillThreshold(self, value: bool) -> None:
+        """use a magnitude threshold to determine if a grid point is filled"""
+        ...
 class DrawElement(Boost.Python.enum):
     ALL: typing.ClassVar[DrawElement]  # value = rdkit.Chem.Draw.rdMolDraw2D.DrawElement.ALL
     ANNOTATIONS: typing.ClassVar[DrawElement]  # value = rdkit.Chem.Draw.rdMolDraw2D.DrawElement.ANNOTATIONS
@@ -552,27 +577,37 @@ class MolDrawOptions(Boost.Python.instance):
     def addAtomIndices(self) -> bool:
         """adds atom indices to drawings. Default False. (default: False)"""
     @addAtomIndices.setter
-    def addAtomIndices(self, value: bool) -> None: ...
+    def addAtomIndices(self, value: bool) -> None:
+        """adds atom indices to drawings. Default False."""
+        ...
     @property
     def addBondIndices(self) -> bool:
         """adds bond indices to drawings. Default False. (default: False)"""
     @addBondIndices.setter
-    def addBondIndices(self, value: bool) -> None: ...
+    def addBondIndices(self, value: bool) -> None:
+        """adds bond indices to drawings. Default False."""
+        ...
     @property
     def addStereoAnnotation(self) -> bool:
         """adds R/S and E/Z to drawings. Default False. (default: False)"""
     @addStereoAnnotation.setter
-    def addStereoAnnotation(self, value: bool) -> None: ...
+    def addStereoAnnotation(self, value: bool) -> None:
+        """adds R/S and E/Z to drawings. Default False."""
+        ...
     @property
     def addStereoGroupAnnotation(self) -> bool:
         """Whether to add the enhanced stereo labels.  Default is True. (default: True)"""
     @addStereoGroupAnnotation.setter
-    def addStereoGroupAnnotation(self, value: bool) -> None: ...
+    def addStereoGroupAnnotation(self, value: bool) -> None:
+        """Whether to add the enhanced stereo labels.  Default is True."""
+        ...
     @property
     def additionalAtomLabelPadding(self) -> float:
         """additional padding to leave around atom labels. Expressed as a fraction of the font size. (default: 0.0)"""
     @additionalAtomLabelPadding.setter
-    def additionalAtomLabelPadding(self, value: float) -> None: ...
+    def additionalAtomLabelPadding(self, value: float) -> None:
+        """additional padding to leave around atom labels. Expressed as a fraction of the font size."""
+        ...
     @property
     def annotationColour(*args, **kwargs):
         """
@@ -580,22 +615,29 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @annotationColour.setter
     def annotationColour(*args, **kwargs):
+        """the annotation colour as an (R,G,B,A) tuple, values should be between 0 and 1"""
         ...
     @property
     def annotationFontScale(self) -> float:
         """Scale of font for atom and bond annotation relative to atomlabel font.  Default=0.75. (default: 0.5)"""
     @annotationFontScale.setter
-    def annotationFontScale(self, value: float) -> None: ...
+    def annotationFontScale(self, value: float) -> None:
+        """Scale of font for atom and bond annotation relative to atomlabel font.  Default=0.75."""
+        ...
     @property
     def atomHighlightsAreCircles(self) -> bool:
         """forces atom highlights always to be circles.Default (false) is to put ellipses roundlonger labels. (default: False)"""
     @atomHighlightsAreCircles.setter
-    def atomHighlightsAreCircles(self, value: bool) -> None: ...
+    def atomHighlightsAreCircles(self, value: bool) -> None:
+        """forces atom highlights always to be circles.Default (false) is to put ellipses roundlonger labels."""
+        ...
     @property
     def atomLabelDeuteriumTritium(self) -> bool:
         """labels deuterium as D and tritium as T (default: False)"""
     @atomLabelDeuteriumTritium.setter
-    def atomLabelDeuteriumTritium(self, value: bool) -> None: ...
+    def atomLabelDeuteriumTritium(self, value: bool) -> None:
+        """labels deuterium as D and tritium as T"""
+        ...
     @property
     def atomLabels(*args, **kwargs):
         """
@@ -603,6 +645,7 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @atomLabels.setter
     def atomLabels(*args, **kwargs):
+        """maps indices to atom labels"""
         ...
     @property
     def atomNoteColour(*args, **kwargs):
@@ -611,6 +654,7 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @atomNoteColour.setter
     def atomNoteColour(*args, **kwargs):
+        """the atom note colour as an (R,G,B,A) tuple, values should be between 0 and 1"""
         ...
     @property
     def atomRegions(*args, **kwargs):
@@ -619,6 +663,7 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @atomRegions.setter
     def atomRegions(*args, **kwargs):
+        """regions to outline"""
         ...
     @property
     def backgroundColour(*args, **kwargs):
@@ -627,17 +672,22 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @backgroundColour.setter
     def backgroundColour(*args, **kwargs):
+        """the background colour as an (R,G,B,A) tuple, values should be between 0 and 1"""
         ...
     @property
     def baseFontSize(self) -> float:
         """relative size of font.  Defaults to 0.6.  -1 means use default. (default: -1.0)"""
     @baseFontSize.setter
-    def baseFontSize(self, value: float) -> None: ...
+    def baseFontSize(self, value: float) -> None:
+        """relative size of font.  Defaults to 0.6.  -1 means use default."""
+        ...
     @property
     def bondLineWidth(self) -> float:
         """if positive, this overrides the default line width for bonds (default: 2.0)"""
     @bondLineWidth.setter
-    def bondLineWidth(self, value: float) -> None: ...
+    def bondLineWidth(self, value: float) -> None:
+        """if positive, this overrides the default line width for bonds"""
+        ...
     @property
     def bondNoteColour(*args, **kwargs):
         """
@@ -645,17 +695,22 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @bondNoteColour.setter
     def bondNoteColour(*args, **kwargs):
+        """the bond note colour as an (R,G,B,A) tuple, values should be between 0 and 1"""
         ...
     @property
     def bracketsAroundAtomLists(self) -> bool:
         """Whether to put brackets round atom lists in query atoms.  Default is true. (default: True)"""
     @bracketsAroundAtomLists.setter
-    def bracketsAroundAtomLists(self, value: bool) -> None: ...
+    def bracketsAroundAtomLists(self, value: bool) -> None:
+        """Whether to put brackets round atom lists in query atoms.  Default is true."""
+        ...
     @property
     def centreMoleculesBeforeDrawing(self) -> bool:
         """Moves the centre of the drawn molecule to (0,0).Default False. (default: False)"""
     @centreMoleculesBeforeDrawing.setter
-    def centreMoleculesBeforeDrawing(self, value: bool) -> None: ...
+    def centreMoleculesBeforeDrawing(self, value: bool) -> None:
+        """Moves the centre of the drawn molecule to (0,0).Default False."""
+        ...
     @property
     def circleAtoms(self) -> bool:
         """default: True"""
@@ -665,12 +720,16 @@ class MolDrawOptions(Boost.Python.instance):
     def clearBackground(self) -> bool:
         """clear the background before drawing a molecule (default: True)"""
     @clearBackground.setter
-    def clearBackground(self, value: bool) -> None: ...
+    def clearBackground(self, value: bool) -> None:
+        """clear the background before drawing a molecule"""
+        ...
     @property
     def comicMode(self) -> bool:
         """simulate hand-drawn lines for bonds. When combined with a font like Comic-Sans or Comic-Neue, this gives xkcd-like drawings. Default is false. (default: False)"""
     @comicMode.setter
-    def comicMode(self, value: bool) -> None: ...
+    def comicMode(self, value: bool) -> None:
+        """simulate hand-drawn lines for bonds. When combined with a font like Comic-Sans or Comic-Neue, this gives xkcd-like drawings. Default is false."""
+        ...
     @property
     def continuousHighlight(self) -> bool:
         """default: True"""
@@ -680,12 +739,16 @@ class MolDrawOptions(Boost.Python.instance):
     def drawMolsSameScale(self) -> bool:
         """when drawing multiple molecules with DrawMolecules, forces them to use the same scale.  Default is true. (default: True)"""
     @drawMolsSameScale.setter
-    def drawMolsSameScale(self, value: bool) -> None: ...
+    def drawMolsSameScale(self, value: bool) -> None:
+        """when drawing multiple molecules with DrawMolecules, forces them to use the same scale.  Default is true."""
+        ...
     @property
     def drawingExtentsInclude(self) -> int:
         """Drawing extents are computed taking into account only selected DrawElement items.  Default=DrawElement.ALL (default: 2147483647)"""
     @drawingExtentsInclude.setter
-    def drawingExtentsInclude(self, value: int) -> None: ...
+    def drawingExtentsInclude(self, value: int) -> None:
+        """Drawing extents are computed taking into account only selected DrawElement items.  Default=DrawElement.ALL"""
+        ...
     @property
     def dummiesAreAttachments(self) -> bool:
         """default: False"""
@@ -695,12 +758,16 @@ class MolDrawOptions(Boost.Python.instance):
     def dummyIsotopeLabels(self) -> bool:
         """adds isotope labels on dummy atoms. Default True. (default: True)"""
     @dummyIsotopeLabels.setter
-    def dummyIsotopeLabels(self, value: bool) -> None: ...
+    def dummyIsotopeLabels(self, value: bool) -> None:
+        """adds isotope labels on dummy atoms. Default True."""
+        ...
     @property
     def explicitMethyl(self) -> bool:
         """Draw terminal methyls explictly.  Default is false. (default: False)"""
     @explicitMethyl.setter
-    def explicitMethyl(self, value: bool) -> None: ...
+    def explicitMethyl(self, value: bool) -> None:
+        """Draw terminal methyls explictly.  Default is false."""
+        ...
     @property
     def fillHighlights(self) -> bool:
         """default: True"""
@@ -710,17 +777,23 @@ class MolDrawOptions(Boost.Python.instance):
     def fixedBondLength(self) -> float:
         """If > 0.0, fixes bond length to this number of pixelsunless that would make it too big.  Default -1.0 meansno fix.  If both set, fixedScale takes precedence. (default: -1.0)"""
     @fixedBondLength.setter
-    def fixedBondLength(self, value: float) -> None: ...
+    def fixedBondLength(self, value: float) -> None:
+        """If > 0.0, fixes bond length to this number of pixelsunless that would make it too big.  Default -1.0 meansno fix.  If both set, fixedScale takes precedence."""
+        ...
     @property
     def fixedFontSize(self) -> int:
         """font size in pixels. default=-1 means not fixed.  If set, always used irrespective of scale, minFontSize and maxFontSize. (default: -1)"""
     @fixedFontSize.setter
-    def fixedFontSize(self, value: int) -> None: ...
+    def fixedFontSize(self, value: int) -> None:
+        """font size in pixels. default=-1 means not fixed.  If set, always used irrespective of scale, minFontSize and maxFontSize."""
+        ...
     @property
     def fixedScale(self) -> float:
         """If > 0.0, fixes scale to that fraction of width ofdraw window.  Default -1.0 means adjust scale to fit. (default: -1.0)"""
     @fixedScale.setter
-    def fixedScale(self, value: float) -> None: ...
+    def fixedScale(self, value: float) -> None:
+        """If > 0.0, fixes scale to that fraction of width ofdraw window.  Default -1.0 means adjust scale to fit."""
+        ...
     @property
     def flagCloseContactsDist(self) -> int:
         """default: 3"""
@@ -730,12 +803,16 @@ class MolDrawOptions(Boost.Python.instance):
     def fontFile(self) -> str:
         """Font file for use with FreeType text drawer.  Can also be BuiltinTelexRegular (the default) or BuiltinRobotoRegular. (default: '')"""
     @fontFile.setter
-    def fontFile(self, value: str) -> None: ...
+    def fontFile(self, value: str) -> None:
+        """Font file for use with FreeType text drawer.  Can also be BuiltinTelexRegular (the default) or BuiltinRobotoRegular."""
+        ...
     @property
     def highlightBondWidthMultiplier(self) -> int:
         """What to multiply default bond width by for highlighting bonds. Default-8. (default: 8)"""
     @highlightBondWidthMultiplier.setter
-    def highlightBondWidthMultiplier(self, value: int) -> None: ...
+    def highlightBondWidthMultiplier(self, value: int) -> None:
+        """What to multiply default bond width by for highlighting bonds. Default-8."""
+        ...
     @property
     def highlightColour(*args, **kwargs):
         """
@@ -743,37 +820,50 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @highlightColour.setter
     def highlightColour(*args, **kwargs):
+        """the highlight colour as an (R,G,B,A) tuple, values should be between 0 and 1"""
         ...
     @property
     def highlightRadius(self) -> float:
         """Default radius for highlight circles. (default: 0.3)"""
     @highlightRadius.setter
-    def highlightRadius(self, value: float) -> None: ...
+    def highlightRadius(self, value: float) -> None:
+        """Default radius for highlight circles."""
+        ...
     @property
     def includeAtomTags(self) -> bool:
         """include atom tags in output (default: False)"""
     @includeAtomTags.setter
-    def includeAtomTags(self, value: bool) -> None: ...
+    def includeAtomTags(self, value: bool) -> None:
+        """include atom tags in output"""
+        ...
     @property
     def includeChiralFlagLabel(self) -> bool:
         """add a molecule annotation with "ABS" if the chiral flag is set. Default is false. (default: False)"""
     @includeChiralFlagLabel.setter
-    def includeChiralFlagLabel(self, value: bool) -> None: ...
+    def includeChiralFlagLabel(self, value: bool) -> None:
+        """add a molecule annotation with "ABS" if the chiral flag is set. Default is false."""
+        ...
     @property
     def includeMetadata(self) -> bool:
         """When possible, include metadata about molecules and reactions to allow them to be reconstructed. Default is true. (default: True)"""
     @includeMetadata.setter
-    def includeMetadata(self, value: bool) -> None: ...
+    def includeMetadata(self, value: bool) -> None:
+        """When possible, include metadata about molecules and reactions to allow them to be reconstructed. Default is true."""
+        ...
     @property
     def includeRadicals(self) -> bool:
         """include radicals in the drawing (it can be useful to turn this off for reactions and queries). Default is true. (default: True)"""
     @includeRadicals.setter
-    def includeRadicals(self, value: bool) -> None: ...
+    def includeRadicals(self, value: bool) -> None:
+        """include radicals in the drawing (it can be useful to turn this off for reactions and queries). Default is true."""
+        ...
     @property
     def isotopeLabels(self) -> bool:
         """adds isotope labels on non-dummy atoms. Default True. (default: True)"""
     @isotopeLabels.setter
-    def isotopeLabels(self, value: bool) -> None: ...
+    def isotopeLabels(self, value: bool) -> None:
+        """adds isotope labels on non-dummy atoms. Default True."""
+        ...
     @property
     def legendColour(*args, **kwargs):
         """
@@ -781,17 +871,22 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @legendColour.setter
     def legendColour(*args, **kwargs):
+        """the legend colour as an (R,G,B,A) tuple, values should be between 0 and 1"""
         ...
     @property
     def legendFontSize(self) -> int:
         """font size in pixels of the legend (if drawn) (default: 16)"""
     @legendFontSize.setter
-    def legendFontSize(self, value: int) -> None: ...
+    def legendFontSize(self, value: int) -> None:
+        """font size in pixels of the legend (if drawn)"""
+        ...
     @property
     def legendFraction(self) -> float:
         """fraction of the draw panel to be used for the legend if present (default: 0.1)"""
     @legendFraction.setter
-    def legendFraction(self, value: float) -> None: ...
+    def legendFraction(self, value: float) -> None:
+        """fraction of the draw panel to be used for the legend if present"""
+        ...
     @property
     def legendPosition(*args, **kwargs):
         """
@@ -799,22 +894,29 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @legendPosition.setter
     def legendPosition(*args, **kwargs):
+        """legend position enum. Default=Bottom. Values: LegendPosition.Bottom, LegendPosition.Top, LegendPosition.Left, LegendPosition.Right."""
         ...
     @property
     def legendVerticalText(self) -> bool:
         """when legend is Left or Right, draw text vertically (one char per line) (default: True)"""
     @legendVerticalText.setter
-    def legendVerticalText(self, value: bool) -> None: ...
+    def legendVerticalText(self, value: bool) -> None:
+        """when legend is Left or Right, draw text vertically (one char per line)"""
+        ...
     @property
     def maxFontSize(self) -> int:
         """maximum font size in pixels. default=40, -1 means no maximum. (default: 40)"""
     @maxFontSize.setter
-    def maxFontSize(self, value: int) -> None: ...
+    def maxFontSize(self, value: int) -> None:
+        """maximum font size in pixels. default=40, -1 means no maximum."""
+        ...
     @property
     def minFontSize(self) -> int:
         """minimum font size in pixels. default=6, -1 means no minimum. (default: 6)"""
     @minFontSize.setter
-    def minFontSize(self, value: int) -> None: ...
+    def minFontSize(self, value: int) -> None:
+        """minimum font size in pixels. default=6, -1 means no minimum."""
+        ...
     @property
     def multiColourHighlightStyle(*args, **kwargs):
         """
@@ -822,27 +924,36 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @multiColourHighlightStyle.setter
     def multiColourHighlightStyle(*args, **kwargs):
+        """Either 'CircleAndLine' or 'Lasso', to control style ofmulti-coloured highlighting in DrawMoleculeWithHighlights.Default is CircleAndLine."""
         ...
     @property
     def multipleBondOffset(self) -> float:
         """offset for the extra lines in a multiple bond as a fraction of mean bond length (default: 0.15)"""
     @multipleBondOffset.setter
-    def multipleBondOffset(self, value: float) -> None: ...
+    def multipleBondOffset(self, value: float) -> None:
+        """offset for the extra lines in a multiple bond as a fraction of mean bond length"""
+        ...
     @property
     def noAtomLabels(self) -> bool:
         """disables inclusion of atom labels in the rendering (default: False)"""
     @noAtomLabels.setter
-    def noAtomLabels(self, value: bool) -> None: ...
+    def noAtomLabels(self, value: bool) -> None:
+        """disables inclusion of atom labels in the rendering"""
+        ...
     @property
     def padding(self) -> float:
         """Fraction of empty space to leave around molecule.  Default=0.05. (default: 0.05)"""
     @padding.setter
-    def padding(self, value: float) -> None: ...
+    def padding(self, value: float) -> None:
+        """Fraction of empty space to leave around molecule.  Default=0.05."""
+        ...
     @property
     def prepareMolsBeforeDrawing(self) -> bool:
         """call prepareMolForDrawing() on each molecule passed to DrawMolecules() (default: True)"""
     @prepareMolsBeforeDrawing.setter
-    def prepareMolsBeforeDrawing(self, value: bool) -> None: ...
+    def prepareMolsBeforeDrawing(self, value: bool) -> None:
+        """call prepareMolForDrawing() on each molecule passed to DrawMolecules()"""
+        ...
     @property
     def queryColour(*args, **kwargs):
         """
@@ -850,52 +961,71 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @queryColour.setter
     def queryColour(*args, **kwargs):
+        """the query colour as an (R,G,B,A) tuple, values should be between 0 and 1"""
         ...
     @property
     def reagentPadding(self) -> float:
         """Fraction of empty space to leave around each component of a reaction drawing.  Default=0.0. (default: 0.0)"""
     @reagentPadding.setter
-    def reagentPadding(self, value: float) -> None: ...
+    def reagentPadding(self, value: float) -> None:
+        """Fraction of empty space to leave around each component of a reaction drawing.  Default=0.0."""
+        ...
     @property
     def rotate(self) -> float:
         """Rotates molecule about centre by this number of degrees, (default: 0.0)"""
     @rotate.setter
-    def rotate(self, value: float) -> None: ...
+    def rotate(self, value: float) -> None:
+        """Rotates molecule about centre by this number of degrees,"""
+        ...
     @property
     def scaleBondWidth(self) -> bool:
         """Scales the width of drawn bonds using image scaling. (default: False)"""
     @scaleBondWidth.setter
-    def scaleBondWidth(self, value: bool) -> None: ...
+    def scaleBondWidth(self, value: bool) -> None:
+        """Scales the width of drawn bonds using image scaling."""
+        ...
     @property
     def scaleHighlightBondWidth(self) -> bool:
         """Scales the width of drawn highlighted bonds using image scaling. (default: True)"""
     @scaleHighlightBondWidth.setter
-    def scaleHighlightBondWidth(self, value: bool) -> None: ...
+    def scaleHighlightBondWidth(self, value: bool) -> None:
+        """Scales the width of drawn highlighted bonds using image scaling."""
+        ...
     @property
     def scalingFactor(self) -> float:
         """scaling factor for pixels->angstrom when auto scalingbeing used.  Default is 20. (default: 20.0)"""
     @scalingFactor.setter
-    def scalingFactor(self, value: float) -> None: ...
+    def scalingFactor(self, value: float) -> None:
+        """scaling factor for pixels->angstrom when auto scalingbeing used.  Default is 20."""
+        ...
     @property
     def showAllCIPCodes(self) -> bool:
         """show all defined CIP codes (no hiding!). Default False. (default: False)"""
     @showAllCIPCodes.setter
-    def showAllCIPCodes(self, value: bool) -> None: ...
+    def showAllCIPCodes(self, value: bool) -> None:
+        """show all defined CIP codes (no hiding!). Default False."""
+        ...
     @property
     def simplifiedStereoGroupLabel(self) -> bool:
         """if all specified stereocenters are in a single StereoGroup, show a molecule-level annotation instead of the individual labels. Default is false. (default: False)"""
     @simplifiedStereoGroupLabel.setter
-    def simplifiedStereoGroupLabel(self, value: bool) -> None: ...
+    def simplifiedStereoGroupLabel(self, value: bool) -> None:
+        """if all specified stereocenters are in a single StereoGroup, show a molecule-level annotation instead of the individual labels. Default is false."""
+        ...
     @property
     def singleColourBonds(self) -> bool:
         """if true all bonds are drawn using symbolColour rather than inheriting their colour from the atoms. Default is false. (default: False)"""
     @singleColourBonds.setter
-    def singleColourBonds(self, value: bool) -> None: ...
+    def singleColourBonds(self, value: bool) -> None:
+        """if true all bonds are drawn using symbolColour rather than inheriting their colour from the atoms. Default is false."""
+        ...
     @property
     def singleColourWedgeBonds(self) -> bool:
         """if true wedged and dashed bonds are drawn using symbolColour rather than inheriting their colour from the atoms. Default is false. (default: False)"""
     @singleColourWedgeBonds.setter
-    def singleColourWedgeBonds(self, value: bool) -> None: ...
+    def singleColourWedgeBonds(self, value: bool) -> None:
+        """if true wedged and dashed bonds are drawn using symbolColour rather than inheriting their colour from the atoms. Default is false."""
+        ...
     @property
     def splitBonds(self) -> bool:
         """default: False"""
@@ -905,22 +1035,30 @@ class MolDrawOptions(Boost.Python.instance):
     def standardColoursForHighlightedAtoms(self) -> bool:
         """If true, highlighted hetero atoms are drawn in standard colours rather than black.  Default=False (default: False)"""
     @standardColoursForHighlightedAtoms.setter
-    def standardColoursForHighlightedAtoms(self, value: bool) -> None: ...
+    def standardColoursForHighlightedAtoms(self, value: bool) -> None:
+        """If true, highlighted hetero atoms are drawn in standard colours rather than black.  Default=False"""
+        ...
     @property
     def stereoGroupAbsLabel(self) -> str:
         """String to use for enhanced stereo 'ABS' groups.  Default='abs'. (default: 'abs')"""
     @stereoGroupAbsLabel.setter
-    def stereoGroupAbsLabel(self, value: str) -> None: ...
+    def stereoGroupAbsLabel(self, value: str) -> None:
+        """String to use for enhanced stereo 'ABS' groups.  Default='abs'."""
+        ...
     @property
     def stereoGroupAndLabel(self) -> str:
         """String to use for enhanced stereo 'AND' groups.  Default='and'. (default: 'and')"""
     @stereoGroupAndLabel.setter
-    def stereoGroupAndLabel(self, value: str) -> None: ...
+    def stereoGroupAndLabel(self, value: str) -> None:
+        """String to use for enhanced stereo 'AND' groups.  Default='and'."""
+        ...
     @property
     def stereoGroupOrLabel(self) -> str:
         """String to use for enhanced stereo 'OR' groups.  Default='or'. (default: 'or')"""
     @stereoGroupOrLabel.setter
-    def stereoGroupOrLabel(self, value: str) -> None: ...
+    def stereoGroupOrLabel(self, value: str) -> None:
+        """String to use for enhanced stereo 'OR' groups.  Default='or'."""
+        ...
     @property
     def symbolColour(*args, **kwargs):
         """
@@ -928,27 +1066,36 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @symbolColour.setter
     def symbolColour(*args, **kwargs):
+        """the symbol colour as an (R,G,B,A) tuple, values should be between 0 and 1"""
         ...
     @property
     def unspecifiedStereoIsUnknown(self) -> bool:
         """if true, double bonds with unspecified stereo are drawn crossed, potential stereocenters with unspecified stereo are drawn with a wavy bond. Default is false. (default: False)"""
     @unspecifiedStereoIsUnknown.setter
-    def unspecifiedStereoIsUnknown(self, value: bool) -> None: ...
+    def unspecifiedStereoIsUnknown(self, value: bool) -> None:
+        """if true, double bonds with unspecified stereo are drawn crossed, potential stereocenters with unspecified stereo are drawn with a wavy bond. Default is false."""
+        ...
     @property
     def useComplexQueryAtomSymbols(self) -> bool:
         """replace any atom, any hetero, any halo queries with complex query symbols A, Q, X, M, optionally followed by H if hydrogen is included (except for AH, which stays *). Default is true (default: True)"""
     @useComplexQueryAtomSymbols.setter
-    def useComplexQueryAtomSymbols(self, value: bool) -> None: ...
+    def useComplexQueryAtomSymbols(self, value: bool) -> None:
+        """replace any atom, any hetero, any halo queries with complex query symbols A, Q, X, M, optionally followed by H if hydrogen is included (except for AH, which stays *). Default is true"""
+        ...
     @property
     def useMolBlockWedging(self) -> bool:
         """If the molecule came from a MolBlock, prefer the wedging information that provides.  If false, use RDKit rules.  Default false (default: False)"""
     @useMolBlockWedging.setter
-    def useMolBlockWedging(self, value: bool) -> None: ...
+    def useMolBlockWedging(self, value: bool) -> None:
+        """If the molecule came from a MolBlock, prefer the wedging information that provides.  If false, use RDKit rules.  Default false"""
+        ...
     @property
     def variableAtomRadius(self) -> float:
         """radius value to use for atoms involved in variable attachment points. (default: 0.4)"""
     @variableAtomRadius.setter
-    def variableAtomRadius(self, value: float) -> None: ...
+    def variableAtomRadius(self, value: float) -> None:
+        """radius value to use for atoms involved in variable attachment points."""
+        ...
     @property
     def variableAttachmentColour(*args, **kwargs):
         """
@@ -956,12 +1103,15 @@ class MolDrawOptions(Boost.Python.instance):
         """
     @variableAttachmentColour.setter
     def variableAttachmentColour(*args, **kwargs):
+        """the variable attachment colour as an (R,G,B,A) tuple, values should be between 0 and 1"""
         ...
     @property
     def variableBondWidthMultiplier(self) -> int:
         """what to multiply standard bond width by for variable attachment points. (default: 16)"""
     @variableBondWidthMultiplier.setter
-    def variableBondWidthMultiplier(self, value: int) -> None: ...
+    def variableBondWidthMultiplier(self, value: int) -> None:
+        """what to multiply standard bond width by for variable attachment points."""
+        ...
 class MultiColourHighlightStyle(Boost.Python.enum):
     CircleAndLine: typing.ClassVar[MultiColourHighlightStyle]  # value = rdkit.Chem.Draw.rdMolDraw2D.MultiColourHighlightStyle.CircleAndLine
     Lasso: typing.ClassVar[MultiColourHighlightStyle]  # value = rdkit.Chem.Draw.rdMolDraw2D.MultiColourHighlightStyle.Lasso

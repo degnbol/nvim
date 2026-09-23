@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  contains code for standardization of data matrices for clustering
 
@@ -15,4 +14,4 @@ def StdDev(mat):
     
       
     """
-methods: list  # value = [('None', <function <lambda> at 0x104c0dc60>, 'No Standardization'), ('Standard Deviation', StdDev, 'Use the standard deviation')]
+methods: list  # value = [('None', <function <lambda> at 0x103637380>, 'No Standardization'), ('Standard Deviation', StdDev, 'Use the standard deviation')]

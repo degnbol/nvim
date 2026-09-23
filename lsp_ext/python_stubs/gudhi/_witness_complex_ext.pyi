@@ -4,7 +4,21 @@ from typing import overload
 
 class Witness_complex_interface:
     @overload
-    def __init__(self, arg: collections.abc.Sequence[collections.abc.Sequence[tuple[int, float]]]) -> None: ...
+    def __init__(self, arg: collections.abc.Sequence[collections.abc.Sequence[tuple[int, float]]]) -> None:
+        """
+        __init__(self, arg: collections.abc.Sequence[collections.abc.Sequence[tuple[int, float]]], /) -> None
+        __init__(self, arg: ndarray[dtype=float64, shape=(*, *, 2), writable=False], /) -> None
+        __init__(self) -> None
+        """
+        ...
     @overload
-    def __init__(self) -> None: ...
-    def create_simplex_tree(self, simplex_tree: gudhi._simplex_tree_ext._Simplex_tree_python_interface, max_alpha_square: float, limit_dimension: int = ...) -> None: ...
+    def __init__(self) -> None:
+        """
+        __init__(self, arg: collections.abc.Sequence[collections.abc.Sequence[tuple[int, float]]], /) -> None
+        __init__(self, arg: ndarray[dtype=float64, shape=(*, *, 2), writable=False], /) -> None
+        __init__(self) -> None
+        """
+        ...
+    def create_simplex_tree(self, simplex_tree: gudhi._simplex_tree_ext._Simplex_tree_python_interface, max_alpha_square: float, limit_dimension: int = ...) -> None:
+        """create_simplex_tree(self, simplex_tree: gudhi._simplex_tree_ext._Simplex_tree_python_interface, max_alpha_square: float, limit_dimension: int = 18446744073709551615) -> None"""
+        ...

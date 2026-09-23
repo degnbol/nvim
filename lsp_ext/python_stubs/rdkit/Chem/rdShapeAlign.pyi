@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import typing
 __all__: list[str] = ['AlignMol', 'AlignShapes', 'FloatVector', 'PrepareConformer', 'ScoreMol', 'ScoreShape', 'ShapeInput', 'ShapeInputOptions', 'TransformConformer']
@@ -75,6 +74,7 @@ class ShapeInput(Boost.Python.instance):
         """
     @shift.setter
     def shift(*args, **kwargs):
+        """Translation of centre of shape coordinates to origin."""
         ...
     @property
     def sof(*args, **kwargs):
@@ -115,6 +115,7 @@ class ShapeInputOptions(Boost.Python.instance):
         """
     @atomRadii.setter
     def atomRadii(*args, **kwargs):
+        """Non-standard radii to use for the atoms specified by their indices in the molecule.  A list of tuples of [int, float]."""
         ...
     @property
     def atomSubset(*args, **kwargs):
@@ -123,6 +124,7 @@ class ShapeInputOptions(Boost.Python.instance):
         """
     @atomSubset.setter
     def atomSubset(*args, **kwargs):
+        """If not empty, use just these atoms in the molecule to form the ShapeInput object."""
         ...
     @property
     def customFeatures(*args, **kwargs):
@@ -131,22 +133,29 @@ class ShapeInputOptions(Boost.Python.instance):
         """
     @customFeatures.setter
     def customFeatures(*args, **kwargs):
+        """Custom features for the shape."""
         ...
     @property
     def dummyRadius(self) -> float:
         """If using dummy atoms in the alignment, what radius to use for them.  Default=2.16 (the radius of Xe). (default: 2.16)"""
     @dummyRadius.setter
-    def dummyRadius(self, value: float) -> None: ...
+    def dummyRadius(self, value: float) -> None:
+        """If using dummy atoms in the alignment, what radius to use for them.  Default=2.16 (the radius of Xe)."""
+        ...
     @property
     def includeDummies(self) -> bool:
         """Whether to use dummy atoms in the alignment. Default=False. (default: False)"""
     @includeDummies.setter
-    def includeDummies(self, value: bool) -> None: ...
+    def includeDummies(self, value: bool) -> None:
+        """Whether to use dummy atoms in the alignment. Default=False."""
+        ...
     @property
     def normalize(self) -> bool:
         """Whether to normalise the shape by putting intoits inertial frame.  Default=True. (default: True)"""
     @normalize.setter
-    def normalize(self, value: bool) -> None: ...
+    def normalize(self, value: bool) -> None:
+        """Whether to normalise the shape by putting intoits inertial frame.  Default=True."""
+        ...
     @property
     def notColorAtoms(*args, **kwargs):
         """
@@ -154,12 +163,15 @@ class ShapeInputOptions(Boost.Python.instance):
         """
     @notColorAtoms.setter
     def notColorAtoms(*args, **kwargs):
+        """Any atoms mentioned here by index should not be used in a color feature."""
         ...
     @property
     def useColors(self) -> bool:
         """Whether to use colors (pharmacophore features) in the score.  Default=True. (default: True)"""
     @useColors.setter
-    def useColors(self, value: bool) -> None: ...
+    def useColors(self, value: bool) -> None:
+        """Whether to use colors (pharmacophore features) in the score.  Default=True."""
+        ...
 @typing.overload
 def AlignMol(ref: Mol, probe: Mol, refConfId: int = -1, probeConfId: int = -1, useColors: bool = True, opt_param: float = 1.0, max_preiters: int = 10, max_postiters: int = 30) -> tuple:
     """

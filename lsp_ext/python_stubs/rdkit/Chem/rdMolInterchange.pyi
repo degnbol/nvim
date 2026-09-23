@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing functions for interchange of molecules.
 Note that this should be considered beta and that the format
@@ -25,27 +24,37 @@ class JSONParseParameters(Boost.Python.instance):
     def parseConformers(self) -> bool:
         """parse conformers in the JSON (default: True)"""
     @parseConformers.setter
-    def parseConformers(self, value: bool) -> None: ...
+    def parseConformers(self, value: bool) -> None:
+        """parse conformers in the JSON"""
+        ...
     @property
     def parseProperties(self) -> bool:
         """parse molecular properties in the JSON (default: True)"""
     @parseProperties.setter
-    def parseProperties(self, value: bool) -> None: ...
+    def parseProperties(self, value: bool) -> None:
+        """parse molecular properties in the JSON"""
+        ...
     @property
     def setAromaticBonds(self) -> bool:
         """set bond types to aromatic for bonds flagged aromatic (default: True)"""
     @setAromaticBonds.setter
-    def setAromaticBonds(self, value: bool) -> None: ...
+    def setAromaticBonds(self, value: bool) -> None:
+        """set bond types to aromatic for bonds flagged aromatic"""
+        ...
     @property
     def strictValenceCheck(self) -> bool:
         """be strict when checking atom valences (default: False)"""
     @strictValenceCheck.setter
-    def strictValenceCheck(self, value: bool) -> None: ...
+    def strictValenceCheck(self, value: bool) -> None:
+        """be strict when checking atom valences"""
+        ...
     @property
     def useHCounts(self) -> bool:
         """use atomic H counts from the JSON. You may want to set this to False when parsing queries. (default: True)"""
     @useHCounts.setter
-    def useHCounts(self, value: bool) -> None: ...
+    def useHCounts(self, value: bool) -> None:
+        """use atomic H counts from the JSON. You may want to set this to False when parsing queries."""
+        ...
 class JSONWriteParameters(Boost.Python.instance):
     """
     Parameters controlling the JSON writer
@@ -64,7 +73,9 @@ class JSONWriteParameters(Boost.Python.instance):
     def useRDKitExtensions(self) -> bool:
         """use RDKit extensions to the commonchem format (default: True)"""
     @useRDKitExtensions.setter
-    def useRDKitExtensions(self, value: bool) -> None: ...
+    def useRDKitExtensions(self, value: bool) -> None:
+        """use RDKit extensions to the commonchem format"""
+        ...
 def JSONToMols(jsonBlock: str, params: typing.Any = None) -> tuple:
     """
         Convert JSON to a tuple of molecules

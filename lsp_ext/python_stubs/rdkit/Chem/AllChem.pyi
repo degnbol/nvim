@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Import all RDKit chemistry modules
 
@@ -75,8 +74,8 @@ from rdkit.Chem.rdMolEnumerator import MolEnumeratorParams
 from rdkit.Chem import rdMolInterchange
 from rdkit.Chem.rdMolInterchange import JSONParseParameters
 from rdkit.Chem.rdMolInterchange import JSONWriteParameters
-import rdkit.Chem.rdchem
 from rdkit.Chem import rdchem
+import rdkit.Chem.rdchem
 from rdkit.Chem.rdchem import Atom
 from rdkit.Chem.rdchem import AtomCoordsMatcher
 from rdkit.Chem.rdchem import AtomKekulizeException
@@ -147,8 +146,8 @@ from rdkit.Chem.rdmolfiles import SmilesWriteParams
 from rdkit.Chem.rdmolfiles import SmilesWriter
 from rdkit.Chem.rdmolfiles import TDTMolSupplier
 from rdkit.Chem.rdmolfiles import TDTWriter
-import rdkit.Chem.rdmolops
 from rdkit.Chem import rdmolops
+import rdkit.Chem.rdmolops
 from rdkit.Chem.rdmolops import AddHsParameters
 from rdkit.Chem.rdmolops import AdjustQueryParameters
 from rdkit.Chem.rdmolops import AdjustQueryWhichFlags

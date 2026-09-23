@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Atom-based calculation of LogP and MR using Crippen's approach
 

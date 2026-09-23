@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Actual implementation of the FMCS algorithm
 This code should be used by importing rdkit.Chem.MCS
@@ -46,8 +45,8 @@ from rdkit.Chem.fmcs.fmcs import atom_typer_elements as default_atom_typer
 from rdkit.Chem.fmcs.fmcs import atom_typer_elements
 from rdkit.Chem.fmcs.fmcs import atom_typer_isotopes
 from rdkit.Chem.fmcs.fmcs import bond_typer_any
-from rdkit.Chem.fmcs.fmcs import bond_typer_bondtypes
 from rdkit.Chem.fmcs.fmcs import bond_typer_bondtypes as default_bond_typer
+from rdkit.Chem.fmcs.fmcs import bond_typer_bondtypes
 from rdkit.Chem.fmcs.fmcs import canon
 from rdkit.Chem.fmcs.fmcs import check_completeRingsOnly
 from rdkit.Chem.fmcs.fmcs import compute_mcs

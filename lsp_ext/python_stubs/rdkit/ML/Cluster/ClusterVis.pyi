@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Cluster tree visualization using Sping
 
@@ -7,8 +6,8 @@ from __future__ import annotations
 import numpy as numpy
 from rdkit.ML.Cluster import ClusterUtils
 import rdkit.sping.colors
-from rdkit.sping import pid as piddle
 from rdkit.sping import pid
+from rdkit.sping import pid as piddle
 import typing
 __all__: list[str] = ['ClusterRenderer', 'ClusterToImg', 'ClusterToPDF', 'ClusterToSVG', 'ClusterUtils', 'DrawClusterTree', 'VisOpts', 'numpy', 'pid', 'piddle']
 class ClusterRenderer:

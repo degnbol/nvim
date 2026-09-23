@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
  Hybrid EState-VSA descriptors (like the MOE VSA descriptors)
 

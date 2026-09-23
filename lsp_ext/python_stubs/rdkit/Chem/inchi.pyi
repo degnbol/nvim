@@ -1,11 +1,10 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 from __future__ import annotations
 import logging as logging
 from rdkit import Chem
 from rdkit.Chem import rdinchi
 from rdkit import Geometry
-import rdkit.RDLogger
 from rdkit import RDLogger
+import rdkit.RDLogger
 import re as re
 __all__: list = ['MolToInchiAndAuxInfo', 'MolToInchi', 'MolBlockToInchiAndAuxInfo', 'MolBlockToInchi', 'MolFromInchi', 'MolFromInchiAndAuxInfo', 'InchiReadWriteError', 'InchiToInchiKey', 'MolToInchiKey', 'GetInchiVersion', 'INCHI_AVAILABLE']
 class InchiReadWriteError(Exception):

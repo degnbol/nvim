@@ -1,4 +1,3 @@
-# fix_pybind_stubs: rdkit 2026.3.5 5beea910
 """
 Module containing basic definitions for wrapped C++ code
 
@@ -550,4 +549,4 @@ _multithreadedEnabled: bool = True
 _serializationEnabled: bool = True
 boostVersion: str = '1_85'
 rdkitBuild: str = 'Darwin|24.6.0|UNIX|AppleClang|64-bit'
-rdkitVersion: str = '2026.03.5'
+rdkitVersion: str = '2026.03.6'
