@@ -9,7 +9,7 @@ before suspecting the server.
 |---|---|---|
 | Database | `compile_commands.json` in the file's parent dirs, or their `build/` | `compile_commands.json` in the workspace root and its immediate subdirs, and dirs above an opened file (when no rule sets `compile_commands`) |
 | Static flags | `compile_flags.txt`; `.clangd` `CompileFlags` (static; cannot run pkg-config) | `clice.toml` / `.clice/config.toml` `[[rules]]` (`append`, `compile_commands`, `default_command`) |
-| No entry | `clang <file>` plus `initializationOptions.fallbackFlags` | a guessed command (line-1 `inferred-compile-command` diagnostic), or a rule's `default_command` |
+| No entry | the nearest entry's command; with an empty database, `clang <file>` plus `initializationOptions.fallbackFlags` | a guessed command (line-1 `inferred-compile-command` diagnostic), or a rule's `default_command` |
 | Set from the client | `initializationOptions.compilationDatabasePath` (a dir); per file at runtime: `workspace/didChangeConfiguration` → `settings.compilationDatabaseChanges` | `initializationOptions`; its `rules` *replace* the config file's |
 
 - clice reads its config file and `initializationOptions` once, at start.
@@ -44,7 +44,20 @@ before suspecting the server.
 
 ## This config
 
-Files without a database get flags from `lua/c_fallback_flags.lua` (pkg-config
-packages; add a library there), used by `lsp/clangd.lua` (`fallbackFlags`) and
-`lsp/clice.lua` (`default_command`, skipped when the project has a clice config).
-clice is pinned by the local Mason registry `lua/mason_overrides/`.
+A project without a database of its own (`find_own` in `lua/compile_db.lua`)
+gets one generated in `stdpath("cache")/compile_db/<sha256 of root>/`, before
+the server starts (the configs' `root_dir`). Include dirs come from the sources'
+`#include` lines: project dirs holding a header, then pkg-config flags of the
+packages owning headers not found elsewhere. The database is made once per
+root and session; `:lsp restart` reuses it. A new `#include` takes effect on
+`<localleader>r` (`compile_db.regenerate`), which regenerates and restarts.
+Headers no `.pc` file provides need a database or config file in the project.
+The own-database check is per opened file: a database two or more levels below
+the root is found only for files under it, and the root's generated database can
+hide it.
+
+- `lsp/clangd.lua`: `compilationDatabasePath` and `fallbackFlags`.
+- `lsp/clice.lua`: `rules` with `compile_commands` and `default_command`, and
+  `cache_dir` in `stdpath("cache")/clice/<sha256 of root>/`; all skipped when
+  the project has a clice config file.
+- clice is pinned by the local Mason registry `lua/mason_overrides/`.

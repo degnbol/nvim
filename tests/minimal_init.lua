@@ -12,3 +12,6 @@ vim.opt.swapfile = false
 -- and history, plus a leftover main.shada.tmp.X whenever a spec aborts. Exhaust
 -- those tmp names and an interactive nvim can no longer write its own (E138).
 vim.o.shadafile = "NONE"
+-- Specs that cache (pkg-config index, generated compile databases) start cold and
+-- leave the real cache alone.
+vim.env.XDG_CACHE_HOME = vim.fn.tempname()

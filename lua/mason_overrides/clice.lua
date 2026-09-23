@@ -1,6 +1,6 @@
 -- https://github.com/mason-org/mason-registry/blob/main/packages/clice/package.yaml
 -- with a newer version. mason-registry pins v0.1.2026082603, which predates
--- `rules.default_command` (clice-io/clice#664).
+-- `rules.compile_commands` and `rules.default_command` (clice-io/clice#664).
 -- A registry entry rather than `clice@<version>` in ensure_installed: Mason marks a
 -- package outdated when its installed version differs from its registry's, so an
 -- update would reinstall the older one.
