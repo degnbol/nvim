@@ -22,6 +22,7 @@ import docify
 import libcst as cst
 import libcst.matchers as m
 import libcst.metadata as meta
+
 from stub_tree import comment_keyword_targets
 
 _REQUIREMENTS = pathlib.Path(__file__).with_name("requirements.txt")
@@ -36,24 +37,23 @@ def patch_docify() -> None:
     only trusted on the version ``requirements.txt`` pins.
 
     Raises:
-        AssertionError: ``requirements.txt`` pins no docify, or the installed
-            one is another version.
+        SystemExit: ``requirements.txt`` pins no docify, or the installed one is
+            another version.
     """
     pin = re.search(r"(?m)^docify==(\S+)", _REQUIREMENTS.read_text())
-    assert pin, f"no docify pin in {_REQUIREMENTS}"
+    if not pin:
+        raise SystemExit(f"no docify pin in {_REQUIREMENTS}")
     pinned = pin.group(1)
     installed = importlib.metadata.version("docify")
-    assert installed == pinned, f"docify {installed} installed, {pinned} pinned"
+    if installed != pinned:
+        raise SystemExit(f"docify {installed} installed, {pinned} pinned")
     docify.get_qualname = get_qualname
 
 
 def get_qualname(scope: meta.Scope, name: str) -> str:
-    """docify's ``get_qualname``, stepping over a scope that is neither global nor
-    class instead of raising.
-
-    libcst puts an ``AnnotationScope`` between a PEP 695 generic class and the
-    global scope. A nested ``def`` would lose its enclosing function from the
-    qualname too, which no stub declaration reaches.
+    """The ``__qualname__`` Python gives a declaration: libcst's
+    ``Scope.get_qualified_names_for``, where docify's raises on any scope but a
+    global or class one.
 
     Args:
         scope: the scope a declaration's name is bound in.
@@ -61,17 +61,11 @@ def get_qualname(scope: meta.Scope, name: str) -> str:
 
     Returns:
         The dotted name of the declaration below its module.
-
-    Raises:
-        ValueError: an enclosing class scope has no name.
     """
-    qualname = name
-    while not isinstance(scope, meta.GlobalScope):
-        if isinstance(scope, meta.ClassScope):
-            if not scope.name:
-                raise ValueError
-            qualname = f"{scope.name}.{qualname}"
-        scope = scope.parent
+    # docify.get_obj returns None on the AttributeError a `<locals>` part
+    # raises, so a function-local name gets no docstring.
+    (qualname,) = {q.name for q in scope.get_qualified_names_for(name)
+                   if q.source is meta.QualifiedNameSource.LOCAL}
     return qualname
 
 

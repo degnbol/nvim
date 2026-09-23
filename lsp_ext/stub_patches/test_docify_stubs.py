@@ -10,9 +10,10 @@ import textwrap
 import tokenize
 
 import docify
-import docify_stubs
 import libcst as cst
 import pytest
+
+import docify_stubs
 from stub_tree import side_effect_free
 
 RUNTIME = '''\
@@ -66,18 +67,6 @@ class Mode:
     None: int
     other: int
 '''
-
-
-@pytest.fixture
-def site(tmp_path, monkeypatch):
-    """A directory on sys.path; modules imported from it are forgotten afterwards."""
-    root = tmp_path / "site"
-    root.mkdir()
-    monkeypatch.syspath_prepend(str(root))
-    before = set(sys.modules)
-    yield root
-    for name in set(sys.modules) - before:
-        del sys.modules[name]
 
 
 def write(path, text):
@@ -215,6 +204,13 @@ def test_a_stub_that_does_not_tokenize_is_returned_and_left_alone(two_modules):
     assert error_types(skipped) == {"fakepkg.first": tokenize.TokenError}
     assert first.read_text() == 'x = """unterminated\n'
     assert docstrings(two_modules["second"].read_text())["sqrt"] == [math.sqrt.__doc__]
+
+
+def test_a_function_local_name_is_not_documented(site, tmp_path):
+    write(site / "fakepkg" / "__init__.py", RUNTIME)
+    stub = write(tmp_path / "__init__.pyi", "def f():\n    sqrt: float\n")
+    assert docify_stubs.document([("fakepkg", stub)], side_effect_free, {}) == {}
+    assert stub.read_text() == "def f():\n    sqrt: float\n"
 
 
 def test_patch_docify_is_idempotent():

@@ -1,7 +1,7 @@
 Type stubs for C-extension packages that don't ship their own.
 Generated with `stubgen --inspect-mode` from mypy via throwaway uv envs.
 `basedpyright --createstub` and monkeytype were tried but produced incomplete results.
-`RUNME.sh` then runs each tree through `../stub_patches/patch_stubs.py`, which
+`RUNME.sh` then runs every tree but pyrosetta through `../stub_patches/patch_stubs.py`, which
 writes the runtime docstrings in (stubgen writes none). See
 `../stub_patches/README.md`.
 

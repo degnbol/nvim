@@ -1,4 +1,5 @@
-Patches for `.pyi` stub trees, run where the runtime package is importable.
+Patches for `.pyi` stub trees, run where the runtime package is importable, on
+Python ≥ 3.10.
 Kept out of `../python_stubs/`: `stubPath` resolves `.py` files too, ahead of
 site-packages, so a helper module there would shadow a project's import of the
 same name.

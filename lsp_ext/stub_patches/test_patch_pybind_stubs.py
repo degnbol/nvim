@@ -16,6 +16,7 @@ import types
 from unittest import mock
 
 import patch_pybind_stubs as v
+from stub_tree import module_name
 
 # A class block in the exact shape RDKit's bundled stubs use.
 BLOCK = '''\
@@ -386,22 +387,34 @@ REVEALED = [
 ]
 
 
+VENDORED = pathlib.Path(__file__).resolve().parent.with_name("python_stubs")
+
+
+def pyright_diagnostics(stubs, probe):
+    """basedpyright's diagnostics on a probe typed against a stub directory.
+
+    stubs: directory set as ``stubPath``.
+    probe: source of the file typed.
+    Returns the ``generalDiagnostics`` of ``basedpyright --outputjson``.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        work = pathlib.Path(tmp)
+        (work / "pyrightconfig.json").write_text(json.dumps(
+            {"typeCheckingMode": "standard", "stubPath": str(stubs),
+             "reportMissingModuleSource": "none"}))
+        (work / "probe.py").write_text(probe)
+        out = subprocess.run(["basedpyright", "--outputjson", "probe.py"],
+                             cwd=work, capture_output=True, text=True).stdout
+    return json.loads(out)["generalDiagnostics"]
+
+
 def slow_test_pyright_reads_the_vendored_tree_as_intended():
     """Type the probe against the vendored tree, and check what comes back.
 
     The only check here that catches a change in pyright's own behaviour, and
     the harness the passes were measured with.
     """
-    stubs = pathlib.Path(__file__).resolve().parent.with_name("python_stubs")
-    with tempfile.TemporaryDirectory() as tmp:
-        work = pathlib.Path(tmp)
-        (work / "pyrightconfig.json").write_text(json.dumps(
-            {"typeCheckingMode": "standard", "stubPath": str(stubs),
-             "reportMissingModuleSource": "none"}))
-        (work / "probe.py").write_text(PROBE)
-        out = subprocess.run(["basedpyright", "--outputjson", "probe.py"],
-                             cwd=work, capture_output=True, text=True).stdout
-    diagnostics = json.loads(out)["generalDiagnostics"]
+    diagnostics = pyright_diagnostics(VENDORED, PROBE)
     notes = [d["message"] for d in diagnostics if d["severity"] == "information"]
     for revealed in REVEALED:
         assert any(revealed in note for note in notes), revealed
@@ -409,6 +422,53 @@ def slow_test_pyright_reads_the_vendored_tree_as_intended():
     # AllChem.AddHs and PandasTools.LoadSDF resolve, and the sole error is what a
     # synthesised declaration is meant to keep: its arity is still checked.
     assert errors == ['Argument missing for parameter "x"'], errors
+
+
+def revealed_by_line(diagnostics):
+    """The type each ``reveal_type`` names, by 0-based line.
+
+    diagnostics: basedpyright ``generalDiagnostics``.
+    Returns {line: type}, every module as ``Module``, since pyright names a
+    module as the import spelled it.
+    """
+    revealed = {}
+    for d in diagnostics:
+        if d["severity"] == "information":
+            shown = d["message"].split(" is ", 1)[1]
+            revealed[d["range"]["start"]["line"]] = "Module" if shown.startswith('"Module(') else shown
+    return revealed
+
+
+def slow_test_appended_names_shadow_nothing_pyright_resolves_without_them():
+    """Each name appended to the vendored rdkit tree is unresolved without the
+    appended section, or resolves there to the type it has with it.
+
+    What the section re-exports and synthesises depends on the rdkit version.
+    A module compares equal to any other module.
+    """
+    root = VENDORED / "rdkit"
+    appended = []
+    with tempfile.TemporaryDirectory() as tmp:
+        cut = pathlib.Path(tmp) / "rdkit"
+        for path in root.rglob("*.pyi"):
+            generated, header, added = path.read_text().partition(v._ADDED_HEADER)
+            copy = cut / path.relative_to(root)
+            copy.parent.mkdir(parents=True, exist_ok=True)
+            copy.write_text(generated)
+            if header:
+                module = module_name(path, root, "rdkit")
+                appended += [(module, name) for name in sorted(v.toplevel_names(added))]
+        probe = "".join(f"from {module} import {name} as _{i}; reveal_type(_{i})\n"
+                        for i, (module, name) in enumerate(appended))
+        without = pyright_diagnostics(cut.parent, probe)
+    unresolved = {d["range"]["start"]["line"] for d in without
+                  if d["message"].endswith("is unknown import symbol")}
+    with_section, without_section = (revealed_by_line(d) for d in
+                                     (pyright_diagnostics(VENDORED, probe), without))
+    shadowing = [(appended[line], shown, with_section.get(line))
+                 for line, shown in without_section.items()
+                 if line not in unresolved and with_section.get(line) != shown]
+    assert appended and shadowing == [], shadowing
 
 
 if __name__ == "__main__":

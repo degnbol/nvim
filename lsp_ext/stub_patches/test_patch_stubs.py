@@ -13,25 +13,14 @@ import subprocess
 import sys
 
 import libcst as cst
+import pytest
+
 import patch_pybind_stubs
 import patch_stubs
-import pytest
 from stub_tree import comment_keyword_targets
 
 RUNTIME = "from math import sqrt\n\ndef py_func(x):\n    return x\n"
 STUB = "def sqrt(x: float) -> float: ...\n"
-
-
-@pytest.fixture
-def site(tmp_path, monkeypatch):
-    """A directory on sys.path; modules imported from it are forgotten afterwards."""
-    root = tmp_path / "site"
-    root.mkdir()
-    monkeypatch.syspath_prepend(str(root))
-    before = set(sys.modules)
-    yield root
-    for name in set(sys.modules) - before:
-        del sys.modules[name]
 
 
 def write(path, text):
@@ -96,6 +85,15 @@ def test_leaves_unchanged_files_and_hard_links_alone(tree, tmp_path):
     patch_stubs.patch(tree)
     assert other.stat().st_ino == inode
     assert link.read_text() == STUB
+
+
+def test_write_back_gives_rewritten_files_a_new_mtime(tree):
+    path = tree / "__init__.pyi"
+    mode = path.stat().st_mode
+    os.utime(path, (0, 0))
+    patch_stubs.patch(tree)
+    assert path.stat().st_mtime > 0
+    assert path.stat().st_mode == mode
 
 
 def test_marker_is_on_the_marker_file_only(tree):
@@ -194,7 +192,7 @@ def test_removes_stale_temp_files(tree):
 
 
 def test_sources_skip_tests_and_dotfiles(tmp_path):
-    for name in ("requirements.txt", "a.py", ".#a.py", "test_a.py", "notes.md"):
+    for name in ("requirements.txt", "a.py", ".#a.py", "test_a.py", "conftest.py", "notes.md"):
         write(tmp_path / name, "")
     assert [p.name for p in patch_stubs.sources(tmp_path)] == ["a.py", "requirements.txt"]
 
@@ -212,6 +210,12 @@ def test_main_exit_statuses(site, tree):
     failed = run_main(site, tree.parent / "missing-stubs")
     assert failed.returncode not in (0, patch_stubs.NOTHING_WRITTEN)
     assert "missing-stubs" in failed.stderr
+
+
+def test_an_old_python_exits_naming_the_floor(monkeypatch):
+    monkeypatch.setattr(sys, "version_info", (3, 9, 0))
+    with pytest.raises(SystemExit, match=r"3\.10"):
+        patch_stubs.main()
 
 
 def test_main_prints_one_line_per_skipped_module(site, tree):
@@ -287,6 +291,9 @@ def test_rdkit_sequence_matches_the_repair_alone(tmp_path):
         and "C++ signature" in (ast.get_docstring(node) or "")]
     assert constructor_docs == []
     assert typed_properties(sequenced) >= typed_properties(repaired)
+    for path in repaired.rglob("*.pyi"):
+        signatures = (sequenced / path.relative_to(repaired)).read_text().count("C++ signature")
+        assert signatures <= path.read_text().count("C++ signature"), path
     once = snapshot(sequenced)
     assert patch_stubs.patch(sequenced) is None
     assert snapshot(sequenced) == once

@@ -51,6 +51,9 @@ module, since a bare class name would also alias a same-named class elsewhere.""
 
 NOTHING_WRITTEN = 3
 WATCHDOG_S = 600
+PYTHON_FLOOR = (3, 10)
+"""Oldest Python the run supports: ``importlib.metadata.packages_distributions``
+is new in 3.10."""
 
 _HERE = pathlib.Path(__file__).resolve().parent
 _MARKER_PREFIX = "# patch_stubs:"
@@ -70,10 +73,11 @@ def sources(directory: pathlib.Path = _HERE) -> list[pathlib.Path]:
         directory: where the patch scripts live.
 
     Returns:
-        ``requirements.txt`` and the ``*.py`` files whose name starts with
-        neither ``test_`` nor ``.``, sorted by name.
+        ``requirements.txt`` and the ``*.py`` files other than ``conftest.py``
+        whose name starts with neither ``test_`` nor ``.``, sorted by name.
     """
-    scripts = [p for p in directory.glob("*.py") if not p.name.startswith(("test_", "."))]
+    scripts = [p for p in directory.glob("*.py")
+               if not p.name.startswith(("test_", ".")) and p.name != "conftest.py"]
     return sorted([directory / "requirements.txt", *scripts], key=lambda p: p.name)
 
 
@@ -206,10 +210,7 @@ def remove_stale_temps(target: pathlib.Path) -> None:
 
 
 def stage(target: pathlib.Path, dest: pathlib.Path) -> None:
-    """Copy a stub's ``.pyi`` files to dest, leaving everything else behind.
-
-    basedpyright resolves a submodule the tree omits from the environment, so
-    nothing but the stubs needs to travel.
+    """Copy a stub's ``.pyi`` files to dest, and nothing else.
 
     Args:
         target: a stub tree's directory, or a single-module ``.pyi``.
@@ -251,7 +252,7 @@ def write_back(staged: pathlib.Path, target: pathlib.Path) -> int:
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as f:
                 f.write(new)
-            shutil.copystat(original, temp)
+            shutil.copymode(original, temp)
             os.replace(temp, original)
         except BaseException:
             pathlib.Path(temp).unlink(missing_ok=True)
@@ -274,8 +275,8 @@ def patch(target: pathlib.Path) -> dict[str, BaseException] | None:
         module was skipped and at most the marker was written.
 
     Raises:
-        SystemExit: the stub has no marker file, or the package does not import,
-            which leaves the stub unwritten.
+        SystemExit: the stub has no marker file, the package does not import,
+            or docify is not the pinned version, which leaves the stub unwritten.
     """
     package = target.name.removesuffix("-stubs") if target.is_dir() else target.stem
     if not marker_file(target).is_file():
@@ -312,7 +313,8 @@ def _patch_staged(staged: pathlib.Path, target: pathlib.Path,
         {module: error} for the modules either pass skipped.
 
     Raises:
-        SystemExit: the package does not import, naming it and the error.
+        SystemExit: the package does not import (the message names it and the
+            error), or docify is not the pinned version.
     """
     # Deferred: docify and libcst are only worth importing for a stub needing a run.
     import docify_stubs
@@ -343,6 +345,9 @@ def _patch_staged(staged: pathlib.Path, target: pathlib.Path,
 
 
 def main() -> None:
+    if sys.version_info < PYTHON_FLOOR:
+        sys.exit(f"Python {sys.version_info[0]}.{sys.version_info[1]} found, "
+                 f"{'.'.join(map(str, PYTHON_FLOOR))} or newer needed")
     skipped = patch(pathlib.Path(sys.argv[1]).absolute())
     if skipped is None:
         sys.exit(NOTHING_WRITTEN)
