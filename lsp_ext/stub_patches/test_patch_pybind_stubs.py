@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
-"""Tests for the Boost.Python stub fixes. Run: ./test_fix_pybind_stubs.py
+"""Tests for the Boost.Python stub repair. Run: ./test_patch_pybind_stubs.py
 
 ``--slow`` additionally runs the checks whose subject is what basedpyright makes
-of the vendored tree beside this file. Those need rdkit and basedpyright:
-``uv run --no-project --with rdkit --with basedpyright ./test_fix_pybind_stubs.py --slow``.
+of the vendored tree in ``../python_stubs``. Those need rdkit and basedpyright:
+``uv run --no-project --with rdkit --with basedpyright ./test_patch_pybind_stubs.py --slow``.
 """
 import ast
 import contextlib
-import hashlib
 import json
 import pathlib
-import shutil
 import subprocess
 import sys
 import tempfile
 import types
 
-import fix_pybind_stubs as v
+import patch_pybind_stubs as v
 
 # A class block in the exact shape RDKit's bundled stubs use.
 BLOCK = '''\
@@ -92,23 +90,6 @@ def test_keepable_lines_survive_a_keyword_enum_member():
     assert v.keepable_signature_lines(src) == {6}
 
 
-def test_marker_names_the_package_version_and_the_script_that_wrote_it():
-    # An uninstalled package also covers the version fallback.
-    assert v.marker_line("nosuchpkg") == (
-        f"# fix_pybind_stubs: nosuchpkg unknown {v.script_fingerprint()}\n")
-
-
-def test_fingerprint_is_the_first_8_of_the_script_sha256():
-    # The Lua side recomputes this with vim.fn.sha256 over the same bytes.
-    digest = hashlib.sha256(pathlib.Path(v.__file__).read_bytes()).hexdigest()
-    assert v.script_fingerprint() == digest[:8]
-
-
-def test_comments_keyword_enum_member():
-    src = "    None: typing.ClassVar[E]  # value = E.None\n"
-    assert v.comment_keyword_targets(src).startswith("# ")
-
-
 def test_types_property_with_default():
     class Fake:
         @property
@@ -135,39 +116,6 @@ def test_type_properties_is_idempotent():
     module = types.SimpleNamespace(SmilesParserParams=Fake)
     once = v.type_properties(v.clean(BLOCK), module)
     assert v.type_properties(once, module) == once
-
-
-@contextlib.contextmanager
-def stub_tree():
-    """Yield a one-file stub tree in a temp dir, shaped like the bundled stubs."""
-    with tempfile.TemporaryDirectory() as tmp:
-        root = pathlib.Path(tmp) / "fake-stubs"
-        (root / "Chem").mkdir(parents=True)
-        (root / "Chem" / "rdmolfiles.pyi").write_text(BLOCK)
-        yield root
-
-
-def test_patch_staged_rewrites_the_tree_in_place():
-    with stub_tree() as root:
-        # The fixture package is not importable, so its properties stay untyped
-        # and are reported; the text cleanups need no import.
-        assert v.patch_staged(root, "fake") == [
-            "fake.Chem.rdmolfiles (No module named 'fake')"
-        ]
-        out = (root / "Chem" / "rdmolfiles.pyi").read_text()
-        assert out.startswith(v.marker_line("fake"))
-        assert "void flush" not in out            # redundant block dropped
-        assert "ExplicitBitVect* GetFingerprint" in out  # informative one kept
-        assert not list(root.parent.glob("fake-stubs.*"))  # no staging/backup left
-
-
-def test_patch_staged_is_idempotent():
-    with stub_tree() as root:
-        pyi = root / "Chem" / "rdmolfiles.pyi"
-        v.patch_staged(root, "fake")
-        once = pyi.read_text()
-        v.patch_staged(root, "fake")
-        assert pyi.read_text() == once
 
 
 def fake_module(name, **attrs):
@@ -265,20 +213,6 @@ def test_extension_module_test_tells_a_native_class_from_a_python_subclass():
     assert not v.in_extension_module(Subclass)
 
 
-def test_keyword_commenting_leaves_docstring_prose_alone():
-    # `from: <url>` inside a docstring reads as an annotated assignment.
-    src = 'def f():\n    """\n    Plane of best fit\n    from: https://example.org\n    """\n'
-    assert v.comment_keyword_targets(src) == src
-    assert v.comment_keyword_targets("    None: int\n") == "#     None: int\n"
-
-
-def test_side_effect_exclusion_matches_whole_path_components():
-    assert v.side_effect_free(("DataStructs", "cDataStructs"))
-    assert v.side_effect_free(("DataManip", "Metric"))
-    assert not v.side_effect_free(("Chem", "Subshape", "demoCombined"))
-    assert not v.side_effect_free(("sping", "PDF"))
-
-
 def test_module_line_is_inserted_once_below_the_future_header():
     text = "from __future__ import annotations\nclass X: ...\n"
     once = v.ensure_module_line(text, "import typing\n")
@@ -301,33 +235,67 @@ def test_class_override_raises_when_its_target_is_gone():
     assert raised
 
 
-def _die(*_):
-    raise RuntimeError("interrupted")
+def test_drops_a_docified_constructor_docstring_before_its_ellipsis():
+    # docify inserts above the original `...`; replacing the docstring with
+    # another `...` would grow the body by one on every run.
+    for doc in ('"""\n        x\n\n        C++ signature :\n            void __init__(_object*)\n        """',
+                'r"""\\ C++ signature :"""',
+                "'C++ signature :\\x00'"):
+        src = f"    def __init__(self) -> None:\n        {doc}\n        ...\n"
+        assert v.drop_constructor_docstrings(src) == "    def __init__(self) -> None:\n        ...\n"
 
 
-def test_patch_staged_leaves_the_original_on_failure():
-    with stub_tree() as root:
-        patch_dir, v.patch_dir = v.patch_dir, _die
-        raised = False
-        try:
-            v.patch_staged(root, "fake")
-        except RuntimeError:
-            raised = True
-        finally:
-            v.patch_dir = patch_dir
-        assert raised
-        assert (root / "Chem" / "rdmolfiles.pyi").read_text() == BLOCK
+def test_drops_a_raw_or_repr_constructor_docstring():
+    for doc in ('r"""\\ C++ signature :"""', "'C++ signature :\\x00'"):
+        src = f"    def __init__(self) -> None:\n        {doc}\n"
+        assert v.drop_constructor_docstrings(src) == "    def __init__(self) -> None:\n        ...\n"
 
 
-def test_patch_staged_recovers_an_interrupted_swap():
-    with stub_tree() as root:
-        # State left by a kill between the two renames: the patched tree is
-        # staged, the original is only reachable under .bak.
-        shutil.copytree(root, root.with_name(root.name + ".new"))
-        root.rename(root.with_name(root.name + ".bak"))
-        v.patch_staged(root, "fake")
-        assert (root / "Chem" / "rdmolfiles.pyi").read_text().startswith(v.MARKER_PREFIX)
-        assert not list(root.parent.glob("fake-stubs.*"))
+def _property(getter_body, setter_body):
+    return ("class P:\n    @property\n    def flag(*args, **kwargs):\n" + getter_body
+            + "    @flag.setter\n    def flag(*args, **kwargs):\n" + setter_body)
+
+
+# Each docstring shape docify writes, then its original `...`.
+DOCIFY_BODIES = [
+    '        """doc"""\n        ...\n',
+    '        r"""doc \\d"""\n        ...\n',
+    "        'doc\\x00'\n        ...\n",
+    '        """\n        doc\n        more\n        """\n        ...\n',
+]
+
+
+def _typed(text):
+    class Fake:
+        @property
+        def flag(self):
+            return True
+
+        @flag.setter
+        def flag(self, value):
+            pass
+
+    return v.type_properties(text, types.SimpleNamespace(P=Fake))
+
+
+def test_property_matches_each_docify_shape_in_the_getter():
+    for body in DOCIFY_BODIES:
+        out = _typed(_property(body, "        ...\n"))
+        assert "def flag(self) -> bool:" in out, body
+        assert "(default: True)" in ast.get_docstring(ast.parse(out).body[0].body[0]), body
+
+
+def test_property_matches_each_docify_shape_in_the_setter():
+    for body in DOCIFY_BODIES:
+        out = _typed(_property('        """doc"""\n', body))
+        assert "def flag(self, value: bool) -> None:" in out, body
+
+
+def test_typed_setter_keeps_its_docstring():
+    out = _typed(_property('        """doc"""\n', '        """doc"""\n        ...\n'))
+    assert out.endswith("    @flag.setter\n    def flag(self, value: bool) -> None:\n"
+                        '        """doc"""\n        ...\n')
+    assert _typed(out) == out
 
 
 @contextlib.contextmanager
@@ -348,18 +316,18 @@ def test_excluded_modules_are_not_introspected():
         conftest = root / "conftest.pyi"
         conftest.write_text("x: int\n")
         owned(fake_module("runtime.conftest"), "computed_at_import", lambda: 0)
-        v.patch_staged(root, "runtime")
+        v.patch_dir(root, "runtime")
         assert "computed_at_import" not in conftest.read_text()
 
 
 def test_runtime_passes_leave_the_tree_byte_identical_on_a_second_run():
-    # The property that the --in-place re-patching of an environment rests on.
+    # The property that re-patching an environment's tree rests on.
     with importable_stub_tree() as root:
         pyi = root / "Chem" / "rdmolfiles.pyi"
-        assert v.patch_staged(root, "runtime") == []
+        assert v.patch_dir(root, "runtime") == []
         once = pyi.read_text()
         assert "def MolWt(*x, **y):" in once
-        v.patch_staged(root, "runtime")
+        v.patch_dir(root, "runtime")
         assert pyi.read_text() == once
 
 
@@ -394,12 +362,12 @@ REVEALED = [
 
 
 def slow_test_pyright_reads_the_vendored_tree_as_intended():
-    """Type the probe against the tree beside this file, and check what comes back.
+    """Type the probe against the vendored tree, and check what comes back.
 
     The only check here that catches a change in pyright's own behaviour, and
     the harness the passes were measured with.
     """
-    stubs = pathlib.Path(__file__).parent
+    stubs = pathlib.Path(__file__).resolve().parent.with_name("python_stubs")
     with tempfile.TemporaryDirectory() as tmp:
         work = pathlib.Path(tmp)
         (work / "pyrightconfig.json").write_text(json.dumps(

@@ -8,7 +8,7 @@
 --- client per script, started from basedpyright's `root_dir` hook (see
 --- `lsp/basedpyright.lua`) and stopped again when its last buffer detaches.
 ---
---- The clients keep the name `basedpyright`, so `stub_fixes.lua` covers them
+--- The clients keep the name `basedpyright`, so `stub_patches.lua` covers them
 --- too; the `uv_script_python` pin below is what tells them apart from the
 --- project's own.
 local util = require "utils/init"

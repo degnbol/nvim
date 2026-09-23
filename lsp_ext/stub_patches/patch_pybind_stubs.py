@@ -1,16 +1,11 @@
-#!/usr/bin/env python3
-"""Fix a package's bundled pybind11-stubgen stubs (RDKit).
+"""Repair a package's bundled pybind11-stubgen stubs (RDKit).
 
 RDKit ships official pybind11-stubgen stubs in a ``rdkit-stubs/`` sibling of
 the installed package. They have real, typed function signatures (which
 pybind11-stubgen alone cannot produce) but five defects, because
 pybind11-stubgen cannot parse Boost.Python's own signatures and does not record
-what the package's Python layer does to itself at import time.
-
-Two modes: ``--out`` copies ``<package>-stubs`` to a destination as a *complete*
-stub package (so pyright's ``stubPath`` copy wins over any ``<package>-stubs``
-installed in the active environment), and ``--in-place`` rewrites the installed
-``<package>-stubs`` itself. Both fix these defects:
+what the package's Python layer does to itself at import time. ``patch_dir``
+repairs these in place:
 
 - Strip the ``C++ signature :`` block from docstrings (keeps the readable
   Boost signature line and prose above it), except where the stub's own return
@@ -30,25 +25,18 @@ installed in the active environment), and ``--in-place`` rewrites the installed
   stub keeps the stale Boost signature (``Mol.GetAtoms``, and ``__iter__`` on
   the ``rdBase`` vector classes).
 
-Every rewritten file gets a ``# fix_pybind_stubs: <package> <version> <sha>``
-head comment, where ``<sha>`` is the first 8 hex digits of this script's own
-sha256. Comments never reach pyright's hover, so it costs nothing to display,
-and it lets a consumer detect not just that a tree was patched but whether it
-was patched by *this* version of the script (a reinstall replaces the files and
-drops the marker with them, so detection still self-heals).
+Docstrings are matched in the shapes both pybind11-stubgen and docify write.
 
-Must run where ``<package>`` is importable: every stub outside the trees listed
-in ``_SIDE_EFFECT_DIRS`` has its module imported to be introspected.
+Must run where ``<package>`` is importable: every stub outside the trees
+``stub_tree.side_effect_free`` rules out has its module imported to be
+introspected.
 """
-import argparse
+from __future__ import annotations
+
 import ast
 import contextlib
-import fnmatch
-import hashlib
 import importlib
-import importlib.metadata
 import inspect
-import io
 import keyword
 import os
 import pathlib
@@ -57,10 +45,14 @@ import re
 import shutil
 import sys
 import textwrap
-import tokenize
 import types
 
-MARKER_PREFIX = "# fix_pybind_stubs:"
+from stub_tree import (
+    comment_keyword_targets,
+    introspection_order,
+    module_name,
+    side_effect_free,
+)
 
 _CPP_MARKER = re.compile(r"^(\s*)C\+\+ signature :\s*$")
 _CPP_RETURN = re.compile(r"^\s*(.*?)\s*[\w:~]+\(.*\)\s*$")
@@ -69,28 +61,28 @@ _CPP_RETURN = re.compile(r"^\s*(.*?)\s*[\w:~]+\(.*\)\s*$")
 _OPAQUE_CPP = frozenset({"void", "void*", "_object*", "PyObject*",
                          "boost::python::api::object", "boost::python::object"})
 _WEAK_PY = frozenset({"Any", "typing.Any", "object", "Incomplete"})
+# A docstring as pybind11-stubgen or docify writes it: triple-quoted, raw when it
+# holds a backslash, or docify's repr() for one with unprintable characters.
+_DOC_LITERAL = (r'(?:[rR]?"""(?:[^"\\]|\\[\s\S]|"(?!""))*"""'
+                r"""|'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")""")
 _CONSTRUCTOR_DOC = re.compile(
     r'(def (?:__init__|__new__)\([^)]*\)(?:\s*->\s*[^:\n]+)?:\s*)'
-    r'("""(?:[^"]|"(?!""))*""")'
+    rf'({_DOC_LITERAL})(?P<rest>\n[ \t]*(?=\.\.\.))?'
 )
-_KEYWORD_TARGET = re.compile(r"^\s*([A-Za-z_]\w*)\s*[:=]")
 _TOPLEVEL_CLASS = re.compile(r"(?m)^(?=class \w)")
 _CLASS_NAME = re.compile(r"^class (\w+)")
 _PROPERTY = re.compile(
     r'    @property\n'
     r'    def (?P<name>\w+)\(\*args, \*\*kwargs\):\n'
-    r'(?:        """\n(?P<doc>(?:.*\n)*?)        """\n|        \.\.\.\n)'
+    rf'(?:        (?P<doc>{_DOC_LITERAL})\n(?:        \.\.\.\n)?|        \.\.\.\n)'
     r'(?P<setter>    @(?P=name)\.setter\n'
-    r'    def (?P=name)\(\*args, \*\*kwargs\):\n        \.\.\.\n)?'
+    r'    def (?P=name)\(\*args, \*\*kwargs\):\n'
+    rf'(?P<setter_body>(?:        {_DOC_LITERAL}\n)?        \.\.\.\n))?'
 )
 _METHOD_NAME = re.compile(r"(?m)^    def (\w+)\(")
 _FUTURE = "from __future__ import annotations\n"
 _ADDED_HEADER = "# present at runtime, absent from the generated stub:\n"
 
-# Trees that compute and print at import time, or need a GUI toolkit. Matched
-# per path component, not as a substring of the dotted name, which would also
-# drop rdkit.DataStructs and rdkit.DataManip.
-_SIDE_EFFECT_DIRS = ("Contrib", "sping", "tests", "TestRunner", "conftest", "demo*")
 # Dunders where the stale C++ signature is harmless, so rewriting them from the
 # runtime would be churn. __iter__/__next__/__getitem__ are deliberately absent:
 # typing those is what makes a patched container iterable and indexable.
@@ -202,48 +194,16 @@ def drop_constructor_docstrings(text):
 
     text: stub source.
     Returns the source with those docstrings replaced by ``...`` so pyright
-    shows the class docstring on constructor hover. Constructors carrying real
-    prose (no C++ signature marker) are left untouched.
+    shows the class docstring on constructor hover, or just removed where a
+    ``...`` already follows. Constructors
+    carrying real prose (no C++ signature marker) are left untouched.
     """
     def repl(m):
-        return m.group(1) + "..." if "C++ signature" in m.group(2) else m.group(0)
+        if "C++ signature" not in m.group(2):
+            return m.group(0)
+        return m.group(1) if m.group("rest") else m.group(1) + "..."
 
     return _CONSTRUCTOR_DOC.sub(repl, text)
-
-
-def string_literal_lines(text):
-    """1-based line numbers any string literal of a source spans.
-
-    text: source that tokenizes, which does not require it to compile.
-    Returns the set of those line numbers.
-    """
-    spans = set()
-    for token in tokenize.generate_tokens(io.StringIO(text).readline):
-        if token.type == tokenize.STRING:
-            spans |= set(range(token.start[0], token.end[0] + 1))
-    return spans
-
-
-def comment_keyword_targets(text):
-    """Comment out lines whose assignment target is a Python keyword.
-
-    text: stub source.
-    Returns the source with such lines prefixed by ``# ``. Boost.Python enums
-    can have a member named ``None``, which is an invalid annotation target;
-    the value stays listed in the enum's names/values dicts. Docstring interiors
-    are left alone: prose reads as an assignment often enough (``from: <url>``)
-    and commenting it out is both wrong and, since the comment then no longer
-    matches, not idempotent.
-    """
-    prose = string_literal_lines(text)
-    out = [
-        "# " + line
-        if (m := _KEYWORD_TARGET.match(line)) and keyword.iskeyword(m.group(1))
-        and n not in prose
-        else line
-        for n, line in enumerate(text.splitlines(keepends=True), start=1)
-    ]
-    return "".join(out)
 
 
 def property_types(cls):
@@ -271,24 +231,43 @@ def property_types(cls):
     return types
 
 
+def append_to_docstring(literal, suffix):
+    """A docstring literal with text appended to its value.
+
+    literal: the literal's source, any of the shapes ``_DOC_LITERAL`` matches.
+    suffix: text to append, after a space.
+    Returns the source of a literal of the same kind (triple-quoted with its
+    prefix kept, or ``repr()`` for a single-quoted one) whose value is the
+    stripped original followed by the suffix.
+    """
+    triple = re.fullmatch(r'([rR]?)"""([\s\S]*)"""', literal)
+    if triple:
+        return f'{triple.group(1)}"""{triple.group(2).strip()} {suffix}"""'
+    return repr(f"{ast.literal_eval(literal).strip()} {suffix}")
+
+
 def _type_class_properties(block, prop_map):
     """Rewrite the property stubs of one class block using an introspected map.
 
     block: source of a single top-level class.
     prop_map: {property_name: (type_name, default_repr)} for that class.
     Returns the block with matched properties given a typed getter (and setter
-    if the original had one) and the default appended to the docstring.
+    if the original had one, keeping its docstring) and the default appended to
+    the getter's docstring.
     """
     def repl(m):
         name = m.group("name")
         if name not in prop_map:
             return m.group(0)
         type_name, default = prop_map[name]
-        doc = (m.group("doc") or "").strip()
-        doc = f"{doc} (default: {default})" if doc else f"default: {default}"
-        out = f'    @property\n    def {name}(self) -> {type_name}:\n        """{doc}"""\n'
+        doc = m.group("doc")
+        doc = (append_to_docstring(doc, f"(default: {default})") if doc
+               else f'"""default: {default}"""')
+        out = f"    @property\n    def {name}(self) -> {type_name}:\n        {doc}\n"
         if m.group("setter"):
-            out += f"    @{name}.setter\n    def {name}(self, value: {type_name}) -> None: ...\n"
+            body = m.group("setter_body")
+            header = f"    @{name}.setter\n    def {name}(self, value: {type_name}) -> None:"
+            out += (header + " ...\n" if body.strip() == "..." else header + "\n" + body)
         return out
 
     return _PROPERTY.sub(repl, block)
@@ -574,90 +553,13 @@ def type_boost_overrides(text, module):
 def clean(text):
     """Apply the import-free text cleanups to one stub's source.
 
-    text: stub source, patched or not; a marker line left by a previous run is
-        dropped so the cleanups are idempotent.
-    Returns the cleaned source, without a marker.
+    text: stub source, repaired or not.
+    Returns the cleaned source.
     """
-    if text.startswith(MARKER_PREFIX):
-        text = text.split("\n", 1)[-1]
     text = drop_constructor_docstrings(text)
     text = strip_cpp_signatures(text, keepable_signature_lines(text))
     text = comment_keyword_targets(text)
     return text
-
-
-def package_version(package):
-    """Version the installed distribution reports for a package.
-
-    package: import name, which is also the distribution name for the packages
-        this fixes.
-    Returns the version, or ``unknown`` when no distribution of that name is
-    installed — the marker is provenance, so a missing version must not stop the
-    stubs being patched.
-    """
-    try:
-        return importlib.metadata.version(package)
-    except importlib.metadata.PackageNotFoundError:
-        return "unknown"
-
-
-def script_fingerprint():
-    """Short digest of this script, identifying which version of it patched a tree.
-
-    Returns the first 8 hex digits of the file's sha256, so a consumer holding
-    the script's path can tell an outdated patched tree from a current one.
-    """
-    return hashlib.sha256(pathlib.Path(__file__).read_bytes()).hexdigest()[:8]
-
-
-def marker_line(package):
-    """Head comment recording what rewrote a stub, and which version it described.
-
-    package: import name whose version is recorded.
-    Returns the comment line, newline included.
-    """
-    return f"{MARKER_PREFIX} {package} {package_version(package)} {script_fingerprint()}\n"
-
-
-def module_name(pyi_path, stub_root, package):
-    """Dotted module name a stub file describes.
-
-    pyi_path: path to a ``.pyi`` file inside stub_root.
-    stub_root: the stub tree's root directory.
-    package: import prefix the tree describes, so the name is independent of
-        stub_root's own directory name.
-    Returns the dotted name, dropping a trailing ``__init__``.
-    """
-    parts = pyi_path.relative_to(stub_root).with_suffix("").parts
-    if parts[-1] == "__init__":
-        parts = parts[:-1]
-    return ".".join((package, *parts))
-
-
-def side_effect_free(parts):
-    """Whether a module's path components steer clear of the import-time hazards.
-
-    parts: the module's path components below the package root, as directory
-        names or as the segments of its dotted name.
-    Returns False for the demo, test and vendored-toolkit trees, which compute,
-    print or need a GUI toolkit at import time.
-    """
-    return not any(fnmatch.fnmatch(part, pattern)
-                   for part in parts for pattern in _SIDE_EFFECT_DIRS)
-
-
-def introspection_order(stub_root):
-    """The tree's stub files, ordered so a package precedes everything under it.
-
-    stub_root: the stub tree's root directory.
-    Returns the paths of every ``.pyi``, parents first. Importing a submodule
-    binds it as an attribute of its package, so a package enumerated after its
-    own descendants would appear to hold names that importing it alone does not
-    create.
-    """
-    return sorted(stub_root.rglob("*.pyi"),
-                  key=lambda p: (len(p.relative_to(stub_root).parts),
-                                 p.name != "__init__.pyi", p))
 
 
 def missing_stub_modules(package):
@@ -685,15 +587,15 @@ def missing_stub_modules(package):
 
 
 def patch_dir(stub_root, package):
-    """Fix the Boost.Python defects in every ``.pyi`` under a stub tree, in place.
+    """Repair the Boost.Python defects in every ``.pyi`` under a stub tree, in place.
 
     stub_root: directory holding the stub tree.
     package: import prefix the tree describes (e.g. ``rdkit``).
     Returns the dotted module names whose import failed, leaving them with the
-    text cleanups alone.
+    text cleanups alone. ``SystemExit`` counts as a failed import too, which
+    otherwise ends the whole run.
     """
     root = stub_root.resolve()
-    marker = marker_line(package)
     unimportable = []
     for p in introspection_order(root):
         # Explicit encoding: a few stubs are non-ASCII and the locale is the
@@ -704,13 +606,13 @@ def patch_dir(stub_root, package):
         if side_effect_free(p.relative_to(root).with_suffix("").parts):
             try:
                 module = importlib.import_module(name)
-            except Exception as e:
+            except (Exception, SystemExit) as e:
                 unimportable.append(f"{name} ({e})")
             else:
                 text = type_properties(text, module)
                 text = type_boost_overrides(text, module)
                 text = declare_missing_names(text, module)
-        p.write_text(marker + text, encoding="utf-8")
+        p.write_text(text, encoding="utf-8")
     return unimportable
 
 
@@ -733,7 +635,7 @@ def vendor(package, dest):
         official stubs.
     dest: destination stub package directory. Merged into rather than replaced,
         so a caller can put stubs for the modules the bundle omits there first
-        and have them fixed alongside; clearing it is that caller's business.
+        and have them repaired alongside; clearing it is that caller's business.
     Returns dest.
     """
     source = stubs_path(package)
@@ -741,55 +643,3 @@ def vendor(package, dest):
         raise SystemExit(f"no bundled stubs at {source}")
     shutil.copytree(source, dest, dirs_exist_ok=True)
     return dest
-
-
-def patch_staged(stub_root, package):
-    """Fix a stub tree in place, swapping a patched copy in atomically.
-
-    stub_root: directory holding the stub tree; it is replaced by the patched
-        copy built beside it, so a reader never sees a half-rewritten tree and
-        an interrupted run leaves the original intact. A swap interrupted
-        between its two renames is recovered on the next call.
-    package: import prefix the tree describes (e.g. ``rdkit``).
-    Returns the dotted module names whose import failed, leaving them with the
-    text cleanups alone.
-    """
-    backup = stub_root.with_name(stub_root.name + ".bak")
-    staging = stub_root.with_name(stub_root.name + ".new")
-    if not stub_root.is_dir() and backup.is_dir():
-        backup.rename(stub_root)
-    if not stub_root.is_dir():
-        raise SystemExit(f"no stubs at {stub_root}")
-    for leftover in (backup, staging):
-        if leftover.exists():
-            shutil.rmtree(leftover)
-    shutil.copytree(stub_root, staging)
-    unimportable = patch_dir(staging, package)
-    stub_root.rename(backup)
-    staging.rename(stub_root)
-    shutil.rmtree(backup)
-    return unimportable
-
-
-def main():
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("package", help="importable package name (e.g. rdkit)")
-    where = ap.add_mutually_exclusive_group(required=True)
-    where.add_argument("-o", "--out", type=pathlib.Path,
-                       help="copy the stubs to this directory and fix the copy")
-    where.add_argument("-i", "--in-place", action="store_true",
-                       help="fix the stubs installed in the active environment")
-    args = ap.parse_args()
-    # A couple of rdkit's modules print on import; the report below goes to the
-    # real stdout, which the redirect has already been lifted from.
-    with open(os.devnull, "w") as quiet, contextlib.redirect_stdout(quiet):
-        if args.in_place:
-            unimportable = patch_staged(stubs_path(args.package), args.package)
-        else:
-            unimportable = patch_dir(vendor(args.package, args.out), args.package)
-    if unimportable:
-        print("introspection skipped (import failed): " + ", ".join(unimportable))
-
-
-if __name__ == "__main__":
-    main()

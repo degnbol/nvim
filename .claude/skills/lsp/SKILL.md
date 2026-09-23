@@ -28,6 +28,7 @@ lsp_ext/
 │   ├── kitty-source/       # Kitty source (git submodule) — provides kitty.* types
 │   └── pymol_modules/      # Symlink → ../pymol-open-source/modules/
 ├── python_stubs/           # .pyi stub files (pyright stubPath)
+├── stub_patches/           # Docstring pass + rdkit repair, run on stub trees
 ├── pymol-open-source/      # Full pymol source repo (git submodule)
 └── r_lsp_dots.R            # R languageserver monkey-patch (see below)
 ```
@@ -41,14 +42,16 @@ glob when generating a fallback pyright config for projects without their own
 there). Both neovim and the lint hook pick it up automatically — no config
 changes needed.
 
-**`stubPath` reaches config-less projects only.** basedpyright discards the
-language server's `stubPath` for any project owning a `pyrightconfig.json` or
-`[tool.basedpyright]`, so such projects read only their environment's own
-`<pkg>-stubs/`. `lua/autocmds/stub_fixes.lua` rewrites those in place (per-env
-confirm, then `didChangeWatchedFiles` to re-type without a restart) — see its
-`M.fixes` for the packages covered and the marker each is detected by. Detection is
-that marker rather than the absence of defects, because the fixer legitimately
-leaves some behind (properties whose type it cannot read off a live instance).
+**`stubPath` reaches config-less projects only.** basedpyright drops the
+language server's config settings (`stubPath`, `extraPaths`, …) for a project
+owning a `pyrightconfig.json` (even `{}`) or a `[tool.basedpyright]` section.
+A `pyproject.toml` without that section keeps them. `pythonPath` survives.
+Such projects read only their environment's own stubs.
+`lua/autocmds/stub_patches.lua` patches those in place without a prompt: on
+`LspAttach` it asks for the declaration of every imported package and queues
+`lsp_ext/stub_patches/patch_stubs.py` on the tree it lands in, then sends
+`didChangeWatchedFiles`. The script decides what applies (see
+`lsp_ext/stub_patches/README.md`).
 
 ## PEP 723 uv scripts — a client per script
 
@@ -67,8 +70,8 @@ its last detach. One server per open uv script.
   is carried by a `uv_script_python` field on the config, not by
   `settings.python.pythonPath` — `LspPyrightSetPythonPath` rewrites the live
   settings in place.
-- The name stays `basedpyright`, so `stub_fixes` applies, prompting once per
-  script environment — and again after a dependency-list edit, which is a new
+- The name stays `basedpyright`, so `stub_patches` applies, once per script
+  environment — and again after a dependency-list edit, which is a new
   environment.
 
 ## R language server — `...` forwarding patch
