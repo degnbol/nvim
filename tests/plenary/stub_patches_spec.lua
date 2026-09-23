@@ -1,6 +1,13 @@
 ---@diagnostic disable: undefined-global
 local stub_patches = require "autocmds/stub_patches"
 
+--- Load the module afresh, so a test that fails with a run still pending does
+--- not leave the queue busy for every later test.
+local function reload()
+    package.loaded["autocmds/stub_patches"] = nil
+    stub_patches = require "autocmds/stub_patches"
+end
+
 --- Write text to a path, creating parent directories.
 local function write(path, text)
     vim.fn.mkdir(vim.fs.dirname(path), "p")
@@ -85,6 +92,8 @@ local function fake_env()
 end
 
 describe("stub_patches spawn gates", function()
+    before_each(reload)
+
     --- The state `consider` leaves, and how many runs it started. Each run is
     --- then finished, so the next test finds none in progress.
     local function consider(env)
@@ -134,6 +143,8 @@ describe("stub_patches spawn gates", function()
 end)
 
 describe("stub_patches.enqueue", function()
+    before_each(reload)
+
     it("runs one at a time and maps each exit status to a state", function()
         --- @type { cmd: string[], opts: table, on_exit: fun(out: table) }[]
         local runs = {}
@@ -166,6 +177,56 @@ describe("stub_patches.enqueue", function()
         assert.is_truthy(messages[1][1]:find("pkg.mod (boom)", 1, true))
         assert.are.equal(vim.log.levels.ERROR, messages[2][2])
         assert.is_truthy(messages[2][1]:find("why", 1, true))
+    end)
+
+    it("keeps the queue going after a spawn failure", function()
+        local envs = { fake_env(), fake_env() }
+        local runs = {}
+        local messages = {}
+        with(vim, "system", function(cmd, _, on_exit)
+            if cmd[#cmd] == envs[1].stubs then error("ENOENT: no such file or directory") end
+            table.insert(runs, on_exit)
+        end, function()
+            with(vim, "notify", function(msg, level) table.insert(messages, { msg, level }) end,
+                function()
+                    for _, env in ipairs(envs) do stub_patches.enqueue(env) end
+                    assert.are.equal("failed", stub_patches.state[envs[1].stubs])
+                    assert.are.equal("patching", stub_patches.state[envs[2].stubs])
+                    runs[1] { code = 3 }
+                    assert.is_true(vim.wait(1000, function()
+                        return stub_patches.state[envs[2].stubs] ~= "patching"
+                    end, 10))
+                end)
+        end)
+        assert.are.equal(1, #runs)
+        assert.are.equal(1, #messages)
+        assert.are.equal(vim.log.levels.ERROR, messages[1][2])
+        assert.is_truthy(messages[1][1]:find("ENOENT", 1, true))
+    end)
+
+    it("keeps the queue going when finishing a run throws", function()
+        local envs = { fake_env(), fake_env() }
+        local runs = {}
+        local messages = {}
+        with(vim, "system", function(_, _, on_exit) table.insert(runs, on_exit) end, function()
+            with(vim, "notify", function(msg, level) table.insert(messages, { msg, level }) end,
+                function()
+                    with(stub_patches, "notify_changed", function() error("boom") end, function()
+                        for _, env in ipairs(envs) do stub_patches.enqueue(env) end
+                        runs[1] { code = 0 }
+                        assert.is_true(vim.wait(1000, function() return #runs == 2 end, 10))
+                        assert.are.equal("patched", stub_patches.state[envs[1].stubs])
+                        assert.are.equal("patching", stub_patches.state[envs[2].stubs])
+                        runs[2] { code = 3 }
+                        assert.is_true(vim.wait(1000, function()
+                            return stub_patches.state[envs[2].stubs] ~= "patching"
+                        end, 10))
+                    end)
+                end)
+        end)
+        assert.are.equal(1, #messages)
+        assert.are.equal(vim.log.levels.ERROR, messages[1][2])
+        assert.is_truthy(messages[1][1]:find("boom", 1, true))
     end)
 end)
 
@@ -228,6 +289,8 @@ local function assert_documents(buf, client, site)
 end
 
 describe("stub_patches", function()
+    before_each(reload)
+
     local server = vim.fn.exepath("basedpyright-langserver")
 
     it("documents a stub after patching it in its environment", function()

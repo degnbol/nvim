@@ -108,7 +108,7 @@ local function run_next()
     running = env ~= nil
     if not env then return end
     M.state[env.stubs] = "patching"
-    vim.system({
+    local spawned, spawn_err = pcall(vim.system, {
         "uv", "run", "--no-project", "--python", env.python,
         "--with-requirements", SCRIPTS .. "/requirements.txt",
         SCRIPTS .. "/patch_stubs.py", env.stubs,
@@ -118,9 +118,19 @@ local function run_next()
         cwd = vim.fn.stdpath("run"),
         timeout = TIMEOUT_MS,
     }, vim.schedule_wrap(function(out)
-        finish(env, out)
+        local finished, finish_err = pcall(finish, env, out)
+        if not finished then
+            vim.notify(("Finishing the patch of %s failed: %s"):format(env.stubs, finish_err),
+                vim.log.levels.ERROR)
+        end
         run_next()
     end))
+    if not spawned then
+        M.state[env.stubs] = "failed"
+        vim.notify(("Starting the patch of %s failed: %s"):format(env.stubs, spawn_err),
+            vim.log.levels.ERROR)
+        run_next()
+    end
 end
 
 --- Queue a run; start it now if none is running.
