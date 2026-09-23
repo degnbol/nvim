@@ -1,13 +1,15 @@
 --- Patch the stubs of every package a buffer imports, in the environment the
 --- language server resolves each from.
 ---
---- basedpyright discards the language server's `stubPath` for any project owning
---- a `pyrightconfig.json`/`[tool.basedpyright]`, so those projects only ever read
---- an environment's own stubs. `lsp_ext/stub_patches/patch_stubs.py` rewrites
---- those in place and decides everything about a tree: which package it
---- describes, whether it applies, whether it is current, which repair runs. This
---- module only finds candidate trees, checks a run can start, queues runs one at
---- a time, and nudges the servers to re-analyse what changed.
+--- basedpyright falls back to an environment's own stubs for any package missing
+--- from the language server's `stubPath`, and ignores `stubPath` entirely in a
+--- project owning a `pyrightconfig.json`/`[tool.basedpyright]`. Copies under
+--- `stubPath` alone are therefore not enough.
+--- `lsp_ext/stub_patches/patch_stubs.py` rewrites an environment's stubs in place
+--- and decides everything about a tree: which package it describes, whether it
+--- applies, whether it is current, which repair runs. This module only finds
+--- candidate trees, checks a run can start, queues runs one at a time, and
+--- nudges the servers to re-analyse what changed.
 local M = {}
 
 local SCRIPTS = vim.fn.stdpath("config") .. "/lsp_ext/stub_patches"
@@ -58,10 +60,17 @@ end
 --- @param path string declaration path
 --- @return StubPatch.Env|nil env nil outside `<env>/lib/python*/site-packages/`
 function M.env_of(path)
-    local root, site, first = path:match("^(.*)(/lib/python[^/]*/site%-packages)/([^/]+)")
+    local root, site, version, first = path:match("^(.*)(/lib/python([^/]*)/site%-packages)/([^/]+)")
     if not root then return nil end
-    local python = root .. "/bin/python"
-    if not vim.uv.fs_stat(python) then python = root .. "/bin/python3" end
+    -- A prefix can hold several Pythons, and only the one matching the
+    -- site-packages version is sure to import from it.
+    local python = root .. "/bin/python3"
+    for _, name in ipairs { "python" .. version, "python" } do
+        if vim.uv.fs_stat(root .. "/bin/" .. name) then
+            python = root .. "/bin/" .. name
+            break
+        end
+    end
     return { stubs = root .. site .. "/" .. first, python = python }
 end
 

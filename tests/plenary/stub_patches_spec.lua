@@ -67,6 +67,18 @@ describe("stub_patches.env_of", function()
         vim.fs.rm(root, { recursive = true })
     end)
 
+    it("prefers the python versioned as its site-packages", function()
+        local root = vim.fn.tempname()
+        for _, name in ipairs { "python3.12", "python", "python3", "python3.13t" } do
+            write(root .. "/bin/" .. name, "")
+        end
+        assert.are.equal(root .. "/bin/python3.12", stub_patches.env_of(
+            root .. "/lib/python3.12/site-packages/pkg/__init__.pyi").python)
+        assert.are.equal(root .. "/bin/python3.13t", stub_patches.env_of(
+            root .. "/lib/python3.13t/site-packages/pkg/__init__.pyi").python)
+        vim.fs.rm(root, { recursive = true })
+    end)
+
     it("returns nil outside a site-packages layout", function()
         assert.is_nil(stub_patches.env_of("/home/me/proj/src/rdkit.py"))
     end)
@@ -85,7 +97,10 @@ end
 --- @return StubPatch.Env
 local function fake_env()
     local root = vim.fn.tempname()
-    local env = { stubs = root .. "/site/pkg", python = root .. "/bin/python" }
+    local env = {
+        stubs = root .. "/lib/python3.12/site-packages/pkg",
+        python = root .. "/bin/python",
+    }
     write(env.stubs .. "/__init__.pyi", "")
     write(env.python, "")
     return env
@@ -227,6 +242,94 @@ describe("stub_patches.enqueue", function()
         assert.are.equal(1, #messages)
         assert.are.equal(vim.log.levels.ERROR, messages[1][2])
         assert.is_truthy(messages[1][1]:find("boom", 1, true))
+    end)
+end)
+
+--- An in-process language server declaring every symbol at the top of one file.
+--- @param path string file every declaration points at
+--- @return fun(dispatchers: vim.lsp.rpc.Dispatchers): vim.lsp.rpc.PublicClient
+local function declaring_server(path)
+    return function(dispatchers)
+        local request_id = 0
+        local closing = false
+        return {
+            request = function(method, _, callback, on_reply)
+                request_id = request_id + 1
+                local result
+                if method == "initialize" then
+                    result = { capabilities = { declarationProvider = true } }
+                elseif method == "textDocument/declaration" then
+                    local top = { line = 0, character = 0 }
+                    result = { uri = vim.uri_from_fname(path), range = { start = top, ["end"] = top } }
+                end
+                callback(nil, result, request_id)
+                if on_reply then on_reply(request_id) end
+                return true, request_id
+            end,
+            notify = function(method)
+                if method == "exit" then dispatchers.on_exit(0, 0) end
+                return true
+            end,
+            is_closing = function() return closing end,
+            terminate = function()
+                closing = true
+                dispatchers.on_exit(0, 15)
+            end,
+        }
+    end
+end
+
+describe("stub_patches attach", function()
+    -- Reloading also re-registers the LspAttach handler these tests drive.
+    before_each(reload)
+
+    it("queues one run per tree, however many buffers import it", function()
+        local env = fake_env()
+        local root = vim.fn.tempname()
+        local runs = {}
+        local n_located = 0
+        local env_of = stub_patches.env_of
+        local bufs = {}
+        local client_ids = {}
+        local function attach_both()
+            for _, name in ipairs { "a.py", "b.py" } do
+                local buf = vim.api.nvim_create_buf(true, false)
+                vim.api.nvim_buf_set_name(buf, root .. "/" .. name)
+                vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "import pkg" })
+                table.insert(bufs, buf)
+                table.insert(client_ids, vim.lsp.start({
+                    name = "basedpyright",
+                    cmd = declaring_server(env.stubs .. "/__init__.pyi"),
+                    root_dir = root,
+                }, { bufnr = buf }))
+            end
+            assert.are.equal(client_ids[1], client_ids[2])
+            assert.is_true(vim.wait(1000, function() return n_located == 2 end, 10))
+            assert.are.equal("patching", stub_patches.state[env.stubs])
+            runs[1] { code = 3 }
+            assert.is_true(vim.wait(1000, function()
+                return stub_patches.state[env.stubs] ~= "patching"
+            end, 10))
+            assert.are.same({ 1, "ok" }, { #runs, stub_patches.state[env.stubs] })
+        end
+
+        local ok, err = pcall(with, vim, "system", function(_, _, on_exit)
+            table.insert(runs, on_exit)
+        end, function()
+            with(vim.fn, "executable", function() return 1 end, function()
+                with(stub_patches, "env_of", function(path)
+                    n_located = n_located + 1
+                    return env_of(path)
+                end, attach_both)
+            end)
+        end)
+        local client = client_ids[1] and vim.lsp.get_client_by_id(client_ids[1])
+        if client then client:stop(true) end
+        for _, buf in ipairs(bufs) do vim.api.nvim_buf_delete(buf, { force = true }) end
+        assert(ok, err)
+        assert.is_true(vim.wait(1000, function()
+            return #vim.lsp.get_clients { name = "basedpyright", _uninitialized = true } == 0
+        end, 10))
     end)
 end)
 
