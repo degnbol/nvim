@@ -4,8 +4,7 @@ Status: spec
 ## Relevant files
 
 - `lsp_ext/stub_patches/patch_stubs.py` — `distribution_version` (`:97`),
-  `stage` docstring, `write_back` (`:244`, `copystat`), `_patch_staged`
-  (`redirect_stdout`, `:310`).
+  `stage` docstring, `write_back` (`:244`, `copystat`).
 - `lsp_ext/stub_patches/docify_stubs.py` — `patch_docify` (`:36-39`),
   `get_qualname` (`:47-72`).
 - `lsp_ext/stub_patches/README.md`, `test_patch_stubs.py` (`site` fixture
@@ -29,9 +28,6 @@ separate from the per-module failure handling.
   keyed on mtime (parso, hence jedi-based tools) keep the pre-patch parse.
   basedpyright is unaffected (it gets `didChangeWatchedFiles`). Permissions are
   what needs copying.
-- **C-level prints.** `redirect_stdout` does not catch output a C extension
-  writes to file descriptor 1 on import. That text lands on stdout, which is
-  the skipped-module report.
 - **Interpreter guess.** A prefix can hold several Pythons (Homebrew:
   `lib/python3.12/site-packages` beside a `bin/python3` that is 3.13). The
   guessed interpreter cannot see the package, so the run exits 3 silently.
@@ -54,18 +50,6 @@ separate from the per-module failure handling.
 ### `patch_stubs.py`
 
 - `write_back`: `shutil.copymode` instead of `shutil.copystat`.
-- `_patch_staged`: silence introspection at the descriptor level. A context
-  manager that `os.dup`s fd 1, `os.dup2`s a devnull fd over it, and restores it
-  in `finally`, replacing `redirect_stdout`:
-
-  ```python
-  @contextlib.contextmanager
-  def stdout_silenced() -> Iterator[None]:
-      """Send everything written to stdout, by Python or by C, to devnull."""
-  ```
-
-  Flush `sys.stdout` before and after, so buffered Python output is not
-  reordered.
 - `stage` docstring: only `.pyi` files are copied because only `.pyi` files are
   patched and written back. Drop the basedpyright rationale.
 
@@ -125,8 +109,7 @@ work, so a 3.9 environment gets one clear ERROR rather than a traceback.
 
 ## Expected outcome
 
-Tools caching by mtime see patched stubs. C-extension import noise no longer
-appears in the report. Homebrew and other multi-Python prefixes are patched. A
+Tools caching by mtime see patched stubs. Homebrew and other multi-Python prefixes are patched. A
 3.9 environment gets one clear message. A failed spawn does not stop later
 runs. The attach path is covered by a test.
 
