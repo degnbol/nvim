@@ -17,9 +17,6 @@ Status: spec
 - `lsp_ext/python_stubs/README.md` (`:4`), `notes/PLAN-rdkit-stub-typing.md`
   (`:243`, `:247`, `:274`).
 
-Independent of `PLAN-stub-patch-robustness.md`, except that both touch
-`_patch_staged`. Implement that plan first.
-
 ## Background
 
 Findings from reviewing the stub-docstring implementation, each small and

@@ -25,13 +25,16 @@ import importlib.metadata
 import importlib.util
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
+import tokenize
 from collections.abc import Callable, Iterator, Sequence
 
 import patch_pybind_stubs
+from stdio import discarded_stdout
 from stub_tree import introspection_order, module_name, side_effect_free
 
 REPAIRS: dict[str, Callable[[pathlib.Path, str], dict[str, BaseException]]] = {
@@ -53,6 +56,9 @@ _HERE = pathlib.Path(__file__).resolve().parent
 _MARKER_PREFIX = "# patch_stubs:"
 _LEGACY_MARKER_PREFIX = "# fix_pybind_stubs:"
 """Written on every file by this sequence's predecessor."""
+_LIBCST_ERROR_PREFIX = re.compile(r"^\w+ error: (?:error at \d+:\d+: )?")
+"""Leads libcst's error messages (``parser error: error at 2:13: expected ...``),
+restating what the line number says."""
 _TEMP_PREFIX = ".patch_stubs-"
 _TEMP_SUFFIX = ".tmp"
 
@@ -321,8 +327,8 @@ def _patch_staged(staged: pathlib.Path, target: pathlib.Path,
     aliases = {key: runtime for key, runtime in CLASS_ALIASES.items()
                if key[0].split(".")[0] == package}
     repair = REPAIRS.get(package)
-    # Some modules print on import.
-    with open(os.devnull, "w") as quiet, contextlib.redirect_stdout(quiet):
+    # Some modules print on import, and stdout is where skipped modules are reported.
+    with discarded_stdout():
         # Else every module would be skipped with the same error.
         try:
             importlib.import_module(package)
@@ -341,10 +347,35 @@ def main() -> None:
     if skipped is None:
         sys.exit(NOTHING_WRITTEN)
     for module, e in skipped.items():
-        # libcst's and some import errors span several lines.
-        message = str(e).partition("\n")[0]
-        print(f"{module} ({type(e).__name__}: {message})" if message
-              else f"{module} ({type(e).__name__})")
+        print(f"{module} ({describe(e)})")
+
+
+def describe(error: BaseException) -> str:
+    """One line naming an error's type and what it says.
+
+    A parser error gives its message and the line it points at. Any other error
+    gives its message's first line, since some span several.
+
+    Args:
+        error: the error.
+
+    Returns:
+        ``<type>: <message>``, or the type alone when the message is empty.
+    """
+    # Looked up, not imported, which would cost a run that finds the stub
+    # current: a libcst error exists only once libcst is loaded.
+    libcst = sys.modules.get("libcst")
+    if isinstance(error, SyntaxError) and error.lineno:
+        message = f"{error.msg} (line {error.lineno})"
+    elif isinstance(error, tokenize.TokenError):
+        text, (line, _) = error.args
+        message = f"{text} (line {line})"
+    elif libcst and isinstance(error, libcst.ParserSyntaxError):
+        message = f"{_LIBCST_ERROR_PREFIX.sub('', error.message)} (line {error.editor_line})"
+    else:
+        message = str(error).partition("\n")[0]
+    name = type(error).__name__
+    return f"{name}: {message}" if message else name
 
 
 if __name__ == "__main__":

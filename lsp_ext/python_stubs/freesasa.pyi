@@ -1,4 +1,4 @@
-# patch_stubs: freesasa 2.2.1 f196cd89
+# patch_stubs: freesasa 2.2.1 7fba10bd
 """The :py:mod:`freesasa` python module wraps the FreeSASA `C API`_"""
 
 import _cython_3_0_5

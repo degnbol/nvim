@@ -16,6 +16,7 @@ import libcst as cst
 import patch_pybind_stubs
 import patch_stubs
 import pytest
+from stub_tree import comment_keyword_targets
 
 RUNTIME = "from math import sqrt\n\ndef py_func(x):\n    return x\n"
 STUB = "def sqrt(x: float) -> float: ...\n"
@@ -219,6 +220,34 @@ def test_main_prints_one_line_per_skipped_module(site, tree):
     write(tree / "exits.pyi", "x: int\n")
     assert run_main(site, tree).stdout == (
         "fakepkg.exits (SystemExit)\nfakepkg.other (ImportError: first)\n")
+
+
+def raised(parse, text):
+    with pytest.raises(Exception) as caught:
+        parse(text)
+    return caught.value
+
+
+def test_a_parser_error_is_described_by_its_message_and_line():
+    syntax = raised(ast.parse, "x = 1\ndef f(a=1, b): ...\n")
+    assert patch_stubs.describe(syntax) == f"SyntaxError: {syntax.msg} (line 2)"
+    token = raised(comment_keyword_targets, 'x = 1\nx = """abc\n')
+    assert patch_stubs.describe(token) == "TokenError: EOF in multi-line string (line 2)"
+    libcst = raised(cst.parse_module, "x = 1\ndef f(a=1, b): ...\n")
+    assert patch_stubs.describe(libcst) == "ParserSyntaxError: expected one of :, = (line 2)"
+
+
+def test_any_other_error_is_described_by_its_first_line():
+    assert patch_stubs.describe(ImportError("first\nsecond")) == "ImportError: first"
+    assert patch_stubs.describe(SystemExit()) == "SystemExit"
+
+
+def test_main_stdout_holds_nothing_compiled_code_prints(site, tree):
+    # C's printf buffers when stdout is a pipe, so it would flush at exit.
+    write(site / "fakepkg" / "other.py", "import ctypes, os\n"
+          "os.write(1, b'raw\\n')\nctypes.CDLL(None).printf(b'buffered\\n')\n"
+          "raise ImportError('no')\n")
+    assert run_main(site, tree).stdout == "fakepkg.other (ImportError: no)\n"
 
 
 _TYPED_PROPERTY = re.compile(r"@property\n    def (\w+)\(self\) -> (?:bool|int|float|str):")

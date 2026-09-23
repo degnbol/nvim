@@ -1,4 +1,4 @@
-# patch_stubs: rdkit 2026.3.6 f196cd89
+# patch_stubs: rdkit 2026.3.6 7fba10bd
 from __future__ import annotations
 import logging as logging
 import sys as sys

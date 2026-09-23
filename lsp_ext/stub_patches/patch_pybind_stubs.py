@@ -34,11 +34,9 @@ introspected.
 from __future__ import annotations
 
 import ast
-import contextlib
 import importlib
 import inspect
 import keyword
-import os
 import pathlib
 import pkgutil
 import re
@@ -48,6 +46,7 @@ import textwrap
 import tokenize
 import types
 
+from stdio import discarded_stdout
 from stub_tree import (
     comment_keyword_targets,
     introspection_order,
@@ -574,7 +573,7 @@ def missing_stub_modules(package):
     bundled = stubs_path(package)
     root = importlib.import_module(package)
     missing = []
-    with open(os.devnull, "w") as quiet, contextlib.redirect_stdout(quiet):
+    with discarded_stdout():
         for info in pkgutil.walk_packages(
                 root.__path__, package + ".",
                 onerror=lambda name: print(f"not walked: {name}", file=sys.stderr)):
