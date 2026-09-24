@@ -1,12 +1,19 @@
 local map = require "utils/keymap"
 
+-- Ours replaces nvim-lspconfig's on_attach (its `Lsp*` export/pin commands) in
+-- the lsp/ merge, so chain it.
+local this_file = vim.uv.fs_realpath(debug.getinfo(1, "S").source:sub(2))
+local base_on_attach
+for _, f in ipairs(vim.api.nvim_get_runtime_file("lsp/tinymist.lua", true)) do
+    if vim.uv.fs_realpath(f) ~= this_file then
+        base_on_attach = dofile(f).on_attach or base_on_attach
+    end
+end
+
 -- https://github.com/Myriad-Dreamin/tinymist/blob/main/editors/neovim/Configuration.md
--- NOTE: this on_attach is dead on its own -- nvim-lspconfig ships its own
--- lsp/tinymist.lua whose on_attach wins the runtimepath merge over ours (see the
--- `tbl_deep_extend` note in the neovim skill). It is re-applied, chained after
--- nvim-lspconfig's, in lua/plugins/lsp.lua's mason-lspconfig `after` block.
 return {
     on_attach = function (client, bufnr)
+        if base_on_attach then base_on_attach(client, bufnr) end
         -- Pinning a main file is load-bearing, not a nicety: tinymist's ref/label
         -- features (hover on @cite/@fig/@tbl/@heading, goto-def on an uncompiled
         -- doc) read `ctx.success_doc()`, which is only populated for a pinned

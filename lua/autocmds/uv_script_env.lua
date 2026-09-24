@@ -6,7 +6,7 @@
 --- unresolved. `settings.python.pythonPath` fixes that, but it is per-client and
 --- one directory can hold several scripts with different environments — hence a
 --- client per script, started from basedpyright's `root_dir` hook (see
---- `lsp/basedpyright.lua`) and stopped again when its last buffer detaches.
+--- `after/lsp/basedpyright.lua`) and stopped again when its last buffer detaches.
 ---
 --- The clients keep the name `basedpyright`, so `stub_patches.lua` covers them
 --- too; the `uv_script_python` pin below is what tells them apart from the
@@ -128,7 +128,7 @@ end
 --- @param python string interpreter of the script's uv environment
 local function start(bufnr, python)
     if not vim.api.nvim_buf_is_loaded(bufnr) then return end
-    -- The resolved config, not a `dofile` of `lsp/basedpyright.lua`: that file is
+    -- The resolved config, not a `dofile` of `after/lsp/basedpyright.lua`: that file is
     -- merely one input to the merge and lacks nvim-lspconfig's cmd and on_attach.
     --- @type UvScriptConfig
     local config = vim.deepcopy(assert(vim.lsp.config[SERVER]))

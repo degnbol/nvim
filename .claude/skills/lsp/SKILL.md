@@ -1,6 +1,6 @@
 ---
 name: lsp
-description: This config's LSP setup — lsp_ext/ external type sources and stubs for basedpyright, per-script clients for PEP 723 uv scripts, the R languageserver `...`-forwarding patch, and the mason-lspconfig field-override workaround. Use when editing lsp/*.lua, lua/plugins/lsp.lua, files under lsp_ext/, or configuring basedpyright/ruff/r_language_server/tinymist/clangd/clice, or C/C++ compile flags / missing headers.
+description: This config's LSP setup — lsp_ext/ external type sources and stubs for basedpyright, per-script clients for PEP 723 uv scripts, the R languageserver `...`-forwarding patch, and why configs live in after/lsp/. Use when editing after/lsp/*.lua, lua/plugins/lsp.lua, files under lsp_ext/, or configuring basedpyright/ruff/r_language_server/tinymist/clangd/clice, or C/C++ compile flags / missing headers.
 ---
 
 # LSP (this config)
@@ -35,7 +35,7 @@ lsp_ext/
 └── r_lsp_dots.R            # R languageserver monkey-patch (see below)
 ```
 
-**How it works:** `lsp/basedpyright.lua` globs `lsp_ext/extraPaths/*/` for
+**How it works:** `after/lsp/basedpyright.lua` globs `lsp_ext/extraPaths/*/` for
 import resolution paths. The Claude `lib/lint-tier.sh` library uses the same
 glob when generating a fallback pyright config for projects without their own
 `pyrightconfig.json`.
@@ -60,7 +60,7 @@ Such projects read only their environment's own stubs.
 A `# /// script` file's dependencies live in an environment of its own under
 `~/.cache/uv/environments-v2/`. `lua/autocmds/uv_script_env.lua` gives such a
 buffer its own basedpyright with `settings.python.pythonPath` set to that
-interpreter, entered from `root_dir` in `lsp/basedpyright.lua` and stopped on
+interpreter, entered from `root_dir` in `after/lsp/basedpyright.lua` and stopped on
 its last detach. One server per open uv script.
 
 - `pythonPath` is not a config-file field, so unlike `stubPath`/`extraPaths`
@@ -92,14 +92,14 @@ via `setHook(packageEvent("languageserver", "onLoad"), ...)`. Two patches:
    `completionItem/resolve` looks up docs for the underlying function, not the
    wrapper).
 
-**Config:** `lsp/r_language_server.lua` sets a custom `cmd` that sources the
-patch before `languageserver::run()`.
+**Config:** `after/lsp/r_language_server.lua` sets a custom `cmd` that sources
+the patch before `languageserver::run()`.
 
-## mason-lspconfig field override
+## lsp/ merge order
 
-Mason's `automatic_enable` calls `vim.lsp.config()` which overrides fields from
-`lsp/*.lua` — not just `cmd` but also `filetypes` and other fields. Fix: in
-`lua/plugins/lsp.lua`, re-apply custom config after `setup()`. Already done for:
-`r_language_server` (custom cmd), `basedpyright` and `ruff` (compound
-filetypes), `tinymist` (`on_attach`, which pins a main so ref hover/goto-def
-work — see the comment there).
+Configs live in `after/lsp/`: nvim-lspconfig's `lsp/<name>.lua` wins over a
+plain `lsp/` one (neovim skill `references/lsp.md` § "External LSP servers").
+Function fields replace, so `after/lsp/tinymist.lua` chains nvim-lspconfig's
+`on_attach` before its own main-pinning. `r_language_server` is excluded from
+mason-lspconfig's `automatic_enable` in `lua/plugins/lsp.lua`, which would
+otherwise override its `cmd`.

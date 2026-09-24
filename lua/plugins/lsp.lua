@@ -140,7 +140,7 @@ return {
 				group = nvim_metals_group,
 			})
 
-			-- JSON with schemas - see lsp/jsonls.lua
+			-- JSON with schemas - see after/lsp/jsonls.lua
 			vim.lsp.enable("jsonls")
 
 			-- Manual efforts. Install julia LSP as described on
@@ -185,42 +185,11 @@ return {
 		after = function()
 			require("mason-lspconfig").setup({
 				ensure_installed = ensure_installed,
+				-- automatic_enable would vim.lsp.config() Mason's binary as cmd, which
+				-- outranks after/lsp/r_language_server.lua (:h lsp-config-merge).
+				automatic_enable = { exclude = { "r_language_server" } },
 			})
-			-- R LSP uses a custom cmd (lsp/r_language_server.lua) that patches
-			-- the languageserver at startup. Must re-apply after mason-lspconfig
-			-- since Mason overrides cmd with its own wrapper.
-			local patch = vim.fn.stdpath("config") .. "/lsp_ext/r_lsp_dots.R"
-			vim.lsp.config("r_language_server", {
-				cmd = { "R", "--no-echo", "-e", "source('" .. patch .. "'); languageserver::run()" },
-			})
-			-- Mason overrides filetypes to {"python"}, re-add compound filetype.
-			vim.lsp.config("basedpyright", { filetypes = { "python", "python.blender" } })
-			vim.lsp.config("ruff", { filetypes = { "python", "python.blender" } })
-			-- Our zsh buffers use the compound filetype "sh.zsh"; re-add it.
-			vim.lsp.config("bashls", { filetypes = { "sh", "bash", "zsh", "sh.zsh" } })
-
-			-- tinymist: nvim-lspconfig's own lsp/tinymist.lua on_attach (its Lsp*
-			-- export/pin commands) wins the runtimepath deep-merge over ours, so our
-			-- main-pinning never ran and ref hover (@cite/@fig/@tbl) came up empty
-			-- for want of a pinned main. Re-apply ours last so it wins, chaining
-			-- nvim-lspconfig's on_attach (resolved lazily on first attach -- not yet
-			-- on the runtimepath when this runs) to keep those commands.
-			local tinymist = dofile(vim.fn.stdpath("config") .. "/lsp/tinymist.lua")
-			local tinymist_base
-			vim.lsp.config("tinymist", {
-				on_attach = function(client, bufnr)
-					if tinymist_base == nil then
-						tinymist_base = false
-						for _, f in ipairs(vim.api.nvim_get_runtime_file("lsp/tinymist.lua", true)) do
-							if not f:find(vim.fn.stdpath("config"), 1, true) then
-								tinymist_base = dofile(f).on_attach
-							end
-						end
-					end
-					if tinymist_base then tinymist_base(client, bufnr) end
-					tinymist.on_attach(client, bufnr)
-				end,
-			})
+			vim.lsp.enable("r_language_server")
 		end,
 	},
 	-- flutter tools contains LSP for dart.

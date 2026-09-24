@@ -14,7 +14,7 @@ vim.env.PATH = vim.env.HOME
 	.. "/.local/bin/:/opt/homebrew/Caskroom/miniforge/base/bin:/opt/homebrew/bin:"
 	.. vim.env.PATH
 
--- PyMOL stubs for LSP are in basedpyright extraPaths (lsp/basedpyright.lua),
+-- PyMOL stubs for LSP are in basedpyright extraPaths (after/lsp/basedpyright.lua),
 -- not PYTHONPATH — global PYTHONPATH breaks the real pymol binary.
 
 local paths = require("utils.paths")
