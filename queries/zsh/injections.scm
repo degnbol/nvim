@@ -276,8 +276,9 @@
 ; -----------------------------------------------------------------------------
 ; `interp <<TAG … TAG` — a command that runs its heredoc body as code because it
 ; reads its script from stdin (`gnuplot <<GP`, `python <<EOF`, `uv run python -
-; <<EOF`). #inject-interp-cmd! takes the whole command node and walks back from
-; its last argument (skipping the `-` stdin marker and flags) to the interpreter
+; <<EOF`, `python3 - $f <<EOF`). #inject-interp-cmd! takes the whole command node
+; and walks back from the `-` stdin marker — or, without one, its last argument —
+; skipping flags to the interpreter
 ; token, then resolves basename → language via the same INTERPRETERS table as
 ; the `-c`/`-e` flag path (the flag char is irrelevant here); an off-table
 ; interpreter leaves it unset, so `cat <<EOF` falls through to the

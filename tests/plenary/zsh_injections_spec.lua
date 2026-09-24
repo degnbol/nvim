@@ -830,6 +830,16 @@ describe("zsh injections", function()
                 "python", "print(1)")
         end)
 
+        it("injects python past script args after -: python3 - $f <<EOF", function()
+            assert_injection(heredoc("python3 - $f", "import sys"),
+                "python", "import sys")
+        end)
+
+        it("injects python past flags, - and several script args", function()
+            assert_injection(heredoc('uv run python -u - "$a" b.txt', "import sys"),
+                "python", "import sys")
+        end)
+
         it("injects python when the interpreter ends a && list", function()
             assert_injection(heredoc("cd /tmp && uv run python -", "print(1)"),
                 "python", "print(1)")

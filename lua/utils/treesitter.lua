@@ -251,10 +251,12 @@ end
 ---(`gnuplot <<GP … GP`, `python <<EOF … EOF`, `uv run python - <<EOF … EOF`).
 ---@cmd is the whole interpreter (command) node. The interpreter may be wrapped
 ---(`uv run python`) and/or trailed by a bare `-` stdin marker and flags
----(`python -u -`), so walk backward from the last child skipping `-`-prefixed
----tokens (flags and the bare `-`) to the interpreter token — the same backward
----walk as `#inject-interp!`, but anchored on the command's last argument rather
----than a `-c`/`-e` flag. Resolves that token's basename in the INTERPRETERS
+---(`python -u -`), so walk backward skipping `-`-prefixed tokens (flags and the
+---bare `-`) to the interpreter token — the same backward walk as
+---`#inject-interp!`, but anchored on the first bare `-` or, without one, the
+---command's last argument rather than a `-c`/`-e` flag. Tokens after the `-` are
+---the script's own argv (`python3 - $f`), so they never name the interpreter.
+---Resolves that token's basename in the INTERPRETERS
 ---table and sets `injection.language` to its `lang` (the `char` command flag is
 ---irrelevant here). An off-table interpreter leaves the language unset, so the
 ---capture is ignored (same contract as `#inject-by-ext!`).
@@ -266,7 +268,14 @@ end
 function M.inject_interp_cmd_directive(match, _, source, pred, metadata)
     local node = (match[pred[2]] or {})[1]
     if not node then return end
-    local interp = resolve_interp(node:named_child(node:named_child_count() - 1), source)
+    local anchor = node:named_child(node:named_child_count() - 1)
+    for child in node:iter_children() do
+        if child:named() and vim.treesitter.get_node_text(child, source) == "-" then
+            anchor = child
+            break
+        end
+    end
+    local interp = resolve_interp(anchor, source)
     if interp then metadata["injection.language"] = interp.lang end
 end
 
