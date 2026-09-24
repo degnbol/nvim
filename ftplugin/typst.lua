@@ -14,7 +14,7 @@ end
 -- the LSP for everything else (`@fig:`/`@sec:`/`@eq:`, which it resolves right).
 map.n('grd', function()
     local items = require"typst_glossary".resolve(0)
-    if items then map.qf_mini { items = items } else map.lsp_definition() end
+    if items then require("utils/qf").jump_or_load { items = items } else require("utils.lsp").definition() end
 end, "Definition (glossary-aware)", { buffer=true })
 
 -- K: our concise glossary hover for glossy `@term` refs; defer to the LSP

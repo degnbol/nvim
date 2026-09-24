@@ -1,3 +1,5 @@
+local qf = require "utils/qf"
+
 local M = {}
 
 --- Normalize a `WorkspaceEdit` to a shape-agnostic list of its per-file edit
@@ -80,6 +82,57 @@ function M.document_link_at(buf, row, col)
         end
     end
     return nil
+end
+
+--- LSP list options whose `on_list` drops the items that match any predicate
+--- and passes the rest to `qf.jump_or_load`.
+--- @param ... fun(item: table): boolean Predicates on a `:h setqflist-what` item.
+--- True drops the item.
+--- @return vim.lsp.LocationOpts opts
+local function filtered_list_opts(...)
+    local rejects = { ... }
+    return {
+        on_list = function(options)
+            options.items = vim.tbl_filter(function(item)
+                return not vim.iter(rejects):any(function(reject) return reject(item) end)
+            end, options.items)
+            qf.jump_or_load(options)
+        end
+    }
+end
+
+--- Go to the LSP definition of the symbol under the cursor, with the results
+--- handled by `qf.jump_or_load`.
+function M.definition()
+    vim.lsp.buf.definition { on_list = qf.jump_or_load }
+end
+
+--- Go to the LSP references of the symbol under the cursor, without the items
+--- that match any predicate, with the rest handled by `qf.jump_or_load`.
+--- @param ... fun(item: table): boolean Predicates on a `:h setqflist-what` item.
+--- True drops the item.
+function M.references(...)
+    vim.lsp.buf.references(nil, filtered_list_opts(...))
+end
+
+---Create a root_dir function for vim.lsp.config that resolves symlinks before searching.
+---Needed for symlinked dotfiles where .git may not be in the apparent ancestor chain.
+---@param markers string|string[] Root markers to search for (default: { '.git' })
+---@return function root_dir_fn Function compatible with vim.lsp.config root_dir
+function M.symlink_root_dir(markers)
+    markers = markers or { '.git' }
+    if type(markers) == 'string' then markers = { markers } end
+    return function(bufnr, on_dir)
+        local fname = vim.api.nvim_buf_get_name(bufnr)
+        local resolved = vim.fn.resolve(fname)
+        local root = vim.fs.root(resolved, markers)
+        if root then
+            on_dir(root)
+        else
+            -- Fallback to file's directory for single-file support
+            on_dir(vim.fn.fnamemodify(resolved, ':h'))
+        end
+    end
 end
 
 return M

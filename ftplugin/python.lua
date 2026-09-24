@@ -79,12 +79,10 @@ for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 10, false)) do
 end
 
 -- Filter the default goto references so we don't see build/ references or
--- import statements (grR additionally excludes the line we're calling from).
+-- import statements.
 local function in_build(item) return item.filename:match("build/") ~= nil end
 local function is_import(item)
     return item.text:match("^import") ~= nil or item.text:match("^from .* import") ~= nil
 end
-map.n('grr', function() map.lsp_references(in_build, is_import) end,
+map.n('grr', function() require("utils.lsp").references(in_build, is_import) end,
     "Goto filtered references", { buffer = true })
-map.n('grR', function() map.lsp_references(map.qf_item_is_self, in_build, is_import) end,
-    "Goto other filtered references", { buffer = true })

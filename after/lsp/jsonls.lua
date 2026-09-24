@@ -1,6 +1,6 @@
 return {
     filetypes = { "json", "jsonc", "json.karabiner" },
-    root_dir = require('utils/init').symlink_root_dir({ '.git' }),
+    root_dir = require('utils.lsp').symlink_root_dir({ '.git' }),
     settings = {
         json = {
             schemas = {

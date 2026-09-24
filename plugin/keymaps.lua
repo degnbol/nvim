@@ -1,6 +1,7 @@
 local util = require "utils/init"
 local read_lines = require("utils.file").read_lines
 local map = require "utils/keymap"
+local lsp = require "utils.lsp"
 local ts = require "utils/treesitter"
 
 require "keymaps/options"
@@ -405,14 +406,12 @@ map.desc('n', '[d', "Diagnostic")
 map.desc('n', ']d', "Diagnostic")
 map.n('<leader>dl', vim.diagnostic.setloclist, "Loclist diagnostics")
 
-map.n('grr', map.lsp_references, "References")
--- grR excludes the line it's called from.
-map.n('grR', function() map.lsp_references(map.qf_item_is_self) end, "Other references")
+map.n('grr', lsp.references, "References")
 map.desc('n', 'gra', "Code actions")
 map.desc('n', 'gri', "Implementations")
 -- grn (rename) is handled by live-rename.nvim's lz.n keys spec.
 map.desc('n', 'grt', "Type definitions")
-map.n('grd', map.lsp_definition, "Definition")
+map.n('grd', lsp.definition, "Definition")
 
 map.i('<C-s>', function()
     -- TODO: modify float to remove empty lines at top and bottom.
@@ -586,7 +585,7 @@ map.n("gx", function()
     end
 
     local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-    local link = require("utils.lsp").document_link_at(0, row - 1, col)
+    local link = lsp.document_link_at(0, row - 1, col)
     if link then return open_url(link) end
 
     -- Using various-textobjs url finder, we will detect url further ahead,
