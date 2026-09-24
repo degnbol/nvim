@@ -177,6 +177,38 @@ describe("iabbrev.iabbrev (side effects)", function()
         clear("id")
         assert.are.equal("I'd", dispatch_in_line("What id"))
     end)
+
+    -- End-to-end through the registered "ia" keymap: type the lhs and a
+    -- trigger char, then read the buffer.
+    local function typed(keys)
+        vim.api.nvim_feedkeys(vim.keycode("i" .. keys .. "<Esc>"), "xt", false)
+        return vim.api.nvim_get_current_line()
+    end
+
+    it("expands through the insert-mode keymap", function()
+        ab.iabbrev("zzteh", "the")
+        fresh_buf()
+        assert.are.equal("the ", typed("zzteh "))
+        fresh_buf()
+        assert.are.equal("The ", typed("Zzteh "))
+    end)
+
+    it("buffer-local abbrev shadows the global one", function()
+        ab.iabbrev("zzshd", "global", false)
+        local buf = fresh_buf()
+        ab.iabbrev("zzshd", "local", false, true)
+        assert.are.equal("local ", typed("zzshd "))
+        fresh_buf()
+        assert.are.equal("global ", typed("zzshd "))
+        vim.api.nvim_set_current_buf(buf)
+    end)
+
+    it("registers an lhs containing |", function()
+        ab.iabbrev("zz|", "pipe", false)
+        local m = vim.fn.maparg("zz|", "i", true, true)
+        assert.are.equal("zz|", m.lhs)
+        assert.are.equal(1, m.abbr)
+    end)
 end)
 
 describe("tex prose predicate (via plugin/abbreviations.lua)", function()

@@ -14,7 +14,7 @@ local function switch(script)
         util.notify_failure(cmd, obj)
         return
     end
-    vim.cmd("colorscheme generated")
+    vim.cmd.colorscheme("generated")
 end
 
 vim.api.nvim_create_user_command("Dark", function() switch("~/dotfiles/colors/dark.sh") end, {})

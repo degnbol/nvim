@@ -7,13 +7,13 @@ local map = require "utils/keymap"
 -- and a non-zero value.
 local nzConcealLvl
 local toggle_conceal = function()
-    if vim.opt.conceallevel:get() > 0 then
-        nzConcealLvl = vim.opt.conceallevel:get()
-        vim.opt.conceallevel = 0
+    if vim.o.conceallevel > 0 then
+        nzConcealLvl = vim.o.conceallevel
+        vim.o.conceallevel = 0
         print("conceallevel = 0")
     else
-        vim.opt.conceallevel = nzConcealLvl or 1
-        print("conceallevel =", vim.opt.conceallevel:get())
+        vim.o.conceallevel = nzConcealLvl or 1
+        print("conceallevel =", vim.o.conceallevel)
     end
 end
 local toggle_colcealcursor = function()
@@ -28,8 +28,8 @@ local enable_autoformat = function()
     vim.opt.formatoptions:append('a')
     -- also remove sidescroll offset since there should be enough space on the screen
     -- Keep record of the original value
-    sidescrolloff = vim.opt.sidescrolloff:get()
-    vim.opt.sidescrolloff = 0
+    sidescrolloff = vim.o.sidescrolloff
+    vim.o.sidescrolloff = 0
     local notify = "fo+=a | sidescrolloff=0"
     print(notify)
     return notify
@@ -40,14 +40,14 @@ local disable_autoformat = function()
     -- if the script local var 'sidescrolloff' hasn't been defined
     -- in a call to enable_autoformat, we set it to what is
     -- currently the default in lua/options.lua
-    vim.opt.sidescrolloff = sidescrolloff or 12
-    local notify = "fo-=a | sidescrolloff=" .. vim.opt.sidescrolloff:get()
+    vim.o.sidescrolloff = sidescrolloff or 12
+    local notify = "fo-=a | sidescrolloff=" .. vim.o.sidescrolloff
     print(notify)
     return notify
 end
 local autoformat
 local enable_wrap = function()
-    vim.opt.wrap = true
+    vim.o.wrap = true
     -- also disable autoformat when wrapping
     -- Keep record of the original value
     autoformat = vim.opt.formatoptions:get()['a']
@@ -56,7 +56,7 @@ local enable_wrap = function()
     return notify
 end
 local disable_wrap = function()
-    vim.opt.wrap = false
+    vim.o.wrap = false
     -- reset autoformat.
     -- if the script local var 'autoformat' hasn't been defined
     -- in a call to enable_wrap, we default to false
@@ -77,7 +77,7 @@ local toggle_autoformat = function()
     end
 end
 local function toggle_wrap()
-    if vim.opt.wrap:get() then
+    if vim.o.wrap then
         disable_wrap()
     else
         enable_wrap()

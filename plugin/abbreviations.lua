@@ -267,23 +267,21 @@ vim.api.nvim_create_autocmd("FileType", {
 -- Language-specific abbreviations toggled by `iminsert` (Danish vs English).
 -- See lua/utils/keymap for the iminsert toggle binding.
 local function toggle_dansk_abbrev()
-    local buf = vim.api.nvim_get_current_buf()
-    local function silent_cmd(cmd) pcall(function() vim.cmd(cmd) end) end
     if vim.bo.iminsert ~= 0 then
         vim.keymap.set("!a", "feks", "f.eks.")
-        silent_cmd("unabbrev eg")
-        silent_cmd("unabbrev Eg")
-        silent_cmd("iunabbrev <buffer> ti")
-        silent_cmd("iunabbrev <buffer> i")
+        pcall(vim.keymap.del, "ia", "eg")
+        pcall(vim.keymap.del, "ia", "Eg")
+        pcall(vim.keymap.del, "ia", "ti", { buf = 0 })
+        pcall(vim.keymap.del, "ia", "i", { buf = 0 })
     else
         pcall(vim.keymap.del, "!a", "feks")
-        vim.cmd("iabbrev eg e.g.")
-        vim.cmd("iabbrev Eg E.g.")
-        if vim.bo[buf].filetype == "asciidoc" then
+        vim.keymap.set("ia", "eg", "e.g.", { remap = true })
+        vim.keymap.set("ia", "Eg", "E.g.", { remap = true })
+        if vim.bo.filetype == "asciidoc" then
             -- For regular text where we wouldn't be talking about a variable i
             -- or in Danish where i is a word.
-            vim.cmd("iabbrev <buffer> i I")
-            vim.cmd("iabbrev <buffer> ti it")
+            vim.keymap.set("ia", "i", "I", { buf = 0, remap = true })
+            vim.keymap.set("ia", "ti", "it", { buf = 0, remap = true })
         end
     end
 end

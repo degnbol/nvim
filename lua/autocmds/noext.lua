@@ -5,6 +5,7 @@
 -- If you really wish to make a file without extension then simply use `touch`
 -- first or specify filename after opening nvim.
 vim.api.nvim_create_autocmd("BufNewFile", {
+    group = vim.api.nvim_create_augroup("noext", {}),
     pattern = "*",
     callback = function()
         local path = vim.api.nvim_buf_get_name(0)

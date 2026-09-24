@@ -44,7 +44,7 @@ map.x('za', function()
             break
         end
     end
-    vim.cmd(("%d,%dfold%s!"):format(s, e, any_open and "close" or "open"))
+    vim.cmd[any_open and "foldclose" or "foldopen"] { range = { s, e }, bang = true }
 end, "Toggle folds in selection")
 
 map.n('<leader>cc', function()
@@ -105,7 +105,7 @@ vim.api.nvim_create_user_command("WQ", "wq", {})
 vim.api.nvim_create_user_command("Wq", "wq", {})
 vim.api.nvim_create_user_command("Lw", "w", {})
 -- abbrev instead of command since command has to start with uppercase
-vim.cmd [[cnoreabbrev qq q]]
+vim.keymap.set("ca", "qq", "q")
 
 -- small hack to remove excess whitespace possible since iw also captures
 -- whitespace under cursor.
@@ -358,11 +358,11 @@ vim.api.nvim_create_autocmd("FileType", {
         local this = "kitty"
         local other = ftapp[vim.bo.filetype]
         map.n('<LocalLeader>1', rectangle { maximize = this },
-            "Whole screen layout", { buffer = true })
+            "Whole screen layout", { buf = 0 })
         map.n('<LocalLeader>2', rectangle { ["right-half"] = other, ["left-half"] = this },
-            "Half screen layout", { buffer = true })
+            "Half screen layout", { buf = 0 })
         map.n('<LocalLeader>3', rectangle { ["last-third"] = other, ["first-two-thirds"] = this },
-            "Two-thirds screen layout", { buffer = true })
+            "Two-thirds screen layout", { buf = 0 })
     end
 })
 
@@ -370,10 +370,10 @@ vim.api.nvim_create_autocmd("FileType", {
 map.n("<leader>:!", function()
     vim.ui.input({}, function(cmd)
         if cmd and cmd ~= "" then
-            vim.cmd("noswapfile new")
-            vim.bo.buftype = "nofile"
-            vim.bo.bufhidden = "wipe"
-            vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.fn.systemlist(cmd))
+            local buf = vim.api.nvim_create_buf(false, true)
+            vim.bo[buf].bufhidden = "wipe"
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.fn.systemlist(cmd))
+            vim.api.nvim_open_win(buf, true, { split = "below" })
         end
     end)
 end, "new|r!<CMD> with bh=wipe")
@@ -607,9 +607,8 @@ map.n("gx", function()
         if default_gx then default_gx() end
         return
     end
-    -- retrieve URL with the z-register as intermediary
-    vim.cmd.normal { '"zy', bang = true }
-    local url = vim.fn.getreg("z")
+    local url = table.concat(vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos(".")))
+    util.end_visual()
     open_url(url)
 end, GX_DESC)
 

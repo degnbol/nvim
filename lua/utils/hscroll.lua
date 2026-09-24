@@ -79,7 +79,7 @@ function M.hscroll(dir)
             -- Leftward is never blocked: content always exists to the left
             -- once leftcol > 0, so no scan or cursor move is needed.
             if leftcol == 0 then return end
-            vim.cmd('normal! ' .. count .. 'zh')
+            vim.cmd.normal { count .. 'zh', bang = true }
             return
         end
 
@@ -109,7 +109,7 @@ function M.hscroll(dir)
         local motion = delta > 0 and (delta .. 'j')
             or delta < 0 and (-delta .. 'k')
             or ''
-        vim.cmd('normal! ' .. motion .. count .. 'z' .. dir)
+        vim.cmd.normal { motion .. count .. 'z' .. dir, bang = true }
     end
 end
 

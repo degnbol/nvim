@@ -67,7 +67,7 @@ end
 ---Ensure the snippets file exists with the standard header.
 ---@param path string
 local function ensure_file(path)
-    if vim.fn.filereadable(path) == 1 then return end
+    if vim.uv.fs_stat(path) then return end
     local f = io.open(path, "w")
     if not f then return end
     f:write("---@diagnostic disable: undefined-global\nreturn {\n}\n")
@@ -135,7 +135,7 @@ function M.add_from_visual()
     if blank_line then
         -- Force blink.cmp to apply buffer-local keymaps (snippet_forward/backward)
         -- to this new buffer. Blink only applies them on InsertEnter.
-        vim.api.nvim_exec_autocmds('InsertEnter', { buffer = 0 })
+        vim.api.nvim_exec_autocmds('InsertEnter', { buf = 0 })
         ls.snip_expand(snippet, { pos = { blank_line - 1, 0 } })
     end
 end
@@ -144,9 +144,7 @@ end
 function M.edit()
     local ft = vim.bo.filetype:match("^[^.]+")
     local path = snippets_file(ft)
-    if vim.fn.filereadable(path) == 0 then
-        ensure_file(path)
-    end
+    ensure_file(path)
     vim.cmd.edit(path)
 end
 

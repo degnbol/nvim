@@ -121,9 +121,10 @@ local function at_word_boundary(lhs)
     return prev == "" or vim.fn.match(prev, "\\k") < 0
 end
 
---- Called from the `<expr>` iabbrevs that `iabbrev` registers. Returns the rhs
---- when it would expand here (at a word boundary, and the predicate passes if
---- any), else the lhs (no expansion). Buffer-local entries shadow globals.
+--- Expansion of the registered abbreviation `lhs` at the cursor. Returns the
+--- rhs when it would expand here (at a word boundary, and the predicate passes
+--- if any), else `lhs` itself (no expansion). Buffer-local entries shadow
+--- globals.
 --- @param lhs string
 --- @return string
 function M._dispatch_lookup(lhs)
@@ -189,7 +190,6 @@ end
 --- @param predicate? fun(): boolean called at expansion time
 function M.iabbrev(lhs, rhs, cases, buf_local, predicate)
     if cases == nil then cases = true end
-    local buf_tag = buf_local and "<buffer> " or ""
     local bucket = M._dispatch_global
     if buf_local then
         local buf = vim.api.nvim_get_current_buf()
@@ -205,9 +205,12 @@ function M.iabbrev(lhs, rhs, cases, buf_local, predicate)
                 error(("iabbrev(%q, %q): %s"):format(lhs, rhs, err), 2)
             end
             bucket[k] = { rhs = v, predicate = predicate }
-            vim.cmd(string.format(
-                "iabbrev <expr> %s%s v:lua.require'utils.iabbrev'._dispatch_lookup(%q)",
-                buf_tag, k, k))
+            -- remap and replace_keycodes = false match `:iabbrev <expr>`, which
+            -- is recursive and uses the returned rhs as-is.
+            vim.keymap.set("ia", k, function() return M._dispatch_lookup(k) end, {
+                expr = true, replace_keycodes = false, remap = true,
+                buf = buf_local and 0 or nil,
+            })
         end
     end
 end

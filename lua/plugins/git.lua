@@ -4,14 +4,11 @@ local hi = require"utils/highlights"
 -- using same naming that I have in the terminal.
 -- abbrev since a cmd will need to start with uppercase and cannot be modified after expansion.
 -- a "c" keymap is also possible but would expand at any mention and make typing anything with g a bit odd.
--- There's no abbrev lua function yet.
-vim.cmd [[
-    cnoreabbrev gts Git status -uno
-    cnoreabbrev gtl Git pull
-    cnoreabbrev gtp Git push
-    cnoreabbrev gta Git add %
-    cnoreabbrev gtc Git commit -m
-]]
+vim.keymap.set("ca", "gts", "Git status -uno")
+vim.keymap.set("ca", "gtl", "Git pull")
+vim.keymap.set("ca", "gtp", "Git push")
+vim.keymap.set("ca", "gta", "Git add %")
+vim.keymap.set("ca", "gtc", "Git commit -m")
 
 return {
     {
@@ -131,9 +128,7 @@ return {
             map.n("<leader>gd", "<Cmd>DiffviewOpen -uno<CR>:DiffviewToggleFiles<CR>", "Diffview open")
             -- pretty cool: works on ranges
             map({ "n", "x" }, "<leader>gh", "<Cmd>DiffviewFileHistory %<CR>", { desc = "History" })
-            vim.cmd [[
-                cnoreabbrev gtd DiffviewOpen -uno
-            ]]
+            vim.keymap.set("ca", "gtd", "DiffviewOpen -uno")
         end,
         after = function()
             local diffview = require "diffview"

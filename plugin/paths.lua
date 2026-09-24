@@ -56,13 +56,13 @@ end
 vim.keymap.set("n", "gf", function()
 	local path, lnum, col = paths.resolve_location_under_cursor(0)
 	if not path then
-		vim.cmd("normal! " .. vim.v.count1 .. "gf")
+		vim.cmd.normal { vim.v.count1 .. "gf", bang = true }
 		return
 	end
 	util.jumplist_add()
 	util.edit(path)
 	if lnum then
 		vim.fn.cursor(lnum, col or 1) -- clamps; nvim_win_set_cursor would throw
-		vim.cmd("normal! zv") -- the target may sit inside a closed fold
+		vim.cmd.normal { "zv", bang = true } -- the target may sit inside a closed fold
 	end
 end, { desc = "gf with $(git root), $VAR, buffer var, :lnum" })

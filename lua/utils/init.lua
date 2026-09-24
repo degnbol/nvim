@@ -233,7 +233,7 @@ end
 ---Add current cursor position to the jumplist.
 ---Useful for setting cursor and having the change function as a jump.
 function M.jumplist_add()
-    vim.cmd "normal! m`"
+    vim.cmd.normal { "m`", bang = true }
 end
 
 ---Show a file in the current window, loading it if it is not loaded yet.

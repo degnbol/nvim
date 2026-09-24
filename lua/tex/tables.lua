@@ -427,7 +427,7 @@ vim.keymap.set("i", "&", function()
     local line = vim.api.nvim_get_current_line()
     local column = #line:sub(1, c + 2):gsub('\\&', ''):gsub('[^&]', '')
 
-    cmd [[silent! exe "normal \<Plug>TableAlign"]]
+    cmd.normal { vim.keycode("<Plug>TableAlign"), mods = { silent = true, emsg_silent = true } }
 
     -- the alignTable call moves the cursor and modifies lines.
     -- The cursor is now at the top of inside the table env.
@@ -435,12 +435,10 @@ vim.keymap.set("i", "&", function()
     -- replace escaped ampersands with something else so they don't get counted
     _, c = line:gsub('\\&', '  '):find(('[^&]*&'):rep(column))
     util.set_cursor(r, c + 1)
-    -- Hacks to clear message area.
-    -- Needed in combination with silent! above to not see any prints.
-    -- Another solution I saw somewhere temporarily redefines some print functions to not do anything.
-    print " "
-    cmd "echo ' '"
-end, { remap = false, silent = true, buffer = true })
+    -- Clear message area.
+    -- Needed in combination with silent above to not see any prints.
+    vim.api.nvim_echo({ { "" } }, false, {})
+end, { remap = false, silent = true, buf = 0 })
 
 local function deleteColumn(opts)
     if not in_env("table") then return end

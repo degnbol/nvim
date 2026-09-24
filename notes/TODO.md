@@ -263,4 +263,9 @@ Use `clear = false` + `nvim_clear_autocmds({ group, buffer = 0 })`, as in `ftplu
 
 Opening a markdown file sets `E31: No such mapping`; opening the first tex file sets `E227: Mapping already exists for a\``. Cause not investigated.
 
+`syntax/tsv.lua` `syntax match Comment "^#.*$"` has no effect: the runtime `csv.vim` defines its `csvCol*` matches afterwards at the same start, and the later match wins, so `#` lines are `csvCol0`.
+Move it after the `csv.vim` runtime call so comments highlight, or delete it. Only matters without treesitter.
+
+`lua/tex/tables.lua` `&` map: a removed comment noted an alternative to clearing the message area after `<Plug>TableAlign` — temporarily redefine the print functions to no-ops. Restore the comment?
+
 

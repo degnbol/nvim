@@ -1,5 +1,6 @@
 require "autocmds/largefile"
 require "autocmds/lastplace"
+require "autocmds/noext"
 require "autocmds/templates"
 require "autocmds/chmodx"
 require "autocmds/lsp"

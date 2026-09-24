@@ -54,7 +54,7 @@ return {
                 keymaps = {
                     -- I regularly /-search for filename and don't need to hl that inside the buffer after opening
                     ["<CR>"] = function()
-                        vim.cmd "nohl"
+                        vim.cmd.nohlsearch()
                         require "oil".select()
                     end
                 }
@@ -107,12 +107,12 @@ return {
             -- (secret) global statusline.
             -- The problem with this approach is how buggy cmdheight=0 still is.
             -- A different solution is laststatus=0 where the statusline is redesigned as a simple border.
-            vim.opt.laststatus = 0
+            vim.o.laststatus = 0
             -- Draw the border with the statusline FILL char, not fixed-width
             -- content. The fill auto-sizes to each window, so it never truncates
             -- (no stray '<' in narrow splits) and needs no WinResized recompute.
             vim.opt.fillchars:append("stl:─,stlnc:─")
-            vim.opt.statusline = "%="
+            vim.o.statusline = "%="
         end,
         after = function()
             local helpers = require 'incline.helpers'
