@@ -126,7 +126,7 @@ return {
             require('incline').setup {
                 ignore = {
                     -- Also display for help etc.
-                    buftypes = {},
+                    buftypes = { 'quickfix' },
                     wintypes = {},
                     unlisted_buffers = false,
                     filetypes = { 'AgenticInput', 'AgenticFiles', 'AgenticTodos', 'AgenticActivity', 'DiffviewFiles' },
