@@ -52,19 +52,16 @@ endfunction
 -- abbrev correction is also very nice in that I have to add a space
 -- afterwards so if I really want --- then I can still get it.
 -- The unicode em-dash can then be mapped with the newunicodechar package
-vim.cmd.iabbrev("---", "⎯")
+require("utils.iabbrev").iabbrev("---", "⎯", false, true)
 
 -- local to window. Some window I'm switching to sometimes must be setting it
 -- so I disable it here.
 vim.opt_local.signcolumn = "no"
 
--- NOTE: only currently attached to the first tex file opened (since require runs things once).
-require "tex.overleaf"
+require "tex.overleaf".setup()
 local tbl = require "tex.tables"
 require "tex.cmds".map_keys()
-require "tex.textcolor".color_textcolor()
-local hi = require "utils/highlights"
-local util = require "utils/init" -- string.contains and schedule_notify
+local util = require "utils/init" -- schedule_notify and jump
 local latexmk = require "tex.latexmk"
 local map = require "utils/keymap"
 
@@ -108,9 +105,9 @@ map.n('<LocalLeader><del>', "<Plug>(vimtex-clean)", "Clean (rm aux)", {buffer=tr
 map.n('<LocalLeader><S-del>', "<Plug>(vimtex-clean-all)", "Clean all (rm aux+out)", {buffer=true})
 map.desc('n', '<LocalLeader>e', "Errors")
 -- hacky. VimtexErrors puts errors found by Vimtex in quickfix (should be
--- running, use <leader>Lb) then cclose closes quickfix, and then Telescope
--- opens the quickfix in a nicer view.
-map.n('<space>E', "<Cmd>VimtexErrors<CR>|:cclose|<Cmd>Telescope quickfix<CR>", "Errors", {buffer=true})
+-- running, use <leader>Lb) then cclose closes quickfix, and then the
+-- <leader>fq picker opens the quickfix in a nicer view.
+map.n('<space>E', "<Cmd>VimtexErrors<CR><Cmd>cclose<CR><leader>fq", "Errors", {buffer=true, remap=true})
 -- Avoid accidentally deleting aux files with default keymap that is very similar to the compile keymaps.
 -- no-operation, instead of del since deleting throws error and this means we don't start a vim change motion etc.
 map.n("<LocalLeader>c", "<nop>", nil, { buffer = true })
@@ -119,7 +116,7 @@ map.n("<LocalLeader>C", "<nop>", nil, { buffer = true })
 map.n('<Leader>cg', function()
     local auxs = vim.fs.find("aux", { upward = true, limit = 5 })
     if #auxs == 0 then
-        vim.api.nvim_err_writeln("Couldn't makeglossaries. No aux/ dir found (searched upward)")
+        vim.notify("Couldn't makeglossaries. No aux/ dir found (searched upward)", vim.log.levels.ERROR)
         return
     end
     local makeglossaries = function(on_exit)
@@ -223,25 +220,22 @@ map.n('gX', function()
         -- open manual pdf directly.
         -- We read it from ctan site since the url may vary (e.g. font doc at https://au.mirrors.cicku.me/ctan/fonts/baskervillef/doc/baskervillef-doc.pdf)
         print("Opening manual pdf(s)...")
-        return vim.system({ 'curl', ctan }, {
-            text = true,
-            stdout = function(err, data)
-                if err ~= nil then
-                    print("Error opening ctan manual pdf.")
-                else
-                    vim.system({ 'grep', '-o', [["http[^"]*\.pdf"]] }, { text = true, stdin = data }, function(obj)
-                        if obj.code ~= 0 then
-                            util.schedule_notify(obj)
-                        else
-                            for _, quoted_url in ipairs(vim.split(obj.stdout, '\n')) do
-                                util.open(quoted_url:match('^"(.*)"$'))
-                            end
-                            return
-                        end
-                    end)
+        vim.net.request(ctan, {}, function(err, response)
+            vim.schedule(function()
+                if err then
+                    vim.notify("CTAN request failed: " .. err, vim.log.levels.ERROR)
+                    return
                 end
-            end
-        })
+                local n_pdfs = 0
+                for url in response.body:gmatch('"(http[^"]*%.pdf)"') do
+                    vim.ui.open(url)
+                    n_pdfs = n_pdfs + 1
+                end
+                if n_pdfs == 0 then
+                    vim.notify("No manual pdf found on " .. ctan, vim.log.levels.WARN)
+                end
+            end)
+        end)
     end
 end, "Open CTAN manual(s) for package", {buffer=true})
 
@@ -395,64 +389,6 @@ map.n('<LocalLeader>-', function()
     if parent == nil then
         print("No file references found.")
     else
-        vim.cmd("edit +" .. linenum .. " " .. parent)
+        util.jump(parent, tonumber(linenum) - 1, 0)
     end
 end, "Go up in latex structure", {buffer=true})
-
--- fix missing or inconsistent hl links on every ColorScheme + now
-hi.onColorScheme(function()
-    -- Pick a reduced colour for removing emphasis on things like \cite{...} where the body's color and underline gives it emphasis by itself.
-    -- We want to differentiate from comment and nontext, and nontext is bold so the fg with italic should be enough differentiation, plus we would write comments more that using nontext.
-    local gray = hi.fg("NonText")
-    hi.link("texCmd", "@function.call")
-    hi.link("texCmdEnv", "@keyword.function") -- italic instead of bold for begin end
-    hi.link("texCmdRef", "@function.builtin") -- italic
-    -- italic \section{...}, bold etc. Gray a bit since the "..." shows aesthetic
-    hi.set("texCmdPart", { fg = gray, italic = true })
-    hi.set("texCmdStyleBold", { fg = gray, italic = true })
-    hi.set("texCmdStyleItal", { fg = gray, italic = true })
-    hi.set("texTypeStyle", { fg = gray, italic = true })       -- e.g. \underline
-    hi.set("texItalStyle", { italic = true })                  -- contents of \emph{...}
-    hi.set("texCmdRefConcealed", { fg = gray, italic = true }) -- italic \cite
-    hi.set("texCmdRef", { fg = gray, italic = true })
-    hi.set("texCmdCRef", { fg = gray, italic = true })
-    hi.set("texCmdAcro", { fg = gray })           -- custom cmd defined in after/syntax/tex.vim
-    hi.link("texCmdPackage", "@function.builtin") -- italic \package
-    hi.link("texCmdInput", "@function.builtin")   -- italic \inputgraphics
-    hi.link("texCmdTitle", "@function.builtin")   -- italic \title
-    hi.link("texCmdAuthor", "@function.builtin")  -- italic \author
-    hi.link("texCmdLet", "@function.builtin")     -- italic \let
-    hi.link("texStatement", "@function.builtin")  -- only seen for \mathrm so far
-    hi.mod("texMatcher", { underline = true })    -- matched parenthesis, \underline body, etc.
-    hi.link("texEnvArgName", "@method")           -- bold and shine instead of nothing
-    hi.link("texCmdBeamer", "@function")
-    hi.link("texOpt", "@parameter")
-    hi.link("texBeamerOpt", "@parameter")
-    hi.link("texOptEqual", "@operator")
-    hi.link("texArg", "@parameter")
-    hi.link("texFileArg", "@string")
-    hi.link("texFilesArg", "@string")
-    hi.link("texFileOpt", "@parameter")
-    hi.link("TexBeamerDelim", "Delimiter")
-    hi.link("superscript", "Type")                                               -- like \huge, \normalsize etc
-    hi.link("subscript", "Type")                                                 -- like \huge, \normalsize etc
-    hi.set("texRefConcealedArg", { fg = hi.fg("TexFileArg"), underline = true }) -- body of \cite{...}
-    hi.link("texTitleArg", "Title")
-    hi.link("texPartArgTitle", "Title")
-    hi.link("texRefArg", "@tag")                                    -- body of \label
-    hi.link("texSpecialChar", "@comment")                           -- unbreakable space ~, and \&
-    hi.link("texMathZone", "@number")                               -- Most of tex math zone that isn't captured by anything else (such as math functions) is numbers and we don't use numbers much elsewhere.
-    hi.set("texMathCmdText", { fg = gray, italic = true })          -- italic \text in math mode
-    hi.set("texMathSymbol", { fg = hi.fg("@type"), italic = true }) -- type is similar colour to number
-    hi.set("texMathSymbol", { fg = hi.fg("@type"), italic = true }) --
-    hi.link("texSICmd", "@number")                                  -- not bold SI. Color like math mode
-    hi.set("texLigature", { bold = true })                          -- bold instead of strong color to only give subtle focus to ``'', --, and the ' in don't
-    hi.link("texCmdLigature", "@function.call")
-    hi.mod("texCmdLigature", { italic = true })
-    hi.link("texTabularChar", "Operator") -- & and \\ in tables. Could also use Delimiter but this makes them bold.
-    hi.mod("texCmdClass", { italic = true, bold = true })
-    hi.link("texOptSep", "Delimiter")
-    hi.mod("texCmdDef", { bold = true, italic = true })    -- an actual function definition. \def. TeX primitive.
-    hi.mod("texCmdNewcmd", { bold = true, italic = true }) -- an actual function definition. \newcommand. LaTeX wrapper on def.
-    hi.link("texNewcmdArgName", "@parameter")
-end)

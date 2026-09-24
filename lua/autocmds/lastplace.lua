@@ -37,7 +37,7 @@ vim.api.nvim_create_autocmd({ 'BufWinEnter', 'FileType' }, {
             elseif buff_last_line - last_line > ((win_last_line - win_first_line) / 2) - 1 then
                 vim.cmd [[normal! g`"zz]]
             else
-                vim.cmd [[normal! G'"<c-e>]]
+                vim.cmd.normal { [[G'"]] .. vim.keycode("<C-e>"), bang = true }
             end
         end
     end

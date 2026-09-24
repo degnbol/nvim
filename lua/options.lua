@@ -10,6 +10,10 @@ opt.path:append("./src")
 g.mapleader = ' '
 g.maplocalleader = '\\'
 
+-- disable netrw
+g.loaded_netrw = 1
+g.loaded_netrwPlugin = 1
+
 opt.expandtab = true
 opt.tabstop = 4        -- how many spaces does a tab correspond to?
 opt.shiftwidth = 0     -- use tabstop number of spaces for indentation
@@ -187,7 +191,8 @@ vim.opt.fillchars:append('fold: ')
 
 -- Enable second pass hunk visual that aligns lines for a git diff better giving nicer overview of changes.
 -- https://old.reddit.com/r/neovim/comments/1ihpvaf/the_linematch_diffopt_makes_builtin_diff_so_sweat/
-vim.opt.diffopt:append("linematch:60")
+-- Only :set+= merges key:value items; vim.opt:append would add a second linematch.
+vim.cmd("set diffopt+=linematch:60")
 
 -- disable coding ligatures for some filetypes that aren't code, e.g. we don't want == ligature when it is used for heading levels.
 local kitty = require "utils/kitty"

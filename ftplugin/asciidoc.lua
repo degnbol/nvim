@@ -38,9 +38,10 @@ local function goto_xref_tag()
     end
 end
 
-vim.keymap.set('n', 'gd', goto_xref_tag, { desc="Goto tag definition" })
+vim.keymap.set('n', 'gd', goto_xref_tag, { buffer=true, desc="Goto tag definition" })
 
 vim.keymap.set('i', '<S-CR>', " +<CR>", {
+    buffer=true,
     desc=[[Hard line break, similar to \\ in tex.
     Can also be achieved with paragraph option [%hardbreaks] or document option :hardbreaks-option:]]
 }
@@ -58,5 +59,4 @@ for _, line in ipairs(lines) do
 end
 
 -- Using blink.cmp instead.
--- TODO: write the blink_ equivalent file if LSP hasn't caught up.
 -- require"completion.asciidoc.cmp_asciidoc".setup()

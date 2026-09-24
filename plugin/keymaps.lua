@@ -97,7 +97,7 @@ map.n('<C-;>', 'q:')
 
 -- Typos.
 vim.api.nvim_create_user_command("Q", "q", {})
-vim.api.nvim_create_user_command("Qa", "qa", { bang = true })
+vim.api.nvim_create_user_command("Qa", "qa<bang>", { bang = true })
 vim.api.nvim_create_user_command("X", "x", {})
 vim.api.nvim_create_user_command("WQ", "wq", {})
 vim.api.nvim_create_user_command("Wq", "wq", {})
@@ -255,6 +255,23 @@ map.c('<A-delete>', "<S-right><C-w>", "Delete next word")
 -- this ignored if kitty handles it.
 map.c('<D-BS>', "<C-u>", "Delete to beginning of line")
 
+---Cmdline map typing `pattern` in a `/` or `?` search, and `other` elsewhere.
+---@param lhs string
+---@param pattern string
+---@param other string
+---@param desc string
+local function search_key(lhs, pattern, other, desc)
+    map.c(lhs, function()
+        local cmdtype = vim.fn.getcmdtype()
+        return (cmdtype == "/" or cmdtype == "?") and pattern or other
+    end, desc, { expr = true, replace_keycodes = false })
+end
+-- Multi-line search: words separated by any whitespace, line breaks included.
+search_key('<M-Space>', [[\_s\+]], " ", "Search: whitespace incl. line breaks")
+search_key('<M-S-Space>', [[\_W\+]], " ", "Search: non-word run incl. line breaks")
+-- Left Option+Space types U+00A0 in kitty (only right Option is Alt).
+search_key('<Char-160>', [[\_s\+]], "\194\160", "Search: whitespace incl. line breaks")
+
 map.x('<D-c>', '"+y', "Copy selection to clipboard")
 
 map.n('<D-v>', 'p<C-=>', "Paste after, auto-indent, place cursor after", { remap = true })
@@ -364,7 +381,11 @@ end, "new|r!<CMD> with bh=wipe")
 map.n("<leader>li", "<Cmd>checkhealth vim.lsp<CR>", "Info")
 -- can't use backspace since it is hardcoded by mini.clue for up one level
 map.n("<leader>l0", "<Cmd>lsp stop<CR>", "Stop")
-map.n("<leader>l1", "<Cmd>lsp enable<CR>", "Enable")
+-- Not `:lsp enable`: with no name it enables every config for the filetype.
+map.n("<leader>l1", function()
+    local configs = vim.lsp.get_configs { enabled = true, filetype = vim.bo.filetype }
+    vim.lsp.enable(vim.tbl_map(function(config) return config.name end, configs))
+end, "Enable")
 map.n("<leader>l!", "<Cmd>lsp restart<CR>", "Restart")
 map.n("<leader>lL", function()
     vim.cmd.edit(vim.lsp.log.get_filename())
@@ -397,7 +418,7 @@ map.i('<C-s>', function()
     -- TODO: modify float to remove empty lines at top and bottom.
     -- TODO: update signature help when pressing comma or deleting a comma or moving cursor.
     -- Also decide if repeated <C-s> should cycle the signatures, as is default.
-    local call_expression = ts.get_parent('call_expression')
+    local call_expression = ts.ancestor('call_expression')
     if call_expression == nil then return end
     local r, c = unpack(vim.api.nvim_win_get_cursor(0))
     local start_row, start_col, end_row, end_col = vim.treesitter.get_node_range(call_expression)
@@ -502,6 +523,23 @@ map.n("K", function()
     vim.api.nvim_feedkeys(vim.v.count1 .. "K", "nx", false)
 end, "Peek file / hover / keywordprg")
 
+local GX_DESC = "Smart URL opener"
+-- The runtime gx: LSP document links, url extmarks, treesitter url metadata
+-- and <cfile>. Checked by desc since re-sourcing this file would otherwise
+-- capture the map below.
+local default_gx = vim.fn.maparg("gx", "n", false, true)
+default_gx = default_gx.desc ~= GX_DESC and default_gx.callback or nil
+if not default_gx then
+    vim.notify("gx: no runtime default gx to fall back to", vim.log.levels.WARN)
+end
+
+---Open a URL with the system handler, notifying if that fails.
+---@param url string
+local function open_url(url)
+    local _, err = vim.ui.open(url)
+    if err then vim.notify(err, vim.log.levels.ERROR) end
+end
+
 -- custom gx function that supports more website links.
 map.n("gx", function()
     -- Go to github for plugins easily.
@@ -515,16 +553,16 @@ map.n("gx", function()
             local repo = line:match([["([%w._-]+)"]]) or line:match([['([%w._-]+)']])
             if repo then
                 if repo:match("http") then
-                    return vim.ui.open(repo)
+                    return open_url(repo)
                 elseif repo:match("/") then
                     -- already an account/repo slug
-                    return vim.ui.open("https://github.com/" .. repo)
+                    return open_url("https://github.com/" .. repo)
                 end
                 -- Post vim.pack migration lz.n specs carry only the bare repo
                 -- name. Resolve the source from pack_specs.lua.
                 local specs = vim.fn.readfile(config .. "/lua/pack_specs.lua")
                 local url = require("utils.pluginspec").resolve(repo, specs)
-                if url then return vim.ui.open(url) end
+                if url then return open_url(url) end
                 -- unresolved: fall through to the general URL resolvers below
             end
         end
@@ -536,7 +574,7 @@ map.n("gx", function()
         local pac = line:match("\\usepackage.*{([%w_-]+)}")
         if pac ~= nil then
             local ctan = "https://ctan.org/pkg/" .. pac .. "?lang=en"
-            return vim.ui.open(ctan)
+            return open_url(ctan)
         end
     end
 
@@ -544,20 +582,37 @@ map.n("gx", function()
     local line = vim.api.nvim_get_current_line()
     local doi = line:match("10%.%d%d%d%d+/[%w%.%-_/:]+[%w]")
     if doi then
-        return vim.ui.open("https://doi.org/" .. doi)
+        return open_url("https://doi.org/" .. doi)
     end
+
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local link = require("utils.lsp").document_link_at(0, row - 1, col)
+    if link then return open_url(link) end
 
     -- Using various-textobjs url finder, we will detect url further ahead,
     -- e.g. useful when being lazy and the url is right there on the line.
     -- visually select URL
-    require("various-textobjs").url()
+    if default_gx then
+        -- The default takes over on a miss, so silence the textobj's miss message.
+        local notify = require("various-textobjs.config.config").config.notify
+        local when_not_found = notify.whenObjectNotFound
+        notify.whenObjectNotFound = false
+        local ok, err = pcall(require("various-textobjs").url)
+        notify.whenObjectNotFound = when_not_found
+        if not ok then error(err, 0) end
+    else
+        require("various-textobjs").url()
+    end
     -- plugin only switches to visual mode when a URL is found (and notifies on miss)
-    if not vim.fn.mode():find("v") then return end
+    if not vim.fn.mode():find("v") then
+        if default_gx then default_gx() end
+        return
+    end
     -- retrieve URL with the z-register as intermediary
     vim.cmd.normal { '"zy', bang = true }
     local url = vim.fn.getreg("z")
-    vim.ui.open(url)
-end, "Smart URL opener")
+    open_url(url)
+end, GX_DESC)
 
 -- Clear the builtin C-leftclick which is goto tag def.
 -- It can't be removed with vim.keymap.del since it's builtin.

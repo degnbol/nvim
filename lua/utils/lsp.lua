@@ -39,4 +39,47 @@ function M.range_text(bufnr, range, encoding)
     return line:sub(scol + 1, ecol)
 end
 
+--- Whether LSP position `a` comes before `b`, or is equal to it.
+--- @param a lsp.Position
+--- @param b lsp.Position
+--- @return boolean
+local function position_le(a, b)
+    return a.line < b.line or (a.line == b.line and a.character <= b.character)
+end
+
+--- Target of the LSP document link covering a buffer position, from any
+--- attached client that serves `textDocument/documentLink`. Links without a
+--- resolved `target` are skipped. Blocks for up to 1 s while clients respond;
+--- a timeout or a server error notifies at WARN.
+--- @param buf integer
+--- @param row integer 0-indexed
+--- @param col integer 0-indexed byte column
+--- @return string|nil target URI of the first covering link, nil if none
+function M.document_link_at(buf, row, col)
+    local method = "textDocument/documentLink"
+    -- buf_request_sync without a client waits out its whole timeout.
+    if #vim.lsp.get_clients { bufnr = buf, method = method } == 0 then return nil end
+    local line = vim.api.nvim_buf_get_lines(buf, row, row + 1, true)[1]
+    local params = { textDocument = vim.lsp.util.make_text_document_params(buf) }
+    local responses, err = vim.lsp.buf_request_sync(buf, method, params)
+    if not responses then
+        vim.notify(method .. ": " .. tostring(err), vim.log.levels.WARN)
+        return nil
+    end
+    for client_id, response in pairs(responses) do
+        local client = assert(vim.lsp.get_client_by_id(client_id))
+        if response.err then
+            vim.notify(("%s (%s): %s"):format(method, client.name, response.err.message), vim.log.levels.WARN)
+        end
+        --- @type lsp.Position
+        local pos = { line = row, character = vim.str_utfindex(line, client.offset_encoding, col, false) }
+        for _, link in ipairs(response.result or {}) do
+            if link.target and position_le(link.range.start, pos) and not position_le(link.range["end"], pos) then
+                return link.target
+            end
+        end
+    end
+    return nil
+end
+
 return M

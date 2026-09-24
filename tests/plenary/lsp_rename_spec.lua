@@ -41,6 +41,99 @@ describe("utils.lsp.workspace_edit_files", function()
     end)
 end)
 
+describe("utils.lsp.document_link_at", function()
+    -- UTF-16 columns: "é" is 2 bytes but 1 character, so byte and character
+    -- columns differ after it.
+    local lines = { "é see https://a.example here", "multi", "line link end" }
+    local links = {
+        { range = { start = { line = 0, character = 6 }, ["end"] = { line = 0, character = 23 } },
+            target = "https://a.example" },
+        { range = { start = { line = 1, character = 2 }, ["end"] = { line = 2, character = 4 } },
+            target = "file:///multi" },
+        -- unresolved link: no target
+        { range = { start = { line = 2, character = 10 }, ["end"] = { line = 2, character = 13 } } },
+    }
+    local buf, client_id
+    --- @type lsp.ResponseError|nil
+    local link_error
+
+    before_each(function()
+        link_error = nil
+        buf = vim.api.nvim_create_buf(true, false)
+        vim.api.nvim_buf_set_name(buf, vim.fn.tempname() .. ".txt")
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+        client_id = vim.lsp.start({
+            name = "fake_links",
+            cmd = function()
+                return {
+                    request = function(method, _, callback)
+                        if method == "initialize" then
+                            callback(nil, { capabilities = { documentLinkProvider = {} } })
+                        elseif method == "textDocument/documentLink" then
+                            if link_error then callback(link_error, nil) else callback(nil, links) end
+                        else
+                            callback(nil, nil)
+                        end
+                        return true, 1
+                    end,
+                    notify = function() return true end,
+                    is_closing = function() return false end,
+                    terminate = function() end,
+                }
+            end,
+        }, { bufnr = buf })
+        vim.wait(1000, function() return vim.lsp.get_client_by_id(client_id).initialized end)
+    end)
+
+    after_each(function()
+        vim.lsp.get_client_by_id(client_id):stop(true)
+        vim.api.nvim_buf_delete(buf, { force = true })
+    end)
+
+    it("returns the target of the link covering a byte column", function()
+        -- byte 7 = character 6, the link's first character
+        assert.are.equal("https://a.example", lsp.document_link_at(buf, 0, 7))
+    end)
+
+    it("excludes the link's end position", function()
+        -- byte 24 = character 23
+        assert.is_nil(lsp.document_link_at(buf, 0, 24))
+        assert.are.equal("https://a.example", lsp.document_link_at(buf, 0, 23))
+    end)
+
+    it("covers every line of a multi-line link", function()
+        assert.are.equal("file:///multi", lsp.document_link_at(buf, 1, 4))
+        assert.are.equal("file:///multi", lsp.document_link_at(buf, 2, 0))
+        assert.are.equal("file:///multi", lsp.document_link_at(buf, 2, 3))
+        assert.is_nil(lsp.document_link_at(buf, 1, 1))
+        assert.is_nil(lsp.document_link_at(buf, 2, 4))
+    end)
+
+    it("returns nil for a link without a target", function()
+        assert.is_nil(lsp.document_link_at(buf, 2, 11))
+    end)
+
+    it("warns and returns nil when the server errors", function()
+        link_error = { code = -32603, message = "boom" }
+        local notify, notes = vim.notify, {}
+        vim.notify = function(msg, level) notes[#notes + 1] = { msg = msg, level = level } end
+        local target = lsp.document_link_at(buf, 0, 7)
+        vim.notify = notify
+        assert.is_nil(target)
+        assert.are.equal(1, #notes)
+        assert.are.equal(vim.log.levels.WARN, notes[1].level)
+        assert.is_truthy(notes[1].msg:find("boom", 1, true))
+    end)
+
+    it("returns nil at once without a documentLink client", function()
+        local other = vim.api.nvim_create_buf(true, true)
+        local t0 = vim.uv.hrtime()
+        assert.is_nil(lsp.document_link_at(other, 0, 0))
+        assert.is_true((vim.uv.hrtime() - t0) / 1e6 < 100)
+        vim.api.nvim_buf_delete(other, { force = true })
+    end)
+end)
+
 describe("lsp_rename.argparse dest derivation", function()
     -- Shared truth with the argparse diagnostic: call snippet → derived dest.
     local cases = {

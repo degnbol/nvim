@@ -17,10 +17,10 @@ local toggle_conceal = function()
     end
 end
 local toggle_colcealcursor = function()
-    if vim.opt_local.concealcursor:get():match('n') then
-        vim.opt_local.concealcursor = vim.opt_local.concealcursor:get():gsub('n', '')
+    if vim.opt_local.concealcursor:get().n then
+        vim.opt_local.concealcursor:remove("n")
     else
-        vim.opt.concealcursor:append('n')
+        vim.opt_local.concealcursor:append("n")
     end
 end
 local sidescrolloff

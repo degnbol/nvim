@@ -11,10 +11,6 @@ return {
         "nvim-tree.lua",
         cmd = "NvimTreeToggle",
         before = function()
-            -- disable netrw
-            vim.g.loaded_netrw = 1
-            vim.g.loaded_netrwPlugin = 1
-
             -- some issue with highlighting shell file logo
             -- vim.g.nvim_tree_highlight_opened_files = 1
             vim.g.nvim_tree_allow_resize = 0

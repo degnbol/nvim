@@ -69,5 +69,5 @@ vim.api.nvim_buf_create_user_command(0, "SortGlossary", sort_glossary_by_short, 
   desc = "Sort glossary entries by short name",
 })
 
-map.n("<localLeader>s", sort_glossary_by_short, "Sort typst glossy entries by \"short\"")
+map.buf("n", "<localLeader>s", sort_glossary_by_short, "Sort typst glossy entries by \"short\"")
 

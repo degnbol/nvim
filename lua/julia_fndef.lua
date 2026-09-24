@@ -151,7 +151,7 @@ function M.conform()
         return
     end
     local target = exemplar.form
-    local root = vim.treesitter.get_parser(0, "julia"):parse()[1]:root()
+    local root = assert(vim.treesitter.get_parser(0, "julia")):parse()[1]:root()
     local query = vim.treesitter.query.parse("julia",
         "[(function_definition) @d (assignment) @d]")
 

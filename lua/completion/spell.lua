@@ -64,7 +64,9 @@ function M:_load_async()
 			self.cached_items = vim.tbl_extend(results)
 			self.is_cached = true
 		end)
-		:catch(function(err) end)
+		:catch(function(err)
+			vim.schedule(function() vim.notify("spell completion: " .. tostring(err), vim.log.levels.ERROR) end)
+		end)
 end
 
 function M:_load_file_async(path)

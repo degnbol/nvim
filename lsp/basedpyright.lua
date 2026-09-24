@@ -2,15 +2,31 @@
 -- https://old.reddit.com/r/neovim/comments/1bh0kba/psa_new_python_lsp_that_supports_inlay_hints_and/
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#basedpyright
 local uv_script = require "autocmds/uv_script_env"
+local util = require "utils/init"
+
+---Run `conda <args> --json` and decode its output, notifying on failure.
+---@param args string[] conda subcommand and its arguments, without `--json`
+---@return table|nil output decoded JSON, nil on failure
+local function conda_json(args)
+    local cmd = { "conda", unpack(args) }
+    table.insert(cmd, "--json")
+    local obj = vim.system(cmd, { text = true }):wait()
+    if obj.code ~= 0 then
+        util.notify_failure(cmd, obj)
+        return nil
+    end
+    local ok, data = pcall(vim.json.decode, obj.stdout)
+    if not ok then
+        vim.notify("Failed to parse conda output: " .. data, vim.log.levels.ERROR)
+        return nil
+    end
+    return data
+end
 
 -- :Conda command to switch conda environment for Python LSP
 local function get_conda_envs()
-    local handle = io.popen("conda env list --json 2>/dev/null")
-    if not handle then return {} end
-    local output = handle:read("*a")
-    handle:close()
-    local ok, data = pcall(vim.json.decode, output)
-    if not ok or not data.envs then return {} end
+    local data = conda_json({ "env", "list" })
+    if not data or not data.envs then return {} end
     local envs = {}
     for _, path in ipairs(data.envs) do
         table.insert(envs, vim.fn.fnamemodify(path, ":t"))
@@ -29,18 +45,8 @@ vim.api.nvim_create_user_command("Conda", function(opts)
         return
     end
     -- Get conda info to find envs directory
-    local handle = io.popen("conda info --json 2>/dev/null")
-    if not handle then
-        vim.notify("Failed to run conda", vim.log.levels.ERROR)
-        return
-    end
-    local output = handle:read("*a")
-    handle:close()
-    local ok, info = pcall(vim.json.decode, output)
-    if not ok then
-        vim.notify("Failed to parse conda info", vim.log.levels.ERROR)
-        return
-    end
+    local info = conda_json({ "info" })
+    if not info then return end
     -- Find the env path
     local env_path
     for _, path in ipairs(info.envs or {}) do
@@ -56,7 +62,7 @@ vim.api.nvim_create_user_command("Conda", function(opts)
     local python_path = env_path .. "/bin/python"
     -- nvim-lspconfig creates this buffer-locally on attach, so run it from a
     -- python buffer.
-    vim.cmd("LspPyrightSetPythonPath " .. python_path)
+    vim.cmd.LspPyrightSetPythonPath(python_path)
     vim.notify("Set Python: " .. python_path, vim.log.levels.INFO)
 end, {
     nargs = "?",

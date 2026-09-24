@@ -42,7 +42,7 @@ local IMPORTS = [[
 --- @param bufnr number
 --- @return table<string, lsp.Position> packages top-level package -> position of its name
 function M.imports(bufnr)
-    local parser = vim.treesitter.get_parser(bufnr, "python", { error = false })
+    local parser = vim.treesitter.get_parser(bufnr, "python")
     if not parser then return {} end
     local query = vim.treesitter.query.parse("python", IMPORTS)
     local packages = {}

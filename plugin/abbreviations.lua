@@ -100,8 +100,8 @@ end
 -- gated (rare in prose).
 local function markdown_prose()
     local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-    local ok, parser = pcall(vim.treesitter.get_parser)
-    if ok and parser then
+    local parser = vim.treesitter.get_parser()
+    if parser then
         parser:parse({ row - 1, row })  -- keep the tree current at the cursor
         local node = parser:named_node_for_range({ row - 1, col, row - 1, col })
         while node do
@@ -269,13 +269,13 @@ local function toggle_dansk_abbrev()
     local buf = vim.api.nvim_get_current_buf()
     local function silent_cmd(cmd) pcall(function() vim.cmd(cmd) end) end
     if vim.bo.iminsert ~= 0 then
-        vim.cmd("abbrev feks f.eks.")
+        vim.keymap.set("!a", "feks", "f.eks.")
         silent_cmd("unabbrev eg")
         silent_cmd("unabbrev Eg")
         silent_cmd("iunabbrev <buffer> ti")
         silent_cmd("iunabbrev <buffer> i")
     else
-        silent_cmd("iunabbrev <buffer> feks")
+        pcall(vim.keymap.del, "!a", "feks")
         vim.cmd("iabbrev eg e.g.")
         vim.cmd("iabbrev Eg E.g.")
         if vim.bo[buf].filetype == "asciidoc" then

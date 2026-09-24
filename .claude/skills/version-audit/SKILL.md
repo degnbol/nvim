@@ -5,7 +5,7 @@ description: Neovim version audit procedure for this config. Use when neovim has
 
 # Neovim Version Audit
 
-Last audited: 0.12.1
+Last audited: 0.12.5
 
 ## Procedure
 
@@ -87,7 +87,6 @@ complete (not partial or experimental).
 | `systemlist(cmd)` | `vim.split(vim.system(cmd):wait().stdout, '\n', { trimempty = true })` | 0.10 |
 | `jobstart(cmd)` | `vim.system(cmd)` or `vim.uv.spawn()` | 0.10 |
 | `timer_start(ms, fn)` | `vim.defer_fn(fn, ms)` or `vim.uv.new_timer()` | 0.10 |
-| `glob(pat)` | `vim.fs.glob(pat)` | 0.11 |
 
 ### Functions with NO replacement (do not warn)
 
@@ -104,7 +103,7 @@ The hook should ignore them.
 `shellescape`, `fnameescape`, `escape`, `nr2char`, `char2nr`, `strdisplaywidth`,
 `strchars`, `byteidx`, `charidx`, `readfile`, `writefile`, `rename`,
 `getftype`, `resolve`, `simplify`, `pathshorten`, `executable`,
-`exepath`, `environ`, `getenv`, `setenv`.
+`exepath`, `environ`, `getenv`, `setenv`, `glob`.
 
 ## Ex commands with API equivalents
 
@@ -127,3 +126,17 @@ The hook should ignore them.
 
 No config changes needed. New deprecation: `nvim_set_decoration_provider`
 `on_line` → use `on_range` instead (not used in config).
+
+### 0.12.5 (2026-09-23) — corrections review
+
+`vim.fs.glob` does not exist, so `glob` moved to the no-replacement list.
+Config fixes:
+
+- `get_parser` returns nil instead of throwing. Callers' `pcall` and
+  `{ error = false }` dropped.
+- `:lsp enable` with no name enables every config for the filetype.
+  `<leader>l1` now enables only the configs already enabled there.
+- `an`/`in` are the builtin incremental selection. The various-textobjs
+  defaults for them are disabled.
+- `vim.opt.diffopt:append` duplicates `linematch:` items. Use `:set+=`.
+- `nvim_buf_add_highlight` and `nvim_err_writeln` replaced.

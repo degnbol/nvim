@@ -1,5 +1,5 @@
 require "guitar.vnewFurther"
-require "guitar.chords"
+local chords = require "guitar.chords"
 require "guitar.tabs"
 local map = require "utils/keymap"
 
@@ -11,7 +11,7 @@ vim.opt_local.formatoptions:remove('a')
 map.buf('n', '<localleader>v', vnewFurther,     "vnew with one window height offset and scrollbind enabled. Accepts a count.")
 map.buf('n', '<localleader>f', forwardScreen,   "Like <C-f> but jumps foward one screen visually in the split regardless of scrolloff.")
 map.buf('n', '<localleader>b', backwardScreen,  "Like <C-b> but jumps backwards one screen visually in the split regardless of scrolloff.")
-map.buf('n', '<localleader>c', prettyChordLine, "Write a pretty print of chord at current line.")
+map.buf('n', '<localleader>c', chords.prettyChordLine, "Write a pretty print of chord at current line.")
 map.buf('n', '<localleader>t', tabNew,          "New tab")
 -- map.buf('i', '-',             tabDash,        "Potentially extend tab")
 -- sometimes you want to simply BS normally, e.g. while writing anything other than additional -.

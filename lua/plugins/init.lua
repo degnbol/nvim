@@ -58,7 +58,9 @@ return {
             require("various-textobjs").setup {
                 keymaps = {
                     useDefaults = true,
-                    disabledDefaults = { "gc" }, -- breaks go comment in visual
+                    -- gc breaks go comment in visual. an/in are the builtin
+                    -- treesitter/LSP incremental selection.
+                    disabledDefaults = { "gc", "an", "in" },
                 },
             }
         end

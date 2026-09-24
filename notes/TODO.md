@@ -124,7 +124,7 @@ there seem to be some nice util functions you can use at https://gitlab.com/jrop
 consider if x and d should be swapped, since d's natural role is cut, so then only x will be non-standard.
 
 Would be cool if viv and vik could understand when = is inside arg and then do intersect of itself and via.
-I downloaded the key/value text objs as a starting point in lua/textobjects/keyvalue.lua.
+I downloaded the key/value text objs as a starting point in lua/textobjs/keyvalue.lua.
 
 Custom completion sources, e.g. valid string values for ggplot, e.g. annotate and guide="none" or direction="vertical"
 inspiration from youtuber showing custom cmp source:
@@ -252,8 +252,5 @@ Shouldn't `:e <TAB>` use ctrl+n and ctrl+p and ctrl+space like blink configured 
 Builtin LSP completion vs blink? And what about luasnip
 
 Consider if we should add buffer names for qf, e.g. showing refs with grr has name like "quickfix-10", but could be "References (qf)" or "Refs: `_edge_min_radius_at`"
-
-Markdown treesitter crash (nvim 0.12)
-The bundled markdown parser in nvim 0.12-dev crashes when `vim.treesitter.start()` is called during initial buffer load with `foldmethod=expr` and treesitter foldexpr. Workaround in `plugin/treesitter.lua` uses `vim.schedule()` to delay treesitter start for markdown files. Remove workaround when fixed upstream.
 
 

@@ -32,16 +32,16 @@ function M.get(name)
     return vim.api.nvim_get_hl(0, { name = name, link = false })
 end
 
----Get highlight ID of the foreground color for a given highlight group name.
+---Get the foreground color of a highlight group, links resolved.
 ---@param name string group name.
----@return number
+---@return integer|nil rgb 24-bit colour (0xRRGGBB), nil if unset
 function M.fg(name)
     return vim.api.nvim_get_hl(0, { name = name, link = false })['fg']
 end
 
----Get highlight ID of the background color for a given highlight group name.
+---Get the background color of a highlight group, links resolved.
 ---@param name string group name.
----@return number
+---@return integer|nil rgb 24-bit colour (0xRRGGBB), nil if unset
 function M.bg(name)
     return vim.api.nvim_get_hl(0, { name = name, link = false })['bg']
 end

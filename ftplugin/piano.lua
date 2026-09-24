@@ -1,9 +1,4 @@
 
-
-vim.schedule(function ()
-    vim.cmd "syn match Comment /b #   # b #   b #   # b #   b #   # b #/"
-end)
-
 local keys = {"a", "A", "a", "B", " ", "C", "d", "D", "d", "E", " ", "F", "f", "G"}
 
 local function putKey()
@@ -13,6 +8,6 @@ local function putKey()
     vim.api.nvim_buf_set_text(0, r-1, c, r-1, c+1, {key})
 end
 
-vim.keymap.set('n', '<C-k>', putKey, { desc="Put piano key at cursor" })
+vim.keymap.set('n', '<C-k>', putKey, { buffer=true, desc="Put piano key at cursor" })
 
 

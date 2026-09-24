@@ -1,5 +1,5 @@
 -- append $PATH to vim option &path (&path uses comma delim in text form and $PATH uses colon)
-vim.opt_local.path:append(vim.split(vim.env.PATH, ":"))
+vim.opt.path:append(vim.split(vim.env.PATH, ":"))
 
 -- edit-in-kitty on remotes doesn't copy the env variables that are normally
 -- present locally so we have to set the necessary ones. These are for julia

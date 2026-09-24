@@ -9,6 +9,11 @@ hi.onColorScheme(function()
     hi.set("kittyOptionName", { italic = false, fg = hi.fg("Keyword") })
 end)
 
+-- jupytext `# %%` cells, captured in after/queries/python/highlights.scm
+hi.onColorScheme(function()
+    hi.set("@cell", { reverse = true })
+end)
+
 return {
     -- julia support, colors and unicode substitution. CANNOT use ft=julia
     {

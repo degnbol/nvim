@@ -70,8 +70,8 @@ end
 -- Check if the pymol_select injection is active at the cursor position.
 -- Piggybacks on the injection scoping (function args, assignments — not docstrings).
 local function in_pymol_context()
-    local ok, parser = pcall(vim.treesitter.get_parser, 0)
-    if not ok or not parser then return false end
+    local parser = vim.treesitter.get_parser(0)
+    if not parser then return false end
     local pos = vim.api.nvim_win_get_cursor(0)
     local range = { pos[1] - 1, pos[2], pos[1] - 1, pos[2] }
     return parser:language_for_range(range):lang() == "pymol_select"

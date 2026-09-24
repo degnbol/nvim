@@ -45,10 +45,10 @@ end
 ---@param ... unknown
 ---@return function
 function M.fncount(fn, ...)
-    local args = ...
+    local args = { ... }
     return function()
-        for _ = 1, M.count() do
-            fn(args)
+        for _ = 1, vim.v.count1 do
+            fn(unpack(args))
         end
     end
 end
@@ -260,12 +260,12 @@ end
 
 ---Jump to position in specific file, leaving the departure in the jumplist.
 ---@param filepath string
----@param row integer 0-indexed
----@param col integer 0-indexed
+---@param row integer 0-indexed. Clamped to the buffer's lines, as `:edit +N` does.
+---@param col integer 0-indexed. Negative is clamped to 0.
 function M.jump(filepath, row, col)
     M.jumplist_add()
     M.edit(filepath)
-    M.set_cursor(row, col)
+    M.set_cursor(math.max(0, math.min(row, vim.api.nvim_buf_line_count(0) - 1)), math.max(0, col))
 end
 
 
@@ -390,6 +390,17 @@ function M.schedule_notify(obj)
     vim.schedule(function() -- notify when we are ready
         vim.notify(text)    -- vim.notify instead of print to see multiple lines
     end)
+end
+
+---Notify an error for a command that exited non-zero, naming the command, its
+---exit code and its stderr. Does nothing on exit 0. Scheduled, so it is safe in
+---a fast context such as a `vim.system` exit callback.
+---@param cmd string[] the command that ran
+---@param obj vim.SystemCompleted its result
+function M.notify_failure(cmd, obj)
+    if obj.code == 0 then return end
+    local msg = ("%s failed (exit %d):\n%s"):format(table.concat(cmd, " "), obj.code, vim.trim(obj.stderr or ""))
+    vim.schedule(function() vim.notify(msg, vim.log.levels.ERROR) end)
 end
 
 ---Byte column of the start of the keyword under the cursor.

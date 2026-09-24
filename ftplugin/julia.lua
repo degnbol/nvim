@@ -1,7 +1,7 @@
 -- have gf (goto file) work when writing the common $ROOT/PATH pattern.
 vim.opt_local.includeexpr = [[substitute(v:fname,'\$ROOT/','','')]]
 
-vim.cmd.iabbrev("edn", "end")
+require("utils.iabbrev").iabbrev("edn", "end", false, true)
 
 local map = require "utils/keymap"
 
@@ -33,20 +33,10 @@ for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 20, false)) do
     end
 end
 
--- Manual efforts. Install julia LSP as described on
--- https://github.com/neovim/nvim-lspconfig/blob/master/lsp/julials.lua
-vim.lsp.enable("julials")
--- vim.lsp.enable("jetls")
-
 -- Annoying bug where something keeps setting buftype=nofile
 vim.api.nvim_create_autocmd("BufWritePre", {
     buffer = 0,
     group = vim.api.nvim_create_augroup("julia_bug", { clear = true }),
     callback = function() vim.bo.buftype = nil end
 })
-
--- TEMP: there should be a better way to do this. syn must be getting reset somewhere.
-vim.defer_fn(function ()
-    vim.cmd [[syn keyword @variable.builtin stdin stdout stderr]]
-end, 0)
 

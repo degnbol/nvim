@@ -1,6 +1,6 @@
-vim.opt.list = false
+vim.opt_local.list = false
 -- to wrap comments using gw (default vim formatting)
-vim.opt.formatoptions:append("t")
+vim.opt_local.formatoptions:append("t")
 
 -- lz.n spec snippets for lua/plugins/ files (deferred until LuaSnip loads)
 if vim.api.nvim_buf_get_name(0):match("lua/plugins/") and not vim.g.lzn_snippets then
@@ -28,6 +28,7 @@ vim.keymap.set('x', 'K', [["hy:h <C-r>h<CR>]], { buffer=true, desc="Help" })
 -- this is where all scripts are required from.
 vim.opt_local.path:append(vim.fn.stdpath("config") .. "/lua")
 
-vim.cmd.iabbrev("ture", "true")
-vim.cmd.iabbrev("flase", "false")
+local iabbrev = require("utils.iabbrev").iabbrev
+iabbrev("ture", "true", false, true)
+iabbrev("flase", "false", false, true)
 

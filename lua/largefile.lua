@@ -21,9 +21,9 @@ function M.configure(buf)
     vim.wo.foldmethod = "manual"
     vim.wo.foldenable = false
     vim.wo.spell = false
-    pcall(vim.treesitter.stop, buf)
+    vim.treesitter.stop(buf)
     for _, client in ipairs(vim.lsp.get_clients({ bufnr = buf })) do
-        pcall(vim.lsp.buf_detach_client, buf, client.id)
+        vim.lsp.buf_detach_client(buf, client.id)
     end
 end
 
@@ -37,9 +37,11 @@ function M.check_argv()
 
             -- Remove from argument list and wipe buffer
             vim.cmd("silent! argdelete *")
-            local bufnr = vim.fn.bufnr(fullpath)
-            if bufnr ~= -1 then
-                vim.cmd("silent! bwipeout! " .. bufnr)
+            -- Not bufnr(fullpath): it takes a pattern, not a path.
+            for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+                if vim.api.nvim_buf_get_name(bufnr) == fullpath then
+                    vim.cmd("silent! bwipeout! " .. bufnr)
+                end
             end
 
             -- Block events during startup

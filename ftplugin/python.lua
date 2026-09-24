@@ -1,23 +1,24 @@
 -- Typo corrections.
-vim.cmd.iabbrev("reutrn", "return")
-vim.cmd.iabbrev("Ture", "True")
-vim.cmd.iabbrev("Flase", "False")
+local iabbrev = require("utils.iabbrev").iabbrev
+iabbrev("reutrn", "return", false, true)
+iabbrev("Ture", "True", false, true)
+iabbrev("Flase", "False", false, true)
 
 local map = require "utils/keymap"
 
 -- remove o, we want to continue comments while editing them only (r).
 -- no t and having c+a means only comments are autoformatted.
 -- However, a made comment reformat slow, so don't use by default.
-vim.opt.formatoptions = "jwcrql"
-vim.opt.concealcursor = ""
-vim.opt.list = false
+vim.opt_local.formatoptions = "jwcrql"
+vim.opt_local.concealcursor = ""
+vim.opt_local.list = false
 
 -- Fallback for <leader>cc when the script has no shebang.
 vim.b.interpreter = 'python'
 
 local hi = require "utils/highlights"
 
-map.n("<LocalLeader>u", function ()
+map.buf("n", "<LocalLeader>u", function ()
     local line = vim.api.nvim_get_current_line()
     local dep = line:match('^import (%w+)')
     if dep == nil then
@@ -42,11 +43,6 @@ local function set_pymol_hl()
     hi.set("@variable.builtin.pymol_select", { fg = hi.fg("Normal"), italic = true })
 end
 
-hi.onColorScheme(function()
-    hi.set("@cell", { reverse = true })
-    if vim.g.loaded_pymol then set_pymol_hl() end
-end)
-
 -- Global so the `pymol` snippet's function node (no closure over this file) can call it.
 function Load_pymol()
     -- Set up treesitter injection for pymol_select in Python strings.
@@ -55,17 +51,17 @@ function Load_pymol()
     local base = read_query('python', 'injections')
     local pymol_inject = read_query('pymol_select', 'python_injections')
     vim.treesitter.query.set('python', 'injections', base .. '\n' .. pymol_inject)
-    set_pymol_hl()
 
     -- Force treesitter to re-evaluate injections with the new query
-    local ok, parser = pcall(vim.treesitter.get_parser, 0)
-    if ok and parser then
+    local parser = vim.treesitter.get_parser(0)
+    if parser then
         parser:invalidate(true)
     end
 
     -- This global var is also used by blink to enable pymol_settings provider
     if not vim.g.loaded_pymol then
         vim.g.loaded_pymol = true
+        hi.onColorScheme(set_pymol_hl)
         -- LuaSnip lazy-loads on InsertEnter; opening a pymol file triggers this
         -- at BufReadPost, before that, so force it onto the rtp first.
         require("lz.n").trigger_load("LuaSnip")

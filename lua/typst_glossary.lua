@@ -160,8 +160,8 @@ end
 ---@param col integer 0-indexed
 ---@return string|nil key
 local function ref_key_at(bufnr, row, col)
-    local ok, parser = pcall(vim.treesitter.get_parser, bufnr, "typst")
-    if not ok or not parser then return nil end
+    local parser = vim.treesitter.get_parser(bufnr, "typst")
+    if not parser then return nil end
     parser:parse({ row, row }) -- get_node doesn't parse on its own
     local start = vim.treesitter.get_node({ bufnr = bufnr, pos = { row, col } })
     local ref = ts.ancestor("ref", start)

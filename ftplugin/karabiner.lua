@@ -12,7 +12,7 @@ vim.treesitter.stop()
 
 -- Create parser and highlighter with combined queries
 local bufnr = vim.api.nvim_get_current_buf()
-local parser = vim.treesitter.get_parser(bufnr, 'json')
+local parser = assert(vim.treesitter.get_parser(bufnr, 'json'))
 vim.treesitter.highlighter.new(parser, {
   queries = {
     json = base_highlights .. '\n' .. karabiner_highlights,

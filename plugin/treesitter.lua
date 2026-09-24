@@ -92,17 +92,7 @@ vim.api.nvim_create_autocmd("FileType", {
         -- vim regex syntax included: setting 'syntax' here would stop it too.
         if vim.b[args.buf].ts_highlight then return end
         if vim.list_contains(disabled, args.match) then return end
-        -- WORKAROUND: nvim 0.12 bundled markdown parser crashes during initial load.
-        -- Delay treesitter.start for markdown to after buffer is fully set up.
-        if args.match == "markdown" then
-            vim.schedule(function()
-                -- The buffer can be gone by the time this runs, and get_parser
-                -- throws on an invalid one.
-                if vim.api.nvim_buf_is_valid(args.buf) then start_treesitter(args.buf) end
-            end)
-        else
-            start_treesitter(args.buf)
-        end
+        start_treesitter(args.buf)
         if vim.list_contains(additional_vim_regex_highlighting, args.match) then
             vim.bo[args.buf].syntax = 'on'
         end

@@ -143,6 +143,11 @@ return {
 			-- JSON with schemas - see lsp/jsonls.lua
 			vim.lsp.enable("jsonls")
 
+			-- Manual efforts. Install julia LSP as described on
+			-- https://github.com/neovim/nvim-lspconfig/blob/master/lsp/julials.lua
+			vim.lsp.enable("julials")
+			-- vim.lsp.enable("jetls")
+
 			-- grammar. Not yet supporting latex but supports typst.
 			-- vim.lsp.config('harper_ls', {
 			--     settings = {
