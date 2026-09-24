@@ -45,24 +45,30 @@ function M.contains_cursor(item)
     return not pos_lt(cursor, start) and (pos_lt(cursor, stop) or not pos_lt(start, cursor))
 end
 
+--- Hash key of the filename, lnum, and col of a quickfix item.
+--- @param item table `:h setqflist-what` item with `filename`, `lnum` and `col`
+--- @return string key
+local function start_key(item)
+    return ("%s:%d:%d"):format(item.filename, item.lnum, item.col)
+end
+
 --- Load `what` as a new quickfix list whose current entry is the first item that
 --- contains the cursor, then jump to the other item if there is exactly one.
 --- With more, print their count and keep the cursor. The quickfix window is not
 --- opened. With no other item, print a message and keep the previous list.
 ---
---- If no item contains the cursor, an item at the cursor is inserted before the
---- first item that sorts after it by filename, lnum, col. This keeps the order
---- only if `items` is already in that order.
+--- The list holds `what.items`, plus an item at the cursor if no item contains
+--- the cursor. It is sorted by filename, lnum, col. Of the items with the same
+--- filename, lnum, and col, only the first in `what.items` is kept.
 --- @param what vim.fn.setqflist.what `:h setqflist-what` whose `items` all have
---- `filename`. Not mutated.
+--- `filename`, `lnum` and `col`. Not mutated.
 function M.jump_or_load(what)
-    local items = assert(what.items)
+    local items = vim.list_extend({}, assert(what.items))
     if not vim.iter(items):any(M.contains_cursor) then
-        local here = cursor_item()
-        local i_after = vim.iter(ipairs(items)):find(function(_, item) return item_lt(here, item) end)
-        items = vim.list_extend({}, items)
-        table.insert(items, i_after or #items + 1, here)
+        table.insert(items, cursor_item())
     end
+    vim.list.unique(items, start_key)
+    table.sort(items, item_lt)
     local i_self, i_other, n_other = nil, nil, 0
     for i, item in ipairs(items) do
         if M.contains_cursor(item) then

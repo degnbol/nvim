@@ -144,11 +144,39 @@ describe("qf", function()
             assert.are.same({ 4, 6 }, cursor())
         end)
 
-        it("appends self when the cursor sorts after all items", function()
+        it("puts self last when the cursor sorts after all items", function()
             vim.api.nvim_win_set_cursor(0, { 6, 0 })
             qf.jump_or_load { items = { print_x(2), print_x(3), print_x(4) } }
             assert.are.equal(4, qf_idx())
             assert.are.equal(4, qf_size())
+        end)
+
+        it("sorts the items", function()
+            vim.api.nvim_win_set_cursor(0, { 3, 6 })
+            qf.jump_or_load { items = { print_x(5), print_x(3), print_x(2), print_x(4) } }
+            local lnums = vim.tbl_map(function(entry) return entry.lnum end, vim.fn.getqflist())
+            assert.are.same({ 2, 3, 4, 5 }, lnums)
+            assert.are.equal(2, qf_idx())
+        end)
+
+        it("sorts the items by filename first", function()
+            vim.api.nvim_win_set_cursor(0, { 3, 6 })
+            local other = item(1, 7, 8, other_path)
+            qf.jump_or_load { items = { print_x(5), other, print_x(3) } }
+            local names = vim.tbl_map(function(entry) return vim.api.nvim_buf_get_name(entry.bufnr) end, vim.fn.getqflist())
+            if path < other_path then
+                assert.are.same({ path, path, other_path }, names)
+            else
+                assert.are.same({ other_path, path, path }, names)
+            end
+        end)
+
+        it("keeps one item per start position", function()
+            vim.api.nvim_win_set_cursor(0, { 2, 6 })
+            qf.jump_or_load { items = { print_x(2), print_x(4), print_x(2), item(4, 7, 9) } }
+            assert.are.same({ 4, 6 }, cursor())
+            assert.are.equal(2, qf_size())
+            assert.are.equal(8, vim.fn.getqflist()[2].end_col)
         end)
 
         it("does not change what.items", function()
