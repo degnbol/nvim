@@ -1,3 +1,6 @@
+local util = require "utils/init"
+local paths = require "utils.paths"
+
 local shebang = "#!/usr/bin/env "
 
 --- Escape literal `$` for snippet syntax.
@@ -56,7 +59,7 @@ local templates = {
             [[if (!require("pacman", quiet=TRUE)) install.packages("pacman")]],
             [[pacman::p_load(data.table, ggplot2, cowplot, ggh4x, svglite)]],
         }
-        local git_root = vim.fs.root(filepath, ".git")
+        local git_root = paths.git_root(filepath)
         local rel = git_root and vim.fs.relpath(git_root, vim.fn.fnamemodify(filepath, ":h"))
         if rel and rel ~= "" then
             table.insert(lines, [[root = system("git root", intern=TRUE)]])
@@ -219,7 +222,7 @@ for ext, body in pairs(templates) do
             if b then
                 vim.snippet.expand(b)
                 -- Stay in select mode for placeholders, otherwise return to normal mode.
-                if vim.fn.mode() ~= 's' then
+                if not util.get_mode():find("^s") then
                     vim.cmd.stopinsert()
                 end
             end

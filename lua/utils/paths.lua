@@ -75,9 +75,20 @@ local function dollar_token(bufnr)
     return token
 end
 
-local function is_file(p)
-    local stat = vim.uv.fs_stat(p)
+---Whether `path` is a regular file, following symlinks.
+---@param path string
+---@return boolean
+function M.is_file(path)
+    local stat = vim.uv.fs_stat(path)
     return stat ~= nil and stat.type == "file"
+end
+
+---Whether `path` is a directory, following symlinks.
+---@param path string
+---@return boolean
+function M.is_dir(path)
+    local stat = vim.uv.fs_stat(path)
+    return stat ~= nil and stat.type == "directory"
 end
 
 -- Resolve a path token to an existing file: absolute, then joined with the
@@ -87,19 +98,20 @@ end
 ---@return string|nil path
 local function resolve_file(token, bufnr)
     local expanded = vim.fn.expand(token) --[[@as string]]
-    if vim.startswith(expanded, "/") and is_file(expanded) then
+    if vim.startswith(expanded, "/") and M.is_file(expanded) then
         return expanded
     end
-    local bufdir = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":h")
-    local joined = bufdir .. "/" .. expanded
-    if is_file(joined) then
+    local joined = vim.fs.joinpath(vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr)), expanded)
+    -- fnamemodify, not vim.fs.normalize: `..` must apply after following a
+    -- symlink, as the kernel does, not remove the segment before it.
+    if M.is_file(joined) then
         return vim.fn.fnamemodify(joined, ":p")
     end
     -- findfile hands back a URL untouched, without a filesystem lookup, so the
     -- same existence test the branches above use has to gate this one too.
     local found = vim.fn.findfile(expanded) --[[@as string]]
     found = found ~= "" and vim.fn.fnamemodify(found, ":p") or ""
-    if is_file(found) then return found end
+    if M.is_file(found) then return found end
     return nil
 end
 
@@ -193,7 +205,7 @@ function M.resolve_path(token, bufnr)
     if vim.startswith(path, "/") then return path end
     local name = vim.api.nvim_buf_get_name(bufnr)
     local base = name ~= "" and vim.fs.dirname(name) or vim.uv.cwd()
-    return vim.fs.normalize(base .. "/" .. path)
+    return vim.fs.normalize(vim.fs.joinpath(base, path))
 end
 
 return M

@@ -193,7 +193,7 @@ function M.setup()
         pattern = "tsv",
         group = group,
         callback = function(args)
-            map.map("n", "<localleader>c", M.toggle_column,
+            map("n", "<localleader>c", M.toggle_column,
                 { buffer = args.buf, desc = "Toggle chemical column" })
         end,
     })

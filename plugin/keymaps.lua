@@ -2,6 +2,7 @@ local util = require "utils/init"
 local read_lines = require("utils.file").read_lines
 local map = require "utils/keymap"
 local lsp = require "utils.lsp"
+local paths = require "utils.paths"
 local ts = require "utils/treesitter"
 
 require "keymaps/options"
@@ -506,9 +507,8 @@ map.n("K", function()
         vim.cmd("wincmd p")
         return
     end
-    local path, lnum = require("utils.paths").resolve_location_under_cursor(0)
-    local stat = path and vim.uv.fs_stat(path)
-    if path and stat and stat.type == "file" then -- dirs (case 1) fall to hover
+    local path, lnum = paths.resolve_location_under_cursor(0)
+    if path and paths.is_file(path) then -- dirs (case 1) fall to hover
         peek_file(path, lnum)
         return
     end
@@ -603,7 +603,7 @@ map.n("gx", function()
         require("various-textobjs").url()
     end
     -- plugin only switches to visual mode when a URL is found (and notifies on miss)
-    if not vim.fn.mode():find("v") then
+    if not util.get_mode():find("^v") then
         if default_gx then default_gx() end
         return
     end

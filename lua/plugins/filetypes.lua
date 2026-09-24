@@ -14,6 +14,17 @@ hi.onColorScheme(function()
     hi.set("@cell", { reverse = true })
 end)
 
+-- Disable the base strikethrough highlight — upstream parser pairs unrelated
+-- single tildes (e.g. ~14 vs ~7 vs ~55) as strikethrough. The `.double`
+-- variant below is applied only to nested strikethroughs (true `~~text~~`)
+-- via after/queries/markdown_inline/highlights.scm, which also conceals the
+-- four ~ delimiters in that case.
+-- https://github.com/tree-sitter-grammars/tree-sitter-markdown/issues/236
+hi.onColorScheme(function()
+    hi.clear("@markup.strikethrough.markdown_inline")
+    hi.set("@markup.strikethrough.double", { strikethrough = true })
+end)
+
 return {
     -- julia support, colors and unicode substitution. CANNOT use ft=julia
     {
@@ -69,9 +80,9 @@ return {
                 hi.set("asciidoctorBold", { bold = true })
                 hi.set("asciidoctorItalic", { italic = true })
                 hi.set("asciidoctorBoldItalic", { bold = true, italic = true })
-                hi.set("asciidoctorBoldComment", { bold = true, fg = hi.get("Comment")['fg'] })
-                hi.set("asciidoctorItalicComment", { italic = true, fg = hi.get("Comment")['fg'] })
-                hi.set("asciidoctorBoldItalicComment", { bold = true, italic = true, fg = hi.get("Comment")['fg'] })
+                hi.set("asciidoctorBoldComment", { bold = true, fg = hi.fg("Comment") })
+                hi.set("asciidoctorItalicComment", { italic = true, fg = hi.fg("Comment") })
+                hi.set("asciidoctorBoldItalicComment", { bold = true, italic = true, fg = hi.fg("Comment") })
                 hi.link("asciidoctorTitleDelimiter", "Comment")
                 hi.link("asciidocPassthrough", "Constant") -- same as asciidoctorCode
                 hi.rev("asciidocHighlight")
@@ -84,7 +95,7 @@ return {
                 for i = 1, 6 do
                     hi.link("asciidoctorH" .. i .. "Delimiter", "Comment")
                 end
-                hi.setfg("commentDelimiter", hi.get("Normal")["bg"])
+                hi.setfg("commentDelimiter", hi.bg("Normal"))
                 hi.link("filenameCommentNoSpell", "Comment")
                 hi.link("UrlCommentNoSpell", "Comment")
                 hi.link("linebreak", "Comment")

@@ -104,7 +104,7 @@ return {
                         vim.fn.stdpath("config") .. "/lsp_ext/extraPaths/*/", false, true))
                     -- PEP 561 stub packages (scipy-stubs, pandas-stubs, ...)
                     -- installed via lsp_ext/python_stubs_pypi/RUNME.sh.
-                    local pypi_lib = vim.fn.expand("~/.local/share/python-stubs/lib")
+                    local pypi_lib = vim.fs.normalize("~/.local/share/python-stubs/lib")
                     for _, py in ipairs(vim.fs.find(
                         function(name) return name:match("^python%d+%.%d+$") end,
                         { path = pypi_lib, type = "directory", limit = math.huge })

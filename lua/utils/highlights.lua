@@ -48,7 +48,7 @@ end
 
 -- update subset of settings for a highlight group instead of replacing them all
 function M.mod(name, val)
-    M.set(name, vim.tbl_extend("force", M.get(name), val))
+    M.set(name, vim.tbl_extend("force", val, { update = true }))
 end
 
 function M.clear(name)

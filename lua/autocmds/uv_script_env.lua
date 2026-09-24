@@ -11,7 +11,6 @@
 --- The clients keep the name `basedpyright`, so `stub_patches.lua` covers them
 --- too; the `uv_script_python` pin below is what tells them apart from the
 --- project's own.
-local util = require "utils/init"
 
 local M = {}
 
@@ -53,7 +52,7 @@ end
 --- @param out vim.SystemCompleted
 --- @return string message
 local function failure(what, out)
-    return ("%s failed (exit %d):\n%s"):format(what, out.code, util.strip(out.stderr or ""))
+    return ("%s failed (exit %d):\n%s"):format(what, out.code, vim.trim(out.stderr or ""))
 end
 
 --- Interpreter of the uv environment belonging to a PEP 723 script.
@@ -79,7 +78,7 @@ function M.resolve(path, cb)
                 if found.code ~= 0 then
                     return cb(nil, failure("uv python find --script", found))
                 end
-                cb(util.strip(found.stdout or ""))
+                cb(vim.trim(found.stdout or ""))
             end)
     end)
 end

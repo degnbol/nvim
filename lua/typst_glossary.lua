@@ -7,6 +7,8 @@
 ---All parsing is treesitter over the typst grammar — no line patterns, no `rg`.
 local M = {}
 
+local util = require "utils/init"
+local paths = require "utils.paths"
 local ts = require "utils/treesitter"
 
 ---Strip a leading and trailing `"` from a treesitter string-node text.
@@ -142,7 +144,7 @@ function M.walk(bufnr, extract)
         if not visited[path] then
             visited[path] = true
             local lines = path == buf_path and start_lines
-                or (vim.uv.fs_stat(path) or {}).type == "file" and vim.fn.readfile(path)
+                or paths.is_file(path) and vim.fn.readfile(path)
             if lines then
                 local content = table.concat(lines, "\n")
                 local result = extract(path, content, lines)
@@ -175,8 +177,8 @@ end
 ---@param bufnr integer
 ---@return table[]|nil items `:h setqflist-what` items
 function M.resolve(bufnr)
-    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-    local key = ref_key_at(bufnr, row - 1, col)
+    local row, col = util.get_cursor()
+    local key = ref_key_at(bufnr, row, col)
     if not key then return nil end
     local items = M.walk(bufnr, function(path, content, lines)
         local pos = M.entries(content)[key]

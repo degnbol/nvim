@@ -1,6 +1,7 @@
 -- A generated compile_commands.json for C/C++ projects without one, in the cache dir.
 -- Server behaviour: .claude/skills/lsp/references/c-cpp.md
 local async = require "utils/async"
+local util = require "utils/init"
 local c_includes = require "utils/c_includes"
 local pkg_config = require "utils/pkg_config"
 local vim_async = require "vim._async"
@@ -58,7 +59,7 @@ function M.collect_files(root)
             vim.notify(("compile_db: stopped after %d entries in %s"):format(max_entries, root), vim.log.levels.WARN)
             break
         end
-        local ext = type == "file" and name:match("%.([^./]+)$")
+        local ext = type == "file" and vim.fs.ext(name)
         if source_exts[ext] then
             table.insert(files.sources, vim.fs.joinpath(root, name))
         elseif header_exts[ext] then
@@ -77,13 +78,11 @@ end
 local function read_includes(paths)
     local includes, unreadable = {}, {}
     for i, path in ipairs(paths) do
-        local file, err = io.open(path)
-        local content = file and file:read("*a")
-        if file then file:close() end
+        local content, err = util.readtext(path)
         if content then
             includes[path] = c_includes.includes(vim.split(content, "\n"))
         else
-            table.insert(unreadable, err or path)
+            table.insert(unreadable, err)
         end
         if i % files_per_chunk == 0 then vim_async.await(1, vim.schedule) end
     end

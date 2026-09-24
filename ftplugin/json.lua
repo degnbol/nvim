@@ -7,7 +7,7 @@ local map = require "utils/keymap"
 map.n("<leader>cc", function()
     local file = vim.api.nvim_buf_get_name(0)
     if file:match("complex_modifications/.*%.json$") then
-        vim.system({ vim.fn.expand("~/.config/karabiner/karabiner.json.sh") }, {}, function(obj)
+        vim.system({ vim.fs.normalize("~/.config/karabiner/karabiner.json.sh") }, {}, function(obj)
             vim.schedule(function()
                 if obj.code == 0 then
                     vim.notify("Regenerated karabiner.json")

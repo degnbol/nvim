@@ -1,3 +1,4 @@
+local util = require "utils/init"
 local hi = require "utils/highlights"
 local map = require "utils/keymap"
 
@@ -262,7 +263,7 @@ return {
             -- Mirrors snacks' own conceal() check so the freeze below and the
             -- hide agree on which line is "being edited". Current window only.
             local function cursor_lines()
-                local mode = vim.fn.mode():sub(1, 1):lower()
+                local mode = util.get_mode():sub(1, 1):lower()
                 if vim.wo.concealcursor:find(mode, 1, true) then
                     return nil
                 end

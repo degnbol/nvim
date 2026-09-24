@@ -1,13 +1,25 @@
+local util = require "utils/init"
+local ts = require "utils/treesitter"
+
 local Kind = vim.lsp.protocol.CompletionItemKind
+
+--- Decode a JSON file, raising if it can't be read.
+--- @param path string
+--- @return any
+local function read_json(path)
+    -- Not `decode(assert(...))`: under plenary, luassert's assert returns extra
+    -- values, which decode rejects as arguments.
+    local text, err = util.readtext(path)
+    if not text then error(err) end
+    return vim.json.decode(text)
+end
 
 --- Load mlr verb/flag data from generated JSON.
 local dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
-local data_path = dir .. "/mlr_verbs.json"
-local data = vim.json.decode(table.concat(vim.fn.readfile(data_path), "\n"))
+local data = read_json(dir .. "/mlr_verbs.json")
 
 --- Load DSL function/keyword data from generated JSON.
-local dsl_path = dir .. "/miller_functions.json"
-local dsl_data = vim.json.decode(table.concat(vim.fn.readfile(dsl_path), "\n"))
+local dsl_data = read_json(dir .. "/miller_functions.json")
 
 -- Convert positional_field_verbs array to set for O(1) lookup
 local positional_field_verbs = {}
@@ -51,19 +63,13 @@ end
 --- to find the root `mlr` command. Returns an ordered list of all command
 --- nodes in the chain, or nil if not in an mlr chain.
 local function find_mlr_chain(start_node)
-    local node = start_node
-    while node and node:type() ~= "command" do
-        node = node:parent()
-    end
+    if not start_node then return end
+    local node = ts.ancestor("command", start_node)
     -- Cursor in whitespace lands on a container node.
     -- Find the last command node whose end <= cursor position.
-    if not node or node:type() ~= "command" then
-        local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-        row = row - 1
-        local container = start_node
-        while container and container:type() ~= "program" do
-            container = container:parent()
-        end
+    if not node then
+        local row, col = util.get_cursor()
+        local container = ts.ancestor("program", start_node)
         if not container then return end
         node = nil
         local function scan(parent)
@@ -134,8 +140,7 @@ end
 --- Determine cursor context within the mlr chain.
 --- Returns { type = "verb" | "field" | "flag", verb = string|nil }
 local function cursor_context(chain)
-    local cursor_row, cursor_col = unpack(vim.api.nvim_win_get_cursor(0))
-    cursor_row = cursor_row - 1
+    local cursor_row, cursor_col = util.get_cursor()
 
     local tokens = collect_tokens(chain)
 
@@ -424,8 +429,7 @@ end
 ---   renames: { old = new } mapping from rename verbs BEFORE cursor's verb
 ---   suppress: true if cursor is in a rename verb at a "to" (new name) position
 local function analyse_renames(chain)
-    local cursor_row, cursor_col = unpack(vim.api.nvim_win_get_cursor(0))
-    cursor_row = cursor_row - 1
+    local cursor_row, cursor_col = util.get_cursor()
 
     local renames = {}
     local suppress = false
@@ -480,26 +484,21 @@ local function column_items(chain)
     local renames, suppress = analyse_renames(chain)
     if suppress then return {} end
 
-    local seen = {}
     local items = {}
     for _, path in ipairs(paths) do
         local abs = resolve_path(path)
         local columns = read_headers(abs)
         local basename = vim.fn.fnamemodify(path, ":t")
         for _, col in ipairs(columns) do
-            local display = renames[col] or col
-            if not seen[display] then
-                seen[display] = true
-                items[#items + 1] = {
-                    label = display,
-                    kind = Kind.Field,
-                    labelDetails = { description = basename },
-                    source = "mlr",
-                }
-            end
+            items[#items + 1] = {
+                label = renames[col] or col,
+                kind = Kind.Field,
+                labelDetails = { description = basename },
+                source = "mlr",
+            }
         end
     end
-    return items
+    return vim.list.unique(items, function(item) return item.label end)
 end
 
 --- Build verb name completion items.
@@ -519,8 +518,7 @@ end
 --- Compute the typed dash prefix and edit range for flag completion items.
 --- Returns prefix string, edit_start col, row (0-indexed).
 local function flag_edit_range()
-    local cursor_row, cursor_col = unpack(vim.api.nvim_win_get_cursor(0))
-    local row = cursor_row - 1
+    local row, cursor_col = util.get_cursor()
     local line_text = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
     local before = line_text:sub(1, cursor_col)
     local prefix = before:match("%-[-a-zA-Z0-9]*$") or ""
@@ -682,8 +680,8 @@ function M:get_completions(_, callback)
             return function() end
         end
         -- After '$': offer column names. Otherwise: DSL functions/keywords/variables.
-        local crow, ccol = unpack(vim.api.nvim_win_get_cursor(0))
-        local line = vim.api.nvim_buf_get_lines(0, crow - 1, crow, false)[1] or ""
+        local crow, ccol = util.get_cursor()
+        local line = vim.api.nvim_buf_get_lines(0, crow, crow + 1, false)[1] or ""
         local before = line:sub(1, ccol)
         if before:match("%$[a-zA-Z_]*$") then
             items = column_items(chain)

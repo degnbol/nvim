@@ -1,3 +1,5 @@
+local util = require "utils/init"
+
 function tabNew()
     local count = vim.v.count == 0 and 5 or vim.v.count
 
@@ -57,8 +59,7 @@ function tabBS()
         vim.api.nvim_buf_set_lines(0, r - n, r - n + 6 + 1, true, replacement)
         vim.api.nvim_win_set_cursor(0, { r, c - 1 })
     else
-        local keys = vim.api.nvim_replace_termcodes('<BS>', true, false, true)
-        vim.api.nvim_feedkeys(keys, 'n', false)
+        util.press('<BS>', { remap = false })
     end
 end
 

@@ -7,6 +7,8 @@
 -- See lua/utils/iabbrev.lua for the expansion algorithm.
 
 local m = require("utils.iabbrev")
+local util = require "utils/init"
+local ts = require "utils/treesitter"
 local function ab(lhs, rhs) m.iabbrev(lhs, rhs, false) end
 local function abc(lhs, rhs) m.iabbrev(lhs, rhs) end
 
@@ -89,6 +91,11 @@ local function typst_prose()
     return true  -- top-level markup
 end
 
+local function is_code_block(node)
+    local t = node:type()
+    return t == "fenced_code_block" or t == "indented_code_block"
+end
+
 -- Markdown/CommonMark: prose everywhere except verbatim — code blocks and
 -- inline code spans (`…`). A span's closing backtick is itself the abbrev
 -- trigger, so at expansion time the span is still unterminated and there is no
@@ -99,18 +106,12 @@ end
 -- Caveat: the count assumes single-backtick spans; ``double`` spans aren't
 -- gated (rare in prose).
 local function markdown_prose()
-    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local row, col = util.get_cursor()
     local parser = vim.treesitter.get_parser()
     if parser then
-        parser:parse({ row - 1, row })  -- keep the tree current at the cursor
-        local node = parser:named_node_for_range({ row - 1, col, row - 1, col })
-        while node do
-            local t = node:type()
-            if t == "fenced_code_block" or t == "indented_code_block" then
-                return false
-            end
-            node = node:parent()
-        end
+        parser:parse({ row, row + 1 })  -- keep the tree current at the cursor
+        local node = parser:named_node_for_range({ row, col, row, col })
+        if node and ts.ancestor(is_code_block, node) then return false end
     end
     local before = vim.api.nvim_get_current_line():sub(1, col)
     return select(2, before:gsub("`", "")) % 2 == 0

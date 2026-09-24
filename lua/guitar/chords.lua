@@ -1,21 +1,6 @@
---- Instead of using vim.expand("<cword>") we find a word under cursor with any 
---- pattern of allowed chars.
---- line: string of the current line
---- c: 0-indexed column of cursor.
---- pattern: string of allowed chars, e.g. "%w()" for alphanumeric as well as parenthesis.
-local function cword(line, c, pattern)
-    return line:sub(1,c):match("["..pattern.."]*$") .. 
-           line:sub(c+1):match("^["..pattern.."]*")
-end
+local util = require "utils/init"
 
-local function readjson(filename)
-    local file = io.open(filename, "r")
-    local content = vim.json.decode(file:read("*a"))
-    file:close()
-    return content
-end
-
-local chordchart = readjson(vim.fn.stdpath("config") .. "/lua/guitar/chordchart.json")
+local chordchart = vim.json.decode(assert(util.readtext(vim.fn.stdpath("config") .. "/lua/guitar/chordchart.json")))
 local name2strings = {}
 for _, chord in ipairs(chordchart) do
     name2strings[chord.name] = {chord.strings, chord.fret}
@@ -81,13 +66,13 @@ end
 --- Detect a chord name or strings pattern (e.g. x00231) on current line and 
 --- return {strings, fret}
 local function detectChordLine()
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+    local _, c = util.get_cursor()
     local line = vim.api.nvim_get_current_line()
     local strings = line:match(("[%dxX-]"):rep(6))
     if strings ~= nil then
         return strings:gsub('-', '0'), 1
     else
-        local name = cword(line, c, "%w/()")
+        local name = util.match_covering(line, c + 1, "[%w/()]+") or ""
         print(name)
         if name:match("/") then
             return slashChord(name)

@@ -36,8 +36,6 @@ function M.parse_search_dirs(verbose_output)
     return dirs
 end
 
-local warned_missing = {}
-
 --- A compiler's default `#include <…>` search dirs. If the compiler is not installed,
 --- warns once per compiler and reports no dirs.
 --- @async
@@ -46,10 +44,7 @@ local warned_missing = {}
 --- @return string[] dirs in search order
 function M.search_dirs(compiler, language)
     if vim.fn.executable(compiler) == 0 then
-        if not warned_missing[compiler] then
-            warned_missing[compiler] = true
-            vim.notify(compiler .. " not found; no default include dirs", vim.log.levels.WARN)
-        end
+        vim.notify_once(compiler .. " not found; no default include dirs", vim.log.levels.WARN)
         return {}
     end
     local result = async.system({ compiler, "-x" .. language, "-E", "-v", "-" }, { stdin = "", text = true })

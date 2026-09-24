@@ -6,13 +6,12 @@ map.n("gcA", function()
         vim.bo.commentstring,
         "%s", { plain = true }
     )
-    local r, _ = unpack(vim.api.nvim_win_get_cursor(0))
     local l_line = #vim.api.nvim_get_current_line()
-    vim.api.nvim_win_set_cursor(0, { r, l_line })
+    util.set_col(l_line)
     vim.api.nvim_put({ ' ' .. comment[1] }, 'c', true, true)
     vim.api.nvim_put({ comment[2] }, 'c', true, false)
     vim.cmd.startinsert()
-    vim.api.nvim_win_set_cursor(0, { r, l_line + #comment[1] + 1 })
+    util.set_col(l_line + #comment[1] + 1)
 end, "New comment at EOL")
 
 map.n("gco", function()

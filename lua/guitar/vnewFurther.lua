@@ -1,4 +1,4 @@
-local utils = require "utils"
+local utils = require "utils/init"
 
 local function getTopline()
     return vim.fn.line("w0")

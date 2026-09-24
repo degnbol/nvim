@@ -1,25 +1,15 @@
 local M = {}
 
----Convenience for plain matching.
----@param a string
----@param b string
----@return integer? start
----@return integer? stop
-function string.contains(a, b)
-    return a:find(b, 1, true)
-end
-
+---Read a whole file.
+---@param path string
+---@return string|nil content nil if the file can't be opened
+---@return string|nil err why the file can't be opened
 function M.readtext(path)
-    local file = io.open(path, "rb") -- r read mode and b binary mode
-    if not file then return nil end
+    local file, err = io.open(path, "rb") -- r read mode and b binary mode
+    if not file then return nil, err end
     local content = file:read "*a"   -- *a or *all reads the whole file
     file:close()
     return content
-end
-
--- strip whitespace at both ends of text
-function M.strip(text)
-    return text:match("^[\t%s]*(.-)[\t%s]*$")
 end
 
 ---Scan `s` left to right for non-overlapping matches of `pattern` and return
@@ -80,21 +70,24 @@ function M.last_visual_range()
     return r1 - 1, c1, r2 - 1, c2
 end
 
--- Return (1,0)-indexed start and end position of visual selection:
--- r1, c1, r2, c2
+---Start and end of the last visual selection. Ends visual mode, call `gv()`
+---afterwards to reselect. A `V` selection spans whole lines. For a `<C-v>`
+---selection, the start is that of the first line's part of the block and the
+---end is that of the last line's part, which is short of the block's right
+---edge when the last line is short or the block extends with `$`.
+---@return integer r1 1-indexed line of the first char
+---@return integer c1 0-indexed first byte of the first char
+---@return integer r2 1-indexed line of the last char
+---@return integer c2 0-indexed last byte of the last char, -1 on an empty line
 function M.get_visual_range()
     -- gives wrong coordinates if we don't end visual first.
-    -- If you want to have visual mode unaffected then call gv() below.
     M.end_visual()
-    local r1, c1 = unpack(vim.api.nvim_buf_get_mark(0, "<"))
-    local r2, c2 = unpack(vim.api.nvim_buf_get_mark(0, ">"))
-    -- don't allow selection beyond line
-    c2 = math.min(c2, #vim.fn.getline(r2))
-    -- handle edge-case where final char is unicode or other multibyte char
-    local char = vim.api.nvim_buf_get_text(0, r2 - 1, c2, r2 - 1, c2 + 1, {})[1]
-    -- if multibyte then char is only half the symbol and won't match a broad pattern like:
-    if not char:match('[%w%p%s]') then c2 = c2 + 1 end
-    return r1, c1, r2, c2
+    local mode = vim.fn.visualmode()
+    -- visualmode() is "" before the first visual selection, which getregionpos rejects.
+    local segments = vim.fn.getregionpos(vim.fn.getpos("'<"), vim.fn.getpos("'>"), { type = mode == "" and "v" or mode })
+    -- Columns are 1-indexed bytes, and 0 on an empty line.
+    local first, last = segments[1][1], segments[#segments][2]
+    return first[2], math.max(0, first[3] - 1), last[2], last[3] - 1
 end
 
 --- vim.cmd.normal 'gv' doesn't seem to work. This function tries to do a simple gv.
@@ -303,20 +296,15 @@ function M.get_text(r, c1, c2)
     return vim.api.nvim_buf_get_text(0, r, c1, r, c2, {})[1]
 end
 
----Get char at r, c (and its beggining byte)
----@param r integer 0-based
----@param c integer 0-based
----@return string char
----@return integer c1 start of byte or multibyte char returned
+---The char left of column `c`, i.e. the one covering byte `c - 1`.
+---@param r integer 0-indexed line
+---@param c integer 0-indexed byte column
+---@return string char "" at column 0
+---@return integer c1 0-indexed first byte of `char`
 function M.get_char(r, c)
     if c == 0 then return "", 0 end
-    local char = vim.api.nvim_buf_get_text(0, r, c - 1, r, c, {})[1]
-    -- if multibyte then char is only half the symbol and won't match a broad pattern like:
-    if char:match('[%w%p%s]') then
-        return char, c - 1
-    else
-        return vim.api.nvim_buf_get_text(0, r, c - 2, r, c, {})[1], c - 2
-    end
+    local c1 = c - 1 + vim.str_utf_start(M.get_line(r), c)
+    return M.get_text(r, c1, c), c1
 end
 
 ---Get char right before cursor, i.e. most recently typed.
@@ -333,16 +321,9 @@ function M.put_char(char)
     vim.api.nvim_put({ char }, "c", false, true)
 end
 
----Shortcut for the most typical call to get nvim internal represenations of
----keycodes given a string, e.g. "<C-V>".
----@param str string
-function M.nvim_code(str)
-    return vim.api.nvim_replace_termcodes(str, true, false, true)
-end
-
 ---Press keys
 ---@param keys string e.g. "<C-^>"
----@param opts? table remap: set to false to make sure key is pressed like in stock vim.
+---@param opts table|nil remap: set to false to make sure key is pressed like in stock vim.
 function M.press(keys, opts)
     local mode
     if opts and (opts.noremap or opts.remap == false) then
@@ -350,7 +331,7 @@ function M.press(keys, opts)
     else
         mode = 'm'
     end
-    vim.api.nvim_feedkeys(M.nvim_code(keys), mode, false)
+    vim.api.nvim_feedkeys(vim.keycode(keys), mode, false)
 end
 
 ---Get current mode.
@@ -372,23 +353,24 @@ function M.set_mode(mode)
     end
 end
 
-M.ctrl_v = M.nvim_code("<C-v>")
+local ctrl_v = vim.keycode("<C-v>")
 ---Check if current mode is visual blockwise.
 ---@return boolean
 function M.is_visual_blockwise()
-    return M.get_mode() == M.ctrl_v
+    return M.get_mode() == ctrl_v
 end
 
----Notify of stderr or stdout from a vim.system call obj.
+---Notify of stderr or stdout from a vim.system call obj, on the main loop.
 ---Intended for stderr. Uses stdout if stderr is empty, which may be the case if program doesn't utilise stderr at all.
----@param obj any
-function M.schedule_notify(obj)
-    local text = obj.stderr:gsub("\n$", "")
+---@param obj vim.SystemCompleted
+---@param level integer|nil `vim.log.levels`, default ERROR
+function M.schedule_notify(obj, level)
+    local text = (obj.stderr or ""):gsub("\n$", "")
     if text == "" then
-        text = obj.stdout:gsub("\n$", "")
+        text = (obj.stdout or ""):gsub("\n$", "")
     end
     vim.schedule(function() -- notify when we are ready
-        vim.notify(text)    -- vim.notify instead of print to see multiple lines
+        vim.notify(text, level or vim.log.levels.ERROR) -- vim.notify instead of print to see multiple lines
     end)
 end
 
@@ -413,22 +395,6 @@ end
 
 function M.is_mac()
     return vim.uv.os_uname().sysname == "Darwin"
-end
-
----Read treesitter query files from runtimepath, concatenating all matches.
----@param lang string Language/directory name under queries/
----@param query_name string Query name without .scm extension
----@return string Combined query source
-function M.read_query(lang, query_name)
-    local files = vim.api.nvim_get_runtime_file('queries/' .. lang .. '/' .. query_name .. '.scm', true)
-    local sources = {}
-    for i = #files, 1, -1 do
-        local content = M.readtext(files[i])
-        if content then
-            table.insert(sources, content)
-        end
-    end
-    return table.concat(sources, '\n')
 end
 
 ---Build a shell command running a script from the directory it lives in.

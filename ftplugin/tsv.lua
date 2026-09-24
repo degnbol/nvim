@@ -6,6 +6,7 @@ vim.opt_local.commentstring = "#%s"
 
 local util = require "utils/init"
 local map = require "utils/keymap"
+local hi = require "utils/highlights"
 
 -- # For agents
 -- The TSV ftplugin's column hiding (`zc`/`zo`/`za`) works by actually removing text from the buffer and storing it in `vim.b`. The `modified` flag is preserved so hiding doesn't mark clean buffers as dirty.
@@ -758,7 +759,7 @@ local function open_header(row, height)
     -- hide LineNrs since they are inconsistent with relativenumber=on
     vim.api.nvim_win_set_hl_ns(winid_float, 1)
     vim.defer_fn(function()
-        local bg = vim.api.nvim_get_hl(0, { name = "NormalFloat", link = false })["bg"]
+        local bg = hi.bg("NormalFloat")
         vim.api.nvim_set_hl(1, "CursorLineNr", { fg = bg })
         vim.api.nvim_set_hl(1, "LineNr", { fg = bg })
     end, 500)

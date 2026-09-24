@@ -118,7 +118,7 @@ end
 ---full entry as a snippet — tab through trigger name, description, and body format.
 function M.add_from_visual()
     local r1, c1, r2, c2 = util.get_visual_range()
-    local lines = vim.api.nvim_buf_get_text(0, r1 - 1, c1, r2 - 1, c2, {})
+    local lines = vim.api.nvim_buf_get_text(0, r1 - 1, c1, r2 - 1, c2 + 1, {})
     if #lines == 0 then
         vim.notify("No selection", vim.log.levels.WARN)
         return

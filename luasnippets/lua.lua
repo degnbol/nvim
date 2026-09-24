@@ -11,10 +11,8 @@ return {
         { t [[local text = io.read("*a")]] }),
 
     s({ trig = "read", dscr = "Read text of a file" },
-        fmta([[local fh = io.open("<>")
-local <> = fh:read("*a") -- *a or *all
-fh:close()
-]], { i(1), i(2, "content") })),
+        fmta([[local <>, err = util.readtext("<>")
+]], { i(2, "content"), i(1) })),
 
     s({ trig = "popen", dscr = "popen template" },
         fmta([[local handle = io.popen("<>")
@@ -54,7 +52,7 @@ end
         { t "string.rep(", i(1, "' '"), t ", ", i(2, "N"), t ")" }),
 
     s({ trig = "strip", dscr = "Strip whitespace" },
-        { i(1), t [[:match("^[\t%s]*(.-)[\t%s]*$")]] }),
+        { t "vim.trim(", i(1), t ")" }),
 
     -- meta. snippet to write snippets.
     -- TODO: condition these on relevant path in the same way you did it for completions for configuring lazy.
@@ -104,7 +102,7 @@ fmta([[<>
         { c(2, {
             t "",
             f(function(import_name)
-                local parts = vim.split(import_name[1][1], '.', true)
+                local parts = vim.split(import_name[1][1], '.', { plain = true })
                 return "local " .. (parts[#parts] or "") .. " = "
             end, { 1 })
         }), t 'require"', i(1), t '"' }),
@@ -140,7 +138,7 @@ fmta([[<>
         { condition = conds.line_begin }),
 
     s({ trig = "rtp", dscr = "Get rtp table", condition = conds.line_begin, snippetType = 'autosnippet' },
-        { t "local rtp = vim.opt.runtimepath:get()" }),
+        { t "local rtp = vim.api.nvim_list_runtime_paths()" }),
 
     s({ trig = "root", dscr = "Get nvim config root", condition = conds.line_begin, snippetType = 'autosnippet' },
         { t 'local config = vim.fn.stdpath("config")' }),
@@ -184,7 +182,7 @@ vim.api.nvim_create_autocmd("<>", {
         { condition = conds.line_begin }),
 
     s({ trig = "cursor", dscr = "get cursor position", condition = conds.line_begin },
-        { t "local r, c = unpack(vim.api.nvim_win_get_cursor(0))" }),
+        { t "local r, c = util.get_cursor()" }),
 
     s(
         {
@@ -202,9 +200,8 @@ vim.api.nvim_create_autocmd("<>", {
     s({ trig = "get_lines", dscr = "get all lines as list of strings" },
         { t "local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)" }),
 
-    -- -1 since nvim_win_get_cursor is (1,0)-indexed and nvim_buf_set_text is 0-indexed.
-    s({ trig = "char", dscr = "get char under cursor" },
-        { t "vim.api.nvim_buf_get_text(0, r-1, c-1, r-1, c, {})[1]" }),
+    s({ trig = "char", dscr = "get char before cursor" },
+        { t "util.get_char(r, c)" }),
 
     s({ trig = "get_mark", dscr = "get buffer mark", condition = conds.line_begin, snippetType = "autosnippet" },
         { t [[local r_mark, c_mark = unpack(vim.api.nvim_buf_get_mark(0, "]], i(1), t '"))' }),
@@ -222,7 +219,7 @@ vim.api.nvim_create_autocmd("<>", {
             { i(1, "Comment"), i(2, 'fg="gray"') })),
 
     s({ trig = "get_hl", dscr = "get highlight group values" },
-        fmta([[vim.api.nvim_get_hl(0, {name="<>", link=false})['<>']
+        fmta([[hi.get("<>").<>
 ]], { i(1, "Comment"), i(2, "fg") })),
 
     s({ trig = "g:", dscr = "Set global variable.", condition = conds.line_begin, snippetType = 'autosnippet' },
@@ -248,8 +245,7 @@ end, {})
             condition = conds.line_begin,
             dscr = "Press key where codes such as <right> are converted to some coded version first.",
         },
-        fmta([[local keys = vim.api.nvim_replace_termcodes('<<<>>>', true,false,true)
-vim.api.nvim_feedkeys(keys, '<>', false)
+        fmta([[vim.api.nvim_feedkeys(vim.keycode('<<<>>>'), '<>', false)
 ]], { i(1, "right"), c(2, { t "m", t "n", t "t", t "i", t "x", t "x!" }) })),
 
     -- returns stdout

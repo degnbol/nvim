@@ -1,4 +1,5 @@
 local util = require "utils/init"
+local map = require "utils/keymap"
 local vtu = require "utils/vimtex"
 local is_inside = vtu.is_inside
 local in_env = vtu.in_env
@@ -53,7 +54,7 @@ end
 local function getPreTabular()
     local r_tabular, _ = getTabular()
     if r_tabular == 0 then return end
-    local line = vim.fn.getline(r_tabular)
+    local line = util.get_line(r_tabular - 1)
     -- find preamble range using balanced bracket patterns.
     -- Empty () to get location (instead of an extracted substring).
     -- example to match:
@@ -170,9 +171,8 @@ vim.keymap.set("n", "<plug>TableJumpPre", function()
         end
         cGoto = cGoto + firstNonW - 1
         -- Mark current location for jumplist to work (e.g. <c-o> to go back in table)
-        -- lua version doesn't work
-        cmd "normal m`"
-        vim.api.nvim_win_set_cursor(0, { r + iGoto, cGoto })
+        util.jumplist_add()
+        util.set_cursor(r + iGoto - 1, cGoto)
     else
         local col = getCurrentColumn()
         -- go across preamble string for "col" alphanumerics ignoring {...}
@@ -192,9 +192,8 @@ vim.keymap.set("n", "<plug>TableJumpPre", function()
         end
         cGoto = cGoto + c_pre - 2
         -- Mark current location for jumplist to work (e.g. <c-o> to go back in table)
-        -- lua version doesn't work
-        cmd "normal m`"
-        vim.api.nvim_win_set_cursor(0, { r_tabular, cGoto })
+        util.jumplist_add()
+        util.set_cursor(r_tabular - 1, cGoto)
     end
 end, { desc = "Goto preamble" })
 
@@ -415,17 +414,16 @@ end
 -- NOTE: what about when conceal is on an \textbf makes a cell look shorter than it is. Mostly relevant for header row.
 -- inspired by https://gist.github.com/tpope/287147
 vim.keymap.set("i", "&", function()
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+    local r, c = util.get_cursor()
 
-    -- -1 since nvim_win_get_cursor is (1,0)-indexed and nvim_buf_set_text is 0-indexed.
-    if not in_env("table") or vim.api.nvim_buf_get_text(0, r - 1, c - 1, r - 1, c, {})[1] == "\\" then
+    if not in_env("table") or vim.api.nvim_buf_get_text(0, r, c - 1, r, c, {})[1] == "\\" then
         -- just write a regular & and exit
-        vim.api.nvim_buf_set_text(0, r - 1, c, r - 1, c, { '&' })
-        vim.api.nvim_win_set_cursor(0, { r, c + 1 })
+        vim.api.nvim_buf_set_text(0, r, c, r, c, { '&' })
+        util.set_cursor(r, c + 1)
         return
     end
 
-    vim.api.nvim_buf_set_text(0, r - 1, c, r - 1, c, { '& ' })
+    vim.api.nvim_buf_set_text(0, r, c, r, c, { '& ' })
     local line = vim.api.nvim_get_current_line()
     local column = #line:sub(1, c + 2):gsub('\\&', ''):gsub('[^&]', '')
 
@@ -433,10 +431,10 @@ vim.keymap.set("i", "&", function()
 
     -- the alignTable call moves the cursor and modifies lines.
     -- The cursor is now at the top of inside the table env.
-    line = vim.fn.getline(r)
+    line = util.get_line(r)
     -- replace escaped ampersands with something else so they don't get counted
     _, c = line:gsub('\\&', '  '):find(('[^&]*&'):rep(column))
-    vim.api.nvim_win_set_cursor(0, { r, c + 1 })
+    util.set_cursor(r, c + 1)
     -- Hacks to clear message area.
     -- Needed in combination with silent! above to not see any prints.
     -- Another solution I saw somewhere temporarily redefines some print functions to not do anything.
@@ -718,7 +716,7 @@ local function yankTable(onlycells, delim)
         if col == -1 then
             if not onlycells then
                 -- strip is only necessary since format lines are left alone completely in the parse
-                lines[#lines + 1] = util.strip(text)
+                lines[#lines + 1] = vim.trim(text)
                 row = row - 1 -- so that next cell (if there is one) will make a new line
             end
         else
@@ -815,55 +813,47 @@ local function pasteTable(delim, opts)
 end
 
 
-local function map(mode, lhs, rhs, desc)
-    local opts = { buffer = true, silent = true }
-    opts.desc = desc
-    vim.keymap.set(mode, lhs, rhs, opts)
-end
+local silent = { silent = true }
 
-local function nmap(lhs, rhs, desc)
-    map('n', lhs, rhs, desc)
-end
-
-nmap("<plug>TableYank", yankTable, "Yank table")
-map({ 'n', 'v' }, "<plug>TablePaste", pasteTable, "Paste table")
-nmap("<plug>TableAlign", alignTable, "Align columns in tex table")
-nmap("<plug>TableDelCol", deleteColumn, "Delete current column (also from preamble)")
-nmap("<plug>TableSwapRight", swapColumn, "Swap table column right (also mod preamble)")
-nmap("<plug>TableSwapLeft", function() swapColumn(true) end, "Swap table column left (also mod preamble)")
-nmap("<plug>TableGoLeft", function()
+map.buf('n', "<plug>TableYank", yankTable, "Yank table", silent)
+map.buf({ 'n', 'v' }, "<plug>TablePaste", pasteTable, "Paste table", silent)
+map.buf('n', "<plug>TableAlign", alignTable, "Align columns in tex table", silent)
+map.buf('n', "<plug>TableDelCol", deleteColumn, "Delete current column (also from preamble)", silent)
+map.buf('n', "<plug>TableSwapRight", swapColumn, "Swap table column right (also mod preamble)", silent)
+map.buf('n', "<plug>TableSwapLeft", function() swapColumn(true) end, "Swap table column left (also mod preamble)", silent)
+map.buf('n', "<plug>TableGoLeft", function()
     local tab = parseTable()
     local row, col = getCurrentCell(tab)
     gotoCell(tab, row, col - vim.v.count1)
-end)
-nmap("<plug>TableGoRight", function()
+end, nil, silent)
+map.buf('n', "<plug>TableGoRight", function()
     local tab = parseTable()
     local row, col = getCurrentCell(tab)
     gotoCell(tab, row, col + vim.v.count1)
-end)
-nmap("<plug>TableGoUp", function()
+end, nil, silent)
+map.buf('n', "<plug>TableGoUp", function()
     local tab = parseTable()
     local row, col = getCurrentCell(tab)
     gotoCell(tab, row - vim.v.count1, col)
-end)
-nmap("<plug>TableGoDown", function()
+end, nil, silent)
+map.buf('n', "<plug>TableGoDown", function()
     local tab = parseTable()
     local row, col = getCurrentCell(tab)
     gotoCell(tab, row + vim.v.count1, col)
-end)
+end, nil, silent)
 
-nmap('<Plug>TableAddColLeft', function()
+map.buf('n', '<Plug>TableAddColLeft', function()
     local tab = parseTable()
     local _, col = getCurrentCell(tab)
     M.addCol(tab, col)
-end, "Add new empty column to the left")
+end, "Add new empty column to the left", silent)
 
-nmap('<Plug>TableAddColRight', function()
+map.buf('n', '<Plug>TableAddColRight', function()
     local tab = parseTable()
     local _, col = getCurrentCell(tab)
     M.addCol(tab, col + 1)
-end, "Add new empty column to the right")
+end, "Add new empty column to the right", silent)
 
-map('v', '<Plug>TableSelInCell', selectInCell, "Select in cell")
+map.buf('v', '<Plug>TableSelInCell', selectInCell, "Select in cell", silent)
 
 return M

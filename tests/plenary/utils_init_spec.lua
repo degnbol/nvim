@@ -1,0 +1,89 @@
+---@diagnostic disable: undefined-global
+local util = require "utils/init"
+
+--- Replace the buffer with `lines`, then make and leave a selection with `keys`
+--- typed from the start of the first line.
+local function make_selection(lines, keys)
+    vim.api.nvim_buf_set_lines(0, 0, -1, true, lines)
+    vim.api.nvim_win_set_cursor(0, { 1, 0 })
+    vim.cmd("normal! " .. vim.keycode(keys .. "<Esc>"))
+end
+
+--- Text of the last visual selection, from the first byte to the last byte inclusive.
+local function range_text()
+    local r1, c1, r2, c2 = util.get_visual_range()
+    return vim.api.nvim_buf_get_text(0, r1 - 1, c1, r2 - 1, c2 + 1, {})
+end
+
+describe("get_visual_range", function()
+    before_each(function() vim.cmd.enew { bang = true } end)
+
+    local cases = {
+        { "ASCII", { "abc" }, "vl", { 1, 0, 1, 1 }, { "ab" } },
+        { "3-byte last char", { "a€" }, "vl", { 1, 0, 1, 3 }, { "a€" } },
+        { "2-byte only char", { "é" }, "v", { 1, 0, 1, 1 }, { "é" } },
+        { "v$", { "abc" }, "v$", { 1, 0, 1, 2 }, { "abc" } },
+        { "v$ on 3-byte last char", { "a€" }, "v$", { 1, 0, 1, 3 }, { "a€" } },
+        { "V", { "abc", "de" }, "lV", { 1, 0, 1, 2 }, { "abc" } },
+        { "V ending on an empty line", { "abc", "" }, "Vj", { 1, 0, 2, -1 }, { "abc", "" } },
+        { "V starting on an empty line", { "", "abc" }, "Vj", { 1, 0, 2, 2 }, { "", "abc" } },
+        { "<C-v> ending on 3-byte char", { "abc", "x€y" }, "<C-v>jl", { 1, 0, 2, 3 }, { "abc", "x€" } },
+    }
+    for _, case in ipairs(cases) do
+        local name, lines, keys, range, text = unpack(case)
+        it("gives the last byte of the last char for " .. name, function()
+            make_selection(lines, keys)
+            assert.are.same(range, { util.get_visual_range() })
+            assert.are.same(text, range_text())
+        end)
+    end
+end)
+
+describe("get_char", function()
+    before_each(function()
+        vim.cmd.enew { bang = true }
+        vim.api.nvim_buf_set_lines(0, 0, -1, true, { "aé€" })
+    end)
+
+    it("gives nothing at column 0", function()
+        assert.are.same({ "", 0 }, { util.get_char(0, 0) })
+    end)
+
+    it("gives the char ending before the column, and its start", function()
+        assert.are.same({ "a", 0 }, { util.get_char(0, 1) })
+        assert.are.same({ "é", 1 }, { util.get_char(0, 3) })
+        assert.are.same({ "€", 3 }, { util.get_char(0, 6) })
+    end)
+end)
+
+describe("readtext", function()
+    it("gives the reason when the file can't be opened", function()
+        local text, err = util.readtext("/nonexistent/file")
+        assert.is_nil(text)
+        assert.matches("No such file", err)
+    end)
+end)
+
+describe("schedule_notify", function()
+    local notify = vim.notify
+    local notes
+
+    before_each(function()
+        notes = {}
+        vim.notify = function(msg, level) notes[#notes + 1] = { msg = msg, level = level } end
+    end)
+
+    after_each(function() vim.notify = notify end)
+
+    it("notifies stderr at ERROR level by default", function()
+        util.schedule_notify { stderr = "oops\n", stdout = "" }
+        vim.wait(50, function() return #notes > 0 end)
+        assert.are.same({ { msg = "oops", level = vim.log.levels.ERROR } }, notes)
+    end)
+
+    it("falls back to stdout at the given level", function()
+        util.schedule_notify({ stderr = "", stdout = "done\n" }, vim.log.levels.INFO)
+        vim.wait(50, function() return #notes > 0 end)
+        assert.are.same({ { msg = "done", level = vim.log.levels.INFO } }, notes)
+    end)
+end)

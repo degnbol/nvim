@@ -36,7 +36,7 @@
 
 ; Highlight only the inner of a nested (double-tilde) strikethrough as struck
 ; text. The base @markup.strikethrough capture from upstream is cleared in
-; ftplugin/markdown.lua to suppress single-tilde false positives, so this
+; lua/plugins/filetypes.lua to suppress single-tilde false positives, so this
 ; capture (linked to a separate group) is the only way struck text renders.
 (strikethrough
   (strikethrough) @markup.strikethrough.double)

@@ -1,3 +1,5 @@
+local util = require "utils/init"
+
 vim.opt_local.conceallevel = 1
 -- adoc is for typing prose. But the autowrap works poorly for lists and most
 -- syntax beyond basic prose.
@@ -7,22 +9,14 @@ vim.opt_local.wrap = true
 -- after/ftplugin/asciidoc.lua so they run once the plugin's own ftplugin has.
 
 local function get_xref_id()
-    local r, c = unpack(vim.api.nvim_win_get_cursor(0))
-    local c=c+1 -- 1-index
+    local _, c = util.get_cursor()
     local line = vim.api.nvim_get_current_line()
     -- check for <<id,text>> pattern
-    for startpos, xref_match, endpos in line:gmatch('()(%b<>)()') do
-        if startpos <= c and c <= endpos then
-            local tag = xref_match:match('^<<([a-z-_]+).*>>$')
-            return tag
-        end
-    end
+    local xref = util.match_covering(line, c + 1, '%b<>')
+    if xref then return xref:match('^<<([a-z-_]+).*>>$') end
     -- check for xref:id[text] pattern
-    for startpos, tag, endpos in line:gmatch('()xref:([a-z-_]+)%b[]()') do
-        if startpos <= c and c <= endpos then
-            return tag
-        end
-    end
+    xref = util.match_covering(line, c + 1, 'xref:[a-z-_]+%b[]')
+    if xref then return xref:match('^xref:([a-z-_]+)') end
 end
 -- Goto tag that xref points to under cursor
 local function goto_xref_tag()

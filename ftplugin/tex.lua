@@ -133,10 +133,7 @@ map.n('<Leader>cg', function()
                 print("makeglossaries complete")
                 return
             end
-            local stderr = obj.stderr:gsub("\n$", "")
-            vim.schedule(function() -- notify when we are ready
-                vim.notify(stderr)  -- vim.notify instead of print to see multiple lines
-            end)
+            util.schedule_notify(obj)
         end)
     end)
 end, "Compile glossary", {buffer=false}) -- No need to make buffer local
@@ -144,7 +141,7 @@ end, "Compile glossary", {buffer=false}) -- No need to make buffer local
 ---Run `biber --cache` to get biber cache dir, so far found in /var/folders/...
 ---Then call `rm -rf` on it.
 ---Then call the supplied on_exit function if given.
----@param on_exit function
+---@param on_exit function|nil
 local function biber_clear_cache(on_exit)
     vim.system({ "biber", "--cache" }, { text = true }, function(obj)
         if obj.code ~= 0 then
@@ -168,7 +165,7 @@ local function biber_clear_cache(on_exit)
         end
     end)
 end
-map.cmd("BiberClearCache", biber_clear_cache)
+vim.api.nvim_create_user_command("BiberClearCache", function() biber_clear_cache() end, {})
 
 map.n('<leader>cb', function(main)
     if main == nil then main = "main" end
@@ -181,7 +178,7 @@ map.n('<leader>cb', function(main)
             return
         end
         -- Might have failed due to lack of pdflatex/lualatex/etc. run
-        if obj.stdout:contains("ERROR - Cannot find '" .. main .. ".bcf'!") then
+        if obj.stdout:find("ERROR - Cannot find '" .. main .. ".bcf'!", 1, true) then
             print("biber failed: no main.bcf")
             return
         end

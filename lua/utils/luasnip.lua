@@ -113,11 +113,10 @@ end
 --- Functionnode function reading template file(s) from `luasnippets/<dir>/templates/`.
 --- :h luasnip-functionnode
 local function putfile(args, parent, dir, ext, fnames)
-    local base = vim.fn.stdpath("config") .. "/luasnippets/" .. dir .. "/templates/"
+    local base = vim.fs.joinpath(vim.fn.stdpath("config"), "luasnippets", dir, "templates")
     local texts = {}
     for _, fname in ipairs(fnames) do
-        local path = base .. fname .. "." .. ext
-        texts[#texts + 1] = assert(util.readtext(path), "template not found: " .. path)
+        texts[#texts + 1] = assert(util.readtext(vim.fs.joinpath(base, fname .. "." .. ext)))
     end
     return vim.split(table.concat(texts, '\n'), '\n')
 end

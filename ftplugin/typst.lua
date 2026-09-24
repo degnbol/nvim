@@ -22,8 +22,8 @@ end, "Definition (glossary-aware)", { buffer=true })
 -- for a glossy ref is noisier and less useful — ours wins outright rather than
 -- both showing (vim.lsp.buf.hover merges every client with no priority knob).
 map.n('K', function()
-    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-    local markdown = require"typst_glossary".hover(0, row - 1, col)
+    local row, col = util.get_cursor()
+    local markdown = require"typst_glossary".hover(0, row, col)
     if markdown then
         vim.lsp.util.open_floating_preview(
             vim.split(markdown, "\n"), "markdown", { focus_id = "textDocument/hover" })

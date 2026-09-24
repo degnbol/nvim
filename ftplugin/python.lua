@@ -47,7 +47,7 @@ end
 function Load_pymol()
     -- Set up treesitter injection for pymol_select in Python strings.
     -- Scoped to function args, keyword args, and assignments — not docstrings.
-    local read_query = require('utils/init').read_query
+    local read_query = require('utils/treesitter').read_query
     local base = read_query('python', 'injections')
     local pymol_inject = read_query('pymol_select', 'python_injections')
     vim.treesitter.query.set('python', 'injections', base .. '\n' .. pymol_inject)

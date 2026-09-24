@@ -1,4 +1,20 @@
+local util = require "utils/init"
+
 local M = {}
+
+---Source of a treesitter query, concatenated from the files nvim would load for
+---it (`vim.treesitter.query.get_files`), in that order. Raises if a file can't
+---be read.
+---@param lang string Language/directory name under queries/
+---@param query_name string Query name without .scm extension
+---@return string source "" if no file matches
+function M.read_query(lang, query_name)
+    local sources = vim.tbl_map(function(file)
+        local text, err = util.readtext(file)
+        return text or error(err)
+    end, vim.treesitter.query.get_files(lang, query_name))
+    return table.concat(sources, '\n')
+end
 
 ---Climb from `start` (default: node under the cursor) to the nearest ancestor
 ---satisfying `match`. `match` is either a node-type string, or a predicate
@@ -64,9 +80,8 @@ function M.trim_directive(match, _, source, pred, metadata)
     local capture_id = pred[2]
     local prefix_bytes = tonumber(pred[3]) or 0
     local suffix_bytes = tonumber(pred[4]) or 0
-    local nodes = match[capture_id]
-    if not nodes or #nodes == 0 then return end
-    local node = nodes[1]
+    local node = (match[capture_id] or {})[1]
+    if not node then return end
     local sr, sc, sb = node:range(true)
     local text = vim.treesitter.get_node_text(node, source)
     local prefix = math.min(prefix_bytes, #text)
@@ -91,9 +106,9 @@ end
 ---@param metadata vim.treesitter.query.TSMetadata
 function M.inject_by_ext_directive(match, _, source, pred, metadata)
     local capture_id = pred[2]
-    local nodes = match[capture_id]
-    if not nodes or #nodes == 0 then return end
-    local dest = vim.treesitter.get_node_text(nodes[1], source)
+    local node = (match[capture_id] or {})[1]
+    if not node then return end
+    local dest = vim.treesitter.get_node_text(node, source)
     dest = dest:gsub("^['\"]", ""):gsub("['\"]$", "")
     local ft = vim.filetype.match({ filename = dest })
     if not ft then return end
@@ -219,13 +234,13 @@ end
 ---@param pred any[]
 ---@param metadata vim.treesitter.query.TSMetadata
 function M.inject_interp_directive(match, _, source, pred, metadata)
-    local nodes = match[pred[2]]
-    if not nodes or #nodes == 0 then return end
-    local flag = vim.treesitter.get_node_text(nodes[1], source)
+    local node = (match[pred[2]] or {})[1]
+    if not node then return end
+    local flag = vim.treesitter.get_node_text(node, source)
     if flag:sub(1, 1) ~= "-" or flag:sub(2, 2) == "-" then return end
     local cmd_char = flag:sub(-1)
     if cmd_char ~= "c" and cmd_char ~= "e" then return end
-    local interp = resolve_interp(nodes[1]:prev_named_sibling(), source)
+    local interp = resolve_interp(node:prev_named_sibling(), source)
     if interp and interp.char == cmd_char then
         metadata["injection.language"] = interp.lang
     end
@@ -249,10 +264,9 @@ end
 ---@param pred any[]
 ---@param metadata vim.treesitter.query.TSMetadata
 function M.inject_interp_cmd_directive(match, _, source, pred, metadata)
-    local nodes = match[pred[2]]
-    if not nodes or #nodes == 0 then return end
-    local cmd = nodes[1]
-    local interp = resolve_interp(cmd:named_child(cmd:named_child_count() - 1), source)
+    local node = (match[pred[2]] or {})[1]
+    if not node then return end
+    local interp = resolve_interp(node:named_child(node:named_child_count() - 1), source)
     if interp then metadata["injection.language"] = interp.lang end
 end
 
@@ -564,9 +578,9 @@ end
 ---@param pred any[]
 ---@param metadata vim.treesitter.query.TSMetadata
 function M.unquote_directive(match, pattern, source, pred, metadata)
-    local nodes = match[pred[2]]
-    if not nodes or #nodes == 0 then return end
-    local text = vim.treesitter.get_node_text(nodes[1], source)
+    local node = (match[pred[2]] or {})[1]
+    if not node then return end
+    local text = vim.treesitter.get_node_text(node, source)
     if #text < 2 or text:sub(1, 1) ~= '"' or text:sub(-1) ~= '"' then return end
     M.trim_directive(match, pattern, source, { pred[1], pred[2], 1, 1 }, metadata)
 end
@@ -581,9 +595,9 @@ end
 function M.head_directive(match, _, _source, pred, metadata)
     local capture_id = pred[2]
     local n = tonumber(pred[3]) or 1
-    local nodes = match[capture_id]
-    if not nodes or #nodes == 0 then return end
-    local sr, sc, sb = nodes[1]:range(true)
+    local node = (match[capture_id] or {})[1]
+    if not node then return end
+    local sr, sc, sb = node:range(true)
     if not metadata[capture_id] then metadata[capture_id] = {} end
     metadata[capture_id].range = { sr, sc, sb, sr, sc + n, sb + n }
 end
@@ -598,9 +612,9 @@ end
 function M.tail_directive(match, _, _source, pred, metadata)
     local capture_id = pred[2]
     local n = tonumber(pred[3]) or 1
-    local nodes = match[capture_id]
-    if not nodes or #nodes == 0 then return end
-    local _, _, _, er, ec, eb = nodes[1]:range(true)
+    local node = (match[capture_id] or {})[1]
+    if not node then return end
+    local _, _, _, er, ec, eb = node:range(true)
     if not metadata[capture_id] then metadata[capture_id] = {} end
     metadata[capture_id].range = { er, ec - n, eb - n, er, ec, eb }
 end

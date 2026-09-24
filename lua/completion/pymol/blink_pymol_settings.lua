@@ -1,4 +1,5 @@
 
+local util = require "utils/init"
 local async = require "blink.cmp.lib.async"
 local Kind = vim.lsp.protocol.CompletionItemKind
 local ts = vim.treesitter
@@ -60,10 +61,8 @@ function M:_load()
     -- add descriptions if available
     for _, item in ipairs(self.cached_items) do
         local filepath = config .. "/lua/completion/pymol/pymol_settings_descriptions/" .. item.label .. ".md"
-        fh = io.open(filepath)
-        if fh ~= nil then
-            local content = fh:read("*a")
-            fh:close()
+        local content = util.readtext(filepath)
+        if content then
             item["documentation"] = {
                 kind = "markdown",
                 value = content:gsub("<p>", ""):gsub("<\\p>", "")

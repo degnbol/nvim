@@ -130,7 +130,7 @@ function M.symlink_root_dir(markers)
             on_dir(root)
         else
             -- Fallback to file's directory for single-file support
-            on_dir(vim.fn.fnamemodify(resolved, ':h'))
+            on_dir(vim.fs.dirname(resolved))
         end
     end
 end

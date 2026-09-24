@@ -1,4 +1,5 @@
 
+local util = require "utils/init"
 local async = require "blink.cmp.lib.async"
 local Kind = vim.lsp.protocol.CompletionItemKind
 local ts = vim.treesitter
@@ -60,13 +61,12 @@ local function blink_format(obj)
 end
 
 function M:_load()
-    local fh = io.open(vim.fn.stdpath("config") .. "/lua/completion/plotlyjs/plotlyjs.json")
-    if fh == nil then
-        print("Error loading plotlyjs.json")
+    local text, err = util.readtext(vim.fn.stdpath("config") .. "/lua/completion/plotlyjs/plotlyjs.json")
+    if not text then
+        vim.notify("Error loading plotlyjs.json: " .. err, vim.log.levels.ERROR)
         return
     end
-    self.tree = vim.json.decode(fh:read("*a"))
-    fh:close()
+    self.tree = vim.json.decode(text)
 
     -- extend with shortcut entries such as marker_color=... instead of marker=attr(color=...).
     -- Only for top level for now. May extend if valid and useful.

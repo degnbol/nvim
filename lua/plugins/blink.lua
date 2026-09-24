@@ -308,8 +308,8 @@ return {
                             --- @type blink-cmp-dictionary.Options
                             opts = {
                                 dictionary_files = {
-                                    vim.fn.expand("~/.config/nvim/spell/en.dic"),
-                                    vim.fn.expand("~/.config/nvim/spell/custom.utf8.add"),
+                                    vim.fn.stdpath("config") .. "/spell/en.dic",
+                                    vim.fn.stdpath("config") .. "/spell/custom.utf8.add",
                                 }
                             }
                         },
@@ -328,9 +328,6 @@ return {
                                 else
                                     return items
                                 end
-                                -- avoid duplicates from the corrections
-                                local seen = {}
-                                local out = {}
                                 for _, item in ipairs(items) do
                                     local raw = item.insertText
                                     if raw:match(correct) then
@@ -338,12 +335,9 @@ return {
                                         item.insertText = text
                                         item.label = text
                                     end
-                                    if not seen[item.insertText] then
-                                        seen[item.insertText] = true
-                                        table.insert(out, item)
-                                    end
                                 end
-                                return out
+                                -- avoid duplicates from the corrections
+                                return vim.list.unique(items, function(item) return item.insertText end)
                             end
                         },
                         -- not currently working

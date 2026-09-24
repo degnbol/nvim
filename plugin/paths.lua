@@ -18,7 +18,7 @@ vim.env.PATH = vim.env.HOME
 -- not PYTHONPATH — global PYTHONPATH breaks the real pymol binary.
 
 local paths = require("utils.paths")
-local util = require("utils.init")
+local util = require("utils/init")
 local git_root = paths.git_root
 
 -- Like git_root but filters to .git *directories*, which means it skips
@@ -30,8 +30,7 @@ local function git_root_top(source)
 		if name ~= ".git" then
 			return false
 		end
-		local stat = vim.uv.fs_stat(p .. "/" .. name)
-		return stat and stat.type == "directory"
+		return paths.is_dir(vim.fs.joinpath(p, name))
 	end, { upward = true, path = path, limit = math.huge })
 	return matches[#matches] and vim.fs.dirname(matches[#matches]) or nil
 end

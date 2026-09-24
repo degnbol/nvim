@@ -4,7 +4,7 @@
 -- reading a whole file to get there.
 
 local file = require "utils.file"
-local util = require "utils.init"
+local util = require "utils/init"
 
 describe("read_lines", function()
     local dir

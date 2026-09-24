@@ -123,7 +123,8 @@ return {
                     local keys = "<Plug>(asterisk-" .. prefix .. z .. suffix .. ")"
                     -- Reveal only in normal mode; in o-pending/visual * is a
                     -- motion and a trailing reveal would corrupt the operator.
-                    if vim.fn.mode() == "n" then
+                    local mode = util.get_mode()
+                    if mode:find("^n") and not mode:find("^no") then
                         keys = keys .. "<Plug>(RevealMatch)"
                     end
                     return keys

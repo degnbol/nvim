@@ -1,4 +1,5 @@
 local async = require "utils/async"
+local util = require "utils/init"
 local vim_async = require "vim._async"
 
 local M = {}
@@ -28,7 +29,6 @@ function M.cflags(packages)
     return vim.list.unique(flags)
 end
 
-local warned_missing = false
 local max_processes = 16
 
 --- The whitespace-separated words of a command's stdout.
@@ -94,10 +94,9 @@ end
 --- @param key string see `index_key`
 --- @return table<string, string[]> index
 local function load_index(key)
-    local file = io.open(index_cache_path())
-    if file then
-        local ok, cached = pcall(vim.json.decode, file:read("*a"))
-        file:close()
+    local text = util.readtext(index_cache_path())
+    if text then
+        local ok, cached = pcall(vim.json.decode, text)
         if ok and type(cached) == "table" and cached.key == key then return cached.index end
     end
     local index, failures = build_index()
@@ -126,10 +125,7 @@ local load_index_shared = async.shared(load_index)
 --- @return table<string, string[]> index package name → include dirs
 function M.include_dir_index()
     if vim.fn.executable("pkg-config") == 0 then
-        if not warned_missing then
-            warned_missing = true
-            vim.notify("pkg-config not found; no include dirs from packages", vim.log.levels.WARN)
-        end
+        vim.notify_once("pkg-config not found; no include dirs from packages", vim.log.levels.WARN)
         return {}
     end
     return load_index_shared(index_key())

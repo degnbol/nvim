@@ -55,7 +55,7 @@ local cmd_mappings = {
 -- Implication is we don't split a cmd.
 -- indexing is (1,0)
 local before_cmd = function (r, c)
-    local line = vim.fn.getline(r)
+    local line = util.get_line(r - 1)
     -- +1 to include the char right after cursor bar
     local cmdStart = line:sub(1, c+1):match('\\%a+$')
     if cmdStart ~= nil then
@@ -81,7 +81,7 @@ local _insert_or_del_cmd = function(name)
     local iDel, jDel = nil, nil
     -- look at current line and then a few lines before
     for rDel = r, math.max(1, r-CONTEXT), -1 do
-        local line = vim.fn.getline(rDel)
+        local line = util.get_line(rDel - 1)
         if rDel == r then line = line:sub(1, c + #name + 1) end
         for i,j in line:gmatch('()' .. name .. '{?()') do
             local cmd = vim.fn['vimtex#cmd#get_at'](rDel, i)
