@@ -35,7 +35,7 @@ end
 
 -- Annoying bug where something keeps setting buftype=nofile
 vim.api.nvim_create_autocmd("BufWritePre", {
-    buffer = 0,
+    buf = 0,
     group = vim.api.nvim_create_augroup("julia_bug", { clear = true }),
     callback = function() vim.bo.buftype = nil end
 })

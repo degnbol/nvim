@@ -14,7 +14,7 @@ local grp = vim.api.nvim_create_augroup("my.lsp", { clear = true })
 vim.api.nvim_create_autocmd('LspAttach', {
     group = grp,
     callback = function(args)
-        local opts = { buffer = args.buf }
+        local opts = { buf = args.buf }
 
         local function map_fzf(lhs, funcname, desc)
             map.n(lhs, function()
@@ -79,7 +79,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         --     and client:supports_method('textDocument/formatting') then
         --     vim.api.nvim_create_autocmd('BufWritePre', {
         --         group = grp,
-        --         buffer = args.buf,
+        --         buf = args.buf,
         --         callback = function()
         --             -- Short timeout so it doesn't hang.
         --             -- If it needs more time then invoke formatting manually.

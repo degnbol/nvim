@@ -23,7 +23,7 @@ return {
         end
         map.n('<LocalLeader>p', function ()
             return pinMain(vim.api.nvim_buf_get_name(0))
-        end, "Pin buffer as main", { buffer=bufnr })
+        end, "Pin buffer as main", { buf=bufnr })
         -- main.typ upward for a multi-file project, else the buffer itself so a
         -- standalone doc's refs still resolve.
         local fname = vim.api.nvim_buf_get_name(bufnr)

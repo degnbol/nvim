@@ -2,12 +2,12 @@ local util = require "utils/init"
 local map = require "utils/keymap"
 
 -- assume using typst.vim
-map.n('<leader>cc', "<Cmd>TypstWatch<CR>", "Compile continuously", { buffer=true, })
+map.n('<leader>cc', "<Cmd>TypstWatch<CR>", "Compile continuously", { buf=0, })
 local path_pdf = vim.api.nvim_buf_get_name(0):gsub(".typ", ".pdf")
 if util.is_mac() then
-    map.n('<leader>cv', "!open -a skim " .. path_pdf .. "<CR>", "Compile view", { buffer=true, silent=true, })
+    map.n('<leader>cv', "!open -a skim " .. path_pdf .. "<CR>", "Compile view", { buf=0, silent=true, })
 else
-    map.n('<leader>cv', "!pdf " .. path_pdf .. "<CR>", "Compile view", { buffer=true, silent=true, })
+    map.n('<leader>cv', "!pdf " .. path_pdf .. "<CR>", "Compile view", { buf=0, silent=true, })
 end
 
 -- grd: jump to a glossary entry's definition for glossy `@term` refs; defer to
@@ -15,7 +15,7 @@ end
 map.n('grd', function()
     local items = require"typst_glossary".resolve(0)
     if items then require("utils/qf").jump_or_load { items = items } else require("utils.lsp").definition() end
-end, "Definition (glossary-aware)", { buffer=true })
+end, "Definition (glossary-aware)", { buf=0 })
 
 -- K: our concise glossary hover for glossy `@term` refs; defer to the LSP
 -- otherwise. tinymist doesn't strip `:pl`/`:cap`/… ref modifiers, so its hover
@@ -30,10 +30,10 @@ map.n('K', function()
     else
         vim.lsp.buf.hover()
     end
-end, "Hover (glossary-aware)", { buffer=true })
+end, "Hover (glossary-aware)", { buf=0 })
 
 -- canonicalize source: math symbol names → unicode glyphs, punctuation → ASCII.
-map.n('<leader>tf', function() require("canon").run() end, "canon: names→glyphs", { buffer=true })
+map.n('<leader>tf', function() require("canon").run() end, "canon: names→glyphs", { buf=0 })
 
 vim.opt_local.wrap = true
 vim.opt_local.sidescrolloff = 0

@@ -43,4 +43,4 @@ vim.keymap.set("n", "<localleader>a", function()
     if not md_table.align_at(0, row, { max_width = 30, align_cells = true }) then
         vim.notify("not on a markdown table", vim.log.levels.INFO)
     end
-end, { buffer = true, desc = "Align markdown table" })
+end, { buf = 0, desc = "Align markdown table" })

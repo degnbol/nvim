@@ -9,9 +9,9 @@ end
 map.buf('n', '<leader>cc', load_config, "Reload kitty config")
 
 local group = vim.api.nvim_create_augroup("kitty_reload", { clear = false })
-vim.api.nvim_clear_autocmds({ group = group, buffer = 0 })
+vim.api.nvim_clear_autocmds({ group = group, buf = 0 })
 vim.api.nvim_create_autocmd("BufWritePost", {
 	group = group,
-	buffer = 0,
+	buf = 0,
 	callback = load_config,
 })

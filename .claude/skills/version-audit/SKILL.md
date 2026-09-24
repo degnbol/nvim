@@ -140,3 +140,5 @@ Config fixes:
   defaults for them are disabled.
 - `vim.opt.diffopt:append` duplicates `linematch:` items. Use `:set+=`.
 - `nvim_buf_add_highlight` and `nvim_err_writeln` replaced.
+- The `buffer` opt of `vim.keymap.set`/`del` and the autocmd API is renamed
+  `buf` (integer only: `buffer = true` → `buf = 0`). Passing both asserts.

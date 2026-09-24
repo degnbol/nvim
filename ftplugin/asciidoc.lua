@@ -32,10 +32,10 @@ local function goto_xref_tag()
     end
 end
 
-vim.keymap.set('n', 'gd', goto_xref_tag, { buffer=true, desc="Goto tag definition" })
+vim.keymap.set('n', 'gd', goto_xref_tag, { buf=0, desc="Goto tag definition" })
 
 vim.keymap.set('i', '<S-CR>', " +<CR>", {
-    buffer=true,
+    buf=0,
     desc=[[Hard line break, similar to \\ in tex.
     Can also be achieved with paragraph option [%hardbreaks] or document option :hardbreaks-option:]]
 }

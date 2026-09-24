@@ -35,10 +35,10 @@ function M.setup()
     -- When collaborating you probably don't want to insert linebreaks all over the place.
     vim.opt_local.wrap = true
     vim.opt_local.formatoptions:remove("a") -- no autoformat
-    vim.api.nvim_clear_autocmds { group = group, buffer = buf }
+    vim.api.nvim_clear_autocmds { group = group, buf = buf }
     vim.api.nvim_create_autocmd({ "BufRead", "BufWritePost", "FocusGained" }, {
         group = group,
-        buffer = buf,
+        buf = buf,
         callback = function(args) sync(vim.api.nvim_buf_get_name(args.buf)) end,
     })
 end

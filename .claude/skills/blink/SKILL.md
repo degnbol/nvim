@@ -26,7 +26,7 @@ Tinymist declares: `#`, `(`, `<`, `,`, `.`, `:`, `/`, `"`, `@`.
 
 LuaSnip snippets appear via the built-in `luasnip` source. Snippet jump keymaps (`<C-.>`/`<C-,>`) are shared between blink and LuaSnip. See the [snippets skill](.claude/skills/snippets/SKILL.md) for node types, custom utilities, and the add-snippet workflow.
 
-**Buffer-local keymaps caveat:** Blink applies its keymaps (including snippet jump in `i`/`s` modes) as buffer-local mappings on `InsertEnter`. When expanding snippets programmatically via `ls.snip_expand` on a newly opened buffer (without entering insert mode first), these keymaps won't exist. Fix: fire `vim.api.nvim_exec_autocmds('InsertEnter', { buffer = 0 })` before expanding.
+**Buffer-local keymaps caveat:** Blink applies its keymaps (including snippet jump in `i`/`s` modes) as buffer-local mappings on `InsertEnter`. When expanding snippets programmatically via `ls.snip_expand` on a newly opened buffer (without entering insert mode first), these keymaps won't exist. Fix: fire `vim.api.nvim_exec_autocmds('InsertEnter', { buf = 0 })` before expanding.
 
 ## Community source tips
 

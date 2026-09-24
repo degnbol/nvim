@@ -60,7 +60,7 @@ return {
                     local api = require 'nvim-tree.api'
 
                     local function nmap(lhs, rhs, desc)
-                        vim.keymap.set('n', lhs, rhs, { desc = desc, buffer = bufnr, nowait = true })
+                        vim.keymap.set('n', lhs, rhs, { desc = desc, buf = bufnr, nowait = true })
                     end
 
                     nmap('<C-]>', api.tree.change_root_to_node, 'CD')

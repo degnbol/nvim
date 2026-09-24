@@ -571,7 +571,7 @@ return {
                     local buf = vim.api.nvim_get_current_buf()
                     if vim.b[buf].snacks_image_attached then
                         pcall(vim.api.nvim_exec_autocmds, "BufWinEnter", {
-                            buffer = buf,
+                            buf = buf,
                             group = "snacks.image.inline." .. buf,
                         })
                     end

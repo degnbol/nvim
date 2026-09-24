@@ -19,4 +19,4 @@ map.n("<leader>cc", function()
     else
         vim.notify("No compile action for this JSON file", vim.log.levels.WARN)
     end
-end, "\"Compile\" karabiner.json", { buffer = true})
+end, "\"Compile\" karabiner.json", { buf = 0})

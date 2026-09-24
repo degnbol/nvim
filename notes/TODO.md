@@ -259,7 +259,7 @@ That sets `b:ts_highlight`, and the "claimed by another plugin" guard returns ea
 lz.n also re-fires FileType, which runs the ftplugin again and clears 'syntax' once more.
 
 `ftplugin/julia.lua` `julia_bug` augroup is created with `clear = true` per buffer, so each new julia buffer deletes the previous buffer's BufWritePre autocmd.
-Use `clear = false` + `nvim_clear_autocmds({ group, buffer = 0 })`, as in `ftplugin/keyd.lua`.
+Use `clear = false` + `nvim_clear_autocmds({ group, buf = 0 })`, as in `ftplugin/keyd.lua`.
 
 Opening a markdown file sets `E31: No such mapping`; opening the first tex file sets `E227: Mapping already exists for a\``. Cause not investigated.
 

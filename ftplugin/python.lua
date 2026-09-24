@@ -69,7 +69,7 @@ function Load_pymol()
     end
 end
 -- manually load
-map.n('<localleader>+', Load_pymol, "Manually load pymol snippets+completion+syntax", { buffer = true, })
+map.n('<localleader>+', Load_pymol, "Manually load pymol snippets+completion+syntax", { buf = 0, })
 -- check if pymol is loaded by scanning first 10 lines
 for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 10, false)) do
     -- might be using e.g. `from pymol_util import *`
@@ -85,4 +85,4 @@ local function is_import(item)
     return item.text:match("^import") ~= nil or item.text:match("^from .* import") ~= nil
 end
 map.n('grr', function() require("utils.lsp").references(in_build, is_import) end,
-    "Goto filtered references", { buffer = true })
+    "Goto filtered references", { buf = 0 })

@@ -39,7 +39,7 @@ return {
             -- Alt use "<Plug>Split" if you wish to choose in another file
             local key_join  = "<leader>j"
             local key_split = "<leader>s"
-            local opts      = { buffer = true }
+            local opts      = { buf = 0 }
 
             vim.api.nvim_create_autocmd("Filetype", {
                 pattern = "*",

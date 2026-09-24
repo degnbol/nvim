@@ -402,7 +402,7 @@ map.buf({ 'n', 'v' }, '}', function()
 local grp = vim.api.nvim_create_augroup("hide", { clear = true })
 -- this autocmd sets vartabstop on file save based on longest cell in each column.
 vim.api.nvim_create_autocmd(defaults.checkevents, {
-    buffer = 0, -- since the extension is not just .tsv but can also be .tab or .bed as defined in ftdetect/tsv.vim
+    buf = 0, -- since the extension is not just .tsv but can also be .tab or .bed as defined in plugin/ftdetect.lua
     group = grp,
     callback = updateWidths,
 })
@@ -413,7 +413,7 @@ map.buf('n', '<localleader>a', updateWidths, "Align columns")
 -- unhide and rehide when saving as to always save the full text to file
 local cols_hidden_before_write = {}
 vim.api.nvim_create_autocmd("BufWritePre", {
-    buffer = 0,
+    buf = 0,
     group = grp,
     callback = function()
         -- Remember which columns are hidden before we unhide them
@@ -426,7 +426,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     end
 })
 vim.api.nvim_create_autocmd("BufWritePost", {
-    buffer = 0,
+    buf = 0,
     group = grp,
     callback = function()
         -- Re-hide only columns that were hidden before save
@@ -444,7 +444,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 -- /Users/cdmadsen/Documents/Topology/Chromatin/Pub/Hinch_2019/GSE124991_DMC1_and_H3K4me3_B6CASTF1.PRDM9hc.txt
 -- yank hidden text as well
 vim.api.nvim_create_autocmd("TextYankPost", {
-    buffer = 0,
+    buf = 0,
     group = grp,
     callback = function()
         local hidden = get_hidden()
@@ -784,13 +784,13 @@ local function open_header(row, height)
         end
     })
     vim.api.nvim_create_autocmd("BufLeave", {
-        buffer = bufid,
+        buf = bufid,
         group = grp_float,
         callback = function()
             close_header()
             -- open again if we come back
             vim.api.nvim_create_autocmd("BufEnter", {
-                buffer = bufid,
+                buf = bufid,
                 group = grp,
                 callback = function()
                     open_header(row, height)

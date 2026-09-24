@@ -146,9 +146,9 @@ silently breaks on the second-and-later buffer:
     ft = "asciidoc",
     after = function()
         vim.cmd [[compiler asciidoctor2pdf]]                          -- window-local
-        vim.keymap.set("n", "<leader>cc", ..., { buffer = true })     -- buffer-local
+        vim.keymap.set("n", "<leader>cc", ..., { buf = 0 })          -- buffer-local
         vim.opt_local.comments = "://"                                -- buffer-local
-        vim.api.nvim_create_autocmd("ColorScheme", { buffer = 0, ... }) -- pinned to buf
+        vim.api.nvim_create_autocmd("ColorScheme", { buf = 0, ... })    -- pinned to buf
     end,
 }
 ```

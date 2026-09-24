@@ -9,6 +9,6 @@ local function putKey()
     vim.api.nvim_buf_set_text(0, r, c, r, c+1, {key})
 end
 
-vim.keymap.set('n', '<C-k>', putKey, { buffer=true, desc="Put piano key at cursor" })
+vim.keymap.set('n', '<C-k>', putKey, { buf=0, desc="Put piano key at cursor" })
 
 

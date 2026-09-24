@@ -366,15 +366,15 @@ return {
                 callback = function(args)
                     local buf_id = args.data.buf_id
                     -- overide - so an oil buffer isn't opened within the mini files buffer
-                    map('n', '-', 'h', { buffer = buf_id, remap = true })
-                    map('n', '<leader>bd', MiniFiles.close, { buffer = buf_id, })
+                    map('n', '-', 'h', { buf = buf_id, remap = true })
+                    map('n', '<leader>bd', MiniFiles.close, { buf = buf_id, })
                     -- There is no option for force closing without prompt
-                    map('n', '<leader>bD', MiniFiles.close, { buffer = buf_id, })
+                    map('n', '<leader>bD', MiniFiles.close, { buf = buf_id, })
                     -- use l to open file without closing explorer
                     map('n', '<Enter>', function() MiniFiles.go_in({ close_on_file = true }) end, {
-                        buffer = buf_id, desc = "Open file and close explorer",
+                        buf = buf_id, desc = "Open file and close explorer",
                     })
-                    map('n', 'g.', toggle_dotfiles, { buffer = buf_id })
+                    map('n', 'g.', toggle_dotfiles, { buf = buf_id })
                     -- NOTE: couldn't get a function working to toggle preview.
                 end,
             })

@@ -201,13 +201,13 @@ function M.map_keys()
         if cmd_grp.imap ~= nil then
             vim.keymap.set("i", cmd_grp.imap, function ()
                 _insert_or_del_cmd(cmd_name)
-            end, {buffer=true, desc=desc})
+            end, {buf=0, desc=desc})
         end
         local xmap = cmd_grp.xmap or cmd_grp.imap
         if xmap ~= nil then
             vim.keymap.set("x", xmap, function ()
                 _surround_visual(cmd_name)
-            end, {buffer=true, desc=desc})
+            end, {buf=0, desc=desc})
         end
     end
 end

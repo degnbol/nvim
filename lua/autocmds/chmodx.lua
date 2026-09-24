@@ -7,7 +7,7 @@ vim.api.nvim_create_autocmd("BufNewFile", {
     -- Automatically do chmod u+x for a new file if it gets written.
     callback = function()
         vim.api.nvim_create_autocmd("BufWritePost", {
-            buffer = 0,
+            buf = 0,
             once = true,
             group = grp,
             callback = function()

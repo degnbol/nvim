@@ -3,11 +3,11 @@
 -- <C-v>|<C-q> where <C-q> is my custom blockim keymap.
 vim.keymap.set({ "o", "x" }, "i|",
     "<cmd>lua require('various-textobjs').shellPipe(true)<CR>",
-    { buffer = true }
+    { buf = 0 }
 )
 vim.keymap.set({ "o", "x" }, "a|",
     "<cmd>lua require('various-textobjs').shellPipe(false)<CR>",
-    { buffer = true }
+    { buf = 0 }
 )
 
 vim.opt_local.list = false

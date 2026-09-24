@@ -22,7 +22,7 @@ if vim.api.nvim_buf_get_name(0):match("lua/plugins/") and not vim.g.lzn_snippets
 end
 
 -- use :help instead of default Man for visual selection in lua
-vim.keymap.set('x', 'K', [["hy:h <C-r>h<CR>]], { buffer=true, desc="Help" })
+vim.keymap.set('x', 'K', [["hy:h <C-r>h<CR>]], { buf=0, desc="Help" })
 
 -- when doing gf or similar obviously we should look in the lua/ folder since 
 -- this is where all scripts are required from.

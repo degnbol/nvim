@@ -64,7 +64,7 @@ end
 ---@param desc string|nil
 ---@param opts table|nil
 function M.buf(mode, lhs, rhs, desc, opts)
-    mode_map(mode)(lhs, rhs, desc, vim.tbl_extend("force", opts or {}, { buffer = true }))
+    mode_map(mode)(lhs, rhs, desc, vim.tbl_extend("force", opts or {}, { buf = 0 }))
 end
 
 ---Add desc(ription) to an already-defined keymap, so a plugin's `after`

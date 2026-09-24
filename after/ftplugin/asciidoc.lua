@@ -10,13 +10,13 @@ pcall(vim.cmd, [[compiler asciidoctor2pdf]])
 -- double <CR> to auto-close after successful compilation. Use :make to keep
 -- the error list open.
 vim.keymap.set("n", "<leader>cc", "<Cmd>Asciidoctor2PDF<CR><CR>",
-    { buffer = true, desc = "Compile to PDF" })
+    { buf = 0, desc = "Compile to PDF" })
 vim.keymap.set("n", "<leader>oo", "<Cmd>AsciidoctorOpenPDF<CR><CR>",
-    { buffer = true, desc = "Open compiled PDF" })
+    { buf = 0, desc = "Open compiled PDF" })
 vim.keymap.set("n", "<leader>cC", function()
     vim.api.nvim_create_autocmd("BufWritePost", {
-        buffer = 0,
+        buf = 0,
         group = vim.api.nvim_create_augroup("asciidocCompile", { clear = true }),
         command = "silent Asciidoctor2PDF",
     })
-end, { buffer = true, desc = "Compile on save" })
+end, { buf = 0, desc = "Compile on save" })

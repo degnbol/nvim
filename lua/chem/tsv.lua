@@ -194,7 +194,7 @@ function M.setup()
         group = group,
         callback = function(args)
             map("n", "<localleader>c", M.toggle_column,
-                { buffer = args.buf, desc = "Toggle chemical column" })
+                { buf = args.buf, desc = "Toggle chemical column" })
         end,
     })
     vim.api.nvim_create_autocmd("BufWipeout", {
