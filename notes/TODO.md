@@ -253,4 +253,14 @@ Builtin LSP completion vs blink? And what about luasnip
 
 Consider if we should add buffer names for qf, e.g. showing refs with grr has name like "quickfix-10", but could be "References (qf)" or "Refs: `_edge_min_radius_at`"
 
+Markdown vim regex syntax is never on, so `after/syntax/markdown.vim` (`%` comments) does nothing.
+The runtime `ftplugin/markdown.lua` calls `vim.treesitter.start()` before the `start_treesitter` FileType autocmd in `plugin/treesitter.lua`.
+That sets `b:ts_highlight`, and the "claimed by another plugin" guard returns early: no `syntax=on`, no `User TSHighlightStart` (so probably no chem element marks in markdown either).
+lz.n also re-fires FileType, which runs the ftplugin again and clears 'syntax' once more.
+
+`ftplugin/julia.lua` `julia_bug` augroup is created with `clear = true` per buffer, so each new julia buffer deletes the previous buffer's BufWritePre autocmd.
+Use `clear = false` + `nvim_clear_autocmds({ group, buffer = 0 })`, as in `ftplugin/keyd.lua`.
+
+Opening a markdown file sets `E31: No such mapping`; opening the first tex file sets `E227: Mapping already exists for a\``. Cause not investigated.
+
 
