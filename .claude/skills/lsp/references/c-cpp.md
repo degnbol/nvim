@@ -57,7 +57,8 @@ the root is found only for files under it, and the root's generated database can
 hide it.
 
 - `after/lsp/clangd.lua`: `compilationDatabasePath` and `fallbackFlags`.
-- `after/lsp/clice.lua`: `rules` with `compile_commands` and `default_command`, and
-  `cache_dir` in `stdpath("cache")/clice/<sha256 of root>/`; all skipped when
-  the project has a clice config file.
+- `after/lsp/clice.lua`: `rules` with `compile_commands` and
+  `default_command`, and `cache_dir` in
+  `stdpath("cache")/clice/<sha256 of root>/`; all skipped when the project has
+  a clice config file.
 - clice is pinned by the local Mason registry `lua/mason_overrides/`.

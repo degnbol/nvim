@@ -137,7 +137,7 @@ function M.lookup(winid, on_result) end
 - Never silently swallow: `on_result(nil, err)` ⇒ `vim.notify(err, WARN)`, with
   distinct text for "nothing resolved that name" and "the request failed".
 - Python only at first; a second language is one more branch. Normalise compound
-  filetypes — `python.blender` is configured in `lsp/basedpyright.lua:77`.
+  filetypes — `python.blender` is configured in `after/lsp/basedpyright.lua:83`.
 
 ### `plugin/keymaps.lua`
 

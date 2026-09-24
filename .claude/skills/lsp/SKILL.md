@@ -5,11 +5,12 @@ description: This config's LSP setup — lsp_ext/ external type sources and stub
 
 # LSP (this config)
 
-General LSP knowledge (in-process servers, external `lsp/<name>.lua` config,
-`vim.lsp.enable`, the "use an in-process server, not custom completefunc"
-strategy) is in the global neovim skill's
+General LSP knowledge (in-process servers, external `lsp/<name>.lua` config
+and why it belongs in `after/lsp/`, `vim.lsp.enable`, the "use an in-process
+server, not custom completefunc" strategy) is in the global neovim skill's
 `~/.claude/skills/neovim/references/lsp.md`. This file is the config-specific
-setup only.
+setup only. All server configs live in `after/lsp/`; `after/lsp/tinymist.lua`
+chains nvim-lspconfig's `on_attach`.
 
 In-process LSP working examples in this config: `modules/kitty-conf.nvim`
 (hover + completion), `modules/agentic.nvim/lua/agentic/completion/lsp_server.lua`
@@ -44,12 +45,9 @@ glob when generating a fallback pyright config for projects without their own
 there). Both neovim and the lint hook pick it up automatically — no config
 changes needed.
 
-**`stubPath` reaches config-less projects only.** basedpyright drops the
-language server's config settings (`stubPath`, `extraPaths`, …) for a project
-owning a `pyrightconfig.json` (even `{}`) or a `[tool.basedpyright]` section.
-A `pyproject.toml` without that section keeps them. `pythonPath` survives.
-Such projects read only their environment's own stubs.
-`lua/autocmds/stub_patches.lua` patches those in place without a prompt: on
+**`stubPath` reaches config-less projects only** (global reference § "basedpyright
+`stubPath` and project config"). Projects with their own config read only their
+environment's own stubs. `lua/autocmds/stub_patches.lua` patches those in place without a prompt: on
 `LspAttach` it asks for the declaration of every imported package and queues
 `lsp_ext/stub_patches/patch_stubs.py` on the tree it lands in, then sends
 `didChangeWatchedFiles`. The script decides what applies (see
@@ -93,13 +91,6 @@ via `setHook(packageEvent("languageserver", "onLoad"), ...)`. Two patches:
    wrapper).
 
 **Config:** `after/lsp/r_language_server.lua` sets a custom `cmd` that sources
-the patch before `languageserver::run()`.
-
-## lsp/ merge order
-
-Configs live in `after/lsp/`: nvim-lspconfig's `lsp/<name>.lua` wins over a
-plain `lsp/` one (neovim skill `references/lsp.md` § "External LSP servers").
-Function fields replace, so `after/lsp/tinymist.lua` chains nvim-lspconfig's
-`on_attach` before its own main-pinning. `r_language_server` is excluded from
-mason-lspconfig's `automatic_enable` in `lua/plugins/lsp.lua`, which would
-otherwise override its `cmd`.
+the patch before `languageserver::run()`. `lua/plugins/lsp.lua` excludes the
+server from mason-lspconfig's `automatic_enable`, which would override that
+`cmd`, and enables it itself.

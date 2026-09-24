@@ -28,7 +28,7 @@ takes precedence and shows the unrepaired C++/untyped forms).
 
 Run `./RUNME.sh` to regenerate all stubs.
 
-basedpyright finds these via the `stubPath` setting in `lsp/basedpyright.lua`.
+basedpyright finds these via the `stubPath` setting in `after/lsp/basedpyright.lua`.
 `stubPath` is ignored in a project owning a `pyrightconfig.json` or a
 `[tool.basedpyright]` section. Keep settings in the LSP config.
 

@@ -62,7 +62,7 @@ for reasons specific to argparse:
 
 4. **Reuse and single-source-of-truth — the decisive one.** This config already
    shares Python type infrastructure between neovim and the Claude lint hook
-   (`lsp_ext/` stubs consumed by both `lsp/basedpyright.lua` and
+   (`lsp_ext/` stubs consumed by both `after/lsp/basedpyright.lua` and
    `lib/lint-tier.sh`). A Python `ast` script is reusable the same way: nvim
    diagnostics, the lint hook, pre-commit, CI. A `vim.treesitter` query is locked
    inside nvim and can never back the shell lint hook. Global CLAUDE.md:

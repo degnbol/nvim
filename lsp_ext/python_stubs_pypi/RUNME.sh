@@ -3,7 +3,7 @@
 # PEP 561 stub packages (scipy-stubs, ...) and typed runtime packages
 # (typed-argument-parser). Installed into a uv venv at
 # ~/.local/share/python-stubs/, which basedpyright picks up via extraPaths in
-# lsp/basedpyright.lua.
+# after/lsp/basedpyright.lua.
 # Rerun this script to install or upgrade.
 
 set -euo pipefail
