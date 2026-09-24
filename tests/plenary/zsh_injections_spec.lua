@@ -806,6 +806,83 @@ describe("zsh injections", function()
         end)
     end)
 
+    describe("git commit message heredoc", function()
+        local msg = "subject\n\nbody"
+        local function heredoc(cmd)
+            return table.concat({ cmd .. " <<'EOF'", msg, "EOF" }, "\n")
+        end
+
+        it("injects gitcommit into git commit -F - heredoc", function()
+            assert_injection(heredoc("git commit -F -"), "gitcommit", msg)
+        end)
+
+        it("injects for --file -", function()
+            assert_injection(heredoc("git commit --file -"), "gitcommit", msg)
+        end)
+
+        it("injects past flags on either side of commit", function()
+            assert_injection(heredoc("git -C /tmp commit -a -F -"),
+                "gitcommit", msg)
+        end)
+
+        it("injects inside a command substitution with stderr redirect",
+            function()
+                assert_injection(
+                    "git diff --cached --stat && out=$(\n"
+                    .. "  git commit -F - 2>&1 <<'EOF'\n" .. msg .. "\nEOF\n)",
+                    "gitcommit", msg)
+            end)
+
+        it("injects with an option after -F -", function()
+            assert_injection(heredoc("git commit -F - --no-verify"),
+                "gitcommit", msg)
+        end)
+
+        it("injects through a wrapper", function()
+            assert_injection(heredoc("sudo git commit -F -"), "gitcommit", msg)
+        end)
+
+        it("injects an unquoted heredoc as one region", function()
+            local body = "subject $x\n\nbody"
+            assert_injection("git commit -F - <<EOF\n" .. body .. "\nEOF",
+                "gitcommit", body, 1)
+        end)
+
+        it("injects when git commit ends a list", function()
+            assert_injection(heredoc("git add -A && git commit -F -"),
+                "gitcommit", msg)
+        end)
+
+        it("injects into -m \"$(cat <<'EOF' … EOF)\"", function()
+            assert_injection(
+                "git commit -m \"$(cat <<'EOF'\n" .. msg .. "\nEOF\n)\"",
+                "gitcommit", msg)
+        end)
+
+        it("injects each of several -m \"$(cat …)\" paragraphs", function()
+            local function para(text)
+                return "-m \"$(cat <<'EOF'\n" .. text .. "\nEOF\n)\""
+            end
+            local src = "git commit " .. para("subject") .. " " .. para("body")
+            assert_injection(src, "gitcommit", "subject", 2)
+            assert_injection(src, "gitcommit", "body", 2)
+        end)
+
+        it("does not inject when -F names a file", function()
+            assert_no_injection(heredoc("git commit -F msg.txt"), "gitcommit")
+        end)
+
+        it("does not inject for other git subcommands", function()
+            assert_no_injection(heredoc("git tag -a v1 -F -"), "gitcommit")
+        end)
+
+        it("does not inject for -m with a non-cat heredoc", function()
+            assert_no_injection(
+                "git commit -m \"$(python <<'EOF'\nprint(1)\nEOF\n)\"",
+                "gitcommit")
+        end)
+    end)
+
     describe("interpreter stdin heredoc", function()
         local function heredoc(cmd, body)
             return table.concat({ cmd .. " <<'EOF'", body, "EOF" }, "\n")
@@ -1032,6 +1109,29 @@ describe("zsh injections", function()
                 "timeout 180 env -i FOO=1 BAR=2 uv run --with numpy --with pandas"
                 .. " python3 -u -B -c 'print(1)'",
                 "python", "print(1)")
+        end)
+
+        local words = {}
+        for i = 1, 30 do words[i] = "w" .. i end
+        local long_args = table.concat(words, " ")
+
+        it("injects python into a stdin heredoc after many script args",
+            function()
+                assert_injection(
+                    "python3 - " .. long_args .. " <<'EOF'\nprint(1)\nEOF",
+                    "python", "print(1)")
+            end)
+
+        it("injects miller after many leading args", function()
+            assert_injection(
+                "mlr " .. long_args .. " " .. long_args .. " filter '$a == 1'",
+                "miller", "$a == 1")
+        end)
+
+        it("injects gitcommit after many commit args", function()
+            assert_injection(
+                "git commit " .. long_args .. " -F - <<'EOF'\nsubject\nEOF",
+                "gitcommit", "subject")
         end)
     end)
 

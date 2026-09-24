@@ -301,13 +301,10 @@
 ; re-asserts the base zsh captures over the injected region at priority 101.
 ; -----------------------------------------------------------------------------
 (redirected_statement
-  body: (command) @_cmd
-  (heredoc_redirect (heredoc_body) @injection.content)
-  (#inject-interp-cmd! @_cmd)
-  (#set! injection.include-children))
-
-(redirected_statement
-  body: (list (command) @_cmd .)
+  body: [
+    (command) @_cmd
+    (list (command) @_cmd .)
+  ]
   (heredoc_redirect (heredoc_body) @injection.content)
   (#inject-interp-cmd! @_cmd)
   (#set! injection.include-children))
@@ -332,6 +329,56 @@
   (#eq? @_lflag "-l")
   (#any-of? @_stdin "/dev/stdin" "-")
   (#set! injection.language "lua"))
+
+; -----------------------------------------------------------------------------
+; Commit message heredocs → gitcommit. `#has-arg?` finds the `commit`
+; subcommand at any position, so git's own options (`git -C dir commit`) and
+; commit's (`-a`) may sit on either side of it.
+;
+; `git commit -F - <<EOF`: the message file is stdin. Two body shapes: a bare
+; command, and a `list` ending in it (`git add -A && git commit -F - <<EOF`).
+; Not covered: the attached forms `-F-` and `--file=-` (one token each), and a
+; pipeline body.
+; -----------------------------------------------------------------------------
+(redirected_statement
+  body: [
+    (command
+      name: (command_name) @_cmd
+      argument: (word) @_flag
+      .
+      argument: (word) @_stdin)
+    (list
+      (command
+        name: (command_name) @_cmd
+        argument: (word) @_flag
+        .
+        argument: (word) @_stdin) .)
+  ]
+  (heredoc_redirect (heredoc_body) @injection.content)
+  (#command-is? @_cmd "git")
+  (#has-arg? @_cmd "commit")
+  (#any-of? @_flag "-F" "--file")
+  (#eq? @_stdin "-")
+  (#set! injection.language "gitcommit")
+  (#set! injection.include-children))
+
+; `git commit -m "$(cat <<'EOF' … EOF)"`: the heredoc belongs to the inner `cat`.
+; Not covered: a clustered `-am`, and the attached `--message="$(…)"`.
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_flag
+  .
+  argument: (string
+    (command_substitution
+      (redirected_statement
+        body: (command name: (command_name) @_cat)
+        (heredoc_redirect (heredoc_body) @injection.content))))
+  (#command-is? @_cmd "git")
+  (#has-arg? @_cmd "commit")
+  (#any-of? @_flag "-m" "--message")
+  (#command-is? @_cat "cat")
+  (#set! injection.language "gitcommit")
+  (#set! injection.include-children))
 
 ; -----------------------------------------------------------------------------
 ; Inject SQL into the query argument of `sqlite3 <db> '<sql>'`.

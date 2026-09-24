@@ -325,6 +325,31 @@ function M.arg_after(match, _, source, pred)
     return cap_byte >= arg_byte
 end
 
+---Query predicate `(#has-arg? @cmd "word" ...)` — true when any argument of the
+---command @cmd invokes is exactly one of the listed words, at any position.
+---@cmd is a `(command_name)` node; wrapper prefixes are resolved first
+---(`effective_command`). The query-side equivalent, a floating
+---`argument: (word) @_w`, is O(command length) in concurrent partial matches and
+---starves every pattern past tree-sitter's match_limit on long commands.
+---@param match table<integer, TSNode[]>
+---@param _ integer pattern index (unused)
+---@param source integer|string buffer or string
+---@param pred any[]
+---@return boolean
+function M.has_arg(match, _, source, pred)
+    local node = (match[pred[2]] or {})[1]
+    if not node then return false end
+    local words = { unpack(pred, 3) }
+    local arg = effective_command(node, source):next_named_sibling()
+    while arg do
+        if vim.list_contains(words, vim.treesitter.get_node_text(arg, source)) then
+            return true
+        end
+        arg = arg:next_named_sibling()
+    end
+    return false
+end
+
 ---A pattern-matching command's argument grammar and its regex dialects, both
 ---taken from the command's own `--help`. `value_chars` are the short flags that
 ---take a value and `value_flags` the long flags whose value may be a separate
