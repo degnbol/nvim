@@ -1,26 +1,23 @@
 ---
 name: math-images
-description: Inline LaTeX math rendering in neovim (LaTeX→PNG via a terminal-graphics image backend) and its conceallevel-tiered sizing/baseline gotchas. Use when working on inline `$…$` math images — width, size, baseline, or conceal behaviour in markdown/tex buffers. The active backend is snacks.image, configured in lua/plugins/pickers.lua.
+description: Rendered LaTeX math images in neovim markdown/tex buffers (`$…$`, `$$…$$`, snacks.image). Use when working on their size, baseline, conceal or layout.
 ---
 
-# Inline Math Images
+# Math Images
 
-Inline LaTeX `$…$` / `$$…$$` renders by compiling the expression to a PNG and
+LaTeX math (`$…$`, `$$…$$`) renders by compiling the expression to a PNG and
 placing it in the buffer through the terminal graphics protocol (kitty unicode
 placeholders). The active backend is **snacks.image**, but most of the hard
-parts are inherent to *any* such backend in neovim. The gotchas below are split
-accordingly: general ones first, then the snacks-specific section.
+parts are inherent to *any* such backend in neovim.
 
 ## Design intent: tier the render by `conceallevel`
 
-This is the level-1-vs-2 "conceals harder" distinction, made meaningful for
-math. It is a design choice, not a backend feature — any backend should honour
-it:
+A design choice, not a backend feature — any backend should honour it:
 
 | `conceallevel` | Source `$…$` | Render | Layout intent |
 |---|---|---|---|
 | **0** | shown literally | **none** | editing — see the raw LaTeX |
-| **1** | keeps its footprint (image overlaid) | fills the source footprint | **no reflow**: text never moves as the cursor enters/leaves the line |
+| **1** | keeps its footprint (image overlaid) | inline: fills the source footprint; display block: native size | **no reflow**: text never moves as the cursor enters/leaves the line |
 | **2+** | fully hidden | **true glyph size**, no surrounding whitespace | reflows around the real footprint |
 
 Intended consequences (not bugs):
@@ -28,6 +25,10 @@ Intended consequences (not bugs):
 - At **cl=1** a wide expression (`$k_{cat}$`) is stretched to fill its source
   width, so it looks "fat". That is the cost of zero reflow; cl=2 trades it for
   true size at the cost of reflow.
+- At **cl=1** a display block keeps native size instead, so its glyphs aren't
+  shrunk to the source line count. Blank cells cover the rest of the source; a
+  taller image continues in virtual lines, blank while the cursor is in the
+  block, so nothing reflows.
 - At **cl=2+** every glyph renders at a consistent size regardless of the
   expression around it (standalone `$k$` matches the `k` in `$k_{cat}$`), with
   no padding on either side.
@@ -35,14 +36,14 @@ Intended consequences (not bugs):
 ## Backend-independent gotchas (any inline-image renderer)
 
 - **Cell-box stretch-fill.** The image fills an integer `width × height` cell
-  box exactly (kitty unicode placeholders). The width you pick controls *size*,
-  not padding — there is no "render at native size, left-aligned" mode. Native
-  size = the box width *equals* the rounded true cell width.
+  box exactly (kitty unicode placeholders). Width controls *size*; padding
+  needs separate blank cells. Native size = box width equals the rounded-up true
+  cell width.
 - **Compute true aspect from raw pixels, not pre-ceiled cell sizes.** A helper
   that converts px→cells typically `ceil`s *both* axes first; taking a ratio of
   those double-rounds and squashes wide expressions. Go back to the raw PNG px
   (`img.info.size`) and the terminal cell dimensions:
-  `round(png_w/png_h · cell_h/cell_w)`.
+  `ceil(png_w/png_h · cell_h/cell_w)`.
 - **No baseline awareness.** A backend that stretches the PNG to fill a cell box
   maps the box *bottom* to the line *bottom* — it knows nothing about the text
   baseline. A descender-less glyph then hovers above the line. Fix on the LaTeX
@@ -60,10 +61,10 @@ Intended consequences (not bugs):
 - **Conceal overrides line highlights.** At cl=1 a concealed `$…$` leaves one
   cell drawn with the `Conceal` attr *replacing* the line attr (sign `linehl`,
   `line_hl_group`, diff) — neovim/neovim#31555. Instead leave the source
-  unconcealed and overlay the image at full source width with
-  `hl_mode="combine"` (`"replace"` paints `Normal` bg). Overlays clip at the
-  window edge, so a span crossing a screen-line wrap must fall back to
-  inline+conceal. Layout thus depends on conceallevel *and* wrap geometry;
+  unconcealed and cover it with overlay cells (image, plus blank padding for
+  blocks) with `hl_mode="combine"` (`"replace"` paints `Normal` bg). Overlays
+  clip at the window edge, so a span crossing a screen-line wrap must fall back
+  to inline+conceal. Layout thus depends on conceallevel *and* wrap geometry;
   re-render when either changes.
 
 ## snacks.image specifics
@@ -78,16 +79,21 @@ read those when touching this:
 
 - `doc.transforms.latex` — inspects raw `img.content` *before* snacks strips the
   delimiter; rewrites inline `$…$`/`\(…\)` to `\begin{math}<strut>…\end{math}`
-  (drops display glue, floors to one line height). Block math passes through.
+  (drops display glue, floors to one line height); display math likewise in
+  `\displaystyle`, unless the body starts with `\begin`. Tags `img.inline`,
+  which `inline.update` passes on as the `display` placement opt.
 - `doc.find_visible` — filters out `type == "math"` matches when the window is
   at cl=0, so the inline manager closes them and the source shows.
 - `placement.state` — sets `loc.width` per the tier table: cl=1 source display
   width + custom `loc.overlay` flag (width−1, inline, when `utils.crosses_wrap`
   reports a wrap crossing); cl=2+ true cell width from raw px. Don't reuse
   snacks' `ceil(w/h)+2` (placement.lua) — its `pixels_to_cells` pre-ceils both
-  axes (see above).
+  axes (see above). `display` math at cl=1 with a clean rectangular footprint
+  (`footprint_width`) sets `loc.box_width`, capped to fit the text area.
 - `placement._render` — on `loc.overlay`, turns the inline extmark into an
-  unconcealed `overlay`, `hl_mode="combine"`.
+  unconcealed `overlay`, `hl_mode="combine"`. On `loc.box_width`, `fill_box`
+  (`utils/image_placement.lua`) does the same to every image row, pads it to
+  the box and swaps conceal for blank overlay rows.
 - An `OptionSet` autocmd (conceallevel + wrap-geometry options) re-fires the
   inline manager's own `BufWinEnter` handler (its `snacks.image.inline.<buf>`
   augroup) to re-render.

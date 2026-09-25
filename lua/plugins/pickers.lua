@@ -1,6 +1,8 @@
 local util = require "utils/init"
 local hi = require "utils/highlights"
 local map = require "utils/keymap"
+local image_placement = require "utils/image_placement"
+local latex = require "utils/latex"
 
 -- Toggle between pickers by changing this flag.
 -- Options: "fzf-lua", "snacks"
@@ -217,8 +219,13 @@ return {
             -- expression followed by text renders below the line with an icon. We
             -- rewrite inline math to `\begin{math}<strut>...\end{math}` before
             -- snacks' transform: math mode drops the glue, and the strut floors
-            -- every expression to one line-height box (uniform 2 cells) so it
-            -- collapses to a single inline row without magnifying short glyphs.
+            -- every inline expression to one line-height box (uniform 2 cells) so
+            -- it collapses to a single inline row without magnifying short glyphs.
+            -- Display math gets the same rewrite with `\displaystyle`, which keeps
+            -- display-size fractions, sums and limits without the empty rows the
+            -- display glue adds. A display body that starts with `\begin` is left
+            -- alone, as snacks leaves it outside `\[...\]` (text mode), and some
+            -- environments can't go inside math mode.
             -- The strut is asymmetric (not \strut's 70/30): snacks fills the cell
             -- with no baseline awareness and maps the box bottom to the line
             -- bottom, so the height/depth split must mirror the editor font's
@@ -232,20 +239,21 @@ return {
             -- resize without disturbing the baseline.
             local strut = "\\rule[-0.18\\baselineskip]{0pt}{1.02\\baselineskip}"
             -- Both transforms below also mark inline matches with `img.inline`,
-            -- for find_visible, while the raw source still has its delimiter.
+            -- for find_visible and inline.update's `display` opt, while the raw
+            -- source still has its delimiter.
             local doc = require("snacks").image.doc
-            local latex = doc.transforms.latex
+            local latex_transform = doc.transforms.latex
             doc.transforms.latex = function(img, ctx)
                 if img.content and img.ext == "math.tex" then
-                    local raw = vim.trim(img.content)
-                    if raw:match("^%$[^$]") or raw:match("^\\%(") then
-                        img.inline = true
-                        local inner = raw:gsub("^%$+`?", ""):gsub("`?%$+$", "")
-                            :gsub("^\\%(", ""):gsub("\\%)$", "")
-                        img.content = ("\\begin{math}%s%s\\end{math}"):format(strut, inner)
+                    local inline = latex.is_inline(img.content)
+                    local body = latex.math_body(img.content)
+                    img.inline = inline
+                    if inline or not body:find("^\\begin") then
+                        img.content = ("\\begin{math}%s%s%s\\end{math}"):format(
+                            inline and "" or "\\displaystyle", strut, body)
                     end
                 end
-                return latex(img, ctx)
+                return latex_transform(img, ctx)
             end
             -- Typst math is display when whitespace follows the opening `$`.
             local typst = doc.transforms.typst
@@ -511,6 +519,7 @@ return {
                                     conceal = vim.b[self.buf].snacks_image_conceal
                                         or (type(conceal_cfg) == "function" and conceal_cfg(i.lang, i.type) or conceal_cfg),
                                     type = i.type,
+                                    display = i.type == "math" and not i.inline,
                                     on_update = function(p)
                                         for _, eid in ipairs(p.eids) do
                                             self.idx[eid] = p
@@ -554,13 +563,59 @@ return {
             --      be reused: pixels_to_cells already ceils both axes, so the
             --      ratio double-rounds and squashes wider expressions (`$k_{cat}$`
             --      lands at 2 cells when its true width is ~2.8).
+            -- A display block (the `display` placement opt, any line count) at
+            -- cl=1 keeps snacks' native size, so glyphs aren't shrunk to fit the
+            -- source line count. Blank overlay cells, not conceal, hide the
+            -- source around the image, up to the widest line right of the opener
+            -- (loc.box_width, applied in _render below). snacks' default would
+            -- leave the lines under a shorter image blank (its conceal_lines mark
+            -- has no effect at cl=1, so only the range conceal applies). A taller
+            -- image still continues in snacks' virt_lines below. The box needs
+            -- the conditions of snacks' overlay path (conceal set, opener outside
+            -- a conceal_lines capture, no wrapped line in any window) and a block
+            -- that owns its lines (footprint_width). Otherwise a one-line display
+            -- block with a one-row image is sized as inline math.
             -- (conceallevel 0 never reaches here; find_visible filters it out.)
             local placement = require("snacks").image.placement
+
+            --- Narrowest text area of `wins`, or nil unless every window is at
+            --- conceallevel 1 and none wraps a line `text_width` cells wide.
+            --- @param wins number[] windows
+            --- @param text_width number widest line in cells
+            --- @return number|nil width in cells
+            local function overlay_area(wins, text_width)
+                local area = math.huge
+                for _, win in ipairs(wins) do
+                    local info = vim.fn.getwininfo(win)[1]
+                    local win_area = info.width - info.textoff
+                    if vim.wo[win].conceallevel ~= 1 or (vim.wo[win].wrap and win_area < text_width) then
+                        return nil
+                    end
+                    area = math.min(area, win_area)
+                end
+                return area
+            end
+
             local state = placement.state
             placement.state = function(self)
                 local st = state(self)
                 local r = self.opts.range
-                if self.opts.type == "math" and st.loc.height == 1 and r and r[1] == r[3] then
+                if self.opts.type ~= "math" or not r then
+                    return st
+                end
+                local box_width = self.opts.display and self.opts.conceal and not self:is_concealed(r[1] - 1, r[2])
+                    and image_placement.footprint_width(
+                        vim.api.nvim_buf_get_lines(self.buf, r[1] - 1, r[3], false), r[2], r[4])
+                local area = box_width and overlay_area(st.wins, r[2] + box_width)
+                if area then
+                    -- Cap at the text area so the image isn't clipped with nowrap.
+                    local size = require("snacks").image.util.fit(self.img.file, {
+                        width = area - r[2],
+                        height = st.loc.height,
+                    }, { info = self.img.info })
+                    st.loc.width, st.loc.height = size.width, size.height
+                    st.loc.box_width = box_width
+                elseif r[1] == r[3] and st.loc.height == 1 then
                     local win = st.wins[1]
                     if win and vim.wo[win].conceallevel == 1 then
                         local src = vim.api.nvim_buf_get_text(self.buf, r[1] - 1, r[2], r[3] - 1, r[4], {})[1]
@@ -577,7 +632,7 @@ return {
                         local sz = self.img.info and self.img.info.size
                         if sz then
                             local cell = require("snacks").image.terminal.size()
-                            st.loc.width = require("utils.inline_math").cell_width(
+                            st.loc.width = image_placement.cell_width(
                                 sz.width, sz.height, cell.cell_width, cell.cell_height)
                         end
                     end
@@ -589,9 +644,13 @@ return {
             -- it. hl_mode "combine" keeps the line bg under the image ("replace"
             -- paints Normal bg); the snacks image hl sets fg/sp (the placeholder
             -- encoding) and nocombine, so the source's hl can't alter them.
+            -- Likewise fill a display block's box when state() chose one.
             local _render = placement._render
             placement._render = function(self, extmarks)
-                if self._state and self._state.loc.overlay then
+                local loc = self._state and self._state.loc
+                if loc and loc.box_width then
+                    extmarks = image_placement.fill_box(extmarks, loc.box_width)
+                elseif loc and loc.overlay then
                     for _, e in ipairs(extmarks) do
                         if e.virt_text_pos == "inline" then
                             e.conceal = nil
