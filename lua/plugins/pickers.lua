@@ -231,18 +231,27 @@ return {
             -- collapse squeezes the box into one row. Scale both together to
             -- resize without disturbing the baseline.
             local strut = "\\rule[-0.18\\baselineskip]{0pt}{1.02\\baselineskip}"
+            -- Both transforms below also mark inline matches with `img.inline`,
+            -- for find_visible, while the raw source still has its delimiter.
             local doc = require("snacks").image.doc
             local latex = doc.transforms.latex
             doc.transforms.latex = function(img, ctx)
                 if img.content and img.ext == "math.tex" then
                     local raw = vim.trim(img.content)
                     if raw:match("^%$[^$]") or raw:match("^\\%(") then
+                        img.inline = true
                         local inner = raw:gsub("^%$+`?", ""):gsub("`?%$+$", "")
                             :gsub("^\\%(", ""):gsub("\\%)$", "")
                         img.content = ("\\begin{math}%s%s\\end{math}"):format(strut, inner)
                     end
                 end
                 return latex(img, ctx)
+            end
+            -- Typst math is display when whitespace follows the opening `$`.
+            local typst = doc.transforms.typst
+            doc.transforms.typst = function(img, ctx)
+                img.inline = img.content and img.content:match("^%$%S") ~= nil
+                return typst(img, ctx)
             end
 
             -- Prefetch margin: render math within one screenful above/below the
@@ -326,7 +335,9 @@ return {
                     -- prefetch (negligible slack margin).
                     doc.find(buf, function(matches)
                         for _, i in ipairs(matches) do
-                            if i.type == "math" and i.range and i.range[1] ~= i.range[3] then
+                            -- Display blocks (`$$…$$`, `\[…\]`) keep their full
+                            -- range: the multi-line block path is built for them.
+                            if i.inline and i.range[1] ~= i.range[3] then
                                 i.range = first_line_range(buf, i.range)
                             end
                             if not ((cl0 and i.type == "math") or math_on_cursor(i.type, i.range, cf, ct)) then
