@@ -564,12 +564,9 @@ return {
             --      ratio double-rounds and squashes wider expressions (`$k_{cat}$`
             --      lands at 2 cells when its true width is ~2.8).
             -- A display block (the `display` placement opt, any line count) at
-            -- cl=1 keeps snacks' native size, so glyphs aren't shrunk to fit the
-            -- source line count. Blank overlay cells, not conceal, hide the
-            -- source around the image, up to the widest line right of the opener
-            -- (loc.box_width, applied in _render below). snacks' default would
-            -- leave the lines under a shorter image blank (its conceal_lines mark
-            -- has no effect at cl=1, so only the range conceal applies). A taller
+            -- cl=1 keeps snacks' native size. Blank overlay cells, not conceal,
+            -- hide the source around the image, up to the widest line right of
+            -- the opener (loc.box_width, applied in _render below). A taller
             -- image still continues in snacks' virt_lines below. The box needs
             -- the conditions of snacks' overlay path (conceal set, opener outside
             -- a conceal_lines capture, no wrapped line in any window) and a block

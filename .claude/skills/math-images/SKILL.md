@@ -18,18 +18,17 @@ A design choice, not a backend feature — any backend should honour it:
 |---|---|---|---|
 | **0** | shown literally | **none** | editing — see the raw LaTeX |
 | **1** | keeps its footprint (image overlaid) | inline: fills the source footprint; display block: native size | **no reflow**: text never moves as the cursor enters/leaves the line |
-| **2+** | fully hidden | **true glyph size**, no surrounding whitespace | reflows around the real footprint |
+| **2+** | fully hidden | inline: **true glyph size**, no surrounding whitespace; display block: snacks' default | reflows around the real footprint |
 
 Intended consequences (not bugs):
 
 - At **cl=1** a wide expression (`$k_{cat}$`) is stretched to fill its source
   width, so it looks "fat". That is the cost of zero reflow; cl=2 trades it for
   true size at the cost of reflow.
-- At **cl=1** a display block keeps native size instead, so its glyphs aren't
-  shrunk to the source line count. Blank cells cover the rest of the source; a
-  taller image continues in virtual lines, blank while the cursor is in the
-  block, so nothing reflows.
-- At **cl=2+** every glyph renders at a consistent size regardless of the
+- At **cl=1** a display block keeps native size instead. Blank cells cover the
+  rest of the source; a taller image continues in virtual lines, so nothing
+  reflows.
+- At **cl=2+** every inline glyph renders at a consistent size regardless of the
   expression around it (standalone `$k$` matches the `k` in `$k_{cat}$`), with
   no padding on either side.
 
