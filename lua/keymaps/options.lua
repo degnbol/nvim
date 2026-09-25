@@ -98,7 +98,9 @@ local statuscolumn_relativenumber =
 local statuscolumn_number         =
 '%##%=%{v:lnum!=line(".")&&v:virtnum==0?v:lnum:""}%#CursorLineNr#%{v:lnum==line(".")&&v:virtnum==0?v:lnum:""}%## '
 local signcolumn                  = false -- single column signcolumn by itself
+-- The bar and gitsigns linehl show the same hunks, so the bar replaces linehl.
 local function toggle_signcolumn()
+    require("gitsigns").toggle_linehl(signcolumn)
     if signcolumn then
         signcolumn = false
         -- only if presently set by a recent call to toggle_git
