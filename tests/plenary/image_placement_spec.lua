@@ -32,6 +32,16 @@ describe("inline math cell width", function()
     end)
 end)
 
+describe("row_height_in", function()
+    it("is aspect/12 in, snapped down to whole px", function()
+        assert.are.equal(37 / 192, image_placement.row_height_in(35 / 15, 192))
+    end)
+
+    it("keeps an exact px count", function()
+        assert.are.equal(36 / 192, image_placement.row_height_in(36 * 12 / 192, 192))
+    end)
+end)
+
 describe("fill_box", function()
     -- A 3×2-cell image over a 4-line block, as snacks' render_grid emits it:
     -- two overlay rows (the first concealing the whole range) and a

@@ -18,6 +18,17 @@ function M.cell_width(png_w, png_h, cell_w, cell_h)
     return math.max(1, math.ceil(native))
 end
 
+--- Height of a PNG that snacks.image shows exactly one cell tall, at any zoom.
+--- snacks shows `px / dpi · 96 · scale` px with `scale = cell_w / 8`
+--- (image/util.lua `fit`, image/terminal.lua `size`), so one cell, `cell_w · aspect` px,
+--- is `aspect / 12` in. Snapped down to whole px, as snacks rounds a part row up.
+--- @param aspect number cell height / cell width
+--- @param density number PNG px per inch
+--- @return number inches
+function M.row_height_in(aspect, density)
+    return math.floor(density * aspect / 12) / density
+end
+
 --- Copy of an image's extmarks, reshaped to fill a `width`-cell box without
 --- conceal. Each image row (an `overlay` or `inline` mark) becomes an overlay,
 --- loses `conceal` and is padded with blank cells to `width`. A `conceal_lines` mark becomes one blank

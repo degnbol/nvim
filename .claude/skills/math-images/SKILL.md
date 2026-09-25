@@ -46,14 +46,14 @@ Intended consequences (not bugs):
 - **No baseline awareness.** A backend that stretches the PNG to fill a cell box
   maps the box *bottom* to the line *bottom* — it knows nothing about the text
   baseline. A descender-less glyph then hovers above the line. Fix on the LaTeX
-  side with an asymmetric strut whose depth fraction matches the editor font's
-  descender (~0.15). Two knobs, both in `\baselineskip` units: the **ratio**
-  `depth : (depth+height)` is the baseline split (0.15 is the floor — shallower
-  and a subscript drops below the strut and grows the box, so `$k$` and
-  `$k_{cat}$` stop sharing a height); the **sum** is the size knob (glyph ink is
-  fixed px, so a taller box shrinks the glyph once the box collapses to one
-  row). Scale both together to resize without moving the baseline. Exact
-  alignment only holds for simple glyphs; fractions/limits extend both sides.
+  side with a strut: its height sets the scale (box = one cell) and its depth
+  fraction the baseline. Only fractions of the cell matter, so the fit is
+  zoom-independent. `latex.cell_fit_tex` computes it from the terminal's cell
+  layout (`kitty.cell_fractions`): strut depth = the cell's space below the
+  baseline; font size so that math x-height, cap-height and descender match the
+  prose with the smallest worst-case error. An expression that extends beyond
+  the strut grows its own PNG and is drawn smaller (subscripts shrink ~3-11%,
+  as the cell has little space below the baseline).
 - **Trim crops the strut.** Once you pad with a transparent strut, image-convert
   trimming (e.g. `-trim`) crops it straight back off. Trim must stay off, so
   PNGs carry the strut's vertical padding by design.
@@ -79,6 +79,11 @@ one glyph's box ~3 cells tall. Config alone can't fix it; the work is
 overrides on exported snacks tables, applied after `setup` so they survive
 `vim.pack` updates. All live in `pickers.lua` with the full *why* in comments —
 read those when touching this:
+
+- PNG size: snacks shows `px / dpi · 96 · scale` px, `scale = cell_w / 8`
+  (image/util.lua `fit`), so a PNG `aspect / 12` in tall is one cell at any zoom
+  (`image_placement.row_height_in`). The cell fit goes in `math.latex.tpl` after
+  `${header}`, set on the first math render.
 
 - `doc.transforms.latex` — inspects raw `img.content` *before* snacks strips the
   delimiter; rewrites inline `$…$`/`\(…\)` to `\begin{math}<strut>…\end{math}`

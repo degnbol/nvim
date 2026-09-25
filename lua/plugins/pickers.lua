@@ -3,6 +3,7 @@ local hi = require "utils/highlights"
 local map = require "utils/keymap"
 local image_placement = require "utils/image_placement"
 local latex = require "utils/latex"
+local kitty = require "utils/kitty"
 
 -- Toggle between pickers by changing this flag.
 -- Options: "fzf-lua", "snacks"
@@ -146,6 +147,7 @@ return {
     {
         "snacks.nvim",
         after = function()
+            local math_density = 192
             ---@type snacks.Config
             require("snacks").setup {
                 -- https://github.com/folke/snacks.nvim/blob/main/docs/input.md
@@ -165,7 +167,7 @@ return {
                     -- `-trim` would crop straight back off.
                     convert = {
                         magick = {
-                            math = { "-density", 192, "{src}[{page}]" }, -- snacks default appends "-trim"
+                            math = { "-density", math_density, "{src}[{page}]" }, -- snacks default appends "-trim"
                         },
                     },
                     math = {
@@ -179,8 +181,7 @@ return {
                             -- the snacks default. The template sorts packages
                             -- alphabetically (doc.lua), so unicode-math lands
                             -- after amsmath/mathtools — the required load order.
-                            -- Latin Modern Math (the default) covers the glyphs;
-                            -- no \setmathfont needed.
+                            -- Fonts: `math_fonts` below.
                             packages = { "amsmath", "amscd", "mathtools", "unicode-math" },
                         }
                     }
@@ -211,6 +212,17 @@ return {
                 end
             end
 
+            -- TeX Gyre DejaVu Math: of the full math fonts in tectonic's bundle,
+            -- its x-height, cap-height and descender best fit Operator Mono's.
+            -- \text and \mathrm in the terminal font (kitty.conf `font_family`,
+            -- `italic_font`, …). Before `${header}`, so a document's own fonts
+            -- still win.
+            local math_fonts = [[
+\setmainfont{Operator Mono SSm Lig Medium}[ItalicFont={Operator Mono SSm Lig Book Italic}, BoldFont={Operator Mono SSm Lig Bold}, BoldItalicFont={Operator Mono SSm Lig Bold Italic}]
+\setmathfont{texgyredejavu-math.otf}]]
+            local latex_cfg = require("snacks").image.config.math.latex
+            latex_cfg.tpl = latex_cfg.tpl:gsub("%${header}", function(header) return math_fonts .. "\n" .. header end)
+
             -- Render inline `$...$` (and `\(...\)`) math flowing within the line,
             -- while `$$...$$` / `\[...\]` stay display blocks. snacks discards the
             -- delimiter and wraps every expression as display `\[...\]`, whose
@@ -226,18 +238,36 @@ return {
             -- display glue adds. A display body that starts with `\begin` is left
             -- alone, as snacks leaves it outside `\[...\]` (text mode), and some
             -- environments can't go inside math mode.
-            -- The strut is asymmetric (not \strut's 70/30): snacks fills the cell
-            -- with no baseline awareness and maps the box bottom to the line
-            -- bottom, so the height/depth split must mirror the editor font's
-            -- baseline ratio or descender-less glyphs hover. Two knobs, both in
-            -- \baselineskip units: their *ratio* (0.15 : 1.02 ~ 15 : 85) is the
-            -- baseline split — 0.15 depth is the floor, any shallower and a
-            -- subscript (k_{cat}) drops below the strut and grows the box so
-            -- `$k$` and `$k_{cat}$` stop matching. Their *sum* is the size knob:
-            -- the glyph ink is fixed, so a taller box shrinks the glyph once the
-            -- collapse squeezes the box into one row. Scale both together to
-            -- resize without disturbing the baseline.
-            local strut = "\\rule[-0.18\\baselineskip]{0pt}{1.02\\baselineskip}"
+            -- In kitty, the strut and the math font size come from kitty's cell
+            -- layout: the strut depth is the cell's space below the baseline,
+            -- so math sits on the prose baseline. An expression that extends
+            -- beyond the strut grows its own PNG, and only that one is drawn
+            -- smaller. The fit goes in the template after `${header}`, so it
+            -- measures any \setmathfont there and also scales display bodies
+            -- that start with `\begin`. It is computed on the first math render,
+            -- not at startup, as kitty.cell_fractions runs kitty synchronously.
+            local strut ---@type string|nil
+
+            --- Strut for the math rewrite. On the first call in kitty, also fits
+            --- snacks' latex template to kitty's cell.
+            --- @return string tex
+            local function math_strut()
+                if strut then return strut end
+                -- Fallback outside kitty or on a metrics error. Set before
+                -- cell_fractions, whose wait() can re-enter this transform.
+                strut = "\\rule[-0.18\\baselineskip]{0pt}{1.02\\baselineskip}"
+                if not kitty.term() then return strut end
+                local fractions, err = kitty.cell_fractions()
+                if not fractions then
+                    vim.notify("Math cell fit failed, using a fixed strut:\n" .. err, vim.log.levels.WARN)
+                    return strut
+                end
+                local fit = latex.cell_fit_tex(fractions, image_placement.row_height_in(fractions.aspect, math_density))
+                latex_cfg.tpl = latex_cfg.tpl:gsub("%${header}", function(header) return header .. "\n" .. fit end)
+                    :gsub("%${content}", "{\\MathCellFit %0}")
+                strut = "\\MathCellStrut " -- The space ends the control word.
+                return strut
+            end
             -- Both transforms below also mark inline matches with `img.inline`,
             -- for find_visible and inline.update's `display` opt, while the raw
             -- source still has its delimiter.
@@ -247,10 +277,11 @@ return {
                 if img.content and img.ext == "math.tex" then
                     local inline = latex.is_inline(img.content)
                     local body = latex.math_body(img.content)
+                    local math_strut_tex = math_strut()
                     img.inline = inline
                     if inline or not body:find("^\\begin") then
                         img.content = ("\\begin{math}%s%s%s\\end{math}"):format(
-                            inline and "" or "\\displaystyle", strut, body)
+                            inline and "" or "\\displaystyle", math_strut_tex, body)
                     end
                 end
                 return latex_transform(img, ctx)
