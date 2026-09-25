@@ -310,6 +310,25 @@ function M.crosses_wrap(win, row, col, width)
     }).all > 1
 end
 
+---The `line_hl_group` neovim draws on buffer row `row`: that of the
+---highest-priority extmark on the row, in any namespace. At equal priority
+---the higher extmark id wins, as when drawn (measured, 0.12.5).
+---@param buf integer
+---@param row integer 0-indexed
+---@return string|nil group
+function M.line_hl(buf, row)
+    local group, priority, id
+    local marks = vim.api.nvim_buf_get_extmarks(buf, -1, { row, 0 }, { row, -1 }, { details = true, overlap = true })
+    for _, mark in ipairs(marks) do
+        local details = mark[4] --[[@as vim.api.keyset.extmark_details]]
+        if details.line_hl_group and not details.invalid and (not priority or details.priority > priority
+                or (details.priority == priority and mark[1] > id)) then
+            group, priority, id = details.line_hl_group, details.priority, mark[1]
+        end
+    end
+    return group
+end
+
 ---The char left of column `c`, i.e. the one covering byte `c - 1`.
 ---@param r integer 0-indexed line
 ---@param c integer 0-indexed byte column

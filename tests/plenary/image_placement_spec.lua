@@ -7,6 +7,7 @@ local image_placement = require "utils/image_placement"
 local cell_width = image_placement.cell_width
 local fill_box = image_placement.fill_box
 local footprint_width = image_placement.footprint_width
+local with_line_hl = image_placement.with_line_hl
 local CELL_W, CELL_H = 9, 18
 
 -- (png_w, png_h) → native cell width = png_w/png_h * cell_h/cell_w
@@ -130,5 +131,35 @@ describe("footprint_width", function()
 
     it("is nil with text after the end column on the last line", function()
         assert.is_nil(footprint_width({ "$$", "a", "$$ x" }, 0, 2))
+    end)
+end)
+
+describe("with_line_hl", function()
+    local function rows()
+        return { { { "  " }, { "xxx", "Img" } }, { { "  " }, { "yyy", "Img" } } }
+    end
+
+    it("combines the hl into each chunk and gives it to chunks without a group", function()
+        local lines = with_line_hl(rows(), "Ln", 0)
+        assert.are.same({ "  ", "Ln" }, lines[1][1])
+        assert.are.same({ "xxx", { "Ln", "Img" } }, lines[1][2])
+        assert.are.same({ "yyy", { "Ln", "Img" } }, lines[2][2])
+    end)
+
+    it("appends a pad chunk in the hl to each row", function()
+        for _, line in ipairs(with_line_hl(rows(), "Ln", 4)) do
+            assert.are.same({ "    ", "Ln" }, line[#line])
+            assert.are.equal(3, #line)
+        end
+    end)
+
+    it("appends an empty chunk for pad 0", function()
+        assert.are.same({ "", "Ln" }, with_line_hl(rows(), "Ln", 0)[1][3])
+    end)
+
+    it("does not modify the input", function()
+        local lines = rows()
+        with_line_hl(lines, "Ln", 4)
+        assert.are.same(rows(), lines)
     end)
 end)

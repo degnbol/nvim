@@ -66,6 +66,10 @@ Intended consequences (not bugs):
   clip at the window edge, so a span crossing a screen-line wrap must fall back
   to inline+conceal. Layout thus depends on conceallevel *and* wrap geometry;
   re-render when either changes.
+- **virt_lines get no line attr.** Image rows continuing in `virt_lines` lose
+  the source line's `line_hl_group`: combine it into every chunk and end each
+  row with a chunk in that group reaching the window edge. Re-render when the
+  line's hl changes (e.g. gitsigns re-diff).
 
 ## snacks.image specifics
 
@@ -93,7 +97,9 @@ read those when touching this:
 - `placement._render` — on `loc.overlay`, turns the inline extmark into an
   unconcealed `overlay`, `hl_mode="combine"`. On `loc.box_width`, `fill_box`
   (`utils/image_placement.lua`) does the same to every image row, pads it to
-  the box and swaps conceal for blank overlay rows.
+  the box and swaps conceal for blank overlay rows. Any placement's virt_lines
+  go through `with_line_hl`. A decoration-provider `on_end` re-renders
+  placements whose line hl went stale.
 - An `OptionSet` autocmd (conceallevel + wrap-geometry options) re-fires the
   inline manager's own `BufWinEnter` handler (its `snacks.image.inline.<buf>`
   augroup) to re-render.

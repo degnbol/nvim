@@ -130,3 +130,50 @@ describe("crosses_wrap", function()
         assert.is_false(util.crosses_wrap(win, 0, 0, 5))
     end)
 end)
+
+describe("line_hl", function()
+    local buf, ns_a, ns_b
+    before_each(function()
+        buf = vim.api.nvim_create_buf(false, true)
+        vim.api.nvim_buf_set_lines(buf, 0, -1, true, { "a", "b", "c" })
+        ns_a = vim.api.nvim_create_namespace("line_hl_spec_a")
+        ns_b = vim.api.nvim_create_namespace("line_hl_spec_b")
+    end)
+    after_each(function() vim.api.nvim_buf_delete(buf, { force = true }) end)
+
+    it("is nil on a row without marks", function()
+        assert.is_nil(util.line_hl(buf, 1))
+    end)
+
+    it("returns the mark's line_hl_group", function()
+        vim.api.nvim_buf_set_extmark(buf, ns_a, 1, 0, { line_hl_group = "LnA" })
+        assert.are.equal("LnA", util.line_hl(buf, 1))
+    end)
+
+    it("picks the highest priority across namespaces", function()
+        vim.api.nvim_buf_set_extmark(buf, ns_a, 1, 0, { line_hl_group = "LnA", priority = 20 })
+        vim.api.nvim_buf_set_extmark(buf, ns_b, 1, 0, { line_hl_group = "LnB", priority = 10 })
+        assert.are.equal("LnA", util.line_hl(buf, 1))
+    end)
+
+    it("picks the higher extmark id at equal priority, whatever the creation order", function()
+        for _ = 1, 5 do vim.api.nvim_buf_set_extmark(buf, ns_a, 2, 0, {}) end
+        vim.api.nvim_buf_set_extmark(buf, ns_a, 0, 0, { line_hl_group = "LnA" }) -- id 6
+        vim.api.nvim_buf_set_extmark(buf, ns_b, 0, 0, { line_hl_group = "LnB" }) -- id 1
+        assert.are.equal("LnA", util.line_hl(buf, 0))
+        vim.api.nvim_buf_set_extmark(buf, ns_b, 1, 0, { line_hl_group = "LnB" }) -- id 2
+        vim.api.nvim_buf_set_extmark(buf, ns_a, 1, 0, { line_hl_group = "LnA" }) -- id 7
+        assert.are.equal("LnA", util.line_hl(buf, 1))
+    end)
+
+    it("ignores marks on other rows", function()
+        vim.api.nvim_buf_set_extmark(buf, ns_a, 0, 0, { line_hl_group = "LnA" })
+        vim.api.nvim_buf_set_extmark(buf, ns_a, 2, 0, { line_hl_group = "LnA" })
+        assert.is_nil(util.line_hl(buf, 1))
+    end)
+
+    it("counts a range mark ending at column 0 of the row", function()
+        vim.api.nvim_buf_set_extmark(buf, ns_a, 0, 0, { end_row = 1, end_col = 0, line_hl_group = "LnA" })
+        assert.are.equal("LnA", util.line_hl(buf, 1))
+    end)
+end)

@@ -43,6 +43,8 @@ Grep `~/nvim/` (excluding `modules/lazy_repro/`) for:
 - Removed or renamed options, events, highlight groups, commands
 - Deprecated treesitter APIs, LSP methods, or diagnostic interfaces
 - New built-in features that replace patterns currently done manually in the config
+- `has("nvim-0.XX")` gates at or below the current version: drop the fallback
+  branch (e.g. the `vim.o.columns` virt_lines pad in `pickers.lua`)
 
 Report each finding with: file, line, what to change, and which news section
 mentions it.

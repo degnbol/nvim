@@ -85,4 +85,22 @@ function M.footprint_width(lines, start_col, end_col)
     return text_width - start_col
 end
 
+--- Copy of `virt_lines` drawn in the line highlight `hl`: each chunk's group
+--- becomes `{ hl, group }` (`hl` for a chunk without one), and each row ends
+--- with a chunk of `pad` spaces in `hl`.
+--- @param virt_lines table[] rows of `{ text, group }` chunks, as for nvim_buf_set_extmark
+--- @param hl string highlight group
+--- @param pad number cells of the trailing chunk. With 0, neovim 0.13+ extends
+--- its hl to the window edge (neovim/neovim#41289).
+--- @return table[] virt_lines
+function M.with_line_hl(virt_lines, hl, pad)
+    return vim.tbl_map(function(line)
+        local chunks = vim.tbl_map(function(chunk)
+            return { chunk[1], chunk[2] and { hl, chunk[2] } or hl }
+        end, line)
+        chunks[#chunks + 1] = { (" "):rep(pad), hl }
+        return chunks
+    end, virt_lines)
+end
+
 return M

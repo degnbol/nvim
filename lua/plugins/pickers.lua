@@ -645,7 +645,29 @@ return {
             -- paints Normal bg); the snacks image hl sets fg/sp (the placeholder
             -- encoding) and nocombine, so the source's hl can't alter them.
             -- Likewise fill a display block's box when state() chose one.
+            -- Neovim draws no line attr (line_hl_group, e.g. gitsigns linehl) on
+            -- virt_lines rows, so an image continuing in virt_lines would lose
+            -- its source line's bg. Draw the virt_lines in the hl of the source
+            -- line above them, to the window edge: an empty last chunk from 0.13
+            -- (neovim/neovim#41289), else a columns-wide one that the default
+            -- virt_lines_overflow "trunc" clips.
+            local virt_lines_pad = vim.fn.has("nvim-0.13") == 1 and 0 or nil
+
+            --- Line hl of the buffer line a placement's virt_lines continue.
+            --- With `above`, render_grid put the mark on the first line past
+            --- the source not hidden by conceal_lines, so the source's last
+            --- line is the one continued, not the line above the mark.
+            --- @param p snacks.image.Placement
+            --- @param row number 0-indexed row of the virt_lines mark
+            --- @param above boolean|nil the mark's virt_lines_above
+            --- @return string|nil group
+            local function virt_lines_hl(p, row, above)
+                local r = p.opts.range
+                return util.line_hl(p.buf, above and (r and r[3] or p.opts.pos[1]) - 1 or row)
+            end
+
             local _render = placement._render
+            local line_hl_marks = setmetatable({}, { __mode = "k" })
             placement._render = function(self, extmarks)
                 local loc = self._state and self._state.loc
                 if loc and loc.box_width then
@@ -659,8 +681,61 @@ return {
                         end
                     end
                 end
-                return _render(self, extmarks)
+                local i_virt_lines, hl
+                for i, e in ipairs(extmarks) do
+                    if e.virt_lines then
+                        i_virt_lines = i
+                        hl = virt_lines_hl(self, e.row, e.virt_lines_above)
+                        if hl then
+                            e.virt_lines = image_placement.with_line_hl(e.virt_lines, hl, virt_lines_pad or vim.o.columns)
+                        end
+                    end
+                end
+                _render(self, extmarks)
+                line_hl_marks[self] = i_virt_lines and { eid = self.eids[i_virt_lines], hl = hl } or nil
             end
+
+            -- The source line's hl can change without a snacks render (async
+            -- gitsigns re-diff, toggling linehl, staging), and GitSignsUpdate
+            -- fires only when the hunk summary changes. So compare after every
+            -- redraw: on_end runs after all windows' on_win, where gitsigns
+            -- places its signs lazily. The hl isn't in snacks' state, so clear
+            -- _state, or update() returns early on an equal one. Only drawn
+            -- buffers are checked: a hidden buffer's placement doesn't render,
+            -- so its recorded hl can't catch up until it is shown again.
+            local drawn_bufs, pending = {}, {}
+            local rerender_scheduled = false
+            vim.api.nvim_set_decoration_provider(vim.api.nvim_create_namespace("image_virt_lines_line_hl"), {
+                on_win = function(_, _, buf)
+                    drawn_bufs[buf] = true
+                end,
+                on_end = function()
+                    for p, rec in pairs(line_hl_marks) do
+                        if drawn_bufs[p.buf] then
+                            local mark = not p.closed
+                                and vim.api.nvim_buf_get_extmark_by_id(p.buf, placement.ns, rec.eid, { details = true })
+                            if not mark or not mark[1] then
+                                line_hl_marks[p] = nil
+                            elseif virt_lines_hl(p, mark[1], mark[3].virt_lines_above) ~= rec.hl then
+                                pending[p] = true
+                            end
+                        end
+                    end
+                    drawn_bufs = {}
+                    if rerender_scheduled or not next(pending) then
+                        return
+                    end
+                    rerender_scheduled = true
+                    vim.schedule(function()
+                        local stale = pending
+                        pending, rerender_scheduled = {}, false
+                        for p in pairs(stale) do
+                            p._state = nil
+                            placement.update(p)
+                        end
+                    end)
+                end,
+            })
 
             -- Inline-math layout depends on conceallevel and on the wrap
             -- geometry (see above), but snacks only recomputes placements on
