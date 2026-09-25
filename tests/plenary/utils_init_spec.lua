@@ -87,3 +87,46 @@ describe("schedule_notify", function()
         assert.are.same({ { msg = "done", level = vim.log.levels.INFO } }, notes)
     end)
 end)
+
+describe("crosses_wrap", function()
+    local win, buf
+    before_each(function()
+        vim.cmd("20vnew")
+        win, buf = vim.api.nvim_get_current_win(), vim.api.nvim_get_current_buf()
+        vim.wo[win].number = false
+        vim.wo[win].signcolumn = "no"
+        vim.wo[win].wrap = true
+        vim.api.nvim_buf_set_lines(buf, 0, -1, true, { ("x"):rep(16) .. " $abcdefgh$ tail" })
+    end)
+    after_each(function() vim.api.nvim_buf_delete(buf, { force = true }) end)
+
+    it("is true for a span crossing the row end", function()
+        assert.is_true(util.crosses_wrap(win, 0, 17, 10))
+    end)
+
+    it("is false for a span within the first row", function()
+        assert.is_false(util.crosses_wrap(win, 0, 0, 5))
+    end)
+
+    it("is false for a span ending exactly at the row end", function()
+        assert.is_false(util.crosses_wrap(win, 0, 10, 10))
+    end)
+
+    it("is false with nowrap", function()
+        vim.wo[win].wrap = false
+        assert.is_false(util.crosses_wrap(win, 0, 17, 10))
+    end)
+
+    it("is unchanged by an inline mark concealing the span to the same footprint", function()
+        vim.wo[win].conceallevel = 1
+        local ns = vim.api.nvim_create_namespace("crosses_wrap_spec")
+        vim.api.nvim_buf_set_extmark(buf, ns, 0, 17, {
+            end_col = 27, conceal = "", virt_text_pos = "inline", virt_text = { { ("#"):rep(9) } },
+        })
+        assert.is_true(util.crosses_wrap(win, 0, 17, 10))
+        vim.api.nvim_buf_set_extmark(buf, ns, 0, 0, {
+            end_col = 5, conceal = "", virt_text_pos = "inline", virt_text = { { ("#"):rep(4) } },
+        })
+        assert.is_false(util.crosses_wrap(win, 0, 0, 5))
+    end)
+end)

@@ -527,8 +527,15 @@ return {
             -- Size collapsed inline math by how hard the source is concealed.
             -- The image stretch-fills loc.width × 1 cells, so the right width
             -- depends on whether the source footprint is still on screen:
-            --   1: `$...$` collapses to one residual space cell — match source
-            --      width minus that cell so surrounding text doesn't move.
+            --   1: keep the source footprint so surrounding text doesn't move.
+            --      Concealing `$...$` would leave one residual cell drawn with
+            --      the Conceal attr, which replaces the line attr (sign linehl,
+            --      line_hl_group, diff), neovim/neovim#31555. So the source
+            --      stays unconcealed and the image is overlaid on it at full
+            --      source width (loc.overlay, applied in _render below). An
+            --      overlay is clipped at the window edge, so a span that crosses
+            --      a screen-line wrap falls back to inline+conceal at source
+            --      width minus the residual cell.
             --   2+: `$...$` fully hidden — size to the glyph's true width (pixel
             --      aspect at one cell tall, rounded to whole cells) so every
             --      glyph renders at a consistent size with no surrounding
@@ -547,7 +554,13 @@ return {
                     if win and vim.wo[win].conceallevel == 1 then
                         local src = vim.api.nvim_buf_get_text(self.buf, r[1] - 1, r[2], r[3] - 1, r[4], {})[1]
                         if src then
-                            st.loc.width = math.max(1, vim.api.nvim_strwidth(src) - 1)
+                            local w = vim.fn.strdisplaywidth(src)
+                            if util.crosses_wrap(win, r[1] - 1, r[2], w) then
+                                st.loc.width = math.max(1, w - 1)
+                            else
+                                st.loc.width = w
+                                st.loc.overlay = true
+                            end
                         end
                     else
                         local sz = self.img.info and self.img.info.size
@@ -561,19 +574,42 @@ return {
                 return st
             end
 
-            -- Inline-math width depends on conceallevel (see above), but snacks
-            -- only recomputes placements on scroll/edit/enter. Re-fire the inline
-            -- manager's own BufWinEnter handler (scoped to its augroup, so no
-            -- other BufWinEnter autocmds run) when conceallevel changes.
+            -- Turn the inline mark into an unconcealed overlay when state() chose
+            -- it. hl_mode "combine" keeps the line bg under the image ("replace"
+            -- paints Normal bg); the snacks image hl sets fg/sp (the placeholder
+            -- encoding) and nocombine, so the source's hl can't alter them.
+            local _render = placement._render
+            placement._render = function(self, extmarks)
+                if self._state and self._state.loc.overlay then
+                    for _, e in ipairs(extmarks) do
+                        if e.virt_text_pos == "inline" then
+                            e.conceal = nil
+                            e.virt_text_pos = "overlay"
+                            e.hl_mode = "combine"
+                        end
+                    end
+                end
+                return _render(self, extmarks)
+            end
+
+            -- Inline-math layout depends on conceallevel and on the wrap
+            -- geometry (see above), but snacks only recomputes placements on
+            -- scroll/edit/enter. Re-fire the inline manager's own BufWinEnter
+            -- handler (scoped to its augroup, so no other BufWinEnter autocmds
+            -- run) when any of them changes. Global values (`:set showbreak`)
+            -- reach every window, so re-render every displayed buffer.
             vim.api.nvim_create_autocmd("OptionSet", {
-                pattern = "conceallevel",
+                pattern = "conceallevel,wrap,linebreak,breakindent,breakindentopt,showbreak,number,relativenumber,numberwidth,statuscolumn,signcolumn,foldcolumn",
                 callback = function()
-                    local buf = vim.api.nvim_get_current_buf()
-                    if vim.b[buf].snacks_image_attached then
-                        pcall(vim.api.nvim_exec_autocmds, "BufWinEnter", {
-                            buf = buf,
-                            group = "snacks.image.inline." .. buf,
-                        })
+                    local bufs = {}
+                    for _, win in ipairs(vim.api.nvim_list_wins()) do
+                        bufs[vim.api.nvim_win_get_buf(win)] = true
+                    end
+                    for buf in pairs(bufs) do
+                        local group = "snacks.image.inline." .. buf
+                        if vim.fn.exists("#" .. group .. "#BufWinEnter") == 1 then
+                            vim.api.nvim_exec_autocmds("BufWinEnter", { buf = buf, group = group })
+                        end
                     end
                 end,
             })

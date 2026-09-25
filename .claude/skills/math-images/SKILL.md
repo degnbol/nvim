@@ -20,7 +20,7 @@ it:
 | `conceallevel` | Source `$…$` | Render | Layout intent |
 |---|---|---|---|
 | **0** | shown literally | **none** | editing — see the raw LaTeX |
-| **1** | one residual cell | fills the source footprint | **no reflow**: text never moves as the cursor toggles conceal on the line |
+| **1** | keeps its footprint (image overlaid) | fills the source footprint | **no reflow**: text never moves as the cursor enters/leaves the line |
 | **2+** | fully hidden | **true glyph size**, no surrounding whitespace | reflows around the real footprint |
 
 Intended consequences (not bugs):
@@ -57,17 +57,21 @@ Intended consequences (not bugs):
 - **Trim crops the strut.** Once you pad with a transparent strut, image-convert
   trimming (e.g. `-trim`) crops it straight back off. Trim must stay off, so
   PNGs carry the strut's vertical padding by design.
-- **conceallevel changes the residual footprint.** At cl=1 the concealed
-  `$...$` leaves one residual cell; at cl=2 it leaves none. Width therefore
-  depends on the level, and most backends only recompute placements on
-  scroll/edit/enter — so a level change needs an explicit re-render trigger.
+- **Conceal overrides line highlights.** At cl=1 a concealed `$…$` leaves one
+  cell drawn with the `Conceal` attr *replacing* the line attr (sign `linehl`,
+  `line_hl_group`, diff) — neovim/neovim#31555. Instead leave the source
+  unconcealed and overlay the image at full source width with
+  `hl_mode="combine"` (`"replace"` paints `Normal` bg). Overlays clip at the
+  window edge, so a span crossing a screen-line wrap must fall back to
+  inline+conceal. Layout thus depends on conceallevel *and* wrap geometry;
+  re-render when either changes.
 
 ## snacks.image specifics
 
 snacks runs every image type through one fit-into-a-cell-box pipeline and, for
 math, **discards the `$`/`$$`/`\[` delimiter and always wraps display `\[…\]`** —
 so inline vs block is indistinguishable downstream and display glue makes even
-one glyph's box ~3 cells tall. Config alone can't fix it; the work is three
+one glyph's box ~3 cells tall. Config alone can't fix it; the work is
 overrides on exported snacks tables, applied after `setup` so they survive
 `vim.pack` updates. All live in `pickers.lua` with the full *why* in comments —
 read those when touching this:
@@ -77,10 +81,13 @@ read those when touching this:
   (drops display glue, floors to one line height). Block math passes through.
 - `doc.find_visible` — filters out `type == "math"` matches when the window is
   at cl=0, so the inline manager closes them and the source shows.
-- `placement.state` — sets `loc.width` per the tier table. cl=1 uses source
-  display width minus the residual cell; cl=2+ computes the true cell width from
-  raw px. Don't reuse snacks' own `ceil(w/h)+2` (placement.lua) — its
-  `pixels_to_cells` already ceils both axes, the pre-ceiled bug above.
-- An `OptionSet conceallevel` autocmd re-fires the inline manager's own
-  `BufWinEnter` handler (scoped to its `snacks.image.inline.<buf>` augroup) to
-  re-render when the level changes.
+- `placement.state` — sets `loc.width` per the tier table: cl=1 source display
+  width + custom `loc.overlay` flag (width−1, inline, when `utils.crosses_wrap`
+  reports a wrap crossing); cl=2+ true cell width from raw px. Don't reuse
+  snacks' `ceil(w/h)+2` (placement.lua) — its `pixels_to_cells` pre-ceils both
+  axes (see above).
+- `placement._render` — on `loc.overlay`, turns the inline extmark into an
+  unconcealed `overlay`, `hl_mode="combine"`.
+- An `OptionSet` autocmd (conceallevel + wrap-geometry options) re-fires the
+  inline manager's own `BufWinEnter` handler (its `snacks.image.inline.<buf>`
+  augroup) to re-render.

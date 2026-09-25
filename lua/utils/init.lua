@@ -296,6 +296,20 @@ function M.get_text(r, c1, c2)
     return vim.api.nvim_buf_get_text(0, r, c1, r, c2, {})[1]
 end
 
+---Whether the `width` display cells starting at byte `col` of buffer row `row`
+---cross a screen-line wrap in `win`. Works for off-screen lines.
+---@param win integer
+---@param row integer 0-indexed
+---@param col integer 0-indexed byte column
+---@param width integer display cells
+---@return boolean
+function M.crosses_wrap(win, row, col, width)
+    local s = vim.fn.virtcol({ row + 1, col + 1 }, true, win)[1] - 1
+    return vim.api.nvim_win_text_height(win, {
+        start_row = row, end_row = row, start_vcol = s, end_vcol = s + width,
+    }).all > 1
+end
+
 ---The char left of column `c`, i.e. the one covering byte `c - 1`.
 ---@param r integer 0-indexed line
 ---@param c integer 0-indexed byte column
