@@ -281,6 +281,24 @@ return {
                         vim.log.levels.WARN)
                 end)
             end
+            local mitex_checked = false
+
+            --- On the first call, warns without blocking if typst cannot import
+            --- mitex, e.g. offline before its first download. Snacks shows no
+            --- error for a failed inline conversion, so the math is just blank.
+            local function check_mitex()
+                if mitex_checked then return end
+                mitex_checked = true
+                if vim.fn.executable("typst") == 0 then
+                    vim.notify("LaTeX math needs typst, which is not installed", vim.log.levels.WARN)
+                    return
+                end
+                typst.can_import(typst.mitex_package, function(ok, stderr)
+                    if ok then return end
+                    vim.notify(("typst cannot import %s, which it downloads on first use:\n%s")
+                        :format(typst.mitex_package, stderr), vim.log.levels.WARN)
+                end)
+            end
             -- Both transforms below also mark inline matches with `img.inline`,
             -- for find_visible and inline.update's `display` opt, while the raw
             -- source still has its delimiter.
@@ -307,6 +325,7 @@ return {
                     local inline = latex.is_inline(img.content)
                     local body = latex.math_body(img.content)
                     if vim.bo[ctx.buf].filetype ~= "tex" and vim.trim(doc.get_header(ctx.buf)) == "" then
+                        check_mitex()
                         img.content = typst.mitex_typ(body, inline)
                         img.ext = "math.typ"
                         return typst_math_transform(img, ctx, inline)

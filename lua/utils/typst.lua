@@ -82,13 +82,26 @@ function M.str_literal(s)
     return '"' .. s:gsub('[\\"]', "\\%0") .. '"'
 end
 
---- Typst source that renders LaTeX math with mitex
---- (https://typst.app/universe/package/mitex).
+--- The mitex package (https://typst.app/universe/package/mitex) that `mitex_typ` imports.
+M.mitex_package = "@preview/mitex:0.2.7"
+
+--- Typst source that renders LaTeX math with mitex.
 --- @param body string LaTeX math without delimiters
 --- @param inline boolean inline (`mi`) rather than display (`mitex`) math
 --- @return string typ
 function M.mitex_typ(body, inline)
-    return ('#import "@preview/mitex:0.2.7": mi, mitex\n#%s(%s)'):format(inline and "mi" or "mitex", M.str_literal(body))
+    return ("#import %s: mi, mitex\n#%s(%s)"):format(M.str_literal(M.mitex_package), inline and "mi" or "mitex",
+        M.str_literal(body))
+end
+
+--- Checks whether typst can import a package, without blocking. Typst
+--- downloads a `@preview` package missing from its cache.
+--- @param package string package spec, e.g. `@preview/name:1.0.0`
+--- @param on_result fun(ok: boolean, stderr: string) called in the main loop
+function M.can_import(package, on_result)
+    vim.system({ "typst", "eval", "import " .. M.str_literal(package) }, { text = true }, vim.schedule_wrap(function(res)
+        on_result(res.code == 0, res.stderr or "")
+    end))
 end
 
 --- Checks whether typst finds a font family, without blocking.

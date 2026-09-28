@@ -155,3 +155,14 @@ describe("mitex_typ", function()
         assert.is_true(png.info.size.height > math.floor(density * box_in))
     end)
 end)
+
+describe("can_import", function()
+    for package, expected in pairs { [typst.mitex_package] = true, ["@local/none:0.0.0"] = false } do
+        it(("is %s for %s"):format(expected, package), function()
+            local ok, stderr
+            typst.can_import(package, function(o, e) ok, stderr = o, e end)
+            vim.wait(10000, function() return ok ~= nil end)
+            assert.are.equal(expected, ok, stderr)
+        end)
+    end
+end)
