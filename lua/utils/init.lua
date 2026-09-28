@@ -29,6 +29,27 @@ function M.match_covering(s, pos, pattern)
     end
 end
 
+---`template` with each `{{name}}` replaced by `values[name]`.
+---Errors on a name that `values` lacks.
+---@param template string
+---@param values table<string, string|number>
+---@return string filled
+function M.fill(template, values)
+    return (template:gsub("{{([%w_]+)}}", function(name)
+        return tostring(assert(values[name], "no value for {{" .. name .. "}}"))
+    end))
+end
+
+---`s` with `before` and `after` inserted around each occurrence of `literal`.
+---@param s string
+---@param literal string plain text, not a pattern
+---@param before string
+---@param after string
+---@return string inserted
+function M.insert_around(s, literal, before, after)
+    return (s:gsub(vim.pesc(literal), function(match) return before .. match .. after end))
+end
+
 ---Repeat calls to a given function as many times as the vim count value (default once).
 ---Optionally pass arguments.
 ---@param fn function

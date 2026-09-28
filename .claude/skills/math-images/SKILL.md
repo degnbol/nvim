@@ -17,14 +17,14 @@ A design choice, not a backend feature — any backend should honour it:
 | `conceallevel` | Source `$…$` | Render | Layout intent |
 |---|---|---|---|
 | **0** | shown literally | **none** | editing — see the raw LaTeX |
-| **1** | keeps its footprint (image overlaid) | inline: fills the source footprint; display block: native size | **no reflow**: text never moves as the cursor enters/leaves the line |
+| **1** | keeps its footprint (image overlaid) | inline: centred in the source footprint; display block: native size | **no reflow**: text never moves as the cursor enters/leaves the line |
 | **2+** | fully hidden | inline: **true glyph size**, no surrounding whitespace; display block: snacks' default | reflows around the real footprint |
 
 Intended consequences (not bugs):
 
-- At **cl=1** a wide expression (`$k_{cat}$`) is stretched to fill its source
-  width, so it looks "fat". That is the cost of zero reflow; cl=2 trades it for
-  true size at the cost of reflow.
+- At **cl=1** an image wider than its source is fit to the source width, so it
+  is drawn smaller and off the baseline. That is the cost of zero reflow; cl=2
+  trades it for true size at the cost of reflow.
 - At **cl=1** a display block keeps native size instead. Blank cells cover the
   rest of the source; a taller image continues in virtual lines, so nothing
   reflows.
@@ -34,26 +34,30 @@ Intended consequences (not bugs):
 
 ## Backend-independent gotchas (any inline-image renderer)
 
-- **Cell-box stretch-fill.** The image fills an integer `width × height` cell
-  box exactly (kitty unicode placeholders). Width controls *size*; padding
-  needs separate blank cells. Native size = box width equals the rounded-up true
-  cell width.
+- **Cell-box fit.** Kitty fits a unicode-placeholder image into its integer
+  `width × height` cell box with the aspect ratio kept: to the box height,
+  centred horizontally, or, if the image is wider, to the box width, centred
+  vertically (kitty `graphics.c` `grman_put_cell_image`). A box narrower than
+  the image makes it smaller; a wider box adds centred whitespace. Native size =
+  box width equals the rounded-up true cell width.
 - **Compute true aspect from raw pixels, not pre-ceiled cell sizes.** A helper
   that converts px→cells typically `ceil`s *both* axes first; taking a ratio of
-  those double-rounds and squashes wide expressions. Go back to the raw PNG px
+  those double-rounds and shrinks wide expressions. Go back to the raw PNG px
   (`img.info.size`) and the terminal cell dimensions:
   `ceil(png_w/png_h · cell_h/cell_w)`.
-- **No baseline awareness.** A backend that stretches the PNG to fill a cell box
+- **No baseline awareness.** A backend that fits the PNG to the cell height
   maps the box *bottom* to the line *bottom* — it knows nothing about the text
-  baseline. A descender-less glyph then hovers above the line. Fix on the LaTeX
-  side with a strut: its height sets the scale (box = one cell) and its depth
+  baseline. A descender-less glyph then hovers above the line. Fix in the math
+  document with a strut: its height sets the scale (box = one cell) and its depth
   fraction the baseline. Only fractions of the cell matter, so the fit is
-  zoom-independent. `latex.cell_fit_tex` computes it from the terminal's cell
-  layout (`kitty.cell_fractions`): strut depth = the cell's space below the
-  baseline; font size so that math x-height, cap-height and descender match the
-  prose with the smallest worst-case error. An expression that extends beyond
+  zoom-independent. `latex.cell_fit_tex` and `typst.cell_fit_typ` compute it
+  from the terminal's cell layout (`kitty.cell_fractions`): strut depth = the
+  cell's space below the baseline; font size so that math x-height, cap-height
+  and descender match the prose with the smallest worst-case error. An expression that extends beyond
   the strut grows its own PNG and is drawn smaller (subscripts shrink ~3-11%,
-  as the cell has little space below the baseline).
+  as the cell has little space below the baseline). unicode-math picks script-style
+  glyphs by pt size relative to the size at `\setmathfont`, so `cell_fit_tex`
+  reruns each `\setmathfont` at the fitted size (~9.5 pt).
 - **Trim crops the strut.** Once you pad with a transparent strut, image-convert
   trimming (e.g. `-trim`) crops it straight back off. Trim must stay off, so
   PNGs carry the strut's vertical padding by design.
@@ -82,8 +86,12 @@ read those when touching this:
 
 - PNG size: snacks shows `px / dpi · 96 · scale` px, `scale = cell_w / 8`
   (image/util.lua `fit`), so a PNG `aspect / 12` in tall is one cell at any zoom
-  (`image_placement.row_height_in`). The cell fit goes in `math.latex.tpl` after
-  `${header}`, set on the first math render.
+  (`image_placement.row_height_in`). One `math_look` table sets the fonts of
+  both engines (`fonts_tex`/`fonts_typ`, before `${header}`). The cell fit goes
+  after `${header}` in `math.latex.tpl` and `math.typst.tpl`, set on the first
+  math render. Typst: the fit drops snacks' 2 pt margin and starts each
+  equation with a strut box; snacks' `bounds` text edges then make an inline
+  PNG the union of strut and ink (`utils/typst.lua`).
 
 - `doc.transforms.latex` — inspects raw `img.content` *before* snacks strips the
   delimiter; rewrites inline `$…$`/`\(…\)` to `\begin{math}<strut>…\end{math}`

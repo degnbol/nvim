@@ -3,6 +3,8 @@ local hi = require "utils/highlights"
 local map = require "utils/keymap"
 local image_placement = require "utils/image_placement"
 local latex = require "utils/latex"
+local typst = require "utils/typst"
+local math_look = require "math_look"
 local kitty = require "utils/kitty"
 
 -- Toggle between pickers by changing this flag.
@@ -181,7 +183,7 @@ return {
                             -- the snacks default. The template sorts packages
                             -- alphabetically (doc.lua), so unicode-math lands
                             -- after amsmath/mathtools — the required load order.
-                            -- Fonts: `math_fonts` below.
+                            -- Fonts: lua/math_look.lua.
                             packages = { "amsmath", "amscd", "mathtools", "unicode-math" },
                         }
                     }
@@ -212,16 +214,13 @@ return {
                 end
             end
 
-            -- TeX Gyre DejaVu Math: of the full math fonts in tectonic's bundle,
-            -- its x-height, cap-height and descender best fit Operator Mono's.
-            -- \text and \mathrm in the terminal font (kitty.conf `font_family`,
-            -- `italic_font`, …). Before `${header}`, so a document's own fonts
+            -- Fonts of `math_look`, before `${header}`, so a document's own fonts
             -- still win.
-            local math_fonts = [[
-\setmainfont{Operator Mono SSm Lig Medium}[ItalicFont={Operator Mono SSm Lig Book Italic}, BoldFont={Operator Mono SSm Lig Bold}, BoldItalicFont={Operator Mono SSm Lig Bold Italic}]
-\setmathfont{texgyredejavu-math.otf}]]
             local latex_cfg = require("snacks").image.config.math.latex
-            latex_cfg.tpl = latex_cfg.tpl:gsub("%${header}", function(header) return math_fonts .. "\n" .. header end)
+            latex_cfg.tpl = util.insert_around(latex_cfg.tpl, "${header}",
+                latex.record_setmathfont_tex .. "\n" .. latex.fonts_tex(math_look) .. "\n", "")
+            local typst_cfg = require("snacks").image.config.math.typst
+            typst_cfg.tpl = util.insert_around(typst_cfg.tpl, "${header}", typst.fonts_typ(math_look) .. "\n", "")
 
             -- Render inline `$...$` (and `\(...\)`) math flowing within the line,
             -- while `$$...$$` / `\[...\]` stay display blocks. snacks discards the
@@ -246,27 +245,41 @@ return {
             -- measures any \setmathfont there and also scales display bodies
             -- that start with `\begin`. It is computed on the first math render,
             -- not at startup, as kitty.cell_fractions runs kitty synchronously.
-            local strut ---@type string|nil
+            -- Typst math gets the same fit from utils/typst.lua.
+            local strut ---@type string|nil LaTeX strut for the math rewrite
 
-            --- Strut for the math rewrite. On the first call in kitty, also fits
-            --- snacks' latex template to kitty's cell.
-            --- @return string tex
-            local function math_strut()
-                if strut then return strut end
+            --- On the first call, sets `strut` and, in kitty, fits snacks' latex
+            --- and typst templates to kitty's cell.
+            local function fit_templates()
+                if strut then return end
                 -- Fallback outside kitty or on a metrics error. Set before
-                -- cell_fractions, whose wait() can re-enter this transform.
+                -- cell_fractions, whose wait() can re-enter the transforms.
                 strut = "\\rule[-0.18\\baselineskip]{0pt}{1.02\\baselineskip}"
-                if not kitty.term() then return strut end
+                if not kitty.term() then return end
                 local fractions, err = kitty.cell_fractions()
                 if not fractions then
                     vim.notify("Math cell fit failed, using a fixed strut:\n" .. err, vim.log.levels.WARN)
-                    return strut
+                    return
                 end
-                local fit = latex.cell_fit_tex(fractions, image_placement.row_height_in(fractions.aspect, math_density))
-                latex_cfg.tpl = latex_cfg.tpl:gsub("%${header}", function(header) return header .. "\n" .. fit end)
-                    :gsub("%${content}", "{\\MathCellFit %0}")
+                local box_in = image_placement.row_height_in(fractions.aspect, math_density)
+                latex_cfg.tpl = util.insert_around(latex_cfg.tpl, "${header}", "", "\n" .. latex.cell_fit_tex(fractions, box_in))
+                latex_cfg.tpl = util.insert_around(latex_cfg.tpl, "${content}", "{\\MathCellFit ", "}")
+                typst_cfg.tpl = util.insert_around(typst_cfg.tpl, "${header}", "", "\n" .. typst.cell_fit_typ(fractions, box_in))
                 strut = "\\MathCellStrut " -- The space ends the control word.
-                return strut
+            end
+            local typst_font_checked = false
+
+            --- On the first call, warns without blocking if typst does not find
+            --- the math font. Typst falls back to its default math font with
+            --- only a compile warning, which snacks does not show.
+            local function check_typst_font()
+                if typst_font_checked or vim.fn.executable("typst") == 0 then return end
+                typst_font_checked = true
+                typst.has_font(math_look.math.family, function(found, stderr)
+                    if found then return end
+                    vim.notify(("typst does not find the math font %s:\n%s"):format(math_look.math.family, stderr),
+                        vim.log.levels.WARN)
+                end)
             end
             -- Both transforms below also mark inline matches with `img.inline`,
             -- for find_visible and inline.update's `display` opt, while the raw
@@ -277,20 +290,24 @@ return {
                 if img.content and img.ext == "math.tex" then
                     local inline = latex.is_inline(img.content)
                     local body = latex.math_body(img.content)
-                    local math_strut_tex = math_strut()
+                    fit_templates()
                     img.inline = inline
                     if inline or not body:find("^\\begin") then
                         img.content = ("\\begin{math}%s%s%s\\end{math}"):format(
-                            inline and "" or "\\displaystyle", math_strut_tex, body)
+                            inline and "" or "\\displaystyle", strut, body)
                     end
                 end
                 return latex_transform(img, ctx)
             end
             -- Typst math is display when whitespace follows the opening `$`.
-            local typst = doc.transforms.typst
+            local typst_transform = doc.transforms.typst
             doc.transforms.typst = function(img, ctx)
+                if img.content then
+                    check_typst_font()
+                    fit_templates()
+                end
                 img.inline = img.content and img.content:match("^%$%S") ~= nil
-                return typst(img, ctx)
+                return typst_transform(img, ctx)
             end
 
             -- Prefetch margin: render math within one screenful above/below the
@@ -576,8 +593,11 @@ return {
             end
 
             -- Size collapsed inline math by how hard the source is concealed.
-            -- The image stretch-fills loc.width × 1 cells, so the right width
-            -- depends on whether the source footprint is still on screen:
+            -- Kitty fits the image into loc.width × 1 cells with its aspect
+            -- ratio kept, centred horizontally; an image wider than the box is
+            -- fit to the width instead, so it is drawn smaller and centred
+            -- vertically. The right width depends on whether the source
+            -- footprint is still on screen:
             --   1: keep the source footprint so surrounding text doesn't move.
             --      Concealing `$...$` would leave one residual cell drawn with
             --      the Conceal attr, which replaces the line attr (sign linehl,
@@ -592,7 +612,7 @@ return {
             --      glyph renders at a consistent size with no surrounding
             --      whitespace. snacks' own ceil(w/h)+2 (placement.lua:490) can't
             --      be reused: pixels_to_cells already ceils both axes, so the
-            --      ratio double-rounds and squashes wider expressions (`$k_{cat}$`
+            --      ratio double-rounds and shrinks wider expressions (`$k_{cat}$`
             --      lands at 2 cells when its true width is ~2.8).
             -- A display block (the `display` placement opt, any line count) at
             -- cl=1 keeps snacks' native size. Blank overlay cells, not conceal,

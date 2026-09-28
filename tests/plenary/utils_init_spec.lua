@@ -15,6 +15,26 @@ local function range_text()
     return vim.api.nvim_buf_get_text(0, r1 - 1, c1, r2 - 1, c2 + 1, {})
 end
 
+describe("fill", function()
+    it("replaces each placeholder, also repeated ones", function()
+        assert.are.equal("a 1 a {b}", util.fill("{{x}} {{n}} {{x}} {b}", { x = "a", n = 1 }))
+    end)
+
+    it("errors on a missing value", function()
+        assert.has_error(function() util.fill("{{x}}", {}) end)
+    end)
+end)
+
+describe("insert_around", function()
+    it("inserts around each occurrence of plain text", function()
+        assert.are.equal("<${h}> <${h}>", util.insert_around("${h} ${h}", "${h}", "<", ">"))
+    end)
+
+    it("keeps % in the inserted text", function()
+        assert.are.equal("%0x", util.insert_around("x", "x", "%0", ""))
+    end)
+end)
+
 describe("get_visual_range", function()
     before_each(function() vim.cmd.enew { bang = true } end)
 

@@ -13,15 +13,15 @@ local CELL_W, CELL_H = 9, 18
 -- (png_w, png_h) → native cell width = png_w/png_h * cell_h/cell_w
 local glyphs = {
     ["$k$"] = { 17, 39 }, -- native ~0.87
-    ["$T$"] = { 23, 39 }, -- native ~1.18 — round-to-nearest squashed this to 1
+    ["$T$"] = { 23, 39 }, -- native ~1.18 — round-to-nearest gave this 1 cell
     ["$k_{cat}$"] = { 53, 40 }, -- native ~2.65
 }
 
 describe("inline math cell width", function()
     -- Conceallevel-2 sizing rule: the box must never be narrower than the
-    -- glyph's native width, or the stretch-fill compresses the glyph.
+    -- glyph's native width, or kitty fits the glyph to the box width, smaller.
     for src, png in pairs(glyphs) do
-        it("never compresses " .. src, function()
+        it("never shrinks " .. src, function()
             local native = png[1] / png[2] * (CELL_H / CELL_W)
             assert.is_true(cell_width(png[1], png[2], CELL_W, CELL_H) >= native)
         end)
