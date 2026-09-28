@@ -229,6 +229,24 @@ describe("zsh injections", function()
         it("does not inject for unrelated commands", function()
             assert_no_injection("echo 'print(1)'", "python")
         end)
+
+        it("injects python into kitty +runpy", function()
+            assert_injection(
+                "kitty +runpy 'from kitty.constants import str_version; print(str_version)'",
+                "python", "from kitty.constants import str_version; print(str_version)"
+            )
+        end)
+
+        it("injects python into double-quoted kitty +runpy", function()
+            assert_injection(
+                'kitty +runpy "print(1)" arg',
+                "python", "print(1)"
+            )
+        end)
+
+        it("does not inject +runpy for other commands", function()
+            assert_no_injection("echo +runpy 'print(1)'", "python")
+        end)
     end)
 
     describe("julia", function()

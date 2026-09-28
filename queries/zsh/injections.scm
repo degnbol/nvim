@@ -129,6 +129,18 @@
   (#trim! @injection.content 1 1)
   (#set! injection.include-children))
 
+; `kitty +runpy '<code>'` runs <code> in kitty's bundled python.
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_flag
+  .
+  argument: [(raw_string) (string)] @injection.content
+  (#command-is? @_cmd "kitty")
+  (#eq? @_flag "+runpy")
+  (#trim! @injection.content 1 1)
+  (#set! injection.language "python")
+  (#set! injection.include-children))
+
 ; Inject awk into the first raw_string argument of awk/gawk/mawk
 (command
   name: (command_name) @_cmd
