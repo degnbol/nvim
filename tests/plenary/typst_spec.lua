@@ -124,3 +124,34 @@ describe("cell_fit_typ", function()
         end
     end)
 end)
+
+describe("str_literal", function()
+    it("round-trips \\, \", a newline and a tab", function()
+        local s = 'a\\b "c"\nd\te'
+        local res = vim.system({ "typst", "eval", typst.str_literal(s), "--format", "json" }, { text = true }):wait()
+        assert.are.equal(0, res.code, res.stderr)
+        assert.are.equal(s, vim.json.decode(res.stdout))
+    end)
+end)
+
+describe("mitex_typ", function()
+    local density_hi = density * 10
+    for latex_body, typ in pairs {
+        x = "$x$",
+        H = "$H$",
+        ["\\frac{k_{cat}}{K_M}"] = "$(k_(c a t))/K_M$",
+    } do
+        it("renders inline " .. latex_body .. " as " .. typ, function()
+            local mitex = render.rasterise(compile(typst.mitex_typ(latex_body, true)), density_hi)
+            local native = render.rasterise(compile(typ), density_hi)
+            assert.are.same(native.info.size, mitex.info.size)
+            assert.are.same(native.ink, mitex.ink)
+        end)
+    end
+
+    it("renders display aligned taller than one cell", function()
+        local body = "\\begin{aligned} a &= b \\\\ c &= d \\end{aligned}"
+        local png = render.rasterise(compile(typst.mitex_typ(body, false)), density)
+        assert.is_true(png.info.size.height > math.floor(density * box_in))
+    end)
+end)

@@ -94,10 +94,13 @@ read those when touching this:
   PNG the union of strut and ink (`utils/typst.lua`).
 
 - `doc.transforms.latex` — inspects raw `img.content` *before* snacks strips the
-  delimiter; rewrites inline `$…$`/`\(…\)` to `\begin{math}<strut>…\end{math}`
-  (drops display glue, floors to one line height); display math likewise in
-  `\displaystyle`, unless the body starts with `\begin`. Tags `img.inline`,
-  which `inline.update` passes on as the `display` placement opt.
+  delimiter. Except in `.tex` buffers and buffers with a snacks header, it
+  rewrites the math to typst via mitex (`typst.mitex_typ`, `img.ext =
+  "math.typ"`), ~0.06 s against tectonic's ~2 s. On tectonic it rewrites
+  inline `$…$`/`\(…\)` to `\begin{math}<strut>…\end{math}` (drops display
+  glue, floors to one line height); display math likewise in `\displaystyle`,
+  unless the body starts with `\begin`. Tags `img.inline`, which
+  `inline.update` passes on as the `display` placement opt.
 - `doc.find_visible` — filters out `type == "math"` matches when the window is
   at cl=0, so the inline manager closes them and the source shows.
 - `placement.state` — sets `loc.width` per the tier table: cl=1 source display

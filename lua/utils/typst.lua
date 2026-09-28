@@ -75,6 +75,22 @@ function M.cell_fit_typ(t, box_in)
 }]], { x = t.x, cap = t.cap, desc = t.desc, box = box_in, below = t.below * box_in })
 end
 
+--- `s` as a typst string literal.
+--- @param s string
+--- @return string typ
+function M.str_literal(s)
+    return '"' .. s:gsub('[\\"]', "\\%0") .. '"'
+end
+
+--- Typst source that renders LaTeX math with mitex
+--- (https://typst.app/universe/package/mitex).
+--- @param body string LaTeX math without delimiters
+--- @param inline boolean inline (`mi`) rather than display (`mitex`) math
+--- @return string typ
+function M.mitex_typ(body, inline)
+    return ('#import "@preview/mitex:0.2.7": mi, mitex\n#%s(%s)'):format(inline and "mi" or "mitex", M.str_literal(body))
+end
+
 --- Checks whether typst finds a font family, without blocking.
 --- @param family string
 --- @param on_result fun(found: boolean, stderr: string) called in the main loop

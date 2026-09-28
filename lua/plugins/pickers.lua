@@ -286,10 +286,31 @@ return {
             -- source still has its delimiter.
             local doc = require("snacks").image.doc
             local latex_transform = doc.transforms.latex
+            local typst_transform = doc.transforms.typst
+
+            --- Applies snacks' typst transform to typst math `img` as inline or
+            --- display math.
+            --- @param inline boolean
+            local function typst_math_transform(img, ctx, inline)
+                check_typst_font()
+                fit_templates()
+                img.inline = inline
+                return typst_transform(img, ctx)
+            end
+
+            -- LaTeX math renders with typst via mitex: tectonic takes ~2 s per
+            -- expression, typst ~0.06 s, and snacks runs at most 3 conversions
+            -- at a time. A `.tex` buffer's math depends on its preamble, and a
+            -- snacks header holds LaTeX, so those stay on tectonic.
             doc.transforms.latex = function(img, ctx)
                 if img.content and img.ext == "math.tex" then
                     local inline = latex.is_inline(img.content)
                     local body = latex.math_body(img.content)
+                    if vim.bo[ctx.buf].filetype ~= "tex" and vim.trim(doc.get_header(ctx.buf)) == "" then
+                        img.content = typst.mitex_typ(body, inline)
+                        img.ext = "math.typ"
+                        return typst_math_transform(img, ctx, inline)
+                    end
                     fit_templates()
                     img.inline = inline
                     if inline or not body:find("^\\begin") then
@@ -300,14 +321,9 @@ return {
                 return latex_transform(img, ctx)
             end
             -- Typst math is display when whitespace follows the opening `$`.
-            local typst_transform = doc.transforms.typst
             doc.transforms.typst = function(img, ctx)
-                if img.content then
-                    check_typst_font()
-                    fit_templates()
-                end
-                img.inline = img.content and img.content:match("^%$%S") ~= nil
-                return typst_transform(img, ctx)
+                if not img.content then return typst_transform(img, ctx) end
+                return typst_math_transform(img, ctx, img.content:match("^%$%S") ~= nil)
             end
 
             -- Prefetch margin: render math within one screenful above/below the
