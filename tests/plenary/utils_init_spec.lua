@@ -35,6 +35,50 @@ describe("insert_around", function()
     end)
 end)
 
+describe("is_comment_line", function()
+    it("matches the whole leader after leading blanks", function()
+        assert.is_true(util.is_comment_line(" \t// x", "//"))
+        assert.is_false(util.is_comment_line("/data/x", "//"))
+    end)
+
+    it("takes the leader as plain text", function()
+        assert.is_true(util.is_comment_line("% x", "%"))
+        assert.is_false(util.is_comment_line("x", "."))
+    end)
+
+    it("matches nothing without a leader", function()
+        assert.is_false(util.is_comment_line("x", ""))
+    end)
+end)
+
+describe("comment_leader", function()
+    local buf
+    before_each(function() buf = vim.api.nvim_create_buf(false, true) end)
+    after_each(function() vim.api.nvim_buf_delete(buf, { force = true }) end)
+
+    it("is the trimmed text before %s", function()
+        vim.bo[buf].commentstring = "<!-- %s -->"
+        assert.are.equal("<!--", util.comment_leader(buf))
+    end)
+
+    it("is empty for a commentstring without one", function()
+        vim.bo[buf].commentstring = "%s"
+        assert.are.equal("", util.comment_leader(buf))
+    end)
+
+    it("follows a change to a buffer that is not current", function()
+        vim.bo[buf].commentstring = "#%s"
+        assert.are.equal("#", util.comment_leader(buf))
+        vim.bo[buf].commentstring = ";%s"
+        -- nvim fires OptionSet with the buffer current, except during the
+        -- startup a spec runs in.
+        vim.api.nvim_buf_call(buf, function()
+            vim.api.nvim_exec_autocmds("OptionSet", { pattern = "commentstring" })
+        end)
+        assert.are.equal(";", util.comment_leader(buf))
+    end)
+end)
+
 describe("get_visual_range", function()
     before_each(function() vim.cmd.enew { bang = true } end)
 

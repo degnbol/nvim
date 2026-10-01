@@ -442,4 +442,91 @@ describe("tsv highlights", function()
             ["true"] = "boolean",
         }, captures)
     end)
+
+    describe("of a comment row", function()
+        -- Attributes @comment lacks, so a number or boolean showing through a
+        -- comment would change what the cell draws with.
+        local groups = {
+            ["@comment"] = { fg = "#ff0000" },
+            ["@number"] = { fg = "#0000ff", bold = true },
+            ["@boolean"] = { underline = true },
+        }
+        local saved = {}
+        before_each(function()
+            for name, spec in pairs(groups) do
+                saved[name] = vim.api.nvim_get_hl(0, { name = name })
+                vim.api.nvim_set_hl(0, name, spec)
+            end
+        end)
+        after_each(function()
+            for name, spec in pairs(saved) do vim.api.nvim_set_hl(0, name, spec) end
+        end)
+
+        --- The screen attribute of the cell starting each `{ lnum, text }` in
+        --- the current window.
+        --- @param cells { [1]: integer, [2]: string }[] 1-based line, cell text
+        --- @return integer[] attrs one per cell
+        local function attrs_of(cells)
+            return vim.tbl_map(function(cell)
+                local lnum, text = cell[1], cell[2]
+                local line = vim.api.nvim_buf_get_lines(0, lnum - 1, lnum, true)[1]
+                local col = assert(line:find(text, 1, true))
+                local pos = vim.fn.screenpos(0, lnum, col)
+                return vim.fn.screenattr(pos.row, pos.col)
+            end, cells)
+        end
+
+        --- Show a TSV buffer in the current window under the treesitter
+        --- highlighter, and run `fn` on it.
+        --- @param lines string[]
+        --- @param fn fun(buf: integer): any
+        --- @return any
+        local function with_drawn(lines, fn)
+            return with_tsv(lines, function(buf)
+                vim.api.nvim_set_current_buf(buf)
+                vim.treesitter.start(buf, "tsv")
+                vim.api.nvim__redraw { valid = false, flush = true }
+                return fn(buf)
+            end)
+        end
+
+        --- The attributes `attrs_of` reads off a freshly drawn TSV buffer.
+        --- @param lines string[]
+        --- @param cells { [1]: integer, [2]: string }[]
+        --- @return integer[]
+        local function drawn(lines, cells)
+            return with_drawn(lines, function() return attrs_of(cells) end)
+        end
+
+        it("draws every cell as a comment, numbers included", function()
+            local attrs = drawn({ "# a\t1\ttrue", "2" },
+                { { 1, "a" }, { 1, "1" }, { 1, "true" }, { 2, "2" } })
+            assert.are.equal(attrs[1], attrs[2])
+            assert.are.equal(attrs[1], attrs[3])
+            assert.are_not.equal(attrs[1], attrs[4])
+        end)
+
+        -- The grammar merges a row starting with an empty cell into the row above.
+        it("leaves a row merged into it uncommented", function()
+            local attrs = drawn({ "# x", "\t3", "3" }, { { 1, "x" }, { 2, "3" }, { 3, "3" } })
+            assert.are_not.equal(attrs[1], attrs[2])
+            assert.are.equal(attrs[3], attrs[2])
+        end)
+
+        it("follows a change to 'commentstring'", function()
+            local cells = { { 1, "1" }, { 2, "2" }, { 3, "3" } }
+            local before, after = unpack(with_drawn({ "#\t1", ";\t2", "3" }, function(buf)
+                local attrs = attrs_of(cells)
+                vim.bo[buf].commentstring = ";%s"
+                -- What nvim fires itself, except during the startup a spec runs in.
+                vim.api.nvim_exec_autocmds("OptionSet", { pattern = "commentstring" })
+                vim.api.nvim__redraw { flush = true }
+                return { attrs, attrs_of(cells) }
+            end))
+            assert.are_not.equal(before[3], before[1])
+            assert.are.equal(before[3], before[2])
+            assert.are.equal(after[3], after[1])
+            assert.are_not.equal(after[3], after[2])
+        end)
+    end)
 end)

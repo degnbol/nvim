@@ -309,6 +309,50 @@ function M.get_line(r)
     return vim.api.nvim_buf_get_lines(0, r, r + 1, true)[1]
 end
 
+---True when `line` is a line comment: its first non-blank text is `leader`.
+---@param line string
+---@param leader string what a comment opens with, see `comment_leader`
+---@return boolean
+function M.is_comment_line(line, leader)
+    return leader ~= "" and line:match("^%s*" .. vim.pesc(leader)) ~= nil
+end
+
+---@type table<integer, string>
+local comment_leaders = {}
+
+---What a comment opens with in buffer `buf`: the part of 'commentstring' before
+---`%s`, trimmed. "" when it has none. Cached per buffer, because reading an
+---option costs about 10 µs and this is read per node by query predicates.
+---@param buf integer 0 for the current buffer
+---@return string leader
+function M.comment_leader(buf)
+    if buf == 0 then buf = vim.api.nvim_get_current_buf() end
+    local leader = comment_leaders[buf]
+    if not leader then
+        leader = vim.trim(vim.bo[buf].commentstring:match("^(.-)%%s") or "")
+        comment_leaders[buf] = leader
+    end
+    return leader
+end
+
+local comment_leader_group = vim.api.nvim_create_augroup("utils.comment_leader", {})
+vim.api.nvim_create_autocmd("OptionSet", {
+    pattern = "commentstring",
+    group = comment_leader_group,
+    callback = function()
+        -- OptionSet gives no <abuf>; the option is set with its buffer current.
+        local buf = vim.api.nvim_get_current_buf()
+        if comment_leaders[buf] == nil then return end
+        comment_leaders[buf] = nil
+        -- Highlight predicates read the leader only when a line is redrawn.
+        vim.api.nvim__redraw { buf = buf, valid = false }
+    end,
+})
+vim.api.nvim_create_autocmd("BufWipeout", {
+    group = comment_leader_group,
+    callback = function(args) comment_leaders[args.buf] = nil end,
+})
+
 ---@param r  integer 0-indexed
 ---@param c1 integer 0-indexed
 ---@param c2 integer 0-indexed

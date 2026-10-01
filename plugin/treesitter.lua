@@ -42,6 +42,8 @@ vim.treesitter.query.add_predicate(
 vim.treesitter.query.add_predicate(
     "has-arg?", ts_utils.has_arg, { force = true })
 vim.treesitter.query.add_predicate(
+    "comment-line?", ts_utils.comment_line, { force = true })
+vim.treesitter.query.add_predicate(
     "regex-pattern?", ts_utils.is_regex_pattern, { force = true })
 -- Registered here with the rest and not in plugin/chem.lua, because a query
 -- naming a predicate no one has registered does not degrade: the parse throws

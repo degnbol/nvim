@@ -269,3 +269,5 @@ Move it after the `csv.vim` runtime call so comments highlight, or delete it. On
 `lua/tex/tables.lua` `&` map: a removed comment noted an alternative to clearing the message area after `<Plug>TableAlign` — temporarily redefine the print functions to no-ops. Restore the comment?
 
 
+Chemical columns in `.csv`: the `csv` parser's `requires` pulls in `tsv`, and `#chem-column?` (`lua/chem/tsv.lua`) would need to stop assuming the tab separator.
+

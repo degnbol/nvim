@@ -299,6 +299,24 @@ function M.command_is(match, _, source, pred)
     return false
 end
 
+---Query predicate `(#comment-line? @cap)` — true when the line @cap starts on
+---is a line comment by the buffer's 'commentstring' (`util.comment_leader`).
+---Always false for a string source, which has no 'commentstring'.
+---@param match table<integer, TSNode[]>
+---@param _ integer pattern index (unused)
+---@param source integer|string buffer or string
+---@param pred any[]
+---@return boolean
+function M.comment_line(match, _, source, pred)
+    if type(source) ~= "number" then return false end
+    local node = (match[pred[2]] or {})[1]
+    if not node then return false end
+    local lnum = node:start()
+    return util.is_comment_line(
+        vim.api.nvim_buf_get_lines(source, lnum, lnum + 1, true)[1],
+        util.comment_leader(source))
+end
+
 ---Query predicate `(#arg-after? @cap @cmd N)` — true when @cap is at least the
 ---Nth argument (1-indexed) of the command @cmd invokes. @cmd is a
 ---`(command_name)` node; wrapper prefixes are resolved first

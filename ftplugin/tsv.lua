@@ -55,25 +55,18 @@ local function set_maxwidths(m) vim.b.tsv_maxwidths = m end
 local function get_hidden() return denilify(vim.b.tsv_hidden) end
 local function set_hidden(h) vim.b.tsv_hidden = h end
 
-local function getCommentChar()
-    return vim.opt_local.commentstring:get():sub(1, 1)
-end
-local function isComment(line, commentchar)
-    return commentchar and commentchar ~= "" and line:match("^[\t%s]*" .. commentchar)
-end
-
 --- Takes a count, to override default number of lines to check for detecting column max lengths.
 local function updateWidths()
-    local commentchar = getCommentChar()
     local widths = {}
 
     local checklines = vim.v.count
     if checklines == 0 then checklines = defaults.checklines end
     local lines = vim.api.nvim_buf_get_lines(0, 0, checklines, false)
+    local leader = util.comment_leader(0)
 
     for _, line in ipairs(lines) do
         -- ignore comment lines
-        if not isComment(line, commentchar) then
+        if not util.is_comment_line(line, leader) then
             local fields = vim.split(line, '\t', true)
             -- when the line is shorter than or equal in length to a line seen so far
             for i = 1, math.min(#widths, #fields) do
@@ -245,11 +238,11 @@ local function hide(cols, maxwidth)
     -- 0 or less not valid maxwidth
     if maxwidth and maxwidth <= 0 then maxwidth = nil end
 
-    local commentchar = getCommentChar()
     local commentlines = {}
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, true)
+    local leader = util.comment_leader(0)
     for i, line in ipairs(lines) do
-        if isComment(line, commentchar) then
+        if util.is_comment_line(line, leader) then
             commentlines[i] = true
         end
     end
@@ -708,11 +701,11 @@ local function open_header(row, height)
     row = row or 1
     if height == nil then
         -- height detected as number of comment lines plus 1
-        local commentchar = getCommentChar()
         -- consider max 20 lines
         local lines = vim.api.nvim_buf_get_lines(0, 0, 20, false)
+        local leader = util.comment_leader(0)
         for i, line in ipairs(lines) do
-            if not isComment(line, commentchar) then
+            if not util.is_comment_line(line, leader) then
                 height = i
                 break
             end
