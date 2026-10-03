@@ -27,9 +27,24 @@ return {
                 -- Cosmetic mlr-invocation formatter (config/fmt-zsh-mlr). Runs
                 -- after shfmt; the two are order-independent — shfmt leaves the
                 -- `+ \` reflow byte-identical. Only active if the binary is on PATH.
+                -- A Lua formatter because conform drops a command formatter's
+                -- stderr on exit 0, where fmt-zsh-mlr warns about chains it skips.
                 fmt_zsh_mlr = {
-                    command = "fmt-zsh-mlr",
-                    stdin = true,
+                    condition = function() return vim.fn.executable("fmt-zsh-mlr") == 1 end,
+                    format = function(_, _, lines, callback)
+                        local stdin = table.concat(lines, "\n") .. "\n"
+                        vim.system({ "fmt-zsh-mlr" }, { stdin = stdin, text = true },
+                            vim.schedule_wrap(function(obj)
+                                local stderr = vim.trim(obj.stderr)
+                                if obj.code ~= 0 then
+                                    return callback(("Formatter 'fmt_zsh_mlr' error: %s"):format(stderr))
+                                end
+                                if stderr ~= "" then vim.notify(stderr, vim.log.levels.WARN) end
+                                local out = vim.split(obj.stdout, "\n")
+                                if out[#out] == "" then table.remove(out) end
+                                callback(nil, out)
+                            end))
+                    end,
                 },
                 shfmt = {
                     prepend_args = function(_, ctx)
