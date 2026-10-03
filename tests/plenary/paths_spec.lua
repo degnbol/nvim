@@ -36,6 +36,12 @@ describe("utils.paths.resolve_path", function()
         assert.are.equal(vim.uv.cwd() .. "/sib.lua", paths.resolve_path("./sib.lua", buf))
     end)
 
+    it("anchors a relative token to cwd for a URL-named buffer", function()
+        local buf = vim.api.nvim_create_buf(false, true)
+        vim.api.nvim_buf_set_name(buf, "agentic://1/input")
+        assert.are.equal(vim.uv.cwd() .. "/sib.lua", paths.resolve_path("./sib.lua", buf))
+    end)
+
     it("returns nil for an empty token", function()
         assert.is_nil(paths.resolve_path("", 0))
     end)

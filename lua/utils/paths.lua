@@ -91,6 +91,17 @@ function M.is_dir(path)
     return stat ~= nil and stat.type == "directory"
 end
 
+-- The directory a buffer's relative paths resolve from: its file's directory,
+-- or the cwd for a buffer with no file — nameless, or named by a URL
+-- (`scheme://…`), whose dirname is no directory.
+---@param bufnr integer 0 = current buffer
+---@return string
+function M.buf_dir(bufnr)
+    local name = vim.api.nvim_buf_get_name(bufnr)
+    if name == "" or name:match("^%a[%w+.-]*://") then return vim.uv.cwd() end
+    return vim.fs.dirname(name)
+end
+
 -- Resolve a path token to an existing file: absolute, then joined with the
 -- buffer's directory, then findfile() — which honours 'path'/'suffixesadd'.
 ---@param token string ~ and $ENV are expanded
@@ -101,7 +112,7 @@ local function resolve_file(token, bufnr)
     if vim.startswith(expanded, "/") and M.is_file(expanded) then
         return expanded
     end
-    local joined = vim.fs.joinpath(vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr)), expanded)
+    local joined = vim.fs.joinpath(M.buf_dir(bufnr), expanded)
     -- fnamemodify, not vim.fs.normalize: `..` must apply after following a
     -- symlink, as the kernel does, not remove the segment before it.
     if M.is_file(joined) then
@@ -190,8 +201,7 @@ end
 
 -- Resolve a path token to its single absolute candidate, as pure string math —
 -- no filesystem access. vim.fs.normalize expands ~ / $ENV and resolves . / ..;
--- a relative token is anchored to the buffer's own directory when it has a
--- name, else the cwd (the nameless-scratch-buffer case). Unlike
+-- a relative token is anchored to M.buf_dir. Unlike
 -- resolve_location_under_cursor (the gf resolver) there is no 'path' search, no
 -- git-root or buffer-var expansion, and no cursor dependency, so the result is
 -- a pure function of (token, base dir) — a valid cache key for an existence
@@ -203,9 +213,7 @@ function M.resolve_path(token, bufnr)
     if token == "" then return nil end
     local path = vim.fs.normalize(token)
     if vim.startswith(path, "/") then return path end
-    local name = vim.api.nvim_buf_get_name(bufnr)
-    local base = name ~= "" and vim.fs.dirname(name) or vim.uv.cwd()
-    return vim.fs.normalize(vim.fs.joinpath(base, path))
+    return vim.fs.normalize(vim.fs.joinpath(M.buf_dir(bufnr), path))
 end
 
 return M

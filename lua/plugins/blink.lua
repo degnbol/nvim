@@ -226,6 +226,11 @@ return {
                         path = {
                             -- When a path is relevant to complete, it usually should.
                             score_offset = 4,
+                            opts = {
+                                get_cwd = function(context)
+                                    return require("utils.paths").buf_dir(context.bufnr)
+                                end,
+                            },
                         },
                         snippets = {
                             -- from default -3. Make sure path is stil higher.
