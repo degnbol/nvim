@@ -20,22 +20,10 @@ if vim.fn.executable("shfmt") == 1 then
     local is_zsh = vim.bo.filetype:find("zsh") ~= nil
     local prg = "shfmt -ln " .. (is_zsh and "zsh" or "auto") .. " -i 4 -ci -sr"
     -- Chain the cosmetic mlr-invocation formatter for zsh (order-independent).
-    -- A filter's stderr lands in the buffer ('shellredir'), so fmt-zsh-mlr's
-    -- warnings go to a file and are notified after the filter.
     if is_zsh and vim.fn.executable("fmt-zsh-mlr") == 1 then
-        local stderr_file = vim.fn.tempname()
-        prg = prg .. " | fmt-zsh-mlr 2>" .. vim.fn.shellescape(stderr_file)
-        local group = vim.api.nvim_create_augroup("fmt_zsh_mlr_stderr", { clear = false })
-        vim.api.nvim_clear_autocmds({ group = group, buf = 0 })
-        vim.api.nvim_create_autocmd("ShellFilterPost", {
-            group = group,
-            buf = 0,
-            callback = function()
-                local stderr = vim.trim(require("utils/init").readtext(stderr_file) or "")
-                os.remove(stderr_file)
-                if stderr ~= "" then vim.notify(stderr, vim.log.levels.WARN) end
-            end,
-        })
+        prg = prg .. " | fmt-zsh-mlr"
     end
     vim.opt_local.formatprg = prg
+    -- stderr (shfmt syntax errors, fmt-zsh-mlr warnings) as notifications
+    vim.opt_local.formatexpr = "v:lua.require'utils.formatprg'.formatexpr()"
 end
