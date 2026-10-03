@@ -37,6 +37,9 @@ return {
                 auto_scroll = {
                     enabled = true,
                 },
+                subagents = {
+                    force_background = true,
+                },
                 notifications = {
                     bell = true,
                 },
