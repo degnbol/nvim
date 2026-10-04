@@ -228,6 +228,26 @@
   (#set! injection.language "lua")
   (#set! injection.include-children))
 
+; `nvim --remote-expr 'luaeval("CODE")'` → lua. The arg is a vim expression,
+; but the vim parser only parses statements and reads a bare `luaeval(…)` as an
+; unknown command. So skip the vim layer and inject CODE as lua directly.
+;
+; Skip 10 bytes (`'luaeval("` / `"luaeval('`), strip 3 bytes (`")'` / `')"`).
+; CODE may contain no quote of either kind, so the gate rejects anything but a
+; single one-argument call: `luaeval("CODE", _A)`, `luaeval("a").luaeval("b")`,
+; and CODE with vim string escapes (`\"`, `''`), which lua would misread.
+(command
+  name: (command_name) @_cmd
+  argument: (word) @_flag
+  .
+  argument: [(raw_string) (string)] @injection.content
+  (#command-is? @_cmd "nvim" "vim")
+  (#eq? @_flag "--remote-expr")
+  (#lua-match? @injection.content "^['\"]luaeval%(['\"][^'\"]*['\"]%)['\"]$")
+  (#trim! @injection.content 10 3)
+  (#set! injection.language "lua")
+  (#set! injection.include-children))
+
 ; -----------------------------------------------------------------------------
 ; Inject regex into the pattern argument of grep / egrep / ggrep / fgrep / rg.
 ;

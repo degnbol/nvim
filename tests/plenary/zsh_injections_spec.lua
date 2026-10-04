@@ -770,6 +770,36 @@ describe("zsh injections", function()
                 local src = 'nvim +"lua\nprint(1)\n"'
                 assert_injection(src, "lua", "print(1)")
             end)
+
+        it("injects lua into --remote-expr 'luaeval(\"...\")'", function()
+            assert_injection(
+                [[nvim --server "$NVIM" --remote-expr 'luaeval("vim.inspect(vim.tbl_map(function(w) return { win = w } end, vim.api.nvim_tabpage_list_wins(0)))")']],
+                "lua",
+                "vim.inspect(vim.tbl_map(function(w) return { win = w } end, vim.api.nvim_tabpage_list_wins(0)))"
+            )
+        end)
+
+        it("injects lua into --remote-expr \"luaeval('...')\"", function()
+            assert_injection([[nvim --remote-expr "luaeval('1 + 1')"]], "lua", "1 + 1")
+        end)
+
+        it("injects a double-quoted $var --remote-expr as one region", function()
+            assert_injection([[nvim --remote-expr "luaeval('print($x)')"]], "lua",
+                "print($x)", 1)
+        end)
+
+        it("does not inject lua into a non-luaeval --remote-expr", function()
+            assert_no_injection([[nvim --remote-expr 'bufnr("lua")']], "lua")
+        end)
+
+        it("does not inject lua into a two-argument luaeval", function()
+            assert_no_injection([[nvim --remote-expr 'luaeval("_A + 1", 2)']], "lua")
+            assert_no_injection([[nvim --remote-expr 'luaeval("f(_A)", "v")']], "lua")
+        end)
+
+        it("does not inject lua across two luaeval calls", function()
+            assert_no_injection([[nvim --remote-expr 'luaeval("a") . luaeval("b")']], "lua")
+        end)
     end)
 
     describe("nvim -l heredoc", function()
