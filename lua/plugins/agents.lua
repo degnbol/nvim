@@ -34,7 +34,7 @@ return {
                 headers = {
                     chat = { title = "Claude" },
                 },
-                auto_scroll = {
+                follow = {
                     enabled = true,
                 },
                 subagents = {
