@@ -23,30 +23,27 @@ local function snippet(lines)
     return table.concat(parts, "\n")
 end
 
+local zsh = snippet {
+    shebang .. "zsh",
+    "set -euo pipefail",
+    "cd ${0:A:h}",
+    "ROOT=$(git root)",
+    "",
+}
+
 -- default contents in new files of specific types.
 -- Either a snippet body string, or a function returning one.
 -- Use raw() for lines containing snippet syntax ($0, $1, $TM_FILENAME, etc.).
 local templates = {
-    -- as a function instead of separate patterns as otherwise they would all get triggered.
     sh = function()
         -- Get zsh syntax
-        vim.api.nvim_set_option_value("filetype", "zsh", { buf = 0 })
-        return snippet {
-            shebang .. "zsh",
-            "set -euo pipefail",
-            "cd ${0:A:h}",
-            "",
-        }
+        vim.api.nvim_set_option_value("filetype", "sh.zsh", { buf = 0 })
+        return zsh
     end,
-    zsh = snippet {
-        shebang .. "zsh",
-        "set -euo pipefail",
-        "cd ${0:A:h}",
-        "",
-    },
+    zsh = zsh,
     bash = snippet {
         shebang .. "bash",
-        "cd $(dirname $0)",
+        'cd "$(dirname "$0")"',
         "",
     },
     scm = snippet {
