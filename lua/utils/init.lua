@@ -304,6 +304,18 @@ function M.is_named()
     return vim.api.nvim_buf_get_name(0) ~= ""
 end
 
+---The loaded buffer whose name is exactly `name`, unlike bufnr(), which takes
+---a pattern and also matches a part of a name.
+---@param name string
+---@return integer|nil bufnr
+function M.loaded_buffer(name)
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_name(buf) == name then
+            return buf
+        end
+    end
+end
+
 ---@param r integer 0-indexed
 function M.get_line(r)
     return vim.api.nvim_buf_get_lines(0, r, r + 1, true)[1]

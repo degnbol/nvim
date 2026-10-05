@@ -453,39 +453,57 @@ local PEEK_LINES = 500
 -- trip that :h vim.lsp.buf.hover gets from focus_id = "textDocument/hover".
 local PEEK_FOCUS = "peek_file"
 
---- Peek a file in a hover-style float, opening on `lnum` and showing
---- PEEK_LINES lines from there — more than fills the float. An out-of-reach
---- `lnum`, whether past EOF (a stale grep hit) or too deep to read, warns and
---- falls back to the top. Highlighting is the matched filetype as the float's
---- 'syntax'. ponytail: regex syntax is enough — add vim.treesitter.start if it
---- ever matters.
----@param path string
----@param lnum integer|nil 1-based line to show first, default the top
-local function peek_file(path, lnum)
-    local lines = read_lines(path, lnum or 1, PEEK_LINES)
-    local missed = lnum ~= nil and #lines == 0
-    if missed then lines = read_lines(path, 1, PEEK_LINES) end
-    -- A zero-byte file: open_floating_preview throws "Invalid 'width'" on it.
-    if #lines == 0 then
-        vim.notify(("%s is empty"):format(vim.fs.basename(path)), vim.log.levels.WARN)
+--- Show `lines` in a hover-style float, highlighted by `ft` as the float's
+--- 'syntax', or warn that `name` is empty when no line has text.
+--- ponytail: regex syntax is enough — add vim.treesitter.start if it ever
+--- matters.
+---@param lines string[]
+---@param ft string
+---@param name string what the lines are of, for the warning
+local function peek_lines(lines, ft, name)
+    -- open_floating_preview trims blank lines, then throws "Invalid 'width'"
+    -- on none left.
+    if not vim.iter(lines):any(function(line) return line ~= "" end) then
+        vim.notify(("%s is empty"):format(name), vim.log.levels.WARN)
         return
     end
-    if missed then
-        vim.notify(("%s: line %d is past the end of the file or the read cap")
-            :format(vim.fs.basename(path), lnum), vim.log.levels.WARN)
-    end
-    -- The compression is not the content: a .tsv.gz highlights as a tsv.
-    local ft = vim.filetype.match({ filename = (path:gsub("%.gz$", "")) }) or ""
     local buf, win = vim.lsp.util.open_floating_preview(lines, ft, { focus_id = PEEK_FOCUS })
     -- The float was already up and open_floating_preview moved the cursor into
     -- it rather than filling a new buffer; its lines are these ones already.
     if win == vim.api.nvim_get_current_win() then return end
     -- open_floating_preview rewrites its contents — trimempty for a plain
     -- syntax, _normalize_markdown for markdown — either of which would shift
-    -- `lnum` off the top of the float.
+    -- the first line off the top of the float.
     vim.bo[buf].modifiable = true
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
     vim.bo[buf].modifiable = false
+end
+
+--- Peek a file, opening on `lnum` and showing PEEK_LINES lines from there —
+--- more than fills the float. An out-of-reach `lnum`, whether past EOF (a
+--- stale grep hit) or too deep to read, warns and falls back to the top.
+---@param path string
+---@param lnum integer|nil 1-based line to show first, default the top
+local function peek_file(path, lnum)
+    local name = vim.fs.basename(path)
+    local lines = read_lines(path, lnum or 1, PEEK_LINES)
+    local missed = lnum ~= nil and #lines == 0
+    if missed then lines = read_lines(path, 1, PEEK_LINES) end
+    if missed and #lines > 0 then
+        vim.notify(("%s: line %d is past the end of the file or the read cap")
+            :format(name, lnum), vim.log.levels.WARN)
+    end
+    -- The compression is not the content: a .tsv.gz highlights as a tsv.
+    local ft = vim.filetype.match({ filename = (path:gsub("%.gz$", "")) }) or ""
+    peek_lines(lines, ft, name)
+end
+
+--- Peek the first PEEK_LINES lines of a loaded buffer, highlighted by its
+--- filetype.
+---@param buf integer
+local function peek_buffer(buf)
+    local lines = vim.api.nvim_buf_get_lines(buf, 0, PEEK_LINES, false)
+    peek_lines(lines, vim.bo[buf].filetype, vim.fs.basename(vim.api.nvim_buf_get_name(buf)))
 end
 
 local function lsp_hover_capable(bufnr)
@@ -496,7 +514,8 @@ local function lsp_hover_capable(bufnr)
 end
 
 -- Overload K: if the cursor is on a path resolving to a readable file, peek it;
--- else LSP hover; else built-in keywordprg. Global (not buffer-local on
+-- else on the name of a loaded buffer with no file behind it (a `scheme://`
+-- name), peek that; else LSP hover; else built-in keywordprg. Global (not buffer-local on
 -- LspAttach) so it works in no-LSP buffers — the primary use case — and so the
 -- LspAttach default sees a K mapping and skips installing its own.
 map.n("K", function()
@@ -512,6 +531,11 @@ map.n("K", function()
         peek_file(path, lnum)
         return
     end
+    local buf = util.loaded_buffer(vim.fn.expand("<cfile>"))
+    if buf then
+        peek_buffer(buf)
+        return
+    end
     if lsp_hover_capable(0) then
         local cword_start = util.cword_start_col()
         local c = vim.api.nvim_win_get_cursor(0)[2]
@@ -520,7 +544,7 @@ map.n("K", function()
     end
     -- n = noremap (bypass this + buffer-local maps → built-in K), x = execute now.
     vim.api.nvim_feedkeys(vim.v.count1 .. "K", "nx", false)
-end, "Peek file / hover / keywordprg")
+end, "Peek file or buffer / hover / keywordprg")
 
 local GX_DESC = "Smart URL opener"
 -- The runtime gx: LSP document links, url extmarks, treesitter url metadata

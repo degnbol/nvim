@@ -162,6 +162,44 @@ describe("K peek", function()
         assert.are.same({ "d.lua is empty" }, notifications(peek))
     end)
 
+    it("reports a file of blank lines as empty", function()
+        fixture("e.lua", { "", "" }, "PATH")
+        local buf
+        local msgs = notifications(function() buf = peek() end)
+        assert.is_nil(buf)
+        assert.are.same({ "e.lua is empty" }, msgs)
+    end)
+
+    --- A scratch buffer named `name` holding `lines`, with filetype `ft`; then
+    --- the window on a buffer holding only `name`, cursor on its first byte.
+    local function named_buffer(name, lines, ft)
+        local buf = vim.api.nvim_create_buf(true, true)
+        vim.api.nvim_buf_set_name(buf, name)
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+        vim.bo[buf].filetype = ft
+        vim.cmd.enew()
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, { name })
+        vim.api.nvim_win_set_cursor(0, { 1, 0 })
+        return buf
+    end
+
+    it("peeks a loaded buffer named by a URL", function()
+        local source = named_buffer("agentic://1/subagent/x-Review", numbered(1), "lua")
+        local buf = peek()
+        assert.are.same({ "", "", "line 3" }, head(buf))
+        assert.are.equal("lua", vim.bo[buf].syntax)
+        vim.api.nvim_buf_delete(source, { force = true })
+    end)
+
+    it("reports an empty loaded buffer instead of opening a float", function()
+        local source = named_buffer("agentic://1/subagent/y-Empty", {}, "")
+        local buf
+        local msgs = notifications(function() buf = peek() end)
+        assert.is_nil(buf)
+        assert.are.same({ "y-Empty is empty" }, msgs)
+        vim.api.nvim_buf_delete(source, { force = true })
+    end)
+
     it("enters the float on a second K, and leaves it on a third", function()
         fixture("g.lua", numbered(170), "PATH:170")
         local source = vim.api.nvim_get_current_win()
