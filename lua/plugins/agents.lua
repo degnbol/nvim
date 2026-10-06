@@ -1,4 +1,5 @@
 local hi = require "utils/highlights"
+local map = require "utils/keymap"
 -- AI coding agent integrations
 
 return {
@@ -6,20 +7,6 @@ return {
     {
         "agentic.nvim",
         load = function() end,
-        cmd = { "Agentic", "AgenticResume" },
-        keys = {
-            { "<D-\\>", "<Plug>(agentic-toggle-tab)", desc = "Agent toggle" },
-            { "<M-CR>", "<Plug>(agentic-send)", desc = "Agent send motion" },
-            { "<M-CR><M-CR>", "<Plug>(agentic-send-line)", desc = "Agent send line" },
-            { "<M-CR>", "<Plug>(agentic-send)", desc = "Agent send selection", mode = "v" },
-            { "<leader>i", nil, desc = "Intelligence/AI" },
-            { "<leader>ii", "<Plug>(agentic-toggle-tab)", desc = "Toggle agent" },
-            { "<leader>if", "<Plug>(agentic-open)", desc = "Focus agent" },
-            { "<leader>iq", "<Plug>(agentic-close)", desc = "Close agent" },
-            { "<leader>in", "<Plug>(agentic-new-session)", desc = "New session" },
-            { "<leader>ib", "<Plug>(agentic-add-file)", desc = "Add current buffer" },
-            { "<leader>is", "<Plug>(agentic-send)", mode = "v", desc = "Send selection" },
-        },
         before = function()
             hi.onColorScheme(function()
                 hi.link("AgenticSearchMatch", "DiagnosticError")
@@ -74,6 +61,17 @@ return {
                     },
                 },
             }
+
+            map.n("<D-\\>", "<Plug>(agentic-toggle-tab)", "Agent toggle")
+            map.n("<M-CR>", "<Plug>(agentic-send)", "Agent send motion")
+            map.n("<M-CR><M-CR>", "<Plug>(agentic-send-line)", "Agent send line")
+            map.v("<M-CR>", "<Plug>(agentic-send)", "Agent send selection")
+            map.n("<leader>ii", "<Plug>(agentic-toggle-tab)", "Toggle agent")
+            map.n("<leader>if", "<Plug>(agentic-open)", "Focus agent")
+            map.n("<leader>iq", "<Plug>(agentic-close)", "Close agent")
+            map.n("<leader>in", "<Plug>(agentic-new-session)", "New session")
+            map.n("<leader>ib", "<Plug>(agentic-add-file)", "Add current buffer")
+            map.v("<leader>is", "<Plug>(agentic-send)", "Send selection")
 
             vim.api.nvim_create_user_command("Agentic", function()
                 require("agentic").toggle_tab()
