@@ -62,20 +62,13 @@ return {
                 },
             }
 
-            map.n("<D-\\>", "<Plug>(agentic-toggle-tab)", "Agent toggle")
             map.n("<M-CR>", "<Plug>(agentic-send)", "Agent send motion")
             map.n("<M-CR><M-CR>", "<Plug>(agentic-send-line)", "Agent send line")
             map.v("<M-CR>", "<Plug>(agentic-send)", "Agent send selection")
-            map.n("<leader>ii", "<Plug>(agentic-toggle-tab)", "Toggle agent")
             map.n("<leader>if", "<Plug>(agentic-open)", "Focus agent")
-            map.n("<leader>iq", "<Plug>(agentic-close)", "Close agent")
             map.n("<leader>in", "<Plug>(agentic-new-session)", "New session")
             map.n("<leader>ib", "<Plug>(agentic-add-file)", "Add current buffer")
             map.v("<leader>is", "<Plug>(agentic-send)", "Send selection")
-
-            vim.api.nvim_create_user_command("Agentic", function()
-                require("agentic").toggle_tab()
-            end, { desc = "Open agentic agent tab" })
         end,
     },
 }
