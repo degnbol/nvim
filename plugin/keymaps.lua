@@ -132,9 +132,6 @@ map.n("<leader>xe", function() require("luasnippets/add").edit() end, "Snippet: 
 -- Built-in vim.snippet jump (same keys as blink.cmp snippet_forward/backward).
 -- Blink's mappings take priority when its snippet session is active; these handle
 -- vim.snippet sessions (e.g. from BufNewFile templates).
--- Built-in vim.snippet jump (same keys as blink.cmp snippet_forward/backward).
--- Blink's mappings take priority when its snippet session is active; these handle
--- vim.snippet sessions (e.g. from BufNewFile templates).
 -- Uses expr + <Cmd> (like neovim's default Tab mapping) so select mode is preserved.
 local function snippet_jump_expr(direction)
     return function()
@@ -146,12 +143,6 @@ local function snippet_jump_expr(direction)
 end
 vim.keymap.set({ 'i', 's' }, '<C-.>', snippet_jump_expr(1), { expr = true, silent = true, desc = "snippet_forward" })
 vim.keymap.set({ 'i', 's' }, '<C-,>', snippet_jump_expr(-1), { expr = true, silent = true, desc = "snippet_backward" })
-map.n('<C-.>', function()
-    if vim.snippet.active({ direction = 1 }) then vim.snippet.jump(1) end
-end, "snippet_forward")
-map.n('<C-,>', function()
-    if vim.snippet.active({ direction = -1 }) then vim.snippet.jump(-1) end
-end, "snippet_backward")
 
 -- use the following two commands to enable spelling
 -- setlocal spell

@@ -5,7 +5,7 @@ description: Neovim version audit procedure for this config. Use when neovim has
 
 # Neovim Version Audit
 
-Last audited: 0.12.5
+Last audited: 0.12.6
 
 ## Procedure
 
@@ -144,3 +144,9 @@ Config fixes:
 - `nvim_buf_add_highlight` and `nvim_err_writeln` replaced.
 - The `buffer` opt of `vim.keymap.set`/`del` and the autocmd API is renamed
   `buf` (integer only: `buffer = true` → `buf = 0`). Passing both asserts.
+
+### 0.12.6 (2026-10-11)
+
+A `vim.snippet` session stops on any change from Insert or Select mode to Normal
+mode, so the Normal-mode `vim.snippet` jump maps were removed. LuaSnip sessions
+(blink's maps) are not affected.
