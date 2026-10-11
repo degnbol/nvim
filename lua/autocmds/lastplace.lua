@@ -1,12 +1,11 @@
 -- https://github.com/neovim/neovim/issues/16339#issuecomment-1348133829
 -- adapted from https://github.com/ethanholz/nvim-lastplace/blob/main/lua/nvim-lastplace/init.lua
-local ignore_buftype = { "quickfix", "nofile", "help" }
 local ignore_filetype = { "gitcommit", "gitrebase", "svn", "hgcommit" }
 
 vim.api.nvim_create_autocmd({ 'BufWinEnter', 'FileType' }, {
     group    = vim.api.nvim_create_augroup('nvim-lastplace', {}),
     callback = function()
-        if vim.tbl_contains(ignore_buftype, vim.bo.buftype) then
+        if vim.bo.buftype ~= "" then
             return
         end
 
