@@ -517,7 +517,7 @@ map.n("K", function()
         vim.cmd("wincmd p")
         return
     end
-    local path, lnum = paths.resolve_location_under_cursor(0)
+    local path, lnum = paths.resolve_location_under_cursor()
     if path and paths.is_file(path) then -- dirs (case 1) fall to hover
         peek_file(path, lnum)
         return

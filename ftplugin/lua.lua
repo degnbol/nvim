@@ -26,7 +26,8 @@ vim.keymap.set('x', 'K', [["hy:h <C-r>h<CR>]], { buf=0, desc="Help" })
 
 -- when doing gf or similar obviously we should look in the lua/ folder since 
 -- this is where all scripts are required from.
-vim.opt_local.path:append(vim.fn.stdpath("config") .. "/lua")
+-- 'path' is global-local: its local value starts empty, so build on the global.
+vim.opt_local.path = vim.go.path .. "," .. vim.fn.stdpath("config") .. "/lua"
 
 local iabbrev = require("utils.iabbrev").iabbrev
 iabbrev("ture", "true", false, true)
