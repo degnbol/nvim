@@ -30,6 +30,27 @@ return {
                 notifications = {
                     bell = true,
                 },
+                permissions = {
+                    structured = {
+                        blender = {
+                            safe_write = { { options = { "background" } }, { options = { "b" } } },
+                            ask = {
+                                {
+                                    options = {
+                                        "python",
+                                        "python-expr",
+                                        "python-text",
+                                        "python-console",
+                                        "P",
+                                        "y",
+                                        "enable-autoexec",
+                                    },
+                                },
+                            },
+                        },
+                        pymol = { safe_write = { {} } },
+                    },
+                },
                 keymaps = {
                     prompts = {
                         ["<localLeader>y"] = "Go ahead.",
