@@ -363,7 +363,9 @@ map.n("<leader>:!", function()
         if cmd and cmd ~= "" then
             local buf = vim.api.nvim_create_buf(false, true)
             vim.bo[buf].bufhidden = "wipe"
-            vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.fn.systemlist(cmd))
+            local result = vim.system({ vim.o.shell, vim.o.shellcmdflag, cmd }, { text = true }):wait()
+            local output = vim.split(result.stdout .. result.stderr, "\n", { trimempty = true })
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, output)
             vim.api.nvim_open_win(buf, true, { split = "below" })
         end
     end)
