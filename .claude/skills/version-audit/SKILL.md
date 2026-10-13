@@ -88,6 +88,7 @@ complete (not partial or experimental).
 | `system(cmd)` | `vim.system(cmd):wait()` | 0.10 |
 | `systemlist(cmd)` | `vim.split(vim.system(cmd):wait().stdout, '\n', { trimempty = true })` | 0.10 |
 | `jobstart(cmd)` | `vim.system(cmd)` or `vim.uv.spawn()` | 0.10 |
+| `jobwait(ids, ms)` | `obj:wait(ms)` on the `vim.system` object (see `jobstart`) | 0.10 |
 | `timer_start(ms, fn)` | `vim.defer_fn(fn, ms)` or `vim.uv.new_timer()` | 0.10 |
 
 ### Functions with NO replacement (do not warn)
