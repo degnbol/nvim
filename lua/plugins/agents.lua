@@ -24,9 +24,6 @@ return {
                 follow = {
                     enabled = true,
                 },
-                subagents = {
-                    force_background = true,
-                },
                 notifications = {
                     bell = true,
                 },
@@ -60,6 +57,9 @@ return {
                 },
                 acp_providers = {
                     ["claude-agent-acp"] = {
+                        subagents = {
+                            force_background = true,
+                        },
                         env = {
                             -- Opt out of the bash-first experiment. Under auto
                             -- and bypass modes the SDK otherwise attaches a
