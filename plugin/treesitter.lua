@@ -13,11 +13,11 @@ vim.treesitter.language.register("json", "jsonl")
 -- both filetypes. Also makes ```smiles fences resolve, since language.get_lang
 -- consults the same alias table.
 vim.treesitter.language.register("smarts", "smiles")
--- typc = typst code mode. tinymist tags hover/completion code fences ```typc;
--- no typc parser exists, so map it to the typst parser for markdown injection
--- (e.g. LSP hover floats). Caveat: the typst grammar parses markup-first, so
--- bare code-mode lines (`let x = …`) stay plain — only `#`-prefixed
--- expressions and the hex constant get captured.
+-- typc = typst code mode: typst code at top level, without `#` prefixes, e.g.
+-- the ```typc fences in tinymist hover/completion docs. The dedicated typc
+-- parser (install/tree-sitter-typc.sh) handles these; injection prefers a parser
+-- named after the fence tag. This maps to the typst parser only when typc isn't
+-- built, which parses markup-first, so bare code lines (`let x = …`) stay plain.
 vim.treesitter.language.register("typst", "typc")
 
 local ts_utils = require "utils/treesitter"

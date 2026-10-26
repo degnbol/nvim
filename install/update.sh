@@ -1,14 +1,5 @@
 #!/usr/bin/env zsh
-# update and override miller syntax highlight file
-wget -O $XDG_CONFIG_HOME/nvim/syntax/mlr.vim https://raw.githubusercontent.com/johnkerl/miller/main/vim/syntax/mlr.vim
-wget -O $XDG_CONFIG_HOME/nvim/lua/surround.lua https://raw.githubusercontent.com/echasnovski/mini.nvim/main/lua/mini/surround.lua
-
-nvim --headless '+Lazy! sync' +qa
-
-# update tree-sitter-cli
-command -v rustup > /dev/null && rustup update
-cargo install --locked tree-sitter-cli
-
-# rebuild the typst code-mode parser (bump $SHA in the script to update it)
-${0:h}/tree-sitter-typc.sh
-
+set -euo pipefail
+cd ${0:A:h}
+nvim -u ../init.lua -l update.lua
+./tree-sitter-typc.sh
