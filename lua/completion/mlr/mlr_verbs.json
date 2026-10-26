@@ -6,22 +6,23 @@
     "bootstrap": "Emits an n-sample, with replacement, of the input records. See also mlr sample and mlr shuffle.",
     "case": "Uppercases strings in record keys and/or values.",
     "cat": "Passes input records directly to output. Most useful for format conversion.",
-    "check": "Consumes records without printing any output, Useful for doing a well-formatted check on input da...",
+    "check": "Consumes records without printing any output, with the exception that warnings are printed to std...",
     "clean-whitespace": "For each record, for each field in the record, whitespace-cleans the keys and/or values. Whitespa...",
     "count-distinct": "Prints number of records having distinct values for specified field names. Same as uniq -c.",
     "count-similar": "Ingests all records, then emits each record augmented by a count of the number of other records h...",
     "count": "Prints number of records, optionally grouped by distinct values for specified field names.",
     "cut": "Passes through input records with specified fields included/excluded.",
     "decimate": "Passes through one of every n records, optionally by category.",
+    "describe": "Shows a compact schema for the input data: field names, types, and value shape. Emits one output ...",
     "fill-down": "If a given record has a missing value for a given field, fill that from the corresponding value f...",
     "fill-empty": "Fills empty-string fields with specified fill-value.",
     "filter": "Lets you use a domain-specific language to programmatically filter which stream records will be o...",
     "flatten": "Flattens multi-level maps to single-level ones. Example: field with name 'a' and value '{\"b\": { \"...",
     "format-values": "Applies format strings to all field values, depending on autodetected type. * If a field value is...",
     "fraction": "For each record's value in specified fields, computes the ratio of that value to the sum of value...",
-    "gap": "Emits an empty record every n records, or when certain values change.",
+    "gap": "Emits an empty record every n records, or when certain values change. One of -n or -g is required.",
     "grep": "Passes through records which match the regular expression.",
-    "group-by": "Outputs records in batches having identical values at specified field names.Options:",
+    "group-by": "Outputs records in batches having identical values at specified field names.",
     "group-like": "Outputs records in batches having identical field names.",
     "gsub": "Replaces old string with new string in specified field(s), with regex support for the old string ...",
     "having-fields": "Conditionally passes through records depending on each record's field names.",
@@ -52,7 +53,7 @@
     "sample": "Reservoir sampling (subsampling without replacement), optionally by category. See also mlr bootst...",
     "sec2gmt": "Replaces a numeric field representing seconds since the epoch with the corresponding GMT timestam...",
     "sec2gmtdate": "Replaces a numeric field representing seconds since the epoch with the corresponding GMT year-mon...",
-    "seqgen": "Passes input records directly to output. Most useful for format conversion. Produces a sequence o...",
+    "seqgen": "Produces a sequence of counters.  Discards the input record stream. Produces output as specified ...",
     "shuffle": "Outputs records randomly permuted. No output records are produced until all input records are rea...",
     "skip-trivial-records": "Passes through all records except those with zero fields, or those for which all fields have empt...",
     "sort-within-records": "Outputs records sorted lexically ascending by keys.",
@@ -71,13 +72,13 @@
     "tee": "",
     "template": "Places input-record fields in the order specified by list of column names. If the input record is...",
     "termcvt": "",
-    "top": "Prints the n records with smallest/largest values at specified fields, optionally by category. If...",
+    "top": "Options: Prints the n records with smallest/largest values at specified fields, optionally by cat...",
     "unflatten": "Reverses flatten. Example: field with name 'a.b.c' and value 4 becomes name 'a' and value '{\"b\": ...",
     "unhex": "",
     "uniq": "Prints distinct values for specified field names. With -c, same as count-distinct. For uniq, -f i...",
     "unspace": "Replaces spaces in record keys and/or values with _. This is helpful for PPRINT output.",
     "unsparsify": "Prints records with the union of field names over all input records. For field names absent in a ...",
-    "utf8-to-latin1": "Recursively converts record strings from Latin-1 to UTF-8. For field-level control, please see th...",
+    "utf8-to-latin1": "Recursively converts record strings from UTF-8 to Latin-1. For field-level control, please see th...",
     "version": "mlr version 6.4.0 for darwin/arm64/go1.19"
   },
   "field_flags": {
@@ -92,6 +93,7 @@
     ],
     "count-distinct": [
       "-f",
+      "-g",
       "-x"
     ],
     "count-similar": [
@@ -137,6 +139,12 @@
       "--lk",
       "--left-keep-field-names"
     ],
+    "json-parse": [
+      "-f"
+    ],
+    "json-stringify": [
+      "-f"
+    ],
     "least-frequent": [
       "-f"
     ],
@@ -149,7 +157,8 @@
       "-f"
     ],
     "reorder": [
-      "-f"
+      "-f",
+      "-r"
     ],
     "sample": [
       "-g"
@@ -206,6 +215,7 @@
     ],
     "uniq": [
       "-g",
+      "-f",
       "-x",
       "-f"
     ],
@@ -244,7 +254,7 @@
       ],
       [
         "--auto",
-        "Automatically computes limits, ignoring --lo and --hi."
+        "Automatically computes limits, ignoring --lo and --hi. Holds all"
       ],
       [
         "-c",
@@ -270,7 +280,7 @@
     "bootstrap": [
       [
         "-n",
-        "Number of samples to output. Defaults to number of input records."
+        "{n} Number of samples to output. Defaults to number of input records. Must"
       ],
       [
         "-h",
@@ -292,23 +302,23 @@
       ],
       [
         "-f",
-        "{a,b,c} Specify which field names to case (default: all)"
+        "{a,b,c} Specify which field names to case (default: all)."
       ],
       [
         "-u",
-        "Convert to uppercase"
+        "Convert to uppercase."
       ],
       [
         "-l",
-        "Convert to lowercase"
+        "Convert to lowercase."
       ],
       [
         "-s",
-        "Convert to sentence case (capitalize first letter)"
+        "Convert to sentence case (capitalize first letter)."
       ],
       [
         "-t",
-        "Convert to title case (capitalize words)"
+        "Convert to title case (capitalize words)."
       ],
       [
         "-h",
@@ -326,11 +336,11 @@
       ],
       [
         "-N",
-        "{name} Prepend field {name} to each record with record-counter starting at 1."
+        "{name} Prepend field {name} to each record with record-counter starting at"
       ],
       [
         "-g",
-        "{a,b,c} Optional group-by-field names for counters, e.g. a,b,c"
+        "{a,b,c} Optional group-by-field names for counters, e.g. a,b,c."
       ],
       [
         "--filename",
@@ -388,11 +398,15 @@
     "count-distinct": [
       [
         "-f",
+        "{a,b,c} Field names for distinct count (synonym for -g)."
+      ],
+      [
+        "-g",
         "{a,b,c} Field names for distinct count."
       ],
       [
         "-x",
-        "{a,b,c} Field names to exclude for distinct count: use each record\\'s others ..."
+        "{a,b,c} Field names to exclude for distinct count; use each record\\'s other"
       ],
       [
         "-n",
@@ -400,11 +414,23 @@
       ],
       [
         "-o",
-        "{name} Field name for output count. Default \"count\"."
+        "{name} Field name for output count. Default \"count\". Ignored with -u."
       ],
       [
         "-u",
-        "Do unlashed counts for multiple field names. With -f a,b and"
+        "Do unlashed counts for multiple field names. With -f a,b and without"
+      ],
+      [
+        "-u",
+        ""
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "count-similar": [
@@ -432,7 +458,7 @@
       ],
       [
         "-n",
-        "{n} Show only the number of distinct values. Not interesting without -g."
+        "Show only the number of distinct values. Not interesting without -g."
       ],
       [
         "-o",
@@ -450,19 +476,19 @@
     "cut": [
       [
         "-f",
-        "{a,b,c} Comma-separated field names for cut, e.g. a,b,c."
+        "{a,b,c} Comma-separated field names to include or exclude, e.g. a,b,c."
       ],
       [
         "-o",
-        "Retain fields in the order specified here in the argument list."
+        "Retain fields in the order specified by -f rather than in"
       ],
       [
         "-x",
-        "Exclude, rather than include, field names specified by -f."
+        "Exclude, rather than include, the field names specified by -f."
       ],
       [
         "--complement",
-        "Exclude, rather than include, field names specified by -f."
+        "Exclude, rather than include, the field names specified by -f."
       ],
       [
         "-r",
@@ -503,6 +529,24 @@
         ""
       ]
     ],
+    "describe": [
+      [
+        "-n",
+        "{n} List a field\\'s distinct values only if it has at most {n} of"
+      ],
+      [
+        "--max-values",
+        "{n} List a field\\'s distinct values only if it has at most {n} of"
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
+      ]
+    ],
     "fill-down": [
       [
         "--all",
@@ -518,7 +562,7 @@
       ],
       [
         "-f",
-        "Field names for fill-down."
+        "{a,b,c} Field names for fill-down."
       ],
       [
         "-h",
@@ -537,32 +581,6 @@
       [
         "-S",
         "Don\\'t infer type -- so \\'-v 0\\' would fill string 0 not int 0."
-      ]
-    ],
-    "filter": [
-      [
-        "-f",
-        "{file name} File containing a DSL expression (see examples below). If the fil..."
-      ],
-      [
-        "-e",
-        "{expression} You can use this after -f to add an expression. Example use"
-      ],
-      [
-        "-s",
-        "name=value: Predefines out-of-stream variable @name to have"
-      ],
-      [
-        "-x",
-        "(default false) Prints records for which {expression} evaluates to false, not..."
-      ],
-      [
-        "-q",
-        "Does not include the modified record in the output stream."
-      ],
-      [
-        "-S",
-        "and -F: There are no-ops in Miller 6 and above, since now type-inferencing is..."
       ],
       [
         "-h",
@@ -571,6 +589,36 @@
       [
         "--help",
         ""
+      ]
+    ],
+    "filter": [
+      [
+        "-f",
+        "{file name} File containing a DSL expression (see examples below). If the]:fi..."
+      ],
+      [
+        "-e",
+        "{expression} DSL expression to evaluate. You can use this after -f to add an"
+      ],
+      [
+        "-s",
+        "{name=value} Predefines out-of-stream variable @name to have the given value."
+      ],
+      [
+        "-x",
+        "Prints records for which {expression} evaluates to false, not"
+      ],
+      [
+        "-q",
+        "Does not include the modified record in the output stream."
+      ],
+      [
+        "-S",
+        "No-op in Miller 6 and above, since type-inferencing is now done"
+      ],
+      [
+        "-F",
+        "No-op in Miller 6 and above, since type-inferencing is now done"
       ],
       [
         "-w",
@@ -582,7 +630,7 @@
       ],
       [
         "-p",
-        "Prints the expressions\\'s AST (abstract syntax tree), which gives full"
+        "Prints the expression\\'s AST (abstract syntax tree), which gives"
       ],
       [
         "-d",
@@ -594,7 +642,7 @@
       ],
       [
         "-E",
-        "Echo DSL expression before printing parse-tree"
+        "Echo DSL expression before printing parse-tree."
       ],
       [
         "-v",
@@ -602,7 +650,23 @@
       ],
       [
         "-X",
-        "Exit after parsing but before stream-processing. Useful with -v/-d/-D, if you"
+        "Exit after parsing but before stream-processing. Useful with"
+      ],
+      [
+        "-v",
+        ""
+      ],
+      [
+        "--explain",
+        "Parse and type-check the DSL expression, report whether it is"
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "flatten": [
@@ -612,7 +676,7 @@
       ],
       [
         "-s",
-        "Separator, defaulting to mlr --flatsep value."
+        "{string} Separator, defaulting to mlr --flatsep value."
       ],
       [
         "-h",
@@ -626,19 +690,27 @@
     "format-values": [
       [
         "-i",
-        "{integer format} Defaults to \"%d\"."
+        "{integer format} Integer format string; defaults to \"%d\". Examples: \"%06lld\","
       ],
       [
         "-f",
-        "{float format} Defaults to \"%f\"."
+        "{float format} Float format string; defaults to \"%f\". Examples: \"%8.3lf\","
       ],
       [
         "-s",
-        "{string format} Defaults to \"%s\"."
+        "{string format} String format string; defaults to \"%s\". Examples: \"_%s\","
       ],
       [
         "-n",
         "Coerce field values autodetected as int to float, and then"
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "fraction": [
@@ -657,6 +729,14 @@
       [
         "-c",
         "Produce cumulative distributions, i.e. running sums: each output"
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "gap": [
@@ -666,11 +746,7 @@
       ],
       [
         "-n",
-        "{n} Print a gap every n records."
-      ],
-      [
-        "-n",
-        "is ignored if -g is present."
+        "{n} Print a gap every n records. Ignored if -g is present."
       ],
       [
         "-h",
@@ -726,15 +802,15 @@
     "gsub": [
       [
         "-f",
-        "{a,b,c} Field names to convert."
+        "{a,b,c} Field names to apply substitution to."
       ],
       [
         "-r",
-        "{regex} Regular expression for field names to convert."
+        "{regex} Regular expression for field names to apply substitution to."
       ],
       [
         "-a",
-        "Convert all field names."
+        "Apply substitution to all fields."
       ],
       [
         "-h",
@@ -748,27 +824,35 @@
     "having-fields": [
       [
         "--at-least",
-        "{comma-separated names}"
+        "{comma-separated names} Pass records that have at least these field"
       ],
       [
         "--which-are",
-        "{comma-separated names}"
+        "{comma-separated names} Pass records whose field names are exactly"
       ],
       [
         "--at-most",
-        "{comma-separated names}"
+        "{comma-separated names} Pass records that have at most these field"
       ],
       [
         "--all-matching",
-        "{regular expression}"
+        "{regular expression} Pass records where all field names match"
       ],
       [
         "--any-matching",
-        "{regular expression}"
+        "{regular expression} Pass records where any field name matches"
       ],
       [
         "--none-matching",
-        "{regular expression}"
+        "{regular expression} Pass records where no field name matches"
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "head": [
@@ -778,7 +862,7 @@
       ],
       [
         "-n",
-        "{n} Head-count to print. Default 10."
+        "{n} Head-count to print. Default 10. A negative count, e.g. -n -2, passes"
       ],
       [
         "-h",
@@ -802,15 +886,15 @@
     "histogram": [
       [
         "-f",
-        "{a,b,c} Value-field names for histogram counts"
+        "{a,b,c} Value-field names for histogram counts."
       ],
       [
         "--lo",
-        "{lo} Histogram low value"
+        "{lo} Histogram low value."
       ],
       [
         "--hi",
-        "{hi} Histogram high value"
+        "{hi} Histogram high value."
       ],
       [
         "--nbins",
@@ -818,7 +902,7 @@
       ],
       [
         "--auto",
-        "Automatically computes limits, ignoring --lo and --hi."
+        "Automatically computes limits, ignoring --lo and --hi. Holds all"
       ],
       [
         "-o",
@@ -836,67 +920,75 @@
     "join": [
       [
         "-f",
-        "{left file name}]:filename:_files"
+        "{left file name} Left file name for join.]:filename:_files"
       ],
       [
         "-j",
-        "{a,b,c} Comma-separated join-field names for output"
+        "{a,b,c} Comma-separated join-field names for"
       ],
       [
         "-l",
-        "{a,b,c} Comma-separated join-field names for left input file;"
+        "{a,b,c} Comma-separated join-field names for left"
       ],
       [
         "-r",
-        "{a,b,c} Comma-separated join-field names for right input file(s);"
+        "{a,b,c} Comma-separated join-field names for right"
       ],
       [
         "--lk",
-        "{a,b,c} If supplied, this means keep only the specified field"
+        "{a,b,c} If supplied, this means keep only the"
       ],
       [
         "--left-keep-field-names",
-        "{a,b,c} If supplied, this means keep only the specified field"
+        "{a,b,c} If supplied, this means keep only the"
       ],
       [
         "--lp",
-        "{text} Additional prefix for non-join output field names from"
+        "{text} Additional prefix for non-join output field"
       ],
       [
         "--rp",
-        "{text} Additional prefix for non-join output field names from"
+        "{text} Additional prefix for non-join output field"
       ],
       [
         "--np",
-        "Do not emit paired records"
+        "Do not emit paired records."
       ],
       [
         "--ul",
-        "Emit unpaired records from the left file"
+        "Emit unpaired records from the left file."
       ],
       [
         "--ur",
-        "Emit unpaired records from the right file(s)"
+        "Emit unpaired records from the right"
       ],
       [
         "-s",
-        "Require sorted input: records must be sorted"
+        "Require sorted input: records must be"
       ],
       [
         "--sorted-input",
-        "Require sorted input: records must be sorted"
+        "Require sorted input: records must be"
       ],
       [
         "-u",
-        "Enable unsorted input. (This is the default even without -u.)"
+        "Enable unsorted input. (This is the default"
       ],
       [
         "--prepipe",
-        "{command} As in main input options; see mlr --help for details."
+        "{command} Shell command to prepipe the left-file"
       ],
       [
         "--prepipex",
-        "{command} Likewise."
+        "{command} Shell command to prepipe the left-file"
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ],
       [
         "-i",
@@ -938,7 +1030,7 @@
     "json-parse": [
       [
         "-f",
-        "{...} Comma-separated list of field names to json-parse (default all)."
+        "{a,b,c} Comma-separated list of field names to json-parse (default all)."
       ],
       [
         "-k",
@@ -956,7 +1048,7 @@
     "json-stringify": [
       [
         "-f",
-        "{...} Comma-separated list of field names to json-parse (default all)."
+        "{a,b,c} Comma-separated list of field names to json-stringify (default"
       ],
       [
         "--jvstack",
@@ -998,11 +1090,11 @@
     "least-frequent": [
       [
         "-f",
-        "{one or more comma-separated field names}. Required flag."
+        "{a,b,c} One or more comma-separated field names to group by. Required flag."
       ],
       [
         "-n",
-        "{count}. Optional flag defaulting to 10."
+        "{count} Maximum number of results to output. Optional flag defaulting to 10."
       ],
       [
         "-b",
@@ -1011,6 +1103,14 @@
       [
         "-o",
         "{name} Field name for output count. Default \"count\"."
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "lecat": [
@@ -1026,11 +1126,15 @@
     "merge-fields": [
       [
         "-a",
-        "{sum,count,...} Names of accumulators. One or more of:"
+        "{sum,count,...} Names of accumulators: one or more of the accumulators listed"
       ],
       [
         "-f",
-        "{a,b,c} Value-field names on which to compute statistics. Requires -o."
+        "{a,b,c} Value-field names on which to compute statistics. Requires"
+      ],
+      [
+        "-o",
+        ""
       ],
       [
         "-r",
@@ -1038,11 +1142,11 @@
       ],
       [
         "-c",
-        "{a,b,c} Substrings for collapse mode. All fields which have the same names"
+        "{a,b,c} Substrings for collapse mode: all fields which have the same"
       ],
       [
         "-i",
-        "Use interpolated percentiles, like R\\'s type=7; default like type=1."
+        "Use interpolated percentiles, like R\\'s type=7; default like"
       ],
       [
         "-o",
@@ -1050,17 +1154,33 @@
       ],
       [
         "-k",
-        "Keep the input fields which contributed to the output statistics;"
+        "Keep the input fields which contributed to the output"
+      ],
+      [
+        "-S",
+        "No-op flag for backward compatibility with Miller 5."
+      ],
+      [
+        "-F",
+        "No-op flag for backward compatibility with Miller 5."
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "most-frequent": [
       [
         "-f",
-        "{one or more comma-separated field names}. Required flag."
+        "{a,b,c} One or more comma-separated field names to group by. Required flag."
       ],
       [
         "-n",
-        "{count}. Optional flag defaulting to 10."
+        "{count} Maximum number of results to output. Optional flag defaulting to 10."
       ],
       [
         "-b",
@@ -1069,40 +1189,96 @@
       [
         "-o",
         "{name} Field name for output count. Default \"count\"."
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "nest": [
       [
         "--explode",
-        ""
+        "Explode field values into separate fields/records. One of"
+      ],
+      [
+        "--explode",
+        "or --implode is required."
+      ],
+      [
+        "--implode",
+        "Reverse of --explode. One of --explode or --implode is"
       ],
       [
         "--values",
-        ""
+        "Operate on field values. One of --values or --pairs is"
+      ],
+      [
+        "--pairs",
+        "Operate on field key-value pairs. One of --values or"
+      ],
+      [
+        "--pairs",
+        "is required."
       ],
       [
         "--across-records",
-        ""
+        "Explode/implode across records. One of --across-records or"
+      ],
+      [
+        "--across-fields",
+        "is required."
+      ],
+      [
+        "--across-fields",
+        "Explode/implode across fields. One of --across-records or"
+      ],
+      [
+        "--across-fields",
+        "is required."
       ],
       [
         "-f",
-        "{field name} Required."
+        "{field name} Required field name to operate on."
+      ],
+      [
+        "-r",
+        "{field names} Like -f but treat arguments as a regular expression. Match"
       ],
       [
         "--nested-fs",
-        "{string} Defaults to \";\". Field separator for nested values."
+        "{string} Field separator for nested values. Defaults to \";\"."
       ],
       [
         "--nested-ps",
-        "{string} Defaults to \":\". Pair separator for nested key-value pairs."
+        "{string} Pair separator for nested key-value pairs. Defaults to \":\"."
       ],
       [
         "--evar",
-        "{string} Shorthand for --explode --values --across-records --nested-fs {string}"
+        "{string} Shorthand for --explode --values --across-records"
+      ],
+      [
+        "--nested-fs",
+        "{string}."
       ],
       [
         "--ivar",
-        "{string} Shorthand for --implode --values --across-records --nested-fs {string}"
+        "{string} Shorthand for --implode --values --across-records"
+      ],
+      [
+        "--nested-fs",
+        "{string}."
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "nothing": [
@@ -1118,19 +1294,19 @@
     "put": [
       [
         "-f",
-        "{file name} File containing a DSL expression (see examples below). If the fil..."
+        "{file name} File containing a DSL expression (see examples below). If the]:fi..."
       ],
       [
         "-e",
-        "{expression} You can use this after -f to add an expression. Example use"
+        "{expression} DSL expression to evaluate. You can use this after -f to add an"
       ],
       [
         "-s",
-        "name=value: Predefines out-of-stream variable @name to have"
+        "{name=value} Predefines out-of-stream variable @name to have the given value."
       ],
       [
         "-x",
-        "(default false) Prints records for which {expression} evaluates to false, not..."
+        "Prints records for which {expression} evaluates to false, not"
       ],
       [
         "-q",
@@ -1138,15 +1314,11 @@
       ],
       [
         "-S",
-        "and -F: There are no-ops in Miller 6 and above, since now type-inferencing is..."
+        "No-op in Miller 6 and above, since type-inferencing is now done"
       ],
       [
-        "-h",
-        ""
-      ],
-      [
-        "--help",
-        ""
+        "-F",
+        "No-op in Miller 6 and above, since type-inferencing is now done"
       ],
       [
         "-w",
@@ -1158,7 +1330,7 @@
       ],
       [
         "-p",
-        "Prints the expressions\\'s AST (abstract syntax tree), which gives full"
+        "Prints the expression\\'s AST (abstract syntax tree), which gives"
       ],
       [
         "-d",
@@ -1170,7 +1342,7 @@
       ],
       [
         "-E",
-        "Echo DSL expression before printing parse-tree"
+        "Echo DSL expression before printing parse-tree."
       ],
       [
         "-v",
@@ -1178,7 +1350,23 @@
       ],
       [
         "-X",
-        "Exit after parsing but before stream-processing. Useful with -v/-d/-D, if you"
+        "Exit after parsing but before stream-processing. Useful with"
+      ],
+      [
+        "-v",
+        ""
+      ],
+      [
+        "--explain",
+        "Parse and type-check the DSL expression, report whether it is"
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "regtest": [
@@ -1242,11 +1430,11 @@
     "rename": [
       [
         "-r",
-        "Treat old field names as regular expressions. \"ab\", \"a.*b\""
+        "Treat old field names as regular expressions. \"ab\", \"a.*b\" will match"
       ],
       [
         "-g",
-        "Do global replacement within each field name rather than"
+        "Do global replacement within each field name rather than first-match"
       ],
       [
         "-h",
@@ -1260,11 +1448,15 @@
     "reorder": [
       [
         "-e",
-        "Put specified field names at record end: default is to put them at record start."
+        "Put specified field names at record end: default is to put them at"
       ],
       [
         "-f",
         "{a,b,c} Field names to reorder."
+      ],
+      [
+        "-r",
+        "{a,b,c} Treat field names as regular expressions. Matched fields are moved to"
       ],
       [
         "-b",
@@ -1290,7 +1482,7 @@
       ],
       [
         "-f",
-        "{field name} Same, but take the repeat count from the specified"
+        "{field name} Same as -n, but take the repeat count from the specified field"
       ],
       [
         "-h",
@@ -1355,6 +1547,30 @@
       [
         "-s",
         "{key-field name,value-field name}"
+      ],
+      [
+        "-i",
+        "{input field names} Input field names for wide-to-long reshape."
+      ],
+      [
+        "-r",
+        "{input field regex} Input field regex for wide-to-long reshape."
+      ],
+      [
+        "-o",
+        "{key-field name,value-field name} Output key-field and value-field names for"
+      ],
+      [
+        "-s",
+        "{key-field name,value-field name} Key-field and value-field names for"
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "sample": [
@@ -1364,7 +1580,11 @@
       ],
       [
         "-k",
-        "{k} Required: number of records to output in total, or by group if using -g."
+        "{k} Required: number of records to output in total, or by group if using"
+      ],
+      [
+        "-g",
+        ""
       ],
       [
         "-h",
@@ -1397,23 +1617,32 @@
         ""
       ]
     ],
-    "sec2gmtdate": [],
+    "sec2gmtdate": [
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
+      ]
+    ],
     "seqgen": [
       [
         "-f",
-        "{name} (default \"i\") Field name for counters."
+        "{name} Field name for counters. Default \"i\"."
       ],
       [
         "--start",
-        "{value} (default 1) Inclusive start value."
+        "{value} Inclusive start value. Default 1."
       ],
       [
         "--step",
-        "{value} (default 1) Step value."
+        "{value} Step value. Default 1. May be negative but not zero (unless"
       ],
       [
         "--stop",
-        "{value} (default 100) Inclusive stop value."
+        "{value} Inclusive stop value. Default 100."
       ],
       [
         "-h",
@@ -1446,8 +1675,16 @@
     ],
     "sort-within-records": [
       [
+        "-f",
+        "{names} Sort only these keys; others preserve record order."
+      ],
+      [
         "-r",
-        "Recursively sort subobjects/submaps, e.g. for JSON input."
+        "{regex} Sort only keys matching this regex; others preserve record order."
+      ],
+      [
+        "-n",
+        "Sort field names naturally (e.g. 2 before 12). Combines with -f/-r."
       ],
       [
         "-h",
@@ -1461,47 +1698,47 @@
     "sort": [
       [
         "-f",
-        "{comma-separated field names} Lexical ascending"
+        "{a,b,c} Lexical ascending sort on the specified field names."
       ],
       [
         "-r",
-        "{comma-separated field names} Lexical descending"
+        "{a,b,c} Lexical descending sort on the specified field names."
       ],
       [
         "-c",
-        "{comma-separated field names} Case-folded lexical ascending"
+        "{a,b,c} Case-folded lexical ascending sort on the specified field names."
       ],
       [
         "-cr",
-        "{comma-separated field names} Case-folded lexical descending"
+        "{a,b,c} Case-folded lexical descending sort on the specified field"
       ],
       [
         "-n",
-        "{comma-separated field names} Numerical ascending; nulls sort last"
+        "{a,b,c} Numerical ascending sort on the specified field names; nulls"
       ],
       [
         "-nf",
-        "{comma-separated field names} Same as -n"
+        "{a,b,c} Same as -n."
       ],
       [
         "-nr",
-        "{comma-separated field names} Numerical descending; nulls sort first"
+        "{a,b,c} Numerical descending sort on the specified field names; nulls"
       ],
       [
         "-t",
-        "{comma-separated field names} Natural ascending"
+        "{a,b,c} Natural ascending sort on the specified field names."
       ],
       [
         "-b",
-        "Move sort fields to start of record, as in reorder -b"
+        "Move sort fields to start of record, as in reorder -b."
       ],
       [
         "-tr",
-        "{comma-separated field names} Natural descending"
+        "{a,b,c} Natural descending sort on the specified field names."
       ],
       [
         "-rt",
-        "{comma-separated field names} Natural descending"
+        "{a,b,c} Natural descending sort on the specified field names."
       ],
       [
         "-h",
@@ -1519,7 +1756,7 @@
       ],
       [
         "-f",
-        "{a,b,c} Specify field names to be operated on; any other fields won\\'t be"
+        "{a,b,c} Specify field names to be operated on; any other fields won\\'t"
       ],
       [
         "-h",
@@ -1533,31 +1770,35 @@
     "split": [
       [
         "-n",
-        "{n}: Cap file sizes at N records."
+        "{n} Cap output file sizes at N records."
       ],
       [
         "-m",
-        "{m}: Produce M files, round-robining records among them."
+        "{m} Produce M files, round-robining records among them."
       ],
       [
         "-g",
-        "{a,b,c}: Write separate files with records having distinct values for fields ..."
+        "{a,b,c} Write separate files with records having distinct values for the"
       ],
       [
         "--prefix",
-        "{p} Specify filename prefix; default \"split\"."
+        "{p} Output filename prefix. Default \"split\"."
       ],
       [
         "--suffix",
-        "{s} Specify filename suffix; default is from mlr output format, e.g. \"csv\"."
+        "{s} Output filename suffix. Default is from the output format, e.g."
+      ],
+      [
+        "--folder",
+        "{f} Output directory. Default is current directory."
       ],
       [
         "-a",
-        "Append to existing file(s), if any, rather than overwriting."
+        "Append to existing files rather than overwriting."
       ],
       [
         "-v",
-        "Send records along to downstream verbs as well as splitting to files."
+        "Send records downstream as well as splitting to files."
       ],
       [
         "-e",
@@ -1565,7 +1806,7 @@
       ],
       [
         "-j",
-        "{J} Use string J to join filename parts; default \"_\"."
+        "{J} String used to join filename parts. Default \"_\"."
       ],
       [
         "-h",
@@ -1579,15 +1820,15 @@
     "ssub": [
       [
         "-f",
-        "{a,b,c} Field names to convert."
+        "{a,b,c} Field names to apply substitution to."
       ],
       [
         "-r",
-        "{regex} Regular expression for field names to convert."
+        "{regex} Regular expression for field names to apply substitution to."
       ],
       [
         "-a",
-        "Convert all field names."
+        "Apply substitution to all fields."
       ],
       [
         "-h",
@@ -1601,11 +1842,11 @@
     "stats1": [
       [
         "-a",
-        "{sum,count,...} Names of accumulators: one or more of:"
+        "{sum,count,...} Names of accumulators: one or more of the listed values. Also"
       ],
       [
         "-f",
-        "{a,b,c} Value-field names on which to compute statistics"
+        "{a,b,c} Value-field names on which to compute statistics."
       ],
       [
         "--fr",
@@ -1613,31 +1854,39 @@
       ],
       [
         "--fx",
-        "{regex} Inverted regex for value-field names on which to compute statistics"
+        "{regex} Inverted regex for value-field names on which to compute"
       ],
       [
         "-g",
-        "{d,e,f} Optional group-by-field names"
+        "{d,e,f} Optional group-by-field names."
       ],
       [
         "--gr",
-        "{regex} Regex for optional group-by-field names"
+        "{regex} Regex for optional group-by-field names (group by values in"
       ],
       [
         "--gx",
-        "{regex} Inverted regex for optional group-by-field names"
+        "{regex} Inverted regex for optional group-by-field names (group by"
       ],
       [
         "--grfx",
-        "{regex} Shorthand for --gr {regex} --fx {that same regex}"
+        "{regex} Shorthand for --gr {regex} --fx {that same regex}."
       ],
       [
         "-i",
-        "Use interpolated percentiles, like R\\'s type=7; default like type=1."
+        "Use interpolated percentiles, like R\\'s type=7; default like"
       ],
       [
         "-s",
         "Print iterative stats. Useful in tail -f contexts, in which"
+      ],
+      [
+        "-S",
+        "No-op flag for backward compatibility with Miller 5."
+      ],
+      [
+        "-F",
+        "No-op flag for backward compatibility with Miller 5."
       ],
       [
         "-h",
@@ -1651,7 +1900,7 @@
     "stats2": [
       [
         "-a",
-        "{linreg-ols,corr,...} Names of accumulators: one or more of:"
+        "{linreg-ols,corr,...} Names of accumulators: one or more of the listed"
       ],
       [
         "-f",
@@ -1667,29 +1916,45 @@
       ],
       [
         "-s",
-        "Print iterative stats. Useful in tail -f contexts, in which"
+        "Print iterative stats. Useful in tail -f contexts, in"
       ],
       [
         "--fit",
-        "Rather than printing regression parameters, applies them to"
+        "Rather than printing regression parameters, applies"
+      ],
+      [
+        "-S",
+        "No-op flag for backward compatibility with Miller 5."
+      ],
+      [
+        "-F",
+        "No-op flag for backward compatibility with Miller 5."
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "step": [
       [
         "-a",
-        "{delta,rsum,...} Names of steppers: comma-separated, one or more of:"
+        "{delta,rsum,...} Names of steppers: comma-separated, one or more of the"
       ],
       [
         "-f",
-        "{a,b,c} Value-field names on which to compute statistics"
+        "{a,b,c} Value-field names on which to compute statistics."
       ],
       [
         "-g",
-        "{d,e,f} Optional group-by-field names"
+        "{d,e,f} Optional group-by-field names."
       ],
       [
         "-F",
-        "Computes integerable things (e.g. counter) in floating point."
+        "Computes integerable things (e.g. counter) in floating"
       ],
       [
         "-d",
@@ -1697,7 +1962,7 @@
       ],
       [
         "-o",
-        "{a,b,c} Custom suffixes for EWMA output fields. If omitted, these default to"
+        "{a,b,c} Custom suffixes for EWMA output fields. If omitted, these"
       ],
       [
         "-h",
@@ -1711,15 +1976,15 @@
     "sub": [
       [
         "-f",
-        "{a,b,c} Field names to convert."
+        "{a,b,c} Field names to apply substitution to."
       ],
       [
         "-r",
-        "{regex} Regular expression for field names to convert."
+        "{regex} Regular expression for field names to apply substitution to."
       ],
       [
         "-a",
-        "Convert all field names."
+        "Apply substitution to all fields."
       ],
       [
         "-h",
@@ -1737,7 +2002,7 @@
       ],
       [
         "-x",
-        "{mean,sum,etc.} Use all summarizers, except the specified ones."
+        "{mean,sum,etc.} Use all summarizers except the specified ones."
       ],
       [
         "--all",
@@ -1745,7 +2010,7 @@
       ],
       [
         "--transpose",
-        "Show output with field names as column names.."
+        "Show output with field names as column names."
       ],
       [
         "-h",
@@ -1768,6 +2033,10 @@
       [
         "-h",
         ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "tac": [
@@ -1783,11 +2052,11 @@
     "tail": [
       [
         "-g",
-        "{a,b,c} Optional group-by-field names for head counts, e.g. a,b,c."
+        "{a,b,c} Optional group-by-field names for tail counts, e.g. a,b,c."
       ],
       [
         "-n",
-        "{n} Head-count to print. Default 10."
+        "{n} Tail-count to print. Default 10. A leading \\'+\\' means start at the nth"
       ],
       [
         "-h",
@@ -1819,15 +2088,15 @@
     "template": [
       [
         "-f",
-        "{a,b,c} Comma-separated field names for template, e.g. a,b,c."
+        "{a,b,c} Comma-separated field names for template, e.g."
       ],
       [
         "-t",
-        "{filename} CSV file whose header line will be used for template.]:filename:_f..."
+        "{filename} CSV file whose header line will be used for]:filename:_files"
       ],
       [
         "--fill-with",
-        "{filler string} What to fill absent fields with. Defaults to the empty string."
+        "{filler string} What to fill absent fields with. Defaults to the"
       ],
       [
         "-h",
@@ -1887,7 +2156,11 @@
       ],
       [
         "-a",
-        "Print all fields for top-value records; default is"
+        "Print all fields for top-value records; default is to print only"
+      ],
+      [
+        "--max",
+        "Print top largest values. This is the default."
       ],
       [
         "--min",
@@ -1895,11 +2168,19 @@
       ],
       [
         "-F",
-        "Keep top values as floats even if they look like integers."
+        "Keep top values as floats even if they look like integers (ignored in"
       ],
       [
         "-o",
-        "{name} Field name for output indices. Default \"top_idx\"."
+        "{name} Field name for output indices. Default \"top_idx\". Ignored if -a is"
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ]
     ],
     "unflatten": [
@@ -1929,11 +2210,15 @@
     "uniq": [
       [
         "-g",
-        "{d,e,f} Group-by-field names for uniq counts."
+        "{d,e,f} Group-by field names for uniq counts."
+      ],
+      [
+        "-f",
+        "{d,e,f} Synonym for -g."
       ],
       [
         "-x",
-        "{a,b,c} Field names to exclude for uniq: use each record\\'s others instead."
+        "{a,b,c} Field names to exclude for uniq; use each record\\'s other fields"
       ],
       [
         "-c",
@@ -1949,7 +2234,15 @@
       ],
       [
         "-a",
-        "Output each unique record only once. Incompatible with -g."
+        "Output each unique record only once. Incompatible with -g. With -c,"
+      ],
+      [
+        "-h",
+        ""
+      ],
+      [
+        "--help",
+        ""
       ],
       [
         "-f",
@@ -1959,7 +2252,7 @@
     "unspace": [
       [
         "-f",
-        "{x} Replace spaces with specified filler character."
+        "{x} Replace spaces with specified filler character. Default \"_\"."
       ],
       [
         "-k",
@@ -1981,11 +2274,11 @@
     "unsparsify": [
       [
         "--fill-with",
-        "{filler string} What to fill absent fields with. Defaults to"
+        "{filler string} What to fill absent fields with. Defaults to the"
       ],
       [
         "-f",
-        "{a,b,c} Specify field names to be operated on. Any other fields won\\'t be"
+        "{a,b,c} Specify field names to be operated on; others are"
       ],
       [
         "-h",
@@ -2162,12 +2455,20 @@
       "Use CSV-lite format for input and output data."
     ],
     [
+      "--dcf",
+      "Use Debian control file (DCF) format for input and…"
+    ],
+    [
       "--dkvp",
       "Use DKVP format for input and output data."
     ],
     [
       "--d2d",
       "Use DKVP format for input and output data."
+    ],
+    [
+      "--dkvpx",
+      "Use DKVPX format for input and output data."
     ],
     [
       "--gen-field-name",
@@ -2200,6 +2501,10 @@
     [
       "--icsvlite",
       "Use CSV-lite format for input data."
+    ],
+    [
+      "--idcf",
+      "Use Debian control file (DCF) format for input data."
     ],
     [
       "--idkvp",
@@ -2258,6 +2563,10 @@
       "Use XTAB format for input data."
     ],
     [
+      "--iyaml",
+      "Use YAML format for input data."
+    ],
+    [
       "--json",
       "Use JSON format for input and output data."
     ],
@@ -2276,6 +2585,14 @@
     [
       "--l2l",
       "Use JSON Lines format for input and output data."
+    ],
+    [
+      "--md",
+      "Use markdown-tabular format for input and output…"
+    ],
+    [
+      "--markdown",
+      "Use markdown-tabular format for input and output…"
     ],
     [
       "--nidx",
@@ -2300,6 +2617,10 @@
     [
       "--ocsvlite",
       "Use CSV-lite format for output data."
+    ],
+    [
+      "--odcf",
+      "Use Debian control file (DCF) format for output data."
     ],
     [
       "--odkvp",
@@ -2350,6 +2671,10 @@
       "Use XTAB format for output data."
     ],
     [
+      "--oyaml",
+      "Use YAML format for output data."
+    ],
+    [
       "--pprint",
       "Use PPRINT format for input and output data."
     ],
@@ -2392,6 +2717,14 @@
     [
       "--xvright",
       "Right-justify values for XTAB format."
+    ],
+    [
+      "--yaml",
+      "Use YAML format for input and output data."
+    ],
+    [
+      "--y2y",
+      "Use YAML format for input and output data."
     ],
     [
       "-i",
@@ -2450,6 +2783,18 @@
       "Put objects/arrays all on one line for JSON output."
     ],
     [
+      "--no-yarray",
+      "Do not wrap YAML output in a single array document;…"
+    ],
+    [
+      "--yarray",
+      "Wrap YAML output in a single top-level array…"
+    ],
+    [
+      "--ya",
+      "Wrap YAML output in a single top-level array…"
+    ],
+    [
       "--jknquoteint",
       "Type information from JSON input files is now…"
     ],
@@ -2504,6 +2849,26 @@
     [
       "--vflatsep",
       "Ignored as of version 6. This functionality is…"
+    ],
+    [
+      "--md-aligned",
+      ""
+    ],
+    [
+      "--markdown-aligned",
+      ""
+    ],
+    [
+      "--omd-aligned",
+      ""
+    ],
+    [
+      "--omarkdown-aligned",
+      ""
+    ],
+    [
+      "--errors-json",
+      "Emit parse errors as a JSON object to stderr instead…"
     ],
     [
       "--fflush",
@@ -2568,6 +2933,10 @@
     [
       "--no-hash-records",
       "See --hash-records."
+    ],
+    [
+      "--no-shell",
+      "Disable Miller's ability to run external commands:…"
     ],
     [
       "--norc",
@@ -2682,6 +3051,18 @@
       "When used in conjunction with --pprint"
     ],
     [
+      "--barred-unicode",
+      "Uses unicode printing chars for barred output…"
+    ],
+    [
+      "--fixed",
+      "Fixed width specification. One of…"
+    ],
+    [
+      "--fw",
+      "Shortcut for --fixed left-align-multi-word…"
+    ],
+    [
       "--right",
       "Right-justifies all fields for PPRINT output."
     ],
@@ -2746,7 +3127,7 @@
       "Specify RS for input and output."
     ],
     [
-      "--c2c",
+      "-c",
       ""
     ],
     [
@@ -2782,11 +3163,15 @@
       ""
     ],
     [
+      "--c2y",
+      ""
+    ],
+    [
       "--t2c",
       ""
     ],
     [
-      "--t2t",
+      "-t",
       ""
     ],
     [
@@ -2818,6 +3203,10 @@
       ""
     ],
     [
+      "--t2y",
+      ""
+    ],
+    [
       "--j2c",
       ""
     ],
@@ -2826,7 +3215,7 @@
       ""
     ],
     [
-      "--j2j",
+      "-j",
       ""
     ],
     [
@@ -2851,6 +3240,10 @@
     ],
     [
       "--j2m",
+      ""
+    ],
+    [
+      "--j2y",
       ""
     ],
     [
@@ -2890,6 +3283,10 @@
       ""
     ],
     [
+      "--l2y",
+      ""
+    ],
+    [
       "--d2c",
       ""
     ],
@@ -2923,6 +3320,10 @@
     ],
     [
       "--d2m",
+      ""
+    ],
+    [
+      "--d2y",
       ""
     ],
     [
@@ -2962,6 +3363,10 @@
       ""
     ],
     [
+      "--n2y",
+      ""
+    ],
+    [
       "--x2c",
       ""
     ],
@@ -2998,6 +3403,10 @@
       ""
     ],
     [
+      "--x2y",
+      ""
+    ],
+    [
       "--p2c",
       ""
     ],
@@ -3030,6 +3439,10 @@
       ""
     ],
     [
+      "--p2y",
+      ""
+    ],
+    [
       "--m2c",
       ""
     ],
@@ -3059,6 +3472,50 @@
     ],
     [
       "--m2p",
+      ""
+    ],
+    [
+      "--m2y",
+      ""
+    ],
+    [
+      "--y2c",
+      ""
+    ],
+    [
+      "--y2t",
+      ""
+    ],
+    [
+      "--y2j",
+      ""
+    ],
+    [
+      "--y2l",
+      ""
+    ],
+    [
+      "--y2d",
+      ""
+    ],
+    [
+      "--y2n",
+      ""
+    ],
+    [
+      "--y2x",
+      ""
+    ],
+    [
+      "--y2p",
+      ""
+    ],
+    [
+      "--y2m",
+      ""
+    ],
+    [
+      "--y2y",
       ""
     ],
     [
