@@ -19,7 +19,7 @@ return {
                 log = true,
                 winbar = false,
                 headers = {
-                    chat = { title = "Claude" },
+                    agent = { title = "Claude" },
                 },
                 follow = {
                     enabled = true,
@@ -57,6 +57,7 @@ return {
                 },
                 acp_providers = {
                     ["claude-agent-acp"] = {
+                        default_mode = "auto",
                         subagents = {
                             force_background = true,
                         },
