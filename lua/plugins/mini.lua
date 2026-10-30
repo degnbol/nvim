@@ -349,6 +349,7 @@ return {
             end
 
             MiniFiles.setup {
+                options = { use_as_default_explorer = false },
                 content = {
                     filter = filter_hide
                 },

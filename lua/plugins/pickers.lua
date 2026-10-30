@@ -161,7 +161,6 @@ return {
                     enabled = true,
                     layout = { fullscreen = true },
                 },
-                explorer = { enabled = true },
                 image = {
                     enabled = true,
                     -- Keep struts visible: the inline-math override below wraps

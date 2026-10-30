@@ -10,9 +10,10 @@ vim.opt.path:append("./src")
 g.mapleader = ' '
 g.maplocalleader = '\\'
 
--- disable netrw
+-- disable netrw and the 0.13+ builtin directory listing; fyler takes directory buffers.
 g.loaded_netrw = 1
 g.loaded_netrwPlugin = 1
+g.loaded_nvim_dir_plugin = 1
 
 o.expandtab = true
 o.tabstop = 4        -- how many spaces does a tab correspond to?

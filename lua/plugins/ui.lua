@@ -41,13 +41,14 @@ return {
     },
     -- File explorer as a buffer with manipulation abilities.
     -- Differes from mini.files by only having a single view taking up the whole screen and has different default keymaps and preview behaviour.
+    -- Remote only (`:Oil oil-ssh://host/path`, oil-s3://); fyler handles local directories.
     {
         "oil.nvim",
-        keys = {
-            { "<leader>-", function() require("oil").open() end, desc = "Oil" },
-        },
+        cmd = "Oil",
+        event = { { event = "BufReadCmd", pattern = "oil*://*" } },
         after = function()
             require("oil").setup {
+                default_file_explorer = false,
                 -- no prompt on rename, including folder change.
                 -- The prompt is a nice list of the performed changes.
                 -- skip_confirm_for_simple_edits = true,
@@ -61,14 +62,41 @@ return {
             }
         end,
     },
+    -- oil as an expandable tree. Loaded at startup so it takes over directory buffers (`vi .`).
     {
         "fyler.nvim",
-	lazy = true,
-	cmd = "Fyler",
+        lazy = false,
         after = function()
-            require("fyler").setup {
-                icon_provider = "nvim-web-devicons",
+            local fyler = require "fyler"
+            fyler.setup {
+                integrations = { icon = "nvim_web_devicons" },
+                kind_presets = {
+                    split_left_most = {
+                        mappings = { n = { ["<CR>"] = { action = "select", args = { close = true, pick = false } } } },
+                    },
+                },
             }
+            vim.keymap.set("n", "<leader>e", function() fyler.open { kind = "split_left_most" } end,
+                { desc = "Explorer" })
+
+            -- Display-only trailing "/" on directory names, as oil shows. fyler writes the bare
+            -- name and marks directories only by highlighting the name with FylerDirectoryName.
+            local ns = vim.api.nvim_create_namespace("fyler_dir_slash")
+            vim.api.nvim_set_decoration_provider(ns, {
+                on_win = function(_, _, buf) return vim.bo[buf].filetype == "fyler_finder" end,
+                on_line = function(_, _, buf, row)
+                    local marks = vim.api.nvim_buf_get_extmarks(buf, -1, { row, 0 }, { row, -1 }, { details = true })
+                    for _, mark in ipairs(marks) do
+                        if mark[4].hl_group == "FylerDirectoryName" then
+                            vim.api.nvim_buf_set_extmark(buf, ns, row, mark[4].end_col, {
+                                virt_text = { { "/", "FylerDirectoryName" } },
+                                virt_text_pos = "overlay",
+                                ephemeral = true,
+                            })
+                        end
+                    end
+                end,
+            })
         end,
     },
     -- https://github.com/jake-stewart/auto-cmdheight.nvim

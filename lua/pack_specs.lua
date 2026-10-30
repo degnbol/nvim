@@ -152,7 +152,6 @@ vim.pack.add({
     gh("A7Lavinraj/fyler.nvim"),
     gh("jake-stewart/auto-cmdheight.nvim"),
     gh("b0o/incline.nvim"),
-    gh("nvim-tree/nvim-tree.lua"),
 
     -- Completion (blink.cmp + compat sources)
     { src = gh("saghen/blink.cmp"), version = vim.version.range("1") },
