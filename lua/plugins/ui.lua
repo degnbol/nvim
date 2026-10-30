@@ -186,18 +186,11 @@ return {
                     if ft == 'AgenticChat' or ft == 'AgenticInput' then
                         -- The header parts are owned by agentic.nvim;
                         -- surface what it publishes rather than rebuild it here.
-                        -- Permission and idle states wait for the user, so they get the warn colour.
                         local deco = require('agentic.ui.window_decoration')
-                        local part = deco.get_header(props.buf)
-                        local state = deco.header_state(part)
                         local color = props.focused and hi.fg("StatusLine") or "gray"
-                        local state_color = (state == 'permission' or state == 'idle') and hi.fg("DiagnosticWarn") or color
-                        return {
-                            part.icon and { part.icon .. ' ', guifg = color } or '',
-                            { part.title, guifg = color },
-                            state and { ' ' .. require('agentic.glyphs').HEADER_STATE[state], guifg = state_color } or '',
-                            part.context and { ' · ' .. part.context, guifg = color } or '',
-                        }
+                        return vim.tbl_map(function(chunk)
+                            return chunk[2] and { chunk[1], group = chunk[2] } or { chunk[1], guifg = color }
+                        end, deco.header_chunks(deco.get_header(props.buf)))
                     end
                     -- In diffview tabs: show rev info instead of filename
                     local dv_ok, dv_lib = pcall(require, 'diffview.lib')
