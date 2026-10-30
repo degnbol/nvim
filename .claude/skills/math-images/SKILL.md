@@ -58,6 +58,16 @@ Intended consequences (not bugs):
   as the cell has little space below the baseline). unicode-math picks script-style
   glyphs by pt size relative to the size at `\setmathfont`, so `cell_fit_tex`
   reruns each `\setmathfont` at the fitted size (~9.5 pt).
+- **Images composite unlike text.** Kitty curves each glyph's coverage
+  alpha by `text_composition_strategy` and the fg/bg luminance
+  (`cell.frag.glsl` `foreground_contrast_new`) but draws image alpha as it is,
+  so math strokes look thinner than prose. `kitty.text_alpha_fx` gives the PNG
+  alpha the same curve. Kitty also filters image texels linearly
+  (`shaders.c` `send_image_to_gpu`) *before* premultiplying
+  (`graphics.frag.glsl`), so the RGB of fully transparent
+  pixels bleeds into edges: give them the fg RGB, or dark math on a light bg
+  thins. The magick args go in the template as a comment so a change to them
+  changes snacks' source hash.
 - **Trim crops the strut.** Once you pad with a transparent strut, image-convert
   trimming (e.g. `-trim`) crops it straight back off. Trim must stay off, so
   PNGs carry the strut's vertical padding by design.
@@ -115,6 +125,6 @@ read those when touching this:
   the box and swaps conceal for blank overlay rows. Any placement's virt_lines
   go through `with_line_hl`. A decoration-provider `on_end` re-renders
   placements whose line hl went stale.
-- An `OptionSet` autocmd (conceallevel + wrap-geometry options) re-fires the
-  inline manager's own `BufWinEnter` handler (its `snacks.image.inline.<buf>`
-  augroup) to re-render.
+- An `OptionSet` autocmd (conceallevel + wrap-geometry options) and
+  `ColorScheme` re-fire the inline manager's own `BufWinEnter` handler (its
+  `snacks.image.inline.<buf>` augroup) to re-render.

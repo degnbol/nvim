@@ -257,6 +257,17 @@ describe("colors", function()
     end)
 end)
 
+describe("hex_to_luminance", function()
+    it("is 0 for black and 1 for white", function()
+        assert(approx_equal(0, colors.hex_to_luminance("#000000"), 1e-12))
+        assert(approx_equal(1, colors.hex_to_luminance("#ffffff"), 1e-6))
+    end)
+
+    it("decodes sRGB 128 as kitty's srgb_lut does", function()
+        assert(approx_equal(0.21586, colors.hex_to_luminance("#808080"), 1e-5))
+    end)
+end)
+
 describe("contrast_ratio", function()
     it("is 21:1 for black against white", function()
         assert(approx_equal(21, colors.contrast_ratio("#000000", "#FFFFFF"), 0.01))

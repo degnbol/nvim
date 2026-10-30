@@ -6,6 +6,7 @@ local latex = require "utils/latex"
 local typst = require "utils/typst"
 local math_look = require "math_look"
 local kitty = require "utils/kitty"
+local colors = require "utils/colors"
 
 -- Toggle between pickers by changing this flag.
 -- Options: "fzf-lua", "snacks"
@@ -246,25 +247,90 @@ return {
             -- not at startup, as kitty.cell_fractions runs kitty synchronously.
             -- Typst math gets the same fit from utils/typst.lua.
             local strut ---@type string|nil LaTeX strut for the math rewrite
+            local magick_cfg = require("snacks").image.config.convert.magick
+
+            --- Re-renders snacks' inline images in every displayed buffer.
+            local function rerender_math()
+                local bufs = {}
+                for _, win in ipairs(vim.api.nvim_list_wins()) do
+                    bufs[vim.api.nvim_win_get_buf(win)] = true
+                end
+                for buf in pairs(bufs) do
+                    -- The inline manager's own handler. The group scope keeps
+                    -- other BufWinEnter autocmds from running.
+                    local group = "snacks.image.inline." .. buf
+                    if vim.fn.exists("#" .. group .. "#BufWinEnter") == 1 then
+                        vim.api.nvim_exec_autocmds("BufWinEnter", { buf = buf, group = group })
+                    end
+                end
+            end
+
+            ---Magick math args and templates after the cell fit, before any
+            ---kitty compositing. Set on the first math render.
+            ---@type { math: (string|number)[], latex_tpl: string, typst_tpl: string }|nil
+            local fitted
+
+            --- In kitty, sets the magick math args and templates to `fitted` plus
+            --- what makes math PNGs composite like kitty's own text for the
+            --- current fg and bg:
+            --- - Fully transparent pixels get the fg RGB. Kitty samples images
+            ---   with linear filtering (`send_image_to_gpu` in kitty's
+            ---   `shaders.c`) before it premultiplies alpha (`graphics.frag.glsl`),
+            ---   so their RGB (white from ghostscript) bleeds into the edges and
+            ---   thins dark math on a light bg.
+            --- - Kitty's glyph alpha curve, which it does not apply to images.
+            ---   Warns once and leaves it out when kitty has no text composition
+            ---   or Normal has no bg.
+            --- Does nothing before `fitted` is set.
+            local function match_kitty_compositing()
+                if not (fitted and kitty.term()) then return end
+                -- The fg as snacks' transforms read it.
+                local fg = require("snacks").util.color("SnacksImageMath") or "#000000"
+                local args = { "-background", fg, "-alpha", "background" }
+                local composition, err = kitty.text_composition()
+                local bg = require("snacks").util.color("Normal", "bg")
+                if not composition then
+                    vim.notify_once("Math alpha curve off, no kitty text composition:\n" .. err, vim.log.levels.WARN)
+                elseif not bg then
+                    vim.notify_once("Math alpha curve off, Normal has no bg", vim.log.levels.WARN)
+                else
+                    local fx = kitty.text_alpha_fx(composition, colors.hex_to_luminance(fg), colors.hex_to_luminance(bg))
+                    vim.list_extend(args, { "-channel", "A", "-fx", fx, "+channel" })
+                end
+                magick_cfg.math = vim.list_extend(vim.deepcopy(fitted.math), args)
+                -- Snacks names the source file, and so the PNG, by a hash of the
+                -- templated source, which holds the fg but not the bg or the
+                -- magick args. The args as a comment make changed args render
+                -- a new PNG.
+                local args_str = table.concat(args, " ")
+                latex_cfg.tpl = util.insert_around(fitted.latex_tpl, "${header}", "", "\n% " .. args_str)
+                typst_cfg.tpl = util.insert_around(fitted.typst_tpl, "${header}", "", "\n// " .. args_str)
+            end
 
             --- On the first call, sets `strut` and, in kitty, fits snacks' latex
-            --- and typst templates to kitty's cell.
+            --- and typst templates to kitty's cell and matches kitty's compositing,
+            --- then re-renders displayed math.
             local function fit_templates()
                 if strut then return end
                 -- Fallback outside kitty or on a metrics error. Set before
                 -- cell_fractions, whose wait() can re-enter the transforms.
                 strut = "\\rule[-0.18\\baselineskip]{0pt}{1.02\\baselineskip}"
-                if not kitty.term() then return end
-                local fractions, err = kitty.cell_fractions()
-                if not fractions then
+                local fractions, err
+                if kitty.term() then fractions, err = kitty.cell_fractions() end
+                if fractions then
+                    local box_in = image_placement.row_height_in(fractions.aspect, math_density)
+                    latex_cfg.tpl = util.insert_around(latex_cfg.tpl, "${header}", "", "\n" .. latex.cell_fit_tex(fractions, box_in))
+                    latex_cfg.tpl = util.insert_around(latex_cfg.tpl, "${content}", "{\\MathCellFit ", "}")
+                    typst_cfg.tpl = util.insert_around(typst_cfg.tpl, "${header}", "", "\n" .. typst.cell_fit_typ(fractions, box_in))
+                    strut = "\\MathCellStrut " -- The space ends the control word.
+                elseif err then
                     vim.notify("Math cell fit failed, using a fixed strut:\n" .. err, vim.log.levels.WARN)
-                    return
                 end
-                local box_in = image_placement.row_height_in(fractions.aspect, math_density)
-                latex_cfg.tpl = util.insert_around(latex_cfg.tpl, "${header}", "", "\n" .. latex.cell_fit_tex(fractions, box_in))
-                latex_cfg.tpl = util.insert_around(latex_cfg.tpl, "${content}", "{\\MathCellFit ", "}")
-                typst_cfg.tpl = util.insert_around(typst_cfg.tpl, "${header}", "", "\n" .. typst.cell_fit_typ(fractions, box_in))
-                strut = "\\MathCellStrut " -- The space ends the control word.
+                fitted = { math = magick_cfg.math, latex_tpl = latex_cfg.tpl, typst_tpl = typst_cfg.tpl }
+                match_kitty_compositing()
+                -- Math that rendered while the kitty calls above waited used
+                -- only part of this setup.
+                rerender_math()
             end
             local typst_font_checked = false
 
@@ -821,24 +887,11 @@ return {
 
             -- Inline-math layout depends on conceallevel and on the wrap
             -- geometry (see above), but snacks only recomputes placements on
-            -- scroll/edit/enter. Re-fire the inline manager's own BufWinEnter
-            -- handler (scoped to its augroup, so no other BufWinEnter autocmds
-            -- run) when any of them changes. Global values (`:set showbreak`)
-            -- reach every window, so re-render every displayed buffer.
+            -- scroll/edit/enter. Re-render when any of them changes, in all
+            -- buffers, as global values (`:set showbreak`) reach every window.
             vim.api.nvim_create_autocmd("OptionSet", {
                 pattern = "conceallevel,wrap,linebreak,breakindent,breakindentopt,showbreak,number,relativenumber,numberwidth,statuscolumn,signcolumn,foldcolumn",
-                callback = function()
-                    local bufs = {}
-                    for _, win in ipairs(vim.api.nvim_list_wins()) do
-                        bufs[vim.api.nvim_win_get_buf(win)] = true
-                    end
-                    for buf in pairs(bufs) do
-                        local group = "snacks.image.inline." .. buf
-                        if vim.fn.exists("#" .. group .. "#BufWinEnter") == 1 then
-                            vim.api.nvim_exec_autocmds("BufWinEnter", { buf = buf, group = group })
-                        end
-                    end
-                end,
+                callback = rerender_math,
             })
 
             -- Persist overrides across colorscheme changes. Snacks has a
@@ -862,6 +915,12 @@ return {
                 -- different from regular text and normal colors makes it blend 
                 -- better into the flow of reading.
                 hi.link("SnacksImageMath", "Normal")
+                -- The compositing args depend on the fg and bg. Before the
+                -- first math render, fit_templates applies them.
+                if fitted then
+                    match_kitty_compositing()
+                    rerender_math()
+                end
             end)
         end,
     },
