@@ -34,6 +34,14 @@ Maybe make a simple snippet for gcc on blank line -> whatever commentchar for th
 Map insert mode cmd+v (<D-v> doesn't seem to work) to align after pasting linewise.
 Once again, the logic is I'm more opposed to changing default vim normal cmds than things like cmd+v and arrows that aren't vim.
 
+Inline math (snacks.image) pdflatex unicode fallback: if we ever use the
+pdflatex + \newunicodechar route for unicode math input, generate the
+glyph->macro mapping instead of hand-writing it. luasnippets/tex/unicode.lua
+already enumerates the glyph set, but maps trigger->glyph not glyph->macro, so
+it's not a direct reuse — would need a glyph->macro source. Sidestepped entirely
+by tectonic + unicode-math (the chosen route). See
+~/.claude/plans/snacks-inline-math-sizing-prefetch.md.
+
 Inline math (snacks.image) in markdown pipe tables misaligns columns at
 conceallevel>=2: the image is drawn at true glyph size, so the cells after it
 reflow while table formatters pad by the `$…$` source width. Fix in
@@ -164,10 +172,6 @@ Would be cool to only list dark or light themes in :Treesitter colorscheme.
 I made a small temp solution with multiple user events but it doesn't deal with 
 requiring plugins with both light and dark colorscheme or to unlist loaded ones later.
 
-In case you want to auto switch comment (commentstring) in markdown with code 
-sections:
-https://dotfyle.com/plugins/JoosepAlviste/nvim-ts-context-commentstring
-
 The U key. It undos all changes in the line. I have never used it.
 We could remap to redo or something else more useful.
 We can still have undo line by remapping Vu to undo line. 
@@ -233,6 +237,11 @@ Would also be cool to make completion within strings that are selection algebra
 https://pymolwiki.org/index.php/Selection_Algebra
 This can be useful for both .pml and .py meant for pymol.
 
+Inject the smarts parser at rdkit call sites in python: a query matching
+`MolFromSmiles`/`MolFromSmarts`/`ReactionFromSmarts` and capturing the string
+argument. Static and precise, unlike the buffer-wide import sniffing that
+`ftplugin/python.lua` does for pymol_select.
+
 Maybe prettier markdown
 https://github.com/OXY2DEV/markview.nvim
 
@@ -274,6 +283,6 @@ Move it after the `csv.vim` runtime call so comments highlight, or delete it. On
 
 `lua/tex/tables.lua` `&` map: a removed comment noted an alternative to clearing the message area after `<Plug>TableAlign` — temporarily redefine the print functions to no-ops. Restore the comment?
 
-
 Chemical columns in `.csv`: the `csv` parser's `requires` pulls in `tsv`, and `#chem-column?` (`lua/chem/tsv.lua`) would need to stop assuming the tab separator.
+
 
