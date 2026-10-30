@@ -61,4 +61,6 @@ hide it.
   `default_command`, and `cache_dir` in
   `stdpath("cache")/clice/<sha256 of root>/`; all skipped when the project has
   a clice config file.
-- clice is pinned by the local Mason registry `lua/mason_overrides/`.
+- Do not pin clice to a version (e.g. a local Mason registry): its releases are
+  daily nightlies and only the latest ~26 are kept, so a pin fails to download
+  within weeks. Mason's registry moves its pin forward.
