@@ -84,6 +84,22 @@ return {
                 },
             }
 
+            -- The budget is editor-wide: one global statusline, only once agentic is in use.
+            vim.api.nvim_create_autocmd("User", {
+                pattern = "AgenticSessionChanged",
+                once = true,
+                callback = function()
+                    vim.o.laststatus = 3
+                    -- %! not %{%…%}: a %{%…%} result without a "%" is not re-parsed,
+                    -- and its spaces are drawn with the 'fillchars' stl char.
+                    vim.o.statusline = "%!'%='..v:lua.require'agentic.budget'.statusline()"
+                end,
+            })
+            vim.api.nvim_create_autocmd("User", {
+                pattern = "AgenticBudgetChanged",
+                callback = function() vim.cmd.redrawstatus() end,
+            })
+
             map.n("<M-CR>", "<Plug>(agentic-send)", "Agent send motion")
             map.n("<M-CR><M-CR>", "<Plug>(agentic-send-line)", "Agent send line")
             map.v("<M-CR>", "<Plug>(agentic-send)", "Agent send selection")

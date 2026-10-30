@@ -107,6 +107,7 @@ return {
             -- (secret) global statusline.
             -- The problem with this approach is how buggy cmdheight=0 still is.
             -- A different solution is laststatus=0 where the statusline is redesigned as a simple border.
+            -- The first agentic session switches to laststatus=3 for the budget (see agents.lua).
             vim.o.laststatus = 0
             -- Draw the border with the statusline FILL char, not fixed-width
             -- content. The fill auto-sizes to each window, so it never truncates
@@ -118,7 +119,7 @@ return {
             local helpers = require 'incline.helpers'
             local devicons = require 'nvim-web-devicons'
             local hi = require 'utils/highlights'
-            -- Refresh incline when agentic.nvim updates header state (context %, mode)
+            -- Refresh incline when agentic.nvim updates header state
             vim.api.nvim_create_autocmd("User", {
                 pattern = "AgenticHeadersChanged",
                 callback = function() require('incline').refresh() end,
@@ -155,13 +156,20 @@ return {
                         return nil
                     end
                     if ft == 'AgenticChat' or ft == 'AgenticInput' then
-                        -- Title (with icon), badge and context are owned by agentic.nvim;
+                        -- The header parts are owned by agentic.nvim;
                         -- surface what it publishes rather than rebuild it here.
-                        local part = vim.b[props.buf].agentic_header or {}
-                        local label = part.title or 'Agentic'
-                        if part.badge then label = label .. ' ' .. part.badge end
-                        if part.context then label = label .. ' ' .. part.context end
-                        return { { label, guifg = props.focused and hi.fg("StatusLine") or "gray" } }
+                        -- Permission and idle states wait for the user, so they get the warn colour.
+                        local deco = require('agentic.ui.window_decoration')
+                        local part = deco.get_header(props.buf)
+                        local state = deco.header_state(part)
+                        local color = props.focused and hi.fg("StatusLine") or "gray"
+                        local state_color = (state == 'permission' or state == 'idle') and hi.fg("DiagnosticWarn") or color
+                        return {
+                            part.icon and { part.icon .. ' ', guifg = color } or '',
+                            { part.title, guifg = color },
+                            state and { ' ' .. require('agentic.glyphs').HEADER_STATE[state], guifg = state_color } or '',
+                            part.context and { ' · ' .. part.context, guifg = color } or '',
+                        }
                     end
                     -- In diffview tabs: show rev info instead of filename
                     local dv_ok, dv_lib = pcall(require, 'diffview.lib')
