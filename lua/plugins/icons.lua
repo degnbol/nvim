@@ -1,5 +1,5 @@
 
--- NOTE: Icons should be consistent with ~/dotfiles/exa/icons.sh
+-- NOTE: Icons should be consistent with $XDG_CONFIG_HOME/eza/theme/extensions.yml
 -- Colors:
 -- Binary data files. color = "#89e051", cterm_color = "113",
 -- Text files. color = "#519aba", cterm_color = "67",
@@ -18,39 +18,75 @@ return {
                         icon = "󰂫",
                         name = "BlenderBackup",
                     },
+                    bash = {
+                        icon = "",
+                        color = "#4d5a5e",
+                        cterm_color = "240",
+                        name = "Bash",
+                    },
+                    m = {
+                        icon = "󰘨",
+                        color = "#599eff",
+                        cterm_color = "111",
+                        name = "Matlab",
+                    },
+                    m2t = {
+                        icon = "",
+                        color = "#fd971f",
+                        cterm_color = "208",
+                        name = "MPEG2TransportStream",
+                    },
+                    xyz = {
+                        icon = "󰵉",
+                        color = "#89e051",
+                        cterm_color = "113",
+                        name = "XYZ",
+                    },
+                    pdb = {
+                        icon = "",
+                        color = "#89e051",
+                        cterm_color = "113",
+                        name = "ProteinDataBank",
+                    },
+                    cif = {
+                        icon = "",
+                        color = "#89e051",
+                        cterm_color = "113",
+                        name = "CrystallographicInformationFile",
+                    },
                     bed = {
-                        icon = "",
+                        icon = "",
                         color = "#89e051",
                         cterm_color = "113",
                         name = "BrowserExtensibleData"
                     },
                     -- .bg2 is bed graph 2D which is just a tsv file with columns chrom1,start1,end1,chrom2,start2,end2,count
                     bg2 = {
-                        icon = "",
+                        icon = "",
                         color = "#89e051",
                         cterm_color = "113",
                         name = "BEDGraph2D"
                     },
                     csv = {
-                        icon = "",
+                        icon = "",
                         color = "#89e051",
                         cterm_color = "113",
                         name = "CommaSeparatedValues"
                     },
                     tab = {
-                        icon = "",
+                        icon = "",
                         color = "#89e051",
                         cterm_color = "113",
                         name = "Table"
                     },
                     tsv = {
-                        icon = "",
+                        icon = "",
                         color = "#89e051",
                         cterm_color = "113",
                         name = "TabSeparatedValues"
                     },
                     ssv = {
-                        icon = "",
+                        icon = "",
                         color = "#89e051",
                         cterm_color = "113",
                         name = "SpaceSeparatedValues"
@@ -81,19 +117,25 @@ return {
                     },
                     -- an HDF5 file with specific groups and datasets for storing genomic data, specifically Hi-C
                     cool = {
-                        icon = "",
+                        icon = "",
                         color = "#89e051",
                         cterm_color = "113",
                         name = "Cooler",
                     },
+                    mcool = {
+                        icon = "",
+                        color = "#89e051",
+                        cterm_color = "113",
+                        name = "MultiResCooler",
+                    },
                     h5 = {
-                        icon = "",
+                        icon = "",
                         color = "#89e051",
                         cterm_color = "113",
                         name = "HDF5",
                     },
                     gz = {
-                        icon = "",
+                        icon = "",
                         name = "GZip",
                     },
                     mat = {
@@ -109,19 +151,19 @@ return {
                         name = "Numpy"
                     },
                     pdf = {
-                        icon = "",
+                        icon = "",
                         color = "#b30b00",
                         ctermfg = 124,
                         name = "PortableDocumentFormat",
                     },
                     pkl = {
-                        icon = "",
+                        icon = "",
                         color = "#89e051",
                         cterm_color = "113",
                         name = "Pickle",
                     },
                     adoc = {
-                        icon = "",
+                        icon = "",
                         color = "#519aba",
                         cterm_color = "67",
                         name = "Asciidoc",
@@ -133,26 +175,26 @@ return {
                         name = "Chordpro",
                     },
                     md = {
-                        icon = "",
+                        icon = "",
                         color = "#519aba",
                         cterm_color = "67",
                         name = "Markdown",
                     },
                     -- NOTE: We need to set both md and markdown.
                     markdown = {
-                        icon = "",
+                        icon = "",
                         color = "#519aba",
                         cterm_color = "67",
                         name = "Markdown",
                     },
                     tex = {
-                        icon = "",
+                        icon = "",
                         color = "#519aba",
                         cterm_color = "67",
                         name = "LaTeX",
                     },
                     typ = {
-                        icon = "",
+                        icon = "",
                         color = "#519aba",
                         cterm_color = "67",
                         name = "Typst",

@@ -31,8 +31,8 @@ return {
                 disable_context_highlighting = true,
                 signs = {
                     -- { CLOSED, OPENED }
-                    section = { "", "" },
-                    item = { "", "" },
+                    section = { "", "" },
+                    item = { "", "" },
                     hunk = { "", "" },
                 },
                 integrations = { diffview = true }, -- adds integration with diffview.nvim

@@ -143,7 +143,7 @@ return {
                         config = {
                             engine = "nvim-cmp",
                             -- a notebook icon to indicate neorg as completion source
-                            name = "",
+                            name = "",
                         }
                     },
                     ["core.export"] = {},
