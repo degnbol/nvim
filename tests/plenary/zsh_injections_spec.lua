@@ -2,7 +2,7 @@
 -- Tests for queries/zsh/injections.scm
 
 vim.treesitter.language.register("zsh", "sh.zsh")
--- Mirror plugin/treesitter.lua: bash/sh injections resolve to zsh parser
+-- Mirror after/plugin/treesitter.lua: bash/sh injections resolve to zsh parser
 -- (only zsh.so is installed; bash.so is not). Also load the `#trim!` query
 -- directive from plugin/treesitter.lua. plugin/* isn't reliably sourced
 -- before PlenaryBustedFile runs, so source it explicitly.

@@ -1,9 +1,4 @@
--- use the zsh parser for all shell filetypes. tree-sitter-bash is unmaintained
--- and has cascading error bugs (parameter expansion, extglob, heredocs).
--- zsh is a superset of bash, so the zsh parser handles bash files fine.
-vim.treesitter.language.register("zsh", "sh")
-vim.treesitter.language.register("zsh", "bash")
-vim.treesitter.language.register("zsh", "sh.zsh")
+-- Shell filetypes → zsh parser: see after/plugin/treesitter.lua.
 -- ```scm fenced code blocks in markdown should use the query parser
 vim.treesitter.language.register("query", "scm")
 -- jsonl/ndjson is newline-delimited json; the json grammar's document rule
