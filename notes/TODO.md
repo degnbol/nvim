@@ -34,6 +34,12 @@ Maybe make a simple snippet for gcc on blank line -> whatever commentchar for th
 Map insert mode cmd+v (<D-v> doesn't seem to work) to align after pasting linewise.
 Once again, the logic is I'm more opposed to changing default vim normal cmds than things like cmd+v and arrows that aren't vim.
 
+Inline math (snacks.image) in markdown pipe tables misaligns columns at
+conceallevel>=2: the image is drawn at true glyph size, so the cells after it
+reflow while table formatters pad by the `$…$` source width. Fix in
+`placement.state` (pickers.lua): on a pipe-table row, place inline math like
+the cl=1 tier — fit to the source footprint, no reflow.
+
 Make TSV plugin, the hiding and aligning functionality is quite useful.
 
 TSV plugin optional: have title row stay in view when you scroll down into large table. Togglable.
