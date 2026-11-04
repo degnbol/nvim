@@ -2,9 +2,19 @@
 ---
 --- A cell's width is the `nvim_strwidth` of its raw text, so the aligned file
 --- lines up wherever markup is shown verbatim (conceallevel 0, `cat`, raw view).
+--- `layout` and `pads` give the virtual spaces that line a table up on screen
+--- under conceal, without changing the file.
 ---
 --- @class utils.markdown_table
 local M = {}
+
+local Conceal = require "agentic.utils.conceal"
+local Ts = require "agentic.utils.treesitter"
+
+--- Filetypes whose buffers hold markdown tables.
+M.FILETYPES = { "markdown", "pandoc", "AgenticInput" }
+--- Default cap on a cell's contribution to its column width.
+M.MAX_WIDTH = 30
 
 --- @alias utils.markdown_table.Align "left"|"centre"|"right"
 
@@ -17,6 +27,7 @@ local M = {}
 
 --- @class utils.markdown_table.Row
 --- @field row integer 0-indexed buffer row
+--- @field line string the row's buffer line
 --- @field prefix string text before the table on this line (indent, `> ` of a blockquote, list continuation)
 --- @field cells utils.markdown_table.Cell[]
 --- @field delimiter boolean
@@ -162,6 +173,7 @@ function M.parse(buf, node)
             ncols = math.max(ncols, #cells)
             rows[#rows + 1] = {
                 row = row,
+                line = line,
                 prefix = line:sub(1, col),
                 cells = cells,
                 delimiter = delimiter,
@@ -286,6 +298,172 @@ function M.align(buf, start_row, end_row, opts)
         end
     end
     return #nodes
+end
+
+--- Tab stop for measuring rows. Tabs inside a table are not supported: pads
+--- move the tab stops after them.
+local TABSTOP = 8
+
+--- Conceal ranges on each row of a table, from the active treesitter
+--- highlighter and from extmarks, in drawing order. Without a highlighter
+--- on `buf`, only the extmark ranges, as on screen.
+--- @param buf integer
+--- @param tbl utils.markdown_table.Table
+--- @return table<integer, agentic.utils.Conceal.Range[]> conceals per index into `tbl.rows`
+function M.conceals(buf, tbl)
+    local srow, erow = tbl.rows[1].row, tbl.rows[#tbl.rows].row + 1
+    -- The highlighter parses injections of drawn rows only.
+    vim.treesitter.get_parser(buf):parse({ srow, 0, erow, 0 })
+    local ranges = Ts.conceal_ranges(buf, Ts.highlight_trees(buf, srow, erow), srow, erow)
+    vim.list_extend(ranges, Conceal.extmark_ranges(buf, srow, erow))
+    local index, conceals = {}, {}
+    for i, row in ipairs(tbl.rows) do
+        index[row.row] = i
+        conceals[i] = {}
+    end
+    for _, range in ipairs(ranges) do
+        local i = index[range.row]
+        if i then
+            table.insert(conceals[i], range)
+        end
+    end
+    return conceals
+end
+
+--- @class utils.markdown_table.CellLayout
+--- @field vis_col integer 0-indexed byte of the first character outside every conceal range; `end_col` when there is none
+--- @field vis_end integer 0-indexed byte after the last character outside every conceal range; `end_col` when there is none
+--- @field slotted boolean false when the cell's raw width is over the cap
+
+--- On-screen layout of a table, from its raw text. Markup is text in a
+--- conceal range. Display widths are between a column's two pipes.
+--- @class utils.markdown_table.Layout
+--- @field cells table<integer, utils.markdown_table.CellLayout>[] per row, per column; no entry for a cell without both pipes
+--- @field align utils.markdown_table.Align[] per column
+--- @field lead integer[] per column, width before the first visible character: widest leading whitespace plus markup
+--- @field trail integer[] per column, width after the last visible character: widest trailing markup plus whitespace
+--- @field width integer[] per column
+
+--- Whether any of `ranges` covers `byte`.
+--- @param ranges agentic.utils.Conceal.Range[]
+--- @param byte integer 0-indexed
+--- @return boolean
+local function covered(ranges, byte)
+    for _, range in ipairs(ranges) do
+        if range.col <= byte and byte < range.end_col then
+            return true
+        end
+    end
+    return false
+end
+
+--- Display widths of the three parts of a cell between its pipes.
+--- @param vcols table<integer, integer> vcol at each character start byte of the row
+--- @param cell utils.markdown_table.Cell
+--- @param cl utils.markdown_table.CellLayout
+--- @return integer before whitespace and markup after the left pipe
+--- @return integer body first to last visible character
+--- @return integer after markup and whitespace before the right pipe
+local function cell_widths(vcols, cell, cl)
+    return vcols[cl.vis_col] - vcols[cell.lpipe + 1],
+        vcols[cl.vis_end] - vcols[cl.vis_col],
+        vcols[cell.rpipe] - vcols[cl.vis_end]
+end
+
+--- Display layout of a table. Per column, the first visible characters of
+--- left and centre cells start at `lead`, the last of right and centre
+--- cells end at `width - trail`, and `width` fits every row at
+--- conceallevel 0. Cells over the cap do not count.
+--- @param tbl utils.markdown_table.Table
+--- @param conceals table<integer, agentic.utils.Conceal.Range[]> per index into `tbl.rows`
+--- @param opts utils.markdown_table.Opts|nil
+--- @return utils.markdown_table.Layout
+function M.layout(tbl, conceals, opts)
+    opts = opts or {}
+    --- @type utils.markdown_table.Layout
+    local layout = { cells = {}, align = {}, lead = {}, trail = {}, width = {} }
+    for c = 1, tbl.ncols do
+        layout.align[c] = opts.align_cells and tbl.align[c] or "left"
+        layout.lead[c], layout.trail[c], layout.width[c] = 0, 0, 0
+    end
+    local widths = {} -- per row, per slotted column: the three `cell_widths`
+    for i, row in ipairs(tbl.rows) do
+        local raw = Conceal.columns(row.line, conceals[i], {}, TABSTOP, 0).raw
+        layout.cells[i], widths[i] = {}, {}
+        for c, cell in ipairs(row.cells) do
+            if cell.lpipe and cell.rpipe then
+                local vis_col, vis_end = cell.col, cell.end_col
+                while vis_col < cell.end_col and covered(conceals[i], vis_col) do
+                    vis_col = vis_col + 1
+                end
+                while vis_end > vis_col and covered(conceals[i], vis_end - 1) do
+                    vis_end = vis_end - 1
+                end
+                local text_width = raw[cell.end_col] - raw[cell.col]
+                --- @type utils.markdown_table.CellLayout
+                local cl = {
+                    vis_col = vis_col,
+                    vis_end = vis_end,
+                    slotted = text_width <= (opts.max_width or text_width),
+                }
+                layout.cells[i][c] = cl
+                if cl.slotted then
+                    local before, body, after = cell_widths(raw, cell, cl)
+                    widths[i][c] = { before = before, body = body, after = after }
+                    layout.lead[c] = math.max(layout.lead[c], before)
+                    layout.trail[c] = math.max(layout.trail[c], after)
+                end
+            end
+        end
+    end
+    for i = 1, #tbl.rows do
+        for c, w in pairs(widths[i]) do
+            local align = layout.align[c]
+            local before = align == "right" and w.before or layout.lead[c]
+            local after = align == "left" and w.after or layout.trail[c]
+            layout.width[c] = math.max(layout.width[c], before + w.body + after)
+        end
+    end
+    return layout
+end
+
+--- Virtual spaces that put every cell of a table in its column on screen,
+--- for a window at `level`.
+--- @param tbl utils.markdown_table.Table
+--- @param layout utils.markdown_table.Layout
+--- @param conceals table<integer, agentic.utils.Conceal.Range[]> per index into `tbl.rows`
+--- @param level integer 'conceallevel'
+--- @param unconcealed_row integer|nil 0-indexed buffer row drawn without conceal
+--- @return { row: integer, col: integer, width: integer }[] pads `width` spaces drawn before 0-indexed `row`, `col`
+function M.pads(tbl, layout, conceals, level, unconcealed_row)
+    local pads = {}
+    local function add(row, col, width)
+        if width > 0 then
+            pads[#pads + 1] = { row = row, col = col, width = width }
+        end
+    end
+    for i, row in ipairs(tbl.rows) do
+        local row_level = row.row == unconcealed_row and 0 or level
+        local shown = Conceal.columns(row.line, conceals[i], {}, TABSTOP, row_level).shown
+        for c, cl in pairs(layout.cells[i]) do
+            local cell = row.cells[c]
+            local before, body, after = cell_widths(shown, cell, cl)
+            local total = before + body + after
+            local width, align = layout.width[c], layout.align[c]
+            local left
+            if align == "right" then
+                left = width - total - math.max(0, layout.trail[c] - after)
+            else
+                local free = width - layout.lead[c] - layout.trail[c] - body
+                local centring = align == "centre" and math.floor(free / 2) or 0
+                left = layout.lead[c] - before + centring
+            end
+            left = math.max(0, left)
+            add(row.row, cell.col, left)
+            add(row.row, cell.end_col, width - total - left)
+        end
+    end
+    return pads
 end
 
 return M

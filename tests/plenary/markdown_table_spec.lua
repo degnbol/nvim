@@ -220,6 +220,185 @@ describe("markdown_table.align", function()
     end)
 end)
 
+describe("markdown_table.layout and pads", function()
+    local Conceal = require "agentic.utils.conceal"
+    local OPTS = { max_width = 30, align_cells = true }
+    -- Registers the #head! directive of the markdown_inline conceal overrides.
+    vim.cmd.runtime("plugin/treesitter.lua")
+
+    before_each(function()
+        buf = vim.api.nvim_create_buf(true, false)
+        vim.bo[buf].filetype = "markdown"
+    end)
+
+    after_each(function()
+        pcall(vim.api.nvim_buf_delete, buf, { force = true })
+    end)
+
+    --- The table on the first row of `lines`, its conceals and layout.
+    --- @param lines string[]
+    --- @return utils.markdown_table.Table
+    --- @return table<integer, agentic.utils.Conceal.Range[]>
+    --- @return utils.markdown_table.Layout
+    local function measure(lines)
+        set(lines)
+        vim.treesitter.start(buf, "markdown")
+        local tbl = md.parse(buf, md.tables(buf, 0, 0)[1])
+        local conceals = md.conceals(buf, tbl)
+        return tbl, conceals, md.layout(tbl, conceals, OPTS)
+    end
+
+    --- Screen vcols per row with the pads drawn: of each cell's right pipe,
+    --- of its first visible character, and after its last one.
+    --- @param tbl utils.markdown_table.Table
+    --- @param conceals table<integer, agentic.utils.Conceal.Range[]>
+    --- @param layout utils.markdown_table.Layout
+    --- @param level integer
+    --- @param unconcealed_row integer|nil
+    --- @return { pipes: integer[], starts: integer[], ends: integer[] }[]
+    local function screen(tbl, conceals, layout, level, unconcealed_row)
+        local pads = md.pads(tbl, layout, conceals, level, unconcealed_row)
+        local out = {}
+        for i, row in ipairs(tbl.rows) do
+            local inlines, pad_at = {}, {}
+            for _, pad in ipairs(pads) do
+                if pad.row == row.row then
+                    inlines[#inlines + 1] = { col = pad.col, width = pad.width }
+                    pad_at[pad.col] = (pad_at[pad.col] or 0) + pad.width
+                end
+            end
+            local row_level = row.row == unconcealed_row and 0 or level
+            local shown = Conceal.columns(row.line, conceals[i], inlines, 8, row_level).shown
+            local pos = { pipes = {}, starts = {}, ends = {} }
+            for c, cell in ipairs(row.cells) do
+                local cl = layout.cells[i][c]
+                pos.pipes[c] = shown[cell.rpipe]
+                pos.starts[c] = shown[cl.vis_col]
+                pos.ends[c] = shown[cl.vis_end] - (pad_at[cl.vis_end] or 0)
+            end
+            out[i] = pos
+        end
+        return out
+    end
+
+    --- Assert every row has the pipes of the first row, and the same
+    --- `starts` in `left` columns and `ends` in `right` columns.
+    local function assert_aligned(rows, left, right)
+        for i = 2, #rows do
+            assert.are.same(rows[1].pipes, rows[i].pipes, "pipes of row " .. i)
+            for _, c in ipairs(left or {}) do
+                assert.are.equal(rows[1].starts[c], rows[i].starts[c], ("start of row %d col %d"):format(i, c))
+            end
+            for _, c in ipairs(right or {}) do
+                assert.are.equal(rows[1].ends[c], rows[i].ends[c], ("end of row %d col %d"):format(i, c))
+            end
+        end
+    end
+
+    local EXAMPLE = {
+        "| correlation with K50 | trypsin    | chymotrypsin |",
+        "| -------------------- | ---------- | ------------ |",
+        "| K/R count            | **-0.215** | -0.064       |",
+        "| F/Y/W/L count        | -0.168     | **-0.414**   |",
+    }
+
+    it("lines up a formatted table at every conceal level, at the same columns", function()
+        local tbl, conceals, layout = measure(EXAMPLE)
+        assert.are_not.same(md.pads(tbl, layout, conceals, 0), md.pads(tbl, layout, conceals, 3))
+        assert.are.same({ 23, 38, 55 }, screen(tbl, conceals, layout, 0)[1].pipes)
+        for level = 0, 3 do
+            local rows = screen(tbl, conceals, layout, level)
+            assert_aligned(rows, { 1, 2, 3 })
+            assert.are.same({ 23, 38, 55 }, rows[1].pipes, "level " .. level)
+            assert.are.same({ 2, 27, 42 }, rows[1].starts, "level " .. level)
+        end
+    end)
+
+    it("keeps the columns on an unconcealed row", function()
+        local tbl, conceals, layout = measure(EXAMPLE)
+        local rows = screen(tbl, conceals, layout, 3, tbl.rows[3].row)
+        assert_aligned(rows, { 1, 2, 3 })
+        assert.are.same({ 23, 38, 55 }, rows[1].pipes)
+    end)
+
+    it("lines up an unformatted table", function()
+        local tbl, conceals, layout = measure({
+            "|a|**bold**|",
+            "|-|-|",
+            "|   long text | x |",
+        })
+        for level = 0, 3 do
+            assert_aligned(screen(tbl, conceals, layout, level), { 1, 2 })
+        end
+    end)
+
+    it("fills the hidden width of mid-cell markup", function()
+        local tbl, conceals, layout = measure({
+            "| a | b |",
+            "| - | - |",
+            "| x **y** z | 1 |",
+            "| plain | 2 |",
+        })
+        for level = 0, 3 do
+            assert_aligned(screen(tbl, conceals, layout, level), { 1, 2 })
+        end
+    end)
+
+    it("lines up a long link over the cap once its markup is concealed", function()
+        local tbl, conceals, layout = measure({
+            "| name | b |",
+            "| - | - |",
+            "| [docs](https://example.com/a/very/long/path) | 1 |",
+            "| plain | 2 |",
+        })
+        assert.is_false(layout.cells[3][1].slotted)
+        for level = 2, 3 do
+            assert_aligned(screen(tbl, conceals, layout, level), { 1, 2 })
+        end
+        local raw = screen(tbl, conceals, layout, 0)
+        assert.are.same(raw[1].pipes, raw[4].pipes)
+        assert.is_true(raw[3].pipes[1] > raw[1].pipes[1])
+    end)
+
+    it("lines up the ends of a right-aligned column", function()
+        local tbl, conceals, layout = measure({
+            "| n |",
+            "| --: |",
+            "| **12** |",
+            "| 345 |",
+            "|    6 |",
+        })
+        for level = 0, 3 do
+            assert_aligned(screen(tbl, conceals, layout, level), nil, { 1 })
+        end
+    end)
+
+    it("lines up a struck-through cell over the strikethrough override", function()
+        local tbl, conceals, layout = measure({
+            "| a | b |",
+            "| - | - |",
+            "| ~~gone~~ | 1 |",
+            "| ~one~ | 2 |",
+            "| kept | 3 |",
+        })
+        for level = 0, 3 do
+            assert_aligned(screen(tbl, conceals, layout, level), { 1, 2 })
+        end
+    end)
+
+    it("keeps an escaped pipe in its cell", function()
+        local tbl, conceals, layout = measure({
+            "| a | b |",
+            "| - | - |",
+            "| x \\| y | 1 |",
+            "| plain | 2 |",
+        })
+        for level = 1, 2 do
+            assert_aligned(screen(tbl, conceals, layout, level), { 1, 2 })
+        end
+    end)
+end)
+
 describe("markdown table keymap", function()
     vim.cmd.runtime("lua/autocmds/markdown_table.lua")
 

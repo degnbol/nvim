@@ -1,11 +1,11 @@
 local util = require "utils/init"
 local md_table = require "utils.markdown_table"
 
---- Cap on column width: the count if given, else 30. Read before leaving
---- visual mode, which resets the count.
+--- Cap on column width: the count if given, else the default.
+--- Read before leaving visual mode, which resets the count.
 --- @return integer
 local function max_width()
-    return vim.v.count > 0 and vim.v.count or 30
+    return vim.v.count > 0 and vim.v.count or md_table.MAX_WIDTH
 end
 
 --- Align the markdown tables intersecting rows [r1, r2] of the current buffer.
@@ -20,7 +20,7 @@ end
 
 vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("markdown_table", { clear = true }),
-    pattern = { "markdown", "pandoc", "AgenticInput" },
+    pattern = md_table.FILETYPES,
     callback = function(ev)
         vim.keymap.set("n", "<localleader>a", function()
             local row = util.get_cursor()
