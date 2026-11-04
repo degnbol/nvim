@@ -55,6 +55,32 @@ o.wildcharm = 9                  -- enables cmdline tab completion when recordin
 -- o.number = true -- show line numbering by default. yon toggles
 -- o.relativenumber = true -- should the line numbering be shown relative to current line?
 o.clipboard = 'unnamed,unnamedplus' -- share clipboard between copy paste and yank
+-- Same detection and commands as the builtin wl-copy provider, except that an
+-- empty clipboard pastes as empty instead of warning "Nothing is copied".
+if vim.fn.has('mac') == 0 and vim.env.WAYLAND_DISPLAY
+    and vim.fn.executable('wl-copy') == 1 and vim.fn.executable('wl-paste') == 1 then
+    ---@param args string[] extra wl-paste args
+    ---@return string[]|integer lines, or 0 on error
+    local function wl_paste(args)
+        local res = vim.system({ 'wl-paste', '--no-newline', unpack(args) }):wait()
+        if res.code == 0 then return vim.split(res.stdout, '\n') end
+        if vim.startswith(res.stderr, 'Nothing is copied') then return {} end
+        vim.notify('clipboard: error: ' .. res.stderr, vim.log.levels.WARN)
+        return 0
+    end
+    vim.g.clipboard = {
+        name = 'wl-copy',
+        copy = {
+            ['+'] = { 'wl-copy', '--type', 'text/plain' },
+            ['*'] = { 'wl-copy', '--primary', '--type', 'text/plain' },
+        },
+        paste = {
+            ['+'] = function() return wl_paste({}) end,
+            ['*'] = function() return wl_paste({ '--primary' }) end,
+        },
+        cache_enabled = 1,
+    }
+end
 o.wrap = false                      -- something run before init.lua is changing the default so we change it back here.
 o.smoothscroll = true               -- if we wrap lines, then show partial start
 -- Whether to break lines when wrapping at whitespace etc. instead of middle of word.

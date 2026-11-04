@@ -11,7 +11,7 @@ if vim.fn.executable("npm") == 1 and vim.fn.executable("cargo") == 1 then
 		-- "jedi_language_server",
 		-- "pyright",
 		-- "pylsp",
-		"clice", -- version pinned in lua/mason_overrides/clice.lua
+		"clice",
 		"basedpyright",
 		"ruff", -- Python linting/formatting (complements basedpyright)
 		-- "julials", -- Manual
@@ -165,10 +165,7 @@ return {
 		lazy = true,
 		cmd = { "Mason", "MasonUpdate", "MasonInstall", "MasonLog", "MasonUninstall", "MasonUninstallAll" },
 		after = function()
-			require("mason").setup({
-				-- Mason takes a package from the first registry that defines it.
-				registries = { "lua:mason_overrides", "github:mason-org/mason-registry" },
-			})
+			require("mason").setup()
 		end,
 	},
 	{
