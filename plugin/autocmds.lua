@@ -8,6 +8,7 @@ require "autocmds/kitty"
 require "autocmds/ftoverrides"
 require "autocmds/docstring"
 require "autocmds/stub_patches"
+require "autocmds/markdown_table"
 
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "*",

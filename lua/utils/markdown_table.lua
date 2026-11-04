@@ -1,296 +1,291 @@
---- Markdown table alignment.
+--- Markdown (GFM) pipe table alignment, parsed with treesitter.
 ---
---- Pads cells with spaces so that columns line up when read at conceallevel 1+
---- (which conceals emphasis/code/link syntax). Width is measured with
---- vim.api.nvim_strwidth after stripping common concealed delimiters, so the
---- aligned text in the buffer is deterministic — re-aligning is a no-op and
---- diffs stay clean. With conceallevel=0 the visual width of cells containing
---- emphasis or links will exceed the column; that's a deliberate trade-off
---- (one stable on-disk format vs. matching every possible runtime conceal).
+--- A cell's width is the `nvim_strwidth` of its raw text, so the aligned file
+--- lines up wherever markup is shown verbatim (conceallevel 0, `cat`, raw view).
 ---
 --- @class utils.markdown_table
 local M = {}
 
---- @class utils.markdown_table.Opts
---- @field max_width? integer Cap on per-cell measured width. Cells longer
----   than this don't expand the column; their content overflows past the
----   trailing space and the row's later cells shift right. nil = no cap.
---- @field align_cells? boolean If true, pad cells per the separator-row
----   alignment markers: `:---` left (trailing spaces, default), `---:` right
----   (leading spaces), `:---:` centre (split, leftover space goes right).
----   Default false — pads everything left-aligned regardless of marker.
+--- @alias utils.markdown_table.Align "left"|"centre"|"right"
 
---- Check if a line is a markdown table row (starts with optional whitespace then `|`).
---- @param line string
---- @return boolean
-function M.is_table_line(line)
-    return line:match("^%s*|") ~= nil
+--- @class utils.markdown_table.Cell
+--- @field text string raw cell text, trimmed
+--- @field col integer 0-indexed start byte column of the trimmed text
+--- @field end_col integer 0-indexed end byte column, exclusive
+--- @field lpipe? integer 0-indexed byte column of the `|` before the cell; nil when the row has no leading pipe
+--- @field rpipe? integer 0-indexed byte column of the `|` after the cell; nil when the row has no trailing pipe
+
+--- @class utils.markdown_table.Row
+--- @field row integer 0-indexed buffer row
+--- @field prefix string text before the table on this line (indent, `> ` of a blockquote, list continuation)
+--- @field cells utils.markdown_table.Cell[]
+--- @field delimiter boolean
+
+--- @class utils.markdown_table.Table
+--- @field node TSNode the `pipe_table` node
+--- @field rows utils.markdown_table.Row[] header first, then delimiter, then body
+--- @field align utils.markdown_table.Align[] per column, from the delimiter row
+--- @field ncols integer max cell count over rows
+
+--- @class utils.markdown_table.Opts
+--- @field max_width? integer cap on a cell's contribution to its column width; nil = no cap
+--- @field align_cells? boolean pad per alignment colons (right/centre); default false = all left
+
+local ROW_TYPES = {
+    pipe_table_header = true,
+    pipe_table_delimiter_row = true,
+    pipe_table_row = true,
+}
+
+--- `pipe_table` nodes that intersect rows [start_row, end_row], including
+--- tables in injected markdown.
+--- @param buf integer
+--- @param start_row integer 0-indexed, inclusive
+--- @param end_row integer 0-indexed, inclusive
+--- @return TSNode[] nodes sorted by start row; empty when the buffer has no parser
+function M.tables(buf, start_row, end_row)
+    local parser = vim.treesitter.get_parser(buf)
+    if not parser then
+        return {}
+    end
+    parser:parse({ start_row, 0, end_row + 1, 0 })
+    local query = vim.treesitter.query.parse("markdown", "(pipe_table) @table")
+    local nodes = {}
+    parser:for_each_tree(function(tree, ltree)
+        if ltree:lang() ~= "markdown" then
+            return
+        end
+        for _, node in query:iter_captures(tree:root(), buf, start_row, end_row + 1) do
+            local sr, _, er, ec = node:range()
+            -- The range ends at column 0 of the row below the table.
+            local last_row = ec == 0 and er - 1 or er
+            if sr <= end_row and last_row >= start_row then
+                nodes[#nodes + 1] = node
+            end
+        end
+    end)
+    table.sort(nodes, function(a, b) return a:start() < b:start() end)
+    return nodes
 end
 
---- Split a string on unescaped `|` delimiters.
---- `\|` is a literal pipe, `\\` is a literal backslash.
---- @param s string
---- @return string[]
-local function split_on_pipes(s)
-    local parts = {}
-    local cur = ""
-    local i = 1
-    local len = #s
-    while i <= len do
-        local ch = s:sub(i, i)
-        if ch == "\\" and i < len then
-            local next_ch = s:sub(i + 1, i + 1)
-            if next_ch == "|" or next_ch == "\\" then
-                cur = cur .. ch .. next_ch
-                i = i + 2
-            else
-                cur = cur .. ch
-                i = i + 1
-            end
-        elseif ch == "|" then
-            parts[#parts + 1] = cur
-            cur = ""
-            i = i + 1
-        else
-            cur = cur .. ch
-            i = i + 1
+--- Byte columns of the `|` tokens of a table row, in order.
+--- @param row_node TSNode
+--- @return integer[] pipes 0-indexed byte columns
+local function row_pipes(row_node)
+    local pipes = {}
+    local function add(node)
+        if node:type() == "|" then
+            pipes[#pipes + 1] = select(2, node:start())
         end
     end
-    parts[#parts + 1] = cur
-    return parts
+    for child in row_node:iter_children() do
+        -- The parser emits `ERROR "|"` in place of a cell for an empty cell `||`.
+        if child:type() == "ERROR" then
+            for token in child:iter_children() do
+                add(token)
+            end
+        else
+            add(child)
+        end
+    end
+    return pipes
 end
 
---- Parse a markdown table row into trimmed cells.
+--- Trimmed cell between byte columns [from, to) of `line`.
 --- @param line string
---- @return string[]
-local function parse_row(line)
+--- @param from integer 0-indexed
+--- @param to integer 0-indexed, exclusive
+--- @return utils.markdown_table.Cell
+local function trimmed_cell(line, from, to)
+    local raw = line:sub(from + 1, to)
+    local lead = #raw:match("^%s*")
+    local text = vim.trim(raw)
+    --- @type utils.markdown_table.Cell
+    local cell = { text = text, col = from + lead, end_col = from + lead + #text }
+    return cell
+end
+
+--- Cells of a table row, split at its `|` tokens.
+--- @param line string the row's buffer line
+--- @param row_node TSNode
+--- @return utils.markdown_table.Cell[]
+local function row_cells(line, row_node)
+    local _, row_start, _, row_end = row_node:range()
+    local bounds = row_pipes(row_node)
+    local leading = bounds[1] == row_start
+    local trailing = bounds[#bounds] == row_end - 1
+    if not leading then
+        table.insert(bounds, 1, row_start - 1)
+    end
+    if not trailing then
+        bounds[#bounds + 1] = row_end
+    end
     local cells = {}
-    local inner = line:match("^%s*|(.*)$")
-    if not inner then
-        return cells
-    end
-    local parts = split_on_pipes(inner)
-    -- Drop trailing empty part from the closing `|`
-    if #parts > 0 and vim.trim(parts[#parts]) == "" then
-        parts[#parts] = nil
-    end
-    for _, cell in ipairs(parts) do
-        cells[#cells + 1] = vim.trim(cell)
+    for i = 1, #bounds - 1 do
+        local cell = trimmed_cell(line, bounds[i] + 1, bounds[i + 1])
+        cell.lpipe = (i > 1 or leading) and bounds[i] or nil
+        cell.rpipe = (i < #bounds - 1 or trailing) and bounds[i + 1] or nil
+        cells[#cells + 1] = cell
     end
     return cells
 end
 
---- True if every cell looks like `---`, `:---`, `---:`, or `:---:`.
---- @param cells string[]
---- @return boolean
-local function is_separator_row(cells)
-    for _, cell in ipairs(cells) do
-        if not cell:match("^:?%-+:?$") then
-            return false
-        end
-    end
-    return #cells > 0
+--- Alignment of a delimiter cell from its colons.
+--- @param text string trimmed delimiter cell, e.g. `:--:`
+--- @return utils.markdown_table.Align
+local function delimiter_align(text)
+    local left, right = text:sub(1, 1) == ":", text:sub(-1) == ":"
+    return left and right and "centre" or right and "right" or "left"
 end
 
---- Build a separator cell of given width preserving alignment markers.
---- @param original string
+--- Parse a `pipe_table` node.
+--- @param buf integer
+--- @param node TSNode the `pipe_table` node
+--- @return utils.markdown_table.Table
+function M.parse(buf, node)
+    local sr, _, er = node:range()
+    local lines = vim.api.nvim_buf_get_lines(buf, sr, er + 1, false)
+    local rows = {}
+    local align = {}
+    local ncols = 0
+    for child in node:iter_children() do
+        if ROW_TYPES[child:type()] then
+            local row, col = child:start()
+            local line = lines[row - sr + 1]
+            local delimiter = child:type() == "pipe_table_delimiter_row"
+            local cells = row_cells(line, child)
+            if delimiter then
+                for c, cell in ipairs(cells) do
+                    align[c] = delimiter_align(cell.text)
+                end
+            end
+            ncols = math.max(ncols, #cells)
+            rows[#rows + 1] = {
+                row = row,
+                prefix = line:sub(1, col),
+                cells = cells,
+                delimiter = delimiter,
+            }
+        end
+    end
+    --- @type utils.markdown_table.Table
+    local tbl = { node = node, rows = rows, align = align, ncols = ncols }
+    return tbl
+end
+
+--- Delimiter cell of `width` keeping the colons of `text`.
+--- @param text string original delimiter cell, empty for a missing cell
 --- @param width integer
 --- @return string
-local function build_separator_cell(original, width)
-    local left = original:match("^:") and ":" or ""
-    local right = original:match(":$") and ":" or ""
-    local dashes = width - #left - #right
-    if dashes < 1 then
-        dashes = 1
-    end
-    return left .. string.rep("-", dashes) .. right
+local function delimiter_cell(text, width)
+    local left = text:sub(1, 1) == ":" and ":" or ""
+    local right = text:sub(-1) == ":" and ":" or ""
+    return left .. string.rep("-", width - #left - #right) .. right
 end
 
---- Visual width of a cell after stripping markdown syntax that's concealed
---- at conceallevel >= 1. Tracks nvim-treesitter's bundled markdown_inline
---- highlights query plus the local override in
---- `after/queries/markdown_inline/highlights.scm` — which conceals the four
---- ~ delimiters of true `~~double~~` strikethroughs while leaving stray
---- single tildes visible. Autolink brackets (`<https://...>`) are NOT
---- concealed and intentionally not stripped here. Order matters: code spans
---- first (their content is opaque), then images before links (`![..](..)`
---- would otherwise match `[..](..)`), then longest emphasis delimiters
---- before shorter.
---- @param cell string
---- @return integer
-local function cell_visual_width(cell)
-    local s = cell
-    s = s:gsub("`([^`]+)`", "%1")
-    s = s:gsub("!%[([^%]]*)%]%([^)]*%)", "%1") -- image
-    s = s:gsub("%[([^%]]*)%]%([^)]*%)", "%1") -- inline link
-    s = s:gsub("%[([^%]]*)%]%[[^%]]*%]", "%1") -- full reference link
-    s = s:gsub("%*%*%*(.-)%*%*%*", "%1")
-    s = s:gsub("___(.-)___", "%1")
-    s = s:gsub("%*%*(.-)%*%*", "%1")
-    s = s:gsub("__(.-)__", "%1")
-    s = s:gsub("%*(.-)%*", "%1")
-    s = s:gsub("_(.-)_", "%1")
-    s = s:gsub("~~(.-)~~", "%1") -- only ~~double~~ — single tildes stay visible
-    return vim.api.nvim_strwidth(s)
+--- Pad `text` to display `width` per `align`. Text wider than `width` is not padded.
+--- @param text string
+--- @param width integer display cells
+--- @param align utils.markdown_table.Align
+--- @return string
+local function pad(text, width, align)
+    local n = math.max(0, width - vim.api.nvim_strwidth(text))
+    local left = align == "right" and n or align == "centre" and math.floor(n / 2) or 0
+    return string.rep(" ", left) .. text .. string.rep(" ", n - left)
 end
 
---- Format a contiguous block of table lines (no validation that they all are).
---- @param table_lines string[]
---- @param opts? utils.markdown_table.Opts
+--- Lines of an aligned table, one per row. Column width is the widest
+--- non-delimiter cell, each capped at `max_width`, and at least 3.
+--- @param tbl utils.markdown_table.Table
+--- @param opts utils.markdown_table.Opts|nil
 --- @return string[]
-function M.format_block(table_lines, opts)
+function M.format(tbl, opts)
     opts = opts or {}
-    local max_width = opts.max_width
-    local align_cells = opts.align_cells == true
-
-    local rows = {}
-    for _, line in ipairs(table_lines) do
-        rows[#rows + 1] = parse_row(line)
-    end
-
-    local num_cols = 0
-    for _, row in ipairs(rows) do
-        if #row > num_cols then
-            num_cols = #row
-        end
-    end
-    if num_cols == 0 then
-        return table_lines
-    end
-
-    local sep_idx = nil
-    for i, row in ipairs(rows) do
-        if is_separator_row(row) then
-            sep_idx = i
-            break
-        end
-    end
-
-    --- Per-column alignment, derived from the separator row when
-    --- `align_cells` is enabled. `"left"` is the default for missing
-    --- markers and for tables with no separator row.
-    --- @type ("left"|"centre"|"right")[]
-    local col_align = {}
-    for c = 1, num_cols do
-        col_align[c] = "left"
-    end
-    if align_cells and sep_idx then
-        for c, cell in ipairs(rows[sep_idx]) do
-            local left = cell:match("^:") ~= nil
-            local right = cell:match(":$") ~= nil
-            if left and right then
-                col_align[c] = "centre"
-            elseif right then
-                col_align[c] = "right"
-            else
-                col_align[c] = "left"
+    local widths = {}
+    for c = 1, tbl.ncols do
+        widths[c] = 3
+        for _, row in ipairs(tbl.rows) do
+            local cell = row.cells[c]
+            if cell and not row.delimiter then
+                local w = vim.api.nvim_strwidth(cell.text)
+                widths[c] = math.max(widths[c], math.min(w, opts.max_width or w))
             end
         end
     end
-
-    local col_widths = {}
-    for c = 1, num_cols do
-        col_widths[c] = 0
-    end
-    for idx, row in ipairs(rows) do
-        if idx ~= sep_idx then
-            for c = 1, num_cols do
-                local cell = row[c] or ""
-                local vw = cell_visual_width(cell)
-                if max_width and vw > max_width then
-                    vw = max_width
-                end
-                if vw > col_widths[c] then
-                    col_widths[c] = vw
-                end
-            end
-        end
-    end
-
-    -- Separator dashes need at least 3 to remain valid markdown.
-    for c = 1, num_cols do
-        if col_widths[c] < 3 then
-            col_widths[c] = 3
-        end
-    end
-
-    local result = {}
-    for _, row in ipairs(rows) do
+    local lines = {}
+    for _, row in ipairs(tbl.rows) do
         local parts = {}
-        local is_sep = is_separator_row(row)
-        for c = 1, num_cols do
-            local cell = row[c] or ""
-            if is_sep then
-                parts[#parts + 1] = build_separator_cell(cell, col_widths[c])
-            else
-                local pad = col_widths[c] - cell_visual_width(cell)
-                if pad < 0 then
-                    pad = 0 -- overflow: cell wider than capped column
-                end
-                local align = col_align[c]
-                if align == "right" then
-                    parts[#parts + 1] = string.rep(" ", pad) .. cell
-                elseif align == "centre" then
-                    local left_pad = math.floor(pad / 2)
-                    local right_pad = pad - left_pad
-                    parts[#parts + 1] = string.rep(" ", left_pad) .. cell
-                        .. string.rep(" ", right_pad)
-                else
-                    parts[#parts + 1] = cell .. string.rep(" ", pad)
-                end
+        for c = 1, tbl.ncols do
+            local text = row.cells[c] and row.cells[c].text or ""
+            parts[c] = row.delimiter and delimiter_cell(text, widths[c])
+                or pad(text, widths[c], opts.align_cells and tbl.align[c] or "left")
+        end
+        lines[#lines + 1] = row.prefix .. "| " .. table.concat(parts, " | ") .. " |"
+    end
+    return lines
+end
+
+--- True when a table has a parse error between its rows, e.g. the stray `|`
+--- of a row starting with `||`. Errors inside a row are empty cells.
+--- @param node TSNode the `pipe_table` node
+--- @return boolean
+local function has_row_level_error(node)
+    for child in node:iter_children() do
+        if child:type() == "ERROR" or child:missing() then
+            return true
+        end
+    end
+    return false
+end
+
+--- Replace `old` with `new` on buffer row `row` by setting only the span
+--- between their common prefix and suffix, so extmarks outside it stay put.
+--- @param buf integer
+--- @param row integer 0-indexed
+--- @param old string
+--- @param new string
+local function set_line_diff(buf, row, old, new)
+    local p = 0
+    while p < #old and p < #new and old:byte(p + 1) == new:byte(p + 1) do
+        p = p + 1
+    end
+    local s = 0
+    while s < #old - p and s < #new - p and old:byte(#old - s) == new:byte(#new - s) do
+        s = s + 1
+    end
+    vim.api.nvim_buf_set_text(buf, row, p, row, #old - s, { new:sub(p + 1, #new - s) })
+end
+
+--- Align every table that intersects rows [start_row, end_row], in place.
+--- Tables with parse errors other than empty cells are skipped with a warning.
+--- Only changed rows are written.
+--- @param buf integer
+--- @param start_row integer 0-indexed, inclusive
+--- @param end_row integer 0-indexed, inclusive
+--- @param opts utils.markdown_table.Opts|nil
+--- @return integer n_tables tables found, including skipped ones
+function M.align(buf, start_row, end_row, opts)
+    local nodes = M.tables(buf, start_row, end_row)
+    local tables = {}
+    for _, node in ipairs(nodes) do
+        if not has_row_level_error(node) then
+            tables[#tables + 1] = M.parse(buf, node)
+        else
+            vim.notify(("markdown table at line %d has parse errors, not aligned"):format(node:start() + 1),
+                vim.log.levels.WARN)
+        end
+    end
+    -- Formatting keeps the row count, so rows of later tables stay valid.
+    for _, tbl in ipairs(tables) do
+        for i, new in ipairs(M.format(tbl, opts)) do
+            local row = tbl.rows[i].row
+            local old = vim.api.nvim_buf_get_lines(buf, row, row + 1, false)[1]
+            if old ~= new then
+                set_line_diff(buf, row, old, new)
             end
         end
-        result[#result + 1] = "| " .. table.concat(parts, " | ") .. " |"
     end
-
-    return result
-end
-
---- Find the contiguous range of table lines covering `row` (0-indexed).
---- Returns nil if `row` is not on a table line.
---- @param bufnr integer
---- @param row integer 0-indexed
---- @return integer? start_row 0-indexed, inclusive
---- @return integer? end_row 0-indexed, inclusive
-function M.find_block_range(bufnr, row)
-    local line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1]
-    if not line or not M.is_table_line(line) then
-        return nil, nil
-    end
-    local total = vim.api.nvim_buf_line_count(bufnr)
-    local s = row
-    while s > 0 do
-        local prev = vim.api.nvim_buf_get_lines(bufnr, s - 1, s, false)[1]
-        if not prev or not M.is_table_line(prev) then
-            break
-        end
-        s = s - 1
-    end
-    local e = row
-    while e < total - 1 do
-        local nxt = vim.api.nvim_buf_get_lines(bufnr, e + 1, e + 2, false)[1]
-        if not nxt or not M.is_table_line(nxt) then
-            break
-        end
-        e = e + 1
-    end
-    return s, e
-end
-
---- Align the table block containing the given row, in place.
---- @param bufnr integer
---- @param row integer 0-indexed
---- @param opts? utils.markdown_table.Opts
---- @return boolean aligned True if a table block was found and replaced.
-function M.align_at(bufnr, row, opts)
-    local s, e = M.find_block_range(bufnr, row)
-    if not s or not e then
-        return false
-    end
-    local lines = vim.api.nvim_buf_get_lines(bufnr, s, e + 1, false)
-    local formatted = M.format_block(lines, opts)
-    vim.api.nvim_buf_set_lines(bufnr, s, e + 1, false, formatted)
-    return true
+    return #nodes
 end
 
 return M

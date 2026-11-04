@@ -1,236 +1,245 @@
 ---@diagnostic disable: undefined-global
 -- Tests for lua/utils/markdown_table.lua
 
-local md = require("utils.markdown_table")
+local md = require "utils.markdown_table"
 
-describe("markdown_table.is_table_line", function()
-    it("recognises lines starting with `|`", function()
-        assert.is_true(md.is_table_line("| a | b |"))
-        assert.is_true(md.is_table_line("  | a | b |"))
-        assert.is_true(md.is_table_line("|---|---|"))
-    end)
-    it("rejects non-table lines", function()
-        assert.is_false(md.is_table_line(""))
-        assert.is_false(md.is_table_line("text"))
-        assert.is_false(md.is_table_line("- bullet"))
-    end)
-end)
+-- ftplugin/markdown.lua requires mini.hipatterns, which the harness lacks.
+vim.cmd("filetype plugin off")
 
-describe("markdown_table.format_block", function()
-    it("pads columns to the widest cell", function()
-        local out = md.format_block({
-            "| Name | Age |",
-            "| --- | --- |",
-            "| Alice | 30 |",
-        })
-        -- All rows must have identical visual width when measured by raw byte
-        -- length (no concealed delimiters in this fixture).
-        assert.are.equal(#out[1], #out[2])
-        assert.are.equal(#out[1], #out[3])
-        -- Header padded so "Name" cell width matches "Alice".
-        assert.is_truthy(out[1]:find("| Name  | Age |"))
-    end)
+local buf
 
-    it("preserves alignment markers", function()
-        local out = md.format_block({
-            "| L | C | R |",
-            "|:---|:---:|---:|",
-            "| a | b | c |",
-        })
-        -- Separator must keep the colon markers and only widen the dashes.
-        local sep = out[2]
-        assert.is_truthy(sep:find(":%-+ |"), "left marker preserved: " .. sep)
-        assert.is_truthy(sep:find(":%-+:"), "centre marker preserved: " .. sep)
-        assert.is_truthy(sep:find("%-+:"), "right marker preserved: " .. sep)
-    end)
+--- @param lines string[]
+local function set(lines)
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+end
 
-    it("is idempotent", function()
-        local input = {
-            "| a | b |",
-            "| --- | --- |",
-            "| longer | x |",
-        }
-        local once = md.format_block(input)
-        local twice = md.format_block(once)
-        assert.are.same(once, twice)
-    end)
+--- @return string[]
+local function get()
+    return vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+end
 
-    it("strips concealed delimiters when measuring width", function()
-        -- Each col-1 cell has visual width 1 after concealing the
-        -- delimiters, so all three rows pad to the same column width.
-        -- Raw byte counts differ by the delimiter overhead per cell.
-        local out = md.format_block({
-            "| H | H |",
-            "| --- | --- |",
-            "| `x` | a |",
-            "| **x** | a |",
-            "| ~~x~~ | a |",
-        })
-        local function len(i) return #out[i] end
-        -- `**x**` adds 2 bytes vs `` `x` `` (4 stars vs 2 backticks); same
-        -- for `~~x~~` (4 tildes vs 2 backticks).
-        assert.are.equal(len(3) + 2, len(4))
-        assert.are.equal(len(3) + 2, len(5))
-    end)
+--- Align rows [r1, r2] (default: whole buffer) and return the buffer lines.
+--- @param opts utils.markdown_table.Opts|nil
+--- @param r1 integer|nil
+--- @param r2 integer|nil
+--- @return string[]
+local function align(opts, r1, r2)
+    md.align(buf, r1 or 0, r2 or vim.api.nvim_buf_line_count(buf) - 1, opts)
+    return get()
+end
 
-    it("caps column width at max_width without truncating cells", function()
-        local out = md.format_block({
-            "| ID | Description |",
-            "| --- | --- |",
-            "| 1 | short |",
-            "| 2 | this is significantly longer than five chars |",
-        }, { max_width = 5 })
-        -- Column 2 capped to 5: short row is padded to 5, long row keeps full
-        -- text and overflows the column (no truncation).
-        local short_row = out[3]
-        local long_row = out[4]
-        assert.is_truthy(short_row:find("| short |"))
-        assert.is_truthy(long_row:find("longer than five chars"),
-            "long cell content preserved")
-    end)
-
-    it("respects alignment markers when align_cells = true", function()
-        local out = md.format_block({
-            "| L | C | R |",
-            "|:---|:---:|---:|",
-            "| a | b | cc |",
-        }, { align_cells = true })
-        -- Strip the wrapping `| ` and ` |` to inspect cell padding directly.
-        --- @param line string
-        --- @return string[]
-        local function inner_cells(line)
-            local body = line:gsub("^| ", ""):gsub(" |$", "")
-            local cs = {}
-            for c in body:gmatch("[^|]+") do
-                cs[#cs + 1] = c:gsub("^%s+(.-)%s+$", "%1") and c
-            end
-            local raw = {}
-            for c in body:gmatch("([^|]+)") do
-                raw[#raw + 1] = c:gsub("^ ", ""):gsub(" $", "")
-            end
-            return raw
-        end
-        local cells = inner_cells(out[3])
-        -- Header column widths: L=3 (sep min), C=3 (sep min), R=3 (`cc`+min).
-        assert.are.equal("a  ", cells[1]) -- left: trailing pad
-        assert.are.equal(" b ", cells[2]) -- centre: split pad
-        assert.are.equal(" cc", cells[3]) -- right: leading pad
-    end)
-
-    it("default leaves all cells left-padded regardless of markers", function()
-        local out = md.format_block({
-            "| L | C | R |",
-            "|:---|:---:|---:|",
-            "| a | b | cc |",
-        }) -- no align_cells
-        assert.is_truthy(out[3]:find("| a   | b   | cc"),
-            "all cells should be left-padded by default: " .. out[3])
-    end)
-
-    it("handles escaped pipes inside cells", function()
-        local out = md.format_block({
-            "| Cmd | Note |",
-            "| --- | --- |",
-            "| `a \\| b` | piped |",
-        })
-        -- Escaped pipe should stay literal in the cell, not split it.
-        assert.is_truthy(out[3]:find("a \\| b"))
-        -- Both rows should have the same number of cells (3 outer pipes plus
-        -- one escaped pipe in row 3, so 4 raw `|` total vs 3 in the header).
-        local function unescaped_pipes(s)
-            local n = 0
-            local i = 1
-            while i <= #s do
-                if s:sub(i, i) == "\\" and s:sub(i + 1, i + 1) == "|" then
-                    i = i + 2
-                elseif s:sub(i, i) == "|" then
-                    n = n + 1; i = i + 1
-                else
-                    i = i + 1
-                end
-            end
-            return n
-        end
-        assert.are.equal(unescaped_pipes(out[1]), unescaped_pipes(out[3]))
-    end)
-end)
-
-describe("markdown_table.find_block_range", function()
-    local buf
-
+describe("markdown_table.align", function()
     before_each(function()
         buf = vim.api.nvim_create_buf(true, false)
+        vim.bo[buf].filetype = "markdown"
     end)
 
     after_each(function()
         pcall(vim.api.nvim_buf_delete, buf, { force = true })
     end)
 
-    it("finds a contiguous range from a row inside the table", function()
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
-            "prose",
-            "",
-            "| a | b |",
-            "| --- | --- |",
-            "| 1 | 2 |",
-            "",
-            "more prose",
-        })
-        local s, e = md.find_block_range(buf, 3) -- separator row
-        assert.are.equal(2, s)
-        assert.are.equal(4, e)
+    it("aligns at raw width", function()
+        set({ "| a | b |", "|---|---|", "| **x** | yy |" })
+        assert.are.same({
+            "| a     | b   |",
+            "| ----- | --- |",
+            "| **x** | yy  |",
+        }, align())
     end)
 
-    it("returns nil when row is not on a table line", function()
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "prose only" })
-        local s, e = md.find_block_range(buf, 0)
-        assert.is_nil(s)
-        assert.is_nil(e)
+    it("lets a cell over max_width overflow while other rows stay aligned", function()
+        set({
+            "| id | note |",
+            "| --- | --- |",
+            "| 1 | short |",
+            "| 2 | much longer than five |",
+        })
+        assert.are.same({
+            "| id  | note  |",
+            "| --- | ----- |",
+            "| 1   | short |",
+            "| 2   | much longer than five |",
+        }, align({ max_width = 5 }))
     end)
 
-    it("handles a table at the start of the buffer", function()
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
-            "| a | b |",
+    it("keeps delimiter colons and pads all cells left by default", function()
+        set({ "| L | C | R |", "|:--|:-:|--:|", "| a | b | cc |" })
+        assert.are.same({
+            "| L   | C   | R   |",
+            "| :-- | :-: | --: |",
+            "| a   | b   | cc  |",
+        }, align())
+    end)
+
+    it("pads right and centre columns with align_cells", function()
+        set({ "| L | C | R |", "|:--|:-:|--:|", "| a | b | cc |", "| a | bb | c |" })
+        assert.are.same({
+            "| L   |  C  |   R |",
+            "| :-- | :-: | --: |",
+            "| a   |  b  |  cc |",
+            "| a   | bb  |   c |",
+        }, align({ align_cells = true }))
+    end)
+
+    it("keeps an escaped pipe inside its cell", function()
+        set({ "| a | b |", "|---|---|", "| x \\| y | z |" })
+        assert.are.same({
+            "| a      | b   |",
+            "| ------ | --- |",
+            "| x \\| y | z   |",
+        }, align())
+    end)
+
+    it("leaves pipes in a code fence untouched and formats a markdown fence", function()
+        local lines = {
+            "```",
+            "|a|b|",
+            "|-|-|",
+            "```",
+            "",
+            "```markdown",
+            "|a|b|",
+            "|---|---|",
+            "```",
+        }
+        set(lines)
+        local out = align()
+        assert.are.same(vim.list_slice(lines, 1, 6), vim.list_slice(out, 1, 6))
+        assert.are.same({ "| a   | b   |", "| --- | --- |", "```" }, vim.list_slice(out, 7, 9))
+    end)
+
+    it("adds missing leading and trailing pipes", function()
+        set({ "a | b", "--|--", "1 | 2" })
+        assert.are.same({
+            "| a   | b   |",
             "| --- | --- |",
-            "| 1 | 2 |",
-            "after",
-        })
-        local s, e = md.find_block_range(buf, 0)
-        assert.are.equal(0, s)
-        assert.are.equal(2, e)
+            "| 1   | 2   |",
+        }, align())
+    end)
+
+    it("keeps the prefix of a table in a blockquote and in a list item", function()
+        set({ "> |a|b|", "> |---|---|", "", "- item", "", "  |a|b|", "  |---|---|" })
+        assert.are.same({
+            "> | a   | b   |",
+            "> | --- | --- |",
+            "",
+            "- item",
+            "",
+            "  | a   | b   |",
+            "  | --- | --- |",
+        }, align())
+    end)
+
+    it("fills missing cells", function()
+        set({ "| a | b | c |", "|---|---|---|", "| 1 |", "| 1 | 2 | 3 | 4 |" })
+        assert.are.same({
+            "| a   | b   | c   |     |",
+            "| --- | --- | --- | --- |",
+            "| 1   |     |     |     |",
+            "| 1   | 2   | 3   | 4   |",
+        }, align())
+    end)
+
+    it("keeps cells after empty cells in their columns", function()
+        set({ "| a | b | c | d |", "|---|---|---|---|", "| a || c ||", "| a ||| d |" })
+        assert.are.same({
+            "| a   | b   | c   | d   |",
+            "| --- | --- | --- | --- |",
+            "| a   |     | c   |     |",
+            "| a   |     |     | d   |",
+        }, align())
+    end)
+
+    it("aligns multibyte and wide characters by display width", function()
+        set({ "| é | 漢字 |", "|---|---|", "| abcd | x |" })
+        assert.are.same({
+            "| é    | 漢字 |",
+            "| ---- | ---- |",
+            "| abcd | x    |",
+        }, align())
+    end)
+
+    it("adds pipes to a blockquote row without them", function()
+        set({ "> |a|b|", "> |---|---|", "> c | d" })
+        assert.are.same({
+            "> | a   | b   |",
+            "> | --- | --- |",
+            "> | c   | d   |",
+        }, align())
+    end)
+
+    it("returns 0 in a buffer without a markdown parser", function()
+        vim.bo[buf].filetype = ""
+        set({ "|a|b|", "|-|-|" })
+        assert.are.equal(0, md.align(buf, 0, 1))
+    end)
+
+    it("skips a table with a row starting with `||` and warns", function()
+        local lines = { "| a | b |", "|---|---|", "|| c |" }
+        set(lines)
+        local notify = vim.notify
+        local level
+        vim.notify = function(_, l) level = l end
+        local out = align()
+        vim.notify = notify
+        assert.are.equal(vim.log.levels.WARN, level)
+        assert.are.same(lines, out)
+    end)
+
+    it("formats only, and all of, the tables a range intersects", function()
+        set({ "|a|b|", "|-|-|", "", "|c|d|", "|-|-|", "|e|f|" })
+        assert.are.same({
+            "|a|b|",
+            "|-|-|",
+            "",
+            "| c   | d   |",
+            "| --- | --- |",
+            "| e   | f   |",
+        }, align(nil, 4, 4))
+    end)
+
+    it("returns 0 outside a table and on the blank line below it", function()
+        set({ "text", "|a|b|", "|-|-|", "", "more" })
+        assert.are.equal(0, md.align(buf, 0, 0))
+        assert.are.equal(0, md.align(buf, 3, 3))
+        assert.are.equal(1, md.align(buf, 2, 2))
+    end)
+
+    it("keeps an extmark before the first changed byte", function()
+        set({ "| aaa | b |", "| --- | --- |" })
+        local ns = vim.api.nvim_create_namespace("markdown_table_spec")
+        local id = vim.api.nvim_buf_set_extmark(buf, ns, 0, 3, {})
+        align()
+        assert.are.same({ 0, 3 }, vim.api.nvim_buf_get_extmark_by_id(buf, ns, id, {}))
+    end)
+
+    it("is idempotent", function()
+        set({ "> | L | C |", "> |:--|:-:|", "> | longer | x |" })
+        local once = align({ align_cells = true })
+        assert.are.same(once, align({ align_cells = true }))
     end)
 end)
 
-describe("markdown_table.align_at", function()
-    local buf
+describe("markdown table keymap", function()
+    vim.cmd.runtime("lua/autocmds/markdown_table.lua")
 
     before_each(function()
         buf = vim.api.nvim_create_buf(true, false)
         vim.api.nvim_set_current_buf(buf)
+        vim.bo[buf].filetype = "markdown"
     end)
 
     after_each(function()
         pcall(vim.api.nvim_buf_delete, buf, { force = true })
     end)
 
-    it("returns false when not on a table", function()
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "prose" })
-        assert.is_false(md.align_at(buf, 0))
-    end)
-
-    it("aligns the block at the cursor and returns true", function()
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
-            "preamble",
-            "|a|bbbb|",
-            "|---|---|",
-            "|longer|x|",
-        })
-        assert.is_true(md.align_at(buf, 1))
-        local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-        -- Preamble untouched.
-        assert.are.equal("preamble", lines[1])
-        -- All table rows now have the same raw width.
-        assert.are.equal(#lines[2], #lines[3])
-        assert.are.equal(#lines[2], #lines[4])
+    it("uses a count as max_width in visual mode", function()
+        set({ "|a|b|", "|-|-|", "|long cell|x|" })
+        vim.api.nvim_feedkeys(vim.keycode("ggVG4<localleader>a"), "xt", false)
+        assert.are.same({
+            "| a    | b   |",
+            "| ---- | --- |",
+            "| long cell | x   |",
+        }, get())
     end)
 end)

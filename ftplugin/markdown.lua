@@ -1,6 +1,3 @@
-local util = require "utils/init"
-local md_table = require "utils.markdown_table"
-
 local opt = vim.opt_local
 -- markdown doesn't really have comments. 
 -- The default is html comments <!-- ... -->.
@@ -37,10 +34,3 @@ if vim.bo.buftype ~= "" then
 end
 
 opt.list = false
-
-vim.keymap.set("n", "<localleader>a", function()
-    local row = util.get_cursor()
-    if not md_table.align_at(0, row, { max_width = 30, align_cells = true }) then
-        vim.notify("not on a markdown table", vim.log.levels.INFO)
-    end
-end, { buf = 0, desc = "Align markdown table" })
