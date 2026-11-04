@@ -109,6 +109,7 @@ describe("markdown_table_display", function()
             flush()
             local rows = assert_aligned(win)
             assert.are.equal(level == 0, rows[3]:find("**", 1, true) ~= nil, "level " .. level)
+            assert.is_truthy(rows[2]:match("^| %-+ | %-+ | %-+ |"), rows[2])
         end
     end)
 
@@ -140,6 +141,17 @@ describe("markdown_table_display", function()
         flush()
         assert.is_truthy(assert_aligned(top)[3]:find("**", 1, true))
         assert.is_falsy(assert_aligned(bottom)[3]:find("**", 1, true))
+    end)
+
+    it("extends delimiter dashes inside alignment colons", function()
+        local win = lua([[
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, ...)
+            vim.wo.conceallevel = 2
+            return vim.api.nvim_get_current_win()
+        ]], { "text", "| n | m |", "| --: | :-: |", "| **1234** | x |", "| 5 | yyyy |" })
+        flush()
+        local delimiter = table_rows(win)[2]
+        assert.is_truthy(delimiter:match("^| %-+: | :%-+: |"), delimiter)
     end)
 
     it("leaves floats unpadded", function()

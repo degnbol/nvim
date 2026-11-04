@@ -108,6 +108,29 @@ local function last_row(node)
     return ec == 0 and er - 1 or er
 end
 
+--- Where pads of delimiter rows go so they join the dashes: inside the
+--- alignment colons of a cell, e.g. `:--:`, instead of outside them.
+--- @param tbl utils.markdown_table.Table
+--- @return table<integer, table<integer, integer>> per delimiter row, byte column of a pad next to a colon → byte column inside it
+local function dash_anchors(tbl)
+    local anchors = {}
+    for _, row in ipairs(tbl.rows) do
+        if row.delimiter then
+            local moved = {}
+            for _, cell in ipairs(row.cells) do
+                if #cell.text >= 2 and cell.text:sub(1, 1) == ":" then
+                    moved[cell.col] = cell.col + 1
+                end
+                if #cell.text >= 2 and cell.text:sub(-1) == ":" then
+                    moved[cell.end_col] = cell.end_col - 1
+                end
+            end
+            anchors[row.row] = moved
+        end
+    end
+    return anchors
+end
+
 --- Set the pads of the table `node` in `win` on `rows`, or on all its rows.
 --- @param win integer
 --- @param buf integer
@@ -118,10 +141,14 @@ local function set_pads(win, buf, node, rows)
     local entry = measured(buf, tbl)
     local ns = namespace(win)
     local level = vim.wo[win].conceallevel
+    local anchors = dash_anchors(tbl)
     for _, pad in ipairs(md_table.pads(tbl, entry.layout, entry.conceals, level, unconcealed_row(win))) do
         if not rows or rows[pad.row] then
-            api.nvim_buf_set_extmark(buf, ns, pad.row, pad.col, {
-                virt_text = { { string.rep(" ", pad.width) } },
+            local moved = anchors[pad.row]
+            local chunk = moved and { string.rep("-", pad.width), "@punctuation.special.markdown" }
+                or { string.rep(" ", pad.width) }
+            api.nvim_buf_set_extmark(buf, ns, pad.row, moved and moved[pad.col] or pad.col, {
+                virt_text = { chunk },
                 virt_text_pos = "inline",
                 hl_mode = "combine",
                 undo_restore = false,
