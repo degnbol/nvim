@@ -14,7 +14,7 @@ local Ts = require "agentic.utils.treesitter"
 --- Filetypes whose buffers hold markdown tables.
 M.FILETYPES = { "markdown", "pandoc", "AgenticInput" }
 --- Default cap on a cell's contribution to its column width.
-M.MAX_WIDTH = 30
+M.MAX_WIDTH = 40
 
 --- @alias utils.markdown_table.Align "left"|"centre"|"right"
 
@@ -195,19 +195,27 @@ local function delimiter_cell(text, width)
     return left .. string.rep("-", width - #left - #right) .. right
 end
 
---- Pad `text` to display `width` per `align`. Text wider than `width` is not padded.
+--- Pad `text` to a column of display `width` per `align`, for a cell that
+--- starts `shift` cells past the column start. The text keeps its place in
+--- the column where it fits, and the padding ends at the column end where
+--- it fits. Text wider than `width` is not padded.
 --- @param text string
 --- @param width integer display cells
 --- @param align utils.markdown_table.Align
+--- @param shift integer display cells
 --- @return string
-local function pad(text, width, align)
+local function pad(text, width, align, shift)
     local n = math.max(0, width - vim.api.nvim_strwidth(text))
     local left = align == "right" and n or align == "centre" and math.floor(n / 2) or 0
-    return string.rep(" ", left) .. text .. string.rep(" ", n - left)
+    left = math.max(0, left - shift)
+    local right = math.max(0, n - shift - left)
+    return string.rep(" ", left) .. text .. string.rep(" ", right)
 end
 
 --- Lines of an aligned table, one per row. Column width is the widest
---- non-delimiter cell, each capped at `max_width`, and at least 3.
+--- non-delimiter cell, each capped at `max_width`, and at least 3. A cell wider
+--- than its column shifts the rest of its row right. Later cells in that row
+--- pad less until the row is back on the column grid.
 --- @param tbl utils.markdown_table.Table
 --- @param opts utils.markdown_table.Opts|nil
 --- @return string[]
@@ -227,10 +235,12 @@ function M.format(tbl, opts)
     local lines = {}
     for _, row in ipairs(tbl.rows) do
         local parts = {}
+        local excess = 0 -- how far the row so far overruns the column grid
         for c = 1, tbl.ncols do
             local text = row.cells[c] and row.cells[c].text or ""
             parts[c] = row.delimiter and delimiter_cell(text, widths[c])
-                or pad(text, widths[c], opts.align_cells and tbl.align[c] or "left")
+                or pad(text, widths[c], opts.align_cells and tbl.align[c] or "left", excess)
+            excess = math.max(0, excess + vim.api.nvim_strwidth(parts[c]) - widths[c])
         end
         lines[#lines + 1] = row.prefix .. "| " .. table.concat(parts, " | ") .. " |"
     end
@@ -428,7 +438,9 @@ function M.layout(tbl, conceals, opts)
 end
 
 --- Virtual spaces that put every cell of a table in its column on screen,
---- for a window at `level`.
+--- for a window at `level`. A cell wider than its column shifts the rest of
+--- its row right. Later cells in that row get less space until the row is back
+--- on the column grid.
 --- @param tbl utils.markdown_table.Table
 --- @param layout utils.markdown_table.Layout
 --- @param conceals table<integer, agentic.utils.Conceal.Range[]> per index into `tbl.rows`
@@ -445,22 +457,27 @@ function M.pads(tbl, layout, conceals, level, unconcealed_row)
     for i, row in ipairs(tbl.rows) do
         local row_level = row.row == unconcealed_row and 0 or level
         local shown = Conceal.columns(row.line, conceals[i], {}, TABSTOP, row_level).shown
-        for c, cl in pairs(layout.cells[i]) do
-            local cell = row.cells[c]
-            local before, body, after = cell_widths(shown, cell, cl)
-            local total = before + body + after
-            local width, align = layout.width[c], layout.align[c]
-            local left
-            if align == "right" then
-                left = width - total - math.max(0, layout.trail[c] - after)
-            else
-                local free = width - layout.lead[c] - layout.trail[c] - body
-                local centring = align == "centre" and math.floor(free / 2) or 0
-                left = layout.lead[c] - before + centring
+        local excess = 0 -- how far the row so far overruns the column grid
+        for c = 1, tbl.ncols do
+            local cl = layout.cells[i][c]
+            if cl then
+                local cell = row.cells[c]
+                local before, body, after = cell_widths(shown, cell, cl)
+                local total = before + body + after
+                local width, align = layout.width[c], layout.align[c]
+                local left
+                if align == "right" then
+                    left = width - total - math.max(0, layout.trail[c] - after)
+                else
+                    local free = width - layout.lead[c] - layout.trail[c] - body
+                    local centring = align == "centre" and math.floor(free / 2) or 0
+                    left = layout.lead[c] - before + centring
+                end
+                left = math.max(0, left - excess)
+                add(row.row, cell.col, left)
+                add(row.row, cell.end_col, width - excess - total - left)
+                excess = math.max(0, excess + left + total - width)
             end
-            left = math.max(0, left)
-            add(row.row, cell.col, left)
-            add(row.row, cell.end_col, width - total - left)
         end
     end
     return pads

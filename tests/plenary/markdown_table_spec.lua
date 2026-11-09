@@ -62,6 +62,36 @@ describe("markdown_table.align", function()
         }, align({ max_width = 5 }))
     end)
 
+    it("shrinks the cells after a cell over max_width until the row is back in its columns", function()
+        set({ "| a | b | c |", "|---|---|---|", "| 1234567 | 1 | x |", "| 1 | 2 | y |" })
+        assert.are.same({
+            "| a     | b   | c   |",
+            "| ----- | --- | --- |",
+            "| 1234567 | 1 | x   |",
+            "| 1     | 2   | y   |",
+        }, align({ max_width = 5 }))
+    end)
+
+    it("keeps the end of a right-aligned cell after a cell over max_width on its column end", function()
+        set({ "| a | b | c |", "|---|--:|---|", "| 1234567 | 1 | x |", "| 1 | 22222 | y |" })
+        assert.are.same({
+            "| a     |     b | c   |",
+            "| ----- | ----: | --- |",
+            "| 1234567 |   1 | x   |",
+            "| 1     | 22222 | y   |",
+        }, align({ max_width = 5, align_cells = true }))
+    end)
+
+    it("keeps a centred cell after a cell over max_width on its column centre where it fits", function()
+        set({ "| a | b | c |", "|---|:-:|---|", "| 1234567 | 1 | x |", "| 1 | 22222 | y |" })
+        assert.are.same({
+            "| a     |   b   | c   |",
+            "| ----- | :---: | --- |",
+            "| 1234567 | 1   | x   |",
+            "| 1     | 22222 | y   |",
+        }, align({ max_width = 5, align_cells = true }))
+    end)
+
     it("keeps delimiter colons and pads all cells left by default", function()
         set({ "| L | C | R |", "|:--|:-:|--:|", "| a | b | cc |" })
         assert.are.same({
@@ -360,6 +390,46 @@ describe("markdown_table.layout and pads", function()
         assert.is_true(raw[3].pipes[1] > raw[1].pipes[1])
     end)
 
+    it("puts a row back in its columns after a cell over the cap", function()
+        local tbl, conceals, layout = measure({
+            "| name | b | c |",
+            "| - | - | - |",
+            "| " .. ("a"):rep(34) .. " | 1 | 2 |",
+            "| plain | " .. ("b"):rep(30) .. " | 3 |",
+        })
+        for _, level in ipairs({ 0, 3 }) do
+            local rows = screen(tbl, conceals, layout, level)
+            assert.is_true(rows[3].pipes[1] > rows[1].pipes[1])
+            assert.are.same(vim.list_slice(rows[1].pipes, 2), vim.list_slice(rows[3].pipes, 2))
+        end
+    end)
+
+    it("keeps a centred cell after a cell over the cap on its column centre", function()
+        local tbl, conceals, layout = measure({
+            "| name | b | c |",
+            "| - | :-: | - |",
+            "| " .. ("a"):rep(34) .. " | 1 | 2 |",
+            "| " .. ("x"):rep(28) .. " | " .. ("b"):rep(30) .. " | 3 |",
+        })
+        for _, level in ipairs({ 0, 3 }) do
+            local rows = screen(tbl, conceals, layout, level)
+            assert.are.equal(rows[1].starts[2], rows[3].starts[2])
+            assert.are.same(vim.list_slice(rows[1].pipes, 2), vim.list_slice(rows[3].pipes, 2))
+        end
+    end)
+
+    it("needs no pads at conceallevel 0 on a table formatted with a cell over the cap", function()
+        set({
+            "| a | b | c |",
+            "| - | --: | - |",
+            "| " .. ("a"):rep(34) .. " | 1 | 2 |",
+            "| x | " .. ("b"):rep(30) .. " | 3 |",
+        })
+        md.align(buf, 0, 3, OPTS)
+        local tbl, conceals, layout = measure(get())
+        assert.are.same({}, md.pads(tbl, layout, conceals, 0))
+    end)
+
     it("lines up the ends of a right-aligned column", function()
         local tbl, conceals, layout = measure({
             "| n |",
@@ -418,7 +488,7 @@ describe("markdown table keymap", function()
         assert.are.same({
             "| a    | b   |",
             "| ---- | --- |",
-            "| long cell | x   |",
+            "| long cell | x |",
         }, get())
     end)
 end)
