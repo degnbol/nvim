@@ -44,10 +44,10 @@ return {
 		ft = "kitty",
 	},
 	{
-		"symref.nvim",
+		"symbol-ls.nvim",
 		load = function() end,
 		after = function()
-			require("symref").setup({ filetypes = { "markdown", "AgenticChat" } })
+			require("symbol-ls").setup({ filetypes = { "markdown", "AgenticChat" } })
 		end,
 	},
 	-- scala (not yet in Mason)

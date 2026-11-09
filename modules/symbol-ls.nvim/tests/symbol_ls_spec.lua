@@ -1,6 +1,6 @@
 ---@diagnostic disable: undefined-global
-local symref = require "symref"
-local lsp = require "symref.lsp_util"
+local symbol_ls = require "symbol-ls"
+local lsp = require "symbol-ls.lsp_util"
 
 --- @param lines string[]
 --- @return integer bufnr
@@ -11,7 +11,7 @@ local function markdown_buf(lines)
     return bufnr
 end
 
-describe("symref.code_span_at", function()
+describe("symbol-ls.code_span_at", function()
     local line = "see `ShellParse.extract_commands` here"
     --         0123456789...: span is bytes 4..32, backticks at 4 and 32
     local bufnr
@@ -21,27 +21,27 @@ describe("symref.code_span_at", function()
     end)
 
     it("returns the text inside a span", function()
-        local text, range = symref.code_span_at(bufnr, 0, 10)
+        local text, range = symbol_ls.code_span_at(bufnr, 0, 10)
         assert.are.equal("ShellParse.extract_commands", text)
         assert.are.same({ 0, 4, 0, 33 }, range)
     end)
 
     it("returns the span on either backtick", function()
-        assert.are.equal("ShellParse.extract_commands", (symref.code_span_at(bufnr, 0, 4)))
-        assert.are.equal("ShellParse.extract_commands", (symref.code_span_at(bufnr, 0, 32)))
+        assert.are.equal("ShellParse.extract_commands", (symbol_ls.code_span_at(bufnr, 0, 4)))
+        assert.are.equal("ShellParse.extract_commands", (symbol_ls.code_span_at(bufnr, 0, 32)))
     end)
 
     it("returns nil outside any span", function()
-        assert.is_nil(symref.code_span_at(bufnr, 0, 1))
-        assert.is_nil(symref.code_span_at(bufnr, 0, 35))
+        assert.is_nil(symbol_ls.code_span_at(bufnr, 0, 1))
+        assert.is_nil(symbol_ls.code_span_at(bufnr, 0, 35))
     end)
 
     it("finds a span on a later row", function()
-        assert.are.equal("x", (symref.code_span_at(bufnr, 2, 7)))
+        assert.are.equal("x", (symbol_ls.code_span_at(bufnr, 2, 7)))
     end)
 end)
 
-describe("symref.parse_term", function()
+describe("symbol-ls.parse_term", function()
     local cases = {
         ["ShellParse.extract_commands"] = { symbol = "extract_commands", qualifiers = { "ShellParse" } },
         ["Mod:method"] = { symbol = "method", qualifiers = { "Mod" } },
@@ -53,18 +53,18 @@ describe("symref.parse_term", function()
     }
     for text, term in pairs(cases) do
         it("parses " .. text, function()
-            assert.are.same(term, symref.parse_term(text))
+            assert.are.same(term, symbol_ls.parse_term(text))
         end)
     end
 
     for _, text in ipairs { "rg -n", "a b", "" } do
         it("rejects '" .. text .. "'", function()
-            assert.is_nil(symref.parse_term(text))
+            assert.is_nil(symbol_ls.parse_term(text))
         end)
     end
 end)
 
-describe("symref.lsp_util.convert_range", function()
+describe("symbol-ls.lsp_util.convert_range", function()
     -- "é" and "ü" are 2 bytes and 1 UTF-16 unit each.
     local fname = vim.fn.tempname() .. ".txt"
     vim.fn.writefile({ "first", "é_ü foo" }, fname)
@@ -137,7 +137,7 @@ local function stop(...)
     vim.wait(1000, function() return #vim.lsp.get_clients() == 0 end)
 end
 
-describe("symref.lsp_util.request_all", function()
+describe("symbol-ls.lsp_util.request_all", function()
     local notify
     before_each(function()
         notify = vim.notify
@@ -180,11 +180,11 @@ describe("symref.lsp_util.request_all", function()
     end)
 end)
 
-describe("symref.setup", function()
+describe("symbol-ls.setup", function()
     local bufs = {}
     after_each(function()
-        stop(unpack(vim.lsp.get_clients { name = "symref" }))
-        vim.api.nvim_del_augroup_by_name("symref")
+        stop(unpack(vim.lsp.get_clients { name = "symbol-ls" }))
+        vim.api.nvim_del_augroup_by_name("symbol-ls")
         for _, bufnr in ipairs(bufs) do
             vim.api.nvim_buf_delete(bufnr, { force = true })
         end
@@ -205,12 +205,12 @@ describe("symref.setup", function()
     --- @param bufnr integer
     --- @return boolean
     local function attached(bufnr)
-        return #vim.lsp.get_clients { bufnr = bufnr, name = "symref" } > 0
+        return #vim.lsp.get_clients { bufnr = bufnr, name = "symbol-ls" } > 0
     end
 
     it("attaches open and later buffers of the filetypes, but not markdown with a buftype", function()
         local open = buf_of("text", "")
-        symref.setup { filetypes = { "markdown", "text" } }
+        symbol_ls.setup { filetypes = { "markdown", "text" } }
         local later = buf_of("markdown", "")
         local float = buf_of("markdown", "nofile")
         local named = buf_of("text", "nofile")
@@ -223,7 +223,7 @@ describe("symref.setup", function()
     end)
 end)
 
-describe("symref textDocument/definition", function()
+describe("symbol-ls textDocument/definition", function()
     it("answers with the ranked hits in UTF-8 columns", function()
         local fname = vim.fn.tempname() .. "/shell_parse.lua"
         vim.fn.mkdir(vim.fs.dirname(fname), "p")
@@ -245,12 +245,12 @@ describe("symref textDocument/definition", function()
 
         local bufnr = markdown_buf { "see `ShellParse.run()`" }
         vim.api.nvim_set_current_buf(bufnr)
-        symref.attach(bufnr)
+        symbol_ls.attach(bufnr)
         local responses = vim.lsp.buf_request_sync(bufnr, "textDocument/definition", {
             textDocument = { uri = vim.uri_from_bufnr(bufnr) },
             position = { line = 0, character = 8 },
         }, 1000)
-        stop(code, unpack(vim.lsp.get_clients { name = "symref" }))
+        stop(code, unpack(vim.lsp.get_clients { name = "symbol-ls" }))
 
         local _, response = next(assert(responses))
         assert.are.same({
@@ -259,11 +259,11 @@ describe("symref textDocument/definition", function()
     end)
 end)
 
-describe("symref.rank", function()
+describe("symbol-ls.rank", function()
     --- @param name string
     --- @param path string
     --- @param container string|nil
-    --- @return symref.Hit
+    --- @return symbol_ls.Hit
     local function hit(name, path, container)
         return {
             info = {
@@ -274,7 +274,7 @@ describe("symref.rank", function()
             },
         }
     end
-    --- @param hits symref.Hit[]
+    --- @param hits symbol_ls.Hit[]
     --- @return string[]
     local function paths(hits)
         return vim.tbl_map(function(h) return vim.uri_to_fname(h.info.location.uri) end, hits)
@@ -291,14 +291,14 @@ describe("symref.rank", function()
         for _ = 1, 3 do
             table.insert(hits, hit(term.symbol, "/repo/lua/agentic/session_manager.test.lua"))
         end
-        local ranked = symref.rank(hits, term, root)
+        local ranked = symbol_ls.rank(hits, term, root)
         assert.are.equal(7, #ranked)
         assert.are.equal("/repo/lua/agentic/session_manager.lua", paths(ranked)[1])
     end)
 
     it("chooses the file stem the qualifier names", function()
         local term = { symbol = "extract_commands", qualifiers = { "ShellParse" } }
-        local ranked = symref.rank({
+        local ranked = symbol_ls.rank({
             hit("extract_commands", "/repo/lua/other.lua"),
             hit("extract_commands", "/repo/lua/shell_parse.lua"),
         }, term, root)
@@ -307,13 +307,13 @@ describe("symref.rank", function()
 
     it("keeps every hit when no qualifier matches", function()
         local term = { symbol = "f", qualifiers = { "Nope" } }
-        local ranked = symref.rank({ hit("f", "/repo/a.lua"), hit("f", "/repo/b.lua") }, term, root)
+        local ranked = symbol_ls.rank({ hit("f", "/repo/a.lua"), hit("f", "/repo/b.lua") }, term, root)
         assert.are.same({ "/repo/a.lua", "/repo/b.lua" }, paths(ranked))
     end)
 
     it("matches containerName", function()
         local term = { symbol = "run", qualifiers = { "my_class" } }
-        local ranked = symref.rank({
+        local ranked = symbol_ls.rank({
             hit("run", "/repo/a.py", "Other"),
             hit("run", "/repo/b.py", "MyClass"),
         }, term, root)
@@ -322,19 +322,19 @@ describe("symref.rank", function()
 
     it("prefers the last qualifier", function()
         local term = { symbol = "f", qualifiers = { "a", "b" } }
-        local ranked = symref.rank({ hit("f", "/repo/a.lua"), hit("f", "/repo/b.lua") }, term, root)
+        local ranked = symbol_ls.rank({ hit("f", "/repo/a.lua"), hit("f", "/repo/b.lua") }, term, root)
         assert.are.same({ "/repo/b.lua", "/repo/a.lua" }, paths(ranked))
     end)
 
     it("prefers files under root", function()
         local term = { symbol = "f", qualifiers = {} }
-        local ranked = symref.rank({ hit("f", "/elsewhere/a.lua"), hit("f", "/repo/a.lua") }, term, root)
+        local ranked = symbol_ls.rank({ hit("f", "/elsewhere/a.lua"), hit("f", "/repo/a.lua") }, term, root)
         assert.are.same({ "/repo/a.lua", "/elsewhere/a.lua" }, paths(ranked))
     end)
 
     it("drops fuzzy non-exact names", function()
         local term = { symbol = "ShellParse", qualifiers = {} }
-        local ranked = symref.rank({
+        local ranked = symbol_ls.rank({
             hit("ShellParse", "/repo/a.lua"),
             hit("shell_parse_x", "/repo/b.lua"),
             hit("SHellParser", "/repo/c.lua"),

@@ -1,17 +1,17 @@
-local lsp_util = require "symref.lsp_util"
+local lsp_util = require "symbol-ls.lsp_util"
 
 --- In-process LSP server that resolves code symbols named in markdown code
---- spans (`` `ShellParse.extract_commands` ``) through the `workspace/symbol`
+--- spans (`` `Foo.bar` ``) through the `workspace/symbol`
 --- of the other running servers. Serves definition, hover and workspace symbol.
 local M = {}
 
-local NAME = "symref"
+local NAME = "symbol-ls"
 
---- @class symref.Hit
+--- @class symbol_ls.Hit
 --- @field info lsp.SymbolInformation range in `client`'s position encoding
 --- @field client vim.lsp.Client
 
---- @class symref.Term
+--- @class symbol_ls.Term
 --- @field symbol string
 --- @field qualifiers string[]
 
@@ -41,7 +41,7 @@ end
 --- `::`; trailing `()` and call arguments dropped (`foo.bar()` → bar).
 --- Returns nil for text that is not an identifier path (`rg -n`, `a b`).
 --- @param text string
---- @return symref.Term|nil
+--- @return symbol_ls.Term|nil
 function M.parse_term(text)
     local path = text:gsub("%b()$", "")
     local dotted = path:gsub("::", "."):gsub("[:#]", ".")
@@ -100,10 +100,10 @@ end
 --- Ties keep input order. Hits whose `name` differs from `symbol` are dropped,
 --- and with qualifiers present, hits that match none are dropped only when
 --- some hit matches one.
---- @param hits symref.Hit[]
---- @param term symref.Term
+--- @param hits symbol_ls.Hit[]
+--- @param term symbol_ls.Term
 --- @param root string|nil
---- @return symref.Hit[]
+--- @return symbol_ls.Hit[]
 function M.rank(hits, term, root)
     local entries = {}
     for i, hit in ipairs(hits) do
@@ -130,16 +130,16 @@ function M.rank(hits, term, root)
     return vim.tbl_map(function(e) return e.hit end, entries)
 end
 
---- workspace/symbol for `symbol` from every running server except symref,
+--- workspace/symbol for `symbol` from every running server except symbol-ls,
 --- each hit tagged with its client. Waits at most 800 ms. Drops hits that
 --- have no range.
 --- @param symbol string
---- @param on_done fun(hits: symref.Hit[])
+--- @param on_done fun(hits: symbol_ls.Hit[])
 function M.query(symbol, on_done)
     -- Below the 1000 ms that 'tagfunc' waits for this server.
     local opts = { exclude = { NAME }, timeout_ms = 800 }
     lsp_util.request_all("workspace/symbol", { query = symbol }, opts, function(replies)
-        --- @type symref.Hit[]
+        --- @type symbol_ls.Hit[]
         local hits = {}
         for _, reply in ipairs(replies) do
             for _, info in ipairs(reply.result or {}) do
@@ -169,7 +169,7 @@ end
 --- range start in that client's encoding. No buffer is loaded or attached
 --- (lua_ls answers for unopened files). nil when the client has no hover or
 --- answers nothing.
---- @param hit symref.Hit
+--- @param hit symbol_ls.Hit
 --- @param on_done fun(result: lsp.Hover|nil)
 function M.hover_at(hit, on_done)
     local method = "textDocument/hover"
@@ -189,7 +189,7 @@ function M.hover_at(hit, on_done)
 end
 
 --- Location of a hit in UTF-8 columns.
---- @param hit symref.Hit
+--- @param hit symbol_ls.Hit
 --- @return lsp.Location
 local function utf8_location(hit)
     local location = hit.info.location
@@ -199,7 +199,7 @@ end
 
 --- Ranked hits for the code span at a text document position.
 --- @param params lsp.TextDocumentPositionParams
---- @param on_done fun(hits: symref.Hit[], span: Range4|nil)
+--- @param on_done fun(hits: symbol_ls.Hit[], span: Range4|nil)
 local function span_hits(params, on_done)
     local uri = params.textDocument.uri
     local current = vim.api.nvim_get_current_buf()
@@ -298,7 +298,7 @@ function M._rpc(dispatchers)
     }
 end
 
---- Attach `bufnr` to the symref client, starting it on first use. One client
+--- Attach `bufnr` to the symbol-ls client, starting it on first use. One client
 --- serves every buffer.
 --- @param bufnr integer
 function M.attach(bufnr)
