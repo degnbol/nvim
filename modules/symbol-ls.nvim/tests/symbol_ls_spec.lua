@@ -1,6 +1,8 @@
 ---@diagnostic disable: undefined-global
 local symbol_ls = require "symbol-ls"
 local lsp = require "symbol-ls.lsp_util"
+local tags = require "symbol-ls.tags"
+local helpers = require "tests.helpers"
 
 --- @param lines string[]
 --- @return integer bufnr
@@ -256,6 +258,144 @@ describe("symbol-ls textDocument/definition", function()
         assert.are.same({
             { uri = uri, range = { start = { line = 1, character = 25 }, ["end"] = { line = 1, character = 28 } } },
         }, assert(response).result)
+    end)
+end)
+
+describe("symbol-ls.files_with_word", function()
+    local notify = vim.notify
+    local notes
+    before_each(function()
+        notes = {}
+        vim.notify = function(msg) notes[#notes + 1] = msg end
+    end)
+    after_each(function()
+        vim.notify = notify
+    end)
+
+    it("lists tracked files containing the word", function()
+        local root = helpers.git_repo({ ["a.lua"] = "foo()", ["sub/b.lua"] = "foobar()" }, { ["c.lua"] = "foo()" })
+        local paths = helpers.await(function(done) symbol_ls.files_with_word(root, "foo", done) end)
+        assert.are.same({ root .. "/a.lua" }, paths)
+        assert.are.same({}, notes)
+    end)
+
+    it("gives {} for no match and outside git", function()
+        local root = helpers.git_repo { ["a.lua"] = "bar()" }
+        assert.are.same({}, helpers.await(function(done) symbol_ls.files_with_word(root, "foo", done) end))
+        local plain = vim.fn.tempname()
+        vim.fn.mkdir(plain, "p")
+        assert.are.same({}, helpers.await(function(done) symbol_ls.files_with_word(plain, "foo", done) end))
+        assert.are.same({}, notes)
+    end)
+end)
+
+describe("symbol-ls.snippet", function()
+    before_each(function() helpers.fixture_tags_dir("r1") end)
+    after_each(helpers.reset_tags_dir)
+    local lines = { "local M = {}", "", "-- Runs it.", "function M.run(x)", "    return x", "end" }
+    local root, hit
+    before_each(function()
+        root = vim.fn.tempname()
+        vim.fn.mkdir(root .. "/lua", "p")
+        vim.fn.writefile(lines, root .. "/lua/a.lua")
+        hit = tags.definitions(table.concat(lines, "\n"), "lua", "run", root .. "/lua/a.lua")[1]
+    end)
+
+    it("shows the comments above and the first line of the definition", function()
+        assert.are.same({
+            kind = "markdown",
+            value = table.concat({ "`lua/a.lua`", "```lua", "-- Runs it.", "function M.run(x)", "```" }, "\n"),
+        }, symbol_ls.snippet(hit, root).contents)
+    end)
+
+    it("shows @doc text before the first line of the definition", function()
+        hit.definition.doc = "Runs it."
+        hit.definition.first_row = hit.definition.range[1]
+        assert.are.equal(table.concat({ "`lua/a.lua`", "", "Runs it.", "", "```lua", "function M.run(x)", "```" }, "\n"),
+            symbol_ls.snippet(hit, root).contents.value)
+    end)
+end)
+
+describe("symbol-ls without a server for the language", function()
+    local registry_source = tags.registry_source
+    local cwd = vim.fn.getcwd()
+    local root
+    before_each(function()
+        helpers.fixture_tags_dir("r1")
+        tags.registry_source = function() return { url = "https://github.com/o/tree-sitter-lua", revision = "r1" } end
+        root = helpers.git_repo { ["lua/shell_parse.lua"] = "-- Runs.\nfunction M.run() end", ["b.lua"] = "M.run()" }
+        vim.fn.chdir(root)
+    end)
+    after_each(function()
+        tags.registry_source = registry_source
+        helpers.reset_tags_dir()
+        vim.fn.chdir(cwd)
+        stop(unpack(vim.lsp.get_clients()))
+    end)
+
+    --- @param method string
+    --- @return any result of symbol-ls for `method` on the code span `ShellParse.run()`
+    local function request(method)
+        local bufnr = markdown_buf { "see `ShellParse.run()`" }
+        vim.api.nvim_set_current_buf(bufnr)
+        symbol_ls.attach(bufnr)
+        local responses = vim.lsp.buf_request_sync(bufnr, method, {
+            textDocument = { uri = vim.uri_from_bufnr(bufnr) },
+            position = { line = 0, character = 8 },
+        }, 2000)
+        local _, response = next(assert(responses))
+        return assert(response).result
+    end
+
+    it("answers definition from tree-sitter tags", function()
+        assert.are.same({
+            { uri = vim.uri_from_fname(root .. "/lua/shell_parse.lua"),
+                range = { start = { line = 1, character = 11 }, ["end"] = { line = 1, character = 14 } } },
+        }, request("textDocument/definition"))
+    end)
+
+    it("answers hover with the definition's source", function()
+        local result = request("textDocument/hover")
+        assert.are.equal(table.concat({ "`lua/shell_parse.lua`", "```lua", "-- Runs.", "function M.run() end", "```" }, "\n"),
+            result.contents.value)
+        assert.are.same({ start = { line = 0, character = 4 }, ["end"] = { line = 0, character = 22 } }, result.range)
+    end)
+
+    -- One language per case: a failed language is skipped for the session.
+    local failing = {
+        ["does not parse"] = { lang = "c", file = "run.c", line = "void run(void) {}", query = "(no_such_node) @name" },
+        ["has an unknown predicate"] = { lang = "vim", file = "run.vim", line = "function! run()",
+            query = "((identifier) @name @definition.function (#no-such-predicate? @name))" },
+    }
+    for problem, case in pairs(failing) do
+        it("warns about a tags query that " .. problem .. " and skips its language", function()
+            local dir = tags.dir()
+            vim.fn.mkdir(dir .. "/queries/" .. case.lang, "p")
+            vim.fn.writefile({ case.query }, dir .. "/queries/" .. case.lang .. "/tags.scm")
+            vim.fn.writefile({ vim.json.encode {
+                lua = { revision = "r1", tags = true }, [case.lang] = { revision = "r1", tags = true },
+            } }, dir .. "/revisions.json")
+            vim.fn.writefile({ case.line }, root .. "/" .. case.file)
+            vim.system({ "git", "add", case.file }, { cwd = root }):wait()
+            local notify, notes = vim.notify, {}
+            vim.notify = function(msg) notes[#notes + 1] = msg end
+            local result = request("textDocument/definition")
+            local second = request("textDocument/definition")
+            vim.notify = notify
+            assert.are.equal(1, #result)
+            assert.are.same(result, second)
+            assert.are.equal(1, #notes)
+            assert.matches("^tags query for " .. case.lang .. ": ", notes[1])
+        end)
+    end
+
+    it("prefers a running server's hit", function()
+        local elsewhere = { uri = "file:///elsewhere/shell_parse.lua",
+            range = { start = { line = 0, character = 0 }, ["end"] = { line = 0, character = 3 } } }
+        fake_client("code", "utf-8", function()
+            return function(cb) cb(nil, { { name = "run", kind = 12, location = elsewhere } }) end
+        end)
+        assert.are.same({ elsewhere }, request("textDocument/definition"))
     end)
 end)
 

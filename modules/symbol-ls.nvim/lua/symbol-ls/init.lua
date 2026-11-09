@@ -1,15 +1,21 @@
 local lsp_util = require "symbol-ls.lsp_util"
+local tags = require "symbol-ls.tags"
 
 --- In-process LSP server that resolves code symbols named in markdown code
---- spans (`` `Foo.bar` ``) through the `workspace/symbol`
---- of the other running servers. Serves definition, hover and workspace symbol.
+--- spans (`` `Foo.bar` ``) through the `workspace/symbol` of the other running
+--- servers, else through tree-sitter `tags` queries on the git-tracked files
+--- that contain the symbol. Serves definition, hover and workspace symbol.
 local M = {}
 
 local NAME = "symbol-ls"
+-- Byte caps on files read per lookup, since parsing runs on the main thread.
+local READ_FILE_MAX = 1e6
+local READ_TOTAL_MAX = 5e6
 
 --- @class symbol_ls.Hit
---- @field info lsp.SymbolInformation range in `client`'s position encoding
---- @field client vim.lsp.Client
+--- @field info lsp.SymbolInformation range in `client`'s position encoding, else UTF-8
+--- @field client? vim.lsp.Client nil for a hit from a tags query
+--- @field definition? symbol_ls.Definition set for a hit from a tags query
 
 --- @class symbol_ls.Term
 --- @field symbol string
@@ -165,15 +171,140 @@ function M.root(bufnr)
     return vim.fn.getcwd(vim.fn.win_findbuf(bufnr)[1] or 0)
 end
 
---- Forward textDocument/hover to the client that reported `hit`, at the
---- range start in that client's encoding. No buffer is loaded or attached
---- (lua_ls answers for unopened files). nil when the client has no hover or
---- answers nothing.
+--- Files tracked by git under `root`, submodules included, that contain
+--- `word` as a whole word. Binary files are skipped.
+--- @param root string
+--- @param word string
+--- @param on_done fun(paths: string[]) absolute. `{}` outside a git repository or on failure (notified at WARN)
+function M.files_with_word(root, word, on_done)
+    if not vim.fs.root(root, ".git") then return on_done({}) end
+    local cmd = { "git", "grep", "-z", "-l", "-I", "-w", "-F", "--recurse-submodules", "-e", word }
+    vim.system(cmd, { cwd = root, text = true }, vim.schedule_wrap(function(result)
+        -- Exit code 1: no match.
+        if result.code == 1 and result.stderr == "" then return on_done({}) end
+        if result.code ~= 0 then
+            vim.notify(("git grep (%s): %s"):format(root, result.stderr), vim.log.levels.WARN)
+            return on_done({})
+        end
+        local paths = vim.split(result.stdout, "\0", { trimempty = true })
+        on_done(vim.tbl_map(function(path) return vim.fs.joinpath(root, path) end, paths))
+    end))
+end
+
+--- @class symbol_ls.TaggedFile
+--- @field path string absolute
+--- @field lang string tree-sitter language
+
+--- Languages whose tags query raised an error, skipped until restart.
+--- @type table<string, true>
+local failed_langs = {}
+
+--- `files` with those whose stem matches one of `qualifiers` under
+--- `fold_name` first. Order is kept otherwise.
+--- @param files symbol_ls.TaggedFile[]
+--- @param qualifiers string[]
+--- @return symbol_ls.TaggedFile[]
+local function qualified_first(files, qualifiers)
+    local folded = vim.tbl_map(fold_name, qualifiers)
+    local matching, rest = {}, {}
+    for _, file in ipairs(files) do
+        local stem = fold_name(vim.fn.fnamemodify(file.path, ":t:r"))
+        table.insert(vim.list_contains(folded, stem) and matching or rest, file)
+    end
+    return vim.list_extend(matching, rest)
+end
+
+--- The git-tracked files under `root` that contain `word` as a word and whose
+--- language has a parser and a tree-sitter `tags` query. Missing tags queries
+--- are downloaded from the grammar repositories in nvim-treesitter's registry.
+--- @param root string
+--- @param word string
+--- @param on_done fun(files: symbol_ls.TaggedFile[]) in `files_with_word` order
+function M.tagged_files(root, word, on_done)
+    M.files_with_word(root, word, function(paths)
+        local files = {} --- @type symbol_ls.TaggedFile[]
+        local langs = {} --- @type table<string, true>
+        for _, path in ipairs(paths) do
+            local filetype = vim.filetype.match { filename = path }
+            local lang = filetype and vim.treesitter.language.get_lang(filetype)
+            if lang and not failed_langs[lang] and vim.treesitter.language.add(lang) then
+                files[#files + 1] = { path = path, lang = lang }
+                langs[lang] = true
+            end
+        end
+        local with_query = {} --- @type table<string, boolean>
+        local function finish()
+            on_done(vim.tbl_filter(function(file) return with_query[file.lang] end, files))
+        end
+        local n_pending = vim.tbl_count(langs)
+        if n_pending == 0 then return finish() end
+        for lang in pairs(langs) do
+            tags.ensure(lang, tags.registry_source, function(ok)
+                with_query[lang] = ok
+                n_pending = n_pending - 1
+                if n_pending == 0 then finish() end
+            end)
+        end
+    end)
+end
+
+--- Definitions of `term.symbol` in `files` by their tags queries. Files whose
+--- stem matches a qualifier of `term` are read first. Files over
+--- `READ_FILE_MAX` bytes are skipped, and reading stops at `READ_TOTAL_MAX`
+--- bytes in total. A language whose query raises an error is reported at WARN
+--- and skipped until restart.
+--- @param files symbol_ls.TaggedFile[]
+--- @param term symbol_ls.Term
+--- @return symbol_ls.Hit[] unranked
+function M.tag_hits(files, term)
+    local hits, n_bytes = {}, 0
+    for _, file in ipairs(qualified_first(files, term.qualifiers)) do
+        local stat = vim.uv.fs_stat(file.path)
+        if stat and stat.size <= READ_FILE_MAX and not failed_langs[file.lang] then
+            n_bytes = n_bytes + stat.size
+            if n_bytes > READ_TOTAL_MAX then break end
+            local ok, result = pcall(tags.definitions, vim.fn.readblob(file.path), file.lang, term.symbol, file.path)
+            if ok then
+                vim.list_extend(hits, result)
+            else
+                failed_langs[file.lang] = true
+                vim.notify(("tags query for %s: %s"):format(file.lang, result), vim.log.levels.WARN)
+            end
+        end
+    end
+    return hits
+end
+
+--- Markdown hover for a hit from a tags query: its path relative to `root`,
+--- its `@doc` text, and in a code block the comments directly above the
+--- definition and the definition's first line.
 --- @param hit symbol_ls.Hit
+--- @param root string|nil nil, or a root not above the file, shows the absolute path
+--- @return lsp.Hover
+function M.snippet(hit, root)
+    local path = vim.uri_to_fname(hit.info.location.uri)
+    local definition = assert(hit.definition)
+    local rows = vim.list_slice(vim.fn.readfile(path, "", definition.range[1] + 1), definition.first_row + 1)
+    local lines = { ("`%s`"):format(root and vim.fs.relpath(root, path) or path) }
+    if definition.doc then vim.list_extend(lines, { "", definition.doc, "" }) end
+    table.insert(lines, "```" .. (vim.filetype.match { filename = path } or ""))
+    vim.list_extend(lines, rows)
+    table.insert(lines, "```")
+    return { contents = { kind = "markdown", value = table.concat(lines, "\n") } }
+end
+
+--- Hover for `hit`. For a hit from a tags query, the definition's source and
+--- doc text. Else textDocument/hover forwarded to the client that reported
+--- it, at the range start in that client's encoding. No buffer is loaded or
+--- attached (lua_ls answers for unopened files). nil when the client has no
+--- hover or answers nothing.
+--- @param hit symbol_ls.Hit
+--- @param root string|nil paths of tags query hits are shown relative to it
 --- @param on_done fun(result: lsp.Hover|nil)
-function M.hover_at(hit, on_done)
+function M.hover_at(hit, root, on_done)
     local method = "textDocument/hover"
     local client, location = hit.client, hit.info.location
+    if not client then return on_done(M.snippet(hit, root)) end
     if not client:supports_method(method) then return on_done(nil) end
     local params = { textDocument = { uri = location.uri }, position = location.range.start }
     local sent = client:request(method, params, function(err, result)
@@ -193,13 +324,16 @@ end
 --- @return lsp.Location
 local function utf8_location(hit)
     local location = hit.info.location
+    if not hit.client then return location end
     local range = lsp_util.convert_range(location.uri, location.range, hit.client.offset_encoding, "utf-8")
     return { uri = location.uri, range = range }
 end
 
---- Ranked hits for the code span at a text document position.
+--- Ranked hits for the code span at a text document position: those of the
+--- running servers, else those of tags queries. The tagged files are found
+--- while the servers answer, but parsed only when no server has a hit.
 --- @param params lsp.TextDocumentPositionParams
---- @param on_done fun(hits: symbol_ls.Hit[], span: Range4|nil)
+--- @param on_done fun(hits: symbol_ls.Hit[], span: Range4|nil, root: string|nil)
 local function span_hits(params, on_done)
     local uri = params.textDocument.uri
     local current = vim.api.nvim_get_current_buf()
@@ -207,10 +341,26 @@ local function span_hits(params, on_done)
     local bufnr = vim.uri_from_bufnr(current) == uri and current or vim.uri_to_bufnr(uri)
     local text, span = M.code_span_at(bufnr, params.position.line, params.position.character)
     local term = text and M.parse_term(text)
-    if not term then return on_done({}, nil) end
+    if not term then return on_done({}, nil, nil) end
     local root = M.root(bufnr)
+    local server_hits, files
+    local function finish()
+        if not server_hits or not files then return end
+        local ranked = M.rank(server_hits, term, root)
+        if #ranked == 0 then ranked = M.rank(M.tag_hits(files, term), term, root) end
+        on_done(ranked, span, root)
+    end
+    if root then
+        M.tagged_files(root, term.symbol, function(tagged)
+            files = tagged
+            finish()
+        end)
+    else
+        files = {}
+    end
     M.query(term.symbol, function(hits)
-        on_done(M.rank(hits, term, root), span)
+        server_hits = hits
+        finish()
     end)
 end
 
@@ -238,9 +388,9 @@ local HANDLERS = {
     -- The reply's range is the code span, which vim.lsp.buf.hover highlights
     -- in the current buffer.
     ["textDocument/hover"] = function(params, reply)
-        span_hits(params, function(hits, span)
+        span_hits(params, function(hits, span, root)
             if not hits[1] or not span then return reply(nil) end
-            M.hover_at(hits[1], function(result)
+            M.hover_at(hits[1], root, function(result)
                 if result then
                     result.range = {
                         start = { line = span[1], character = span[2] },
@@ -316,10 +466,11 @@ local function is_attachable(bufnr)
 end
 
 --- Attach every buffer of `opts.filetypes`, open now or later, except
---- markdown buffers with a 'buftype'.
+--- markdown buffers with a 'buftype'. Add `tags.dir()` to 'runtimepath'.
 --- @param opts { filetypes: string[]|nil }|nil filetypes default `{ "markdown" }`
 function M.setup(opts)
     local filetypes = opts and opts.filetypes or { "markdown" }
+    vim.opt.runtimepath:append(tags.dir())
     vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup(NAME, { clear = true }),
         pattern = filetypes,

@@ -5,10 +5,12 @@ Go to code symbols named in markdown code spans. With the cursor in
 hover.
 
 symbol-ls is an in-process LSP server that asks the language servers already
-running (lua_ls, basedpyright, rust-analyzer, …) and needs no keymaps of its
-own.
+running (lua_ls, basedpyright, rust-analyzer, …), else runs tree-sitter `tags`
+queries on the git-tracked files that contain the symbol. It needs no keymaps
+of its own.
 
-Requires Neovim 0.12 and the bundled markdown tree-sitter parsers.
+Requires Neovim 0.12 and the bundled markdown tree-sitter parsers. The
+`tags` fallback also needs git, curl and nvim-treesitter.
 
 ## Setup
 

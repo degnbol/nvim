@@ -12,8 +12,30 @@ such as `Foo.bar` or `bar()`, it answers:
 
 It has no index of its own. It sends `workspace/symbol` for the last name
 in the span to every other running LSP client and ranks the exact-name
-matches. A language with no running client gets no answer. With no answer
-from any client, |CTRL-]| falls back to the tags file.
+matches. When no client has a match, it ranks the definitions that
+tree-sitter `tags` queries find instead, see |symbol-ls-tags|. With no
+answer from either, |CTRL-]| falls back to the tags file.
+
+`workspace/symbol` requests to symbol-ls get only the clients' matches.
+
+==============================================================================
+TAGS QUERIES                                                  *symbol-ls-tags*
+
+At the same time as asking the clients, symbol-ls runs `git grep` in the
+project root (see |symbol-ls-ranking|) for the git-tracked files, submodules
+included, that contain the name as a whole word. When no client has a
+match, each file whose language has an installed parser is parsed, and the
+`tags` query of that language gives its definitions: the `@definition.<kind>` matches whose `@name` is the
+name (https://tree-sitter.github.io/tree-sitter/4-code-navigation.html).
+Hover for such a match shows its file, its `@doc` text, and the comment
+lines directly above the definition with the definition's first line.
+
+The `tags` query of a language is downloaded from its grammar repository at
+the revision that nvim-treesitter's parser registry names, on the first
+lookup in that language and again when the revision changes. Queries go to
+`stdpath("data")/symbol-ls/queries/<lang>/tags.scm`, a directory that
+|symbol-ls.setup()| adds to 'runtimepath'. Revisions, and repositories with
+no `tags` query, are recorded in `stdpath("data")/symbol-ls/revisions.json`.
 
 ==============================================================================
 SETUP                                                      *symbol-ls.setup()*
@@ -71,5 +93,17 @@ LIMITS                                                      *symbol-ls-limits*
   buffer takes over 1 s to answer, e.g. a client that is still starting.
 - Matches whose location has no range (a `WorkspaceSymbol` that needs
   `workspaceSymbol/resolve`) are dropped.
+- |symbol-ls-tags| needs a project root inside a git repository, git, curl,
+  and nvim-treesitter. Languages without a parser, a registry entry on
+  GitHub, or an upstream `tags.scm` get no answer from it.
+- |symbol-ls-tags| skips files over 1 MB and stops reading at 5 MB in total.
+  Files whose name without extension matches a qualifier are read first.
+- A `tags` query that raises an error, such as one that fails to parse with
+  the installed parser or uses a predicate Neovim lacks, is reported once
+  with |vim.notify()| at WARN, and its language gets no answer until
+  restart. A parse error happens when the parser is not the one
+  nvim-treesitter installed, e.g. one bundled with Neovim at another
+  revision.
+- Matches from |symbol-ls-tags| have no `containerName`.
 
  vim:tw=78:ts=8:ft=help:norl:
