@@ -103,8 +103,9 @@ end
 
 --- Go to the LSP definition of the symbol under the cursor, with the results
 --- handled by `qf.jump_or_load`.
-function M.definition()
-    vim.lsp.buf.definition { on_list = qf.jump_or_load }
+--- @param tab boolean|nil Make the jump in a new tab page.
+function M.definition(tab)
+    vim.lsp.buf.definition { on_list = function(options) qf.jump_or_load(options, tab) end }
 end
 
 --- Go to the LSP references of the symbol under the cursor, without the items

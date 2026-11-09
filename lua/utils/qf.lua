@@ -62,7 +62,8 @@ end
 --- filename, lnum, and col, only the first in `what.items` is kept.
 --- @param what vim.fn.setqflist.what `:h setqflist-what` whose `items` all have
 --- `filename`, `lnum` and `col`. Not mutated.
-function M.jump_or_load(what)
+--- @param tab boolean|nil Make the jump in a new tab page, like `CTRL-W gf`.
+function M.jump_or_load(what, tab)
     local items = vim.list_extend({}, assert(what.items))
     if not vim.iter(items):any(M.contains_cursor) then
         table.insert(items, cursor_item())
@@ -83,6 +84,7 @@ function M.jump_or_load(what)
     end
     vim.fn.setqflist({}, ' ', vim.tbl_extend('force', what, { items = items, idx = i_self }))
     if n_other == 1 then
+        if tab then vim.cmd "tab split" end
         vim.cmd.cc(i_other)
     else
         print(("%s: %d items"):format(what.title or "Quickfix", n_other))

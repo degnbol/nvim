@@ -187,6 +187,32 @@ describe("qf", function()
             assert.are.same(copy, items)
         end)
 
+        describe("with tab", function()
+            local function n_tabs() return #vim.api.nvim_list_tabpages() end
+            after_each(function() vim.cmd.tabonly() end)
+
+            it("jumps to the one other item in a new tab", function()
+                vim.api.nvim_win_set_cursor(0, { 2, 6 })
+                local win = vim.api.nvim_get_current_win()
+                qf.jump_or_load({ items = { print_x(2), print_x(4) } }, true)
+                assert.are.equal(2, n_tabs())
+                assert.are.same({ 4, 6 }, cursor())
+                assert.are.same({ 2, 6 }, vim.api.nvim_win_get_cursor(win))
+            end)
+
+            it("opens no tab for several other items", function()
+                vim.api.nvim_win_set_cursor(0, { 3, 6 })
+                qf.jump_or_load({ items = { print_x(2), print_x(3), print_x(4) } }, true)
+                assert.are.equal(1, n_tabs())
+            end)
+
+            it("opens no tab for no other item", function()
+                vim.api.nvim_win_set_cursor(0, { 2, 6 })
+                qf.jump_or_load({ items = { print_x(2) } }, true)
+                assert.are.equal(1, n_tabs())
+            end)
+        end)
+
         it("counts only the ref under the cursor as self", function()
             vim.api.nvim_win_set_cursor(0, { 1, 12 })
             qf.jump_or_load { items = { item(1, 7, 8), item(1, 13, 14) } }
