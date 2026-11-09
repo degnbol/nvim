@@ -1,7 +1,8 @@
 --- Markdown (GFM) pipe table alignment, parsed with treesitter.
 ---
---- A cell's width is the `nvim_strwidth` of its raw text, so the aligned file
---- lines up wherever markup is shown verbatim (conceallevel 0, `cat`, raw view).
+--- Widths are of the raw text, so the aligned file lines up wherever markup
+--- is shown verbatim (conceallevel 0, `cat`, raw view). Markup that conceal
+--- hides at a cell edge takes the place of the space next to the pipe.
 --- `layout` and `pads` give the virtual spaces that line a table up on screen
 --- under conceal, without changing the file.
 ---
@@ -22,8 +23,9 @@ M.MAX_WIDTH = 40
 --- @field text string raw cell text, trimmed
 --- @field col integer 0-indexed start byte column of the trimmed text
 --- @field end_col integer 0-indexed end byte column, exclusive
---- @field lpipe? integer 0-indexed byte column of the `|` before the cell; nil when the row has no leading pipe
---- @field rpipe? integer 0-indexed byte column of the `|` after the cell; nil when the row has no trailing pipe
+--- @field from integer 0-indexed byte column after the `|` before the cell, or of the row start
+--- @field to integer 0-indexed byte column of the `|` after the cell, or of the row end
+--- @field piped boolean whether a `|` is on both sides of the cell
 
 --- @class utils.markdown_table.Row
 --- @field row integer 0-indexed buffer row
@@ -106,13 +108,14 @@ end
 --- @param line string
 --- @param from integer 0-indexed
 --- @param to integer 0-indexed, exclusive
+--- @param piped boolean whether a `|` is on both sides
 --- @return utils.markdown_table.Cell
-local function trimmed_cell(line, from, to)
+local function trimmed_cell(line, from, to, piped)
     local raw = line:sub(from + 1, to)
     local lead = #raw:match("^%s*")
     local text = vim.trim(raw)
     --- @type utils.markdown_table.Cell
-    local cell = { text = text, col = from + lead, end_col = from + lead + #text }
+    local cell = { text = text, col = from + lead, end_col = from + lead + #text, from = from, to = to, piped = piped }
     return cell
 end
 
@@ -133,10 +136,8 @@ local function row_cells(line, row_node)
     end
     local cells = {}
     for i = 1, #bounds - 1 do
-        local cell = trimmed_cell(line, bounds[i] + 1, bounds[i + 1])
-        cell.lpipe = (i > 1 or leading) and bounds[i] or nil
-        cell.rpipe = (i < #bounds - 1 or trailing) and bounds[i + 1] or nil
-        cells[#cells + 1] = cell
+        local piped = (i > 1 or leading) and (i < #bounds - 1 or trailing)
+        cells[#cells + 1] = trimmed_cell(line, bounds[i] + 1, bounds[i + 1], piped)
     end
     return cells
 end
@@ -195,54 +196,248 @@ local function delimiter_cell(text, width)
     return left .. string.rep("-", width - #left - #right) .. right
 end
 
---- Pad `text` to a column of display `width` per `align`, for a cell that
---- starts `shift` cells past the column start. The text keeps its place in
---- the column where it fits, and the padding ends at the column end where
---- it fits. Text wider than `width` is not padded.
---- @param text string
---- @param width integer display cells
---- @param align utils.markdown_table.Align
---- @param shift integer display cells
---- @return string
-local function pad(text, width, align, shift)
-    local n = math.max(0, width - vim.api.nvim_strwidth(text))
-    local left = align == "right" and n or align == "centre" and math.floor(n / 2) or 0
-    left = math.max(0, left - shift)
-    local right = math.max(0, n - shift - left)
-    return string.rep(" ", left) .. text .. string.rep(" ", right)
+--- Tab stop for measuring rows. Tabs inside a table are not supported: pads
+--- move the tab stops after them.
+local TABSTOP = 8
+
+--- Whether conceal hides `byte`: of the ranges covering it, the one with the
+--- highest priority (the last on a tie) has an empty replacement.
+--- @param ranges agentic.utils.Conceal.Range[] in insertion order
+--- @param byte integer 0-indexed
+--- @return boolean
+local function hidden(ranges, byte)
+    local decider --- @type agentic.utils.Conceal.Range|nil
+    for _, range in ipairs(ranges) do
+        if range.col <= byte and byte < range.end_col and (not decider or range.priority >= decider.priority) then
+            decider = range
+        end
+    end
+    return decider ~= nil and decider.text == ""
 end
 
---- Lines of an aligned table, one per row. Column width is the widest
---- non-delimiter cell, each capped at `max_width`, and at least 3. A cell wider
---- than its column shifts the rest of its row right. Later cells in that row
---- pad less until the row is back on the column grid.
+--- Bytes from the first to after the last character of a cell's text that
+--- conceal does not hide.
+--- @param cell utils.markdown_table.Cell
+--- @param ranges agentic.utils.Conceal.Range[] conceal ranges on the cell's row
+--- @return integer vis_col 0-indexed; `cell.end_col` when every character is hidden
+--- @return integer vis_end 0-indexed, exclusive; `vis_col` when every character is hidden
+local function visible_span(cell, ranges)
+    local vis_col, vis_end = cell.col, cell.end_col
+    while vis_col < cell.end_col and hidden(ranges, vis_col) do
+        vis_col = vis_col + 1
+    end
+    while vis_end > vis_col and hidden(ranges, vis_end - 1) do
+        vis_end = vis_end - 1
+    end
+    return vis_col, vis_end
+end
+
+--- Display widths of the parts of a cell, from its `from` to its `to`.
+--- @class utils.markdown_table.CellParts
+--- @field ws_l integer whitespace before the text
+--- @field mark_l integer hidden markup from the text start to the first visible character
+--- @field body integer first to last visible character; 0 without one
+--- @field mark_r integer hidden markup from the last visible character to the text end
+--- @field ws_r integer whitespace after the text
+
+--- Parts of a cell, measured in `cols`.
+--- @param cols table<integer, integer> vcol at each character start byte of the row
+--- @param cell utils.markdown_table.Cell
+--- @param vis_col integer 0-indexed byte of the first visible character
+--- @param vis_end integer 0-indexed byte after the last visible character
+--- @return utils.markdown_table.CellParts
+local function cell_parts(cols, cell, vis_col, vis_end)
+    --- @type utils.markdown_table.CellParts
+    local parts = {
+        ws_l = cols[cell.col] - cols[cell.from],
+        mark_l = cols[vis_col] - cols[cell.col],
+        body = cols[vis_end] - cols[vis_col],
+        mark_r = cols[cell.end_col] - cols[vis_end],
+        ws_r = cols[cell.to] - cols[cell.end_col],
+    }
+    return parts
+end
+
+--- Display widths of a cell around its body.
+--- @class utils.markdown_table.Sides
+--- @field pre integer before the body
+--- @field body integer 0 without a body
+--- @field post integer after the body
+
+--- Sides of a cell as it is: whitespace and markup count.
+--- @param parts utils.markdown_table.CellParts
+--- @return utils.markdown_table.Sides
+local function layout_sides(parts)
+    --- @type utils.markdown_table.Sides
+    local sides = { pre = parts.ws_l + parts.mark_l, body = parts.body, post = parts.mark_r + parts.ws_r }
+    return sides
+end
+
+--- Sides of a cell as formatted: markup at an edge is the gap next to the
+--- pipe, else the gap is 1 where the cell has whitespace there, else 0.
+--- @param parts utils.markdown_table.CellParts
+--- @return utils.markdown_table.Sides
+local function format_sides(parts)
+    --- @type utils.markdown_table.Sides
+    local sides = {
+        pre = parts.mark_l > 0 and parts.mark_l or math.min(parts.ws_l, 1),
+        body = parts.body,
+        post = parts.mark_r > 0 and parts.mark_r or math.min(parts.ws_r, 1),
+    }
+    return sides
+end
+
+--- Where a column places its bodies.
+--- @class utils.markdown_table.Column
+--- @field align utils.markdown_table.Align
+--- @field width integer display cells between the column's pipes
+--- @field lead integer widest `pre` of a cell with a body
+--- @field trail integer widest `post` of a cell with a body
+
+--- Narrowest column that fits every cell of `sides` with its body placed per
+--- `align`: left bodies start at `lead`, right bodies end at `width - trail`,
+--- centred bodies are centred. A cell without a body needs `pre + post`.
+--- @param sides utils.markdown_table.Sides[]
+--- @param align utils.markdown_table.Align
+--- @param min_width integer
+--- @return utils.markdown_table.Column
+local function column_geometry(sides, align, min_width)
+    --- @type utils.markdown_table.Column
+    local column = { align = align, width = min_width, lead = 0, trail = 0 }
+    for _, s in ipairs(sides) do
+        if s.body > 0 then
+            column.lead = math.max(column.lead, s.pre)
+            column.trail = math.max(column.trail, s.post)
+        end
+    end
+    for _, s in ipairs(sides) do
+        local width = s.body == 0 and s.pre + s.post
+            or align == "left" and column.lead + s.body + s.post
+            or align == "right" and s.pre + s.body + column.trail
+            or math.max(s.body + 2 * s.pre, s.body + 2 * s.post - 1)
+        column.width = math.max(column.width, width)
+    end
+    return column
+end
+
+--- Display cells from the start of `column` to a cell's body: the column's
+--- place for it, or after its `pre` when that is further. For a cell
+--- without a body, its `pre`.
+--- @param column utils.markdown_table.Column
+--- @param sides utils.markdown_table.Sides
+--- @return integer
+local function body_start(column, sides)
+    if sides.body == 0 then
+        return sides.pre
+    end
+    local anchor = column.align == "left" and column.lead
+        or column.align == "right" and column.width - column.trail - sides.body
+        or math.floor((column.width - sides.body) / 2)
+    return math.max(sides.pre, anchor)
+end
+
+--- Spaces to add before and after a cell in its slot of `column`, for a
+--- cell that starts `excess` cells past the column start. The spaces put
+--- its body at `body_start` and end the slot at the column end. Where the
+--- slot is too narrow, the spaces after the cell go first, then those before.
+--- @param column utils.markdown_table.Column
+--- @param sides utils.markdown_table.Sides that place the body
+--- @param before integer display cells the cell has before its body
+--- @param width integer display cells of the cell
+--- @param excess integer display cells
+--- @return integer left
+--- @return integer right
+local function slot_spaces(column, sides, before, width, excess)
+    local room = column.width - excess
+    local left = math.max(0, math.min(body_start(column, sides) - excess - before, room - width))
+    return left, math.max(0, room - left - width)
+end
+
+--- Conceal ranges of the cells of a row, each cell's text parsed alone as
+--- markdown_inline.
+--- @param row utils.markdown_table.Row
+--- @return agentic.utils.Conceal.Range[] byte columns on `row.line`
+local function cell_conceals(row)
+    local ranges = {}
+    for _, cell in ipairs(row.cells) do
+        local trees = Ts.string_highlight_trees(cell.text, "markdown_inline")
+        for _, range in ipairs(Ts.conceal_ranges(cell.text, trees, 0, 1)) do
+            ranges[#ranges + 1] = vim.tbl_extend("force", range, {
+                col = cell.col + range.col,
+                end_col = cell.col + math.min(range.end_col, #cell.text),
+            })
+        end
+    end
+    return ranges
+end
+
+--- Lines of an aligned table, one per row. Each column is just wide enough
+--- for every body to keep its gap to each pipe: markup at an edge, else 1
+--- space where the input has whitespace there, else none. The delimiter row
+--- keeps its gaps and gets at least 3 dashes. It has no other effect on
+--- column widths. A cell wider than `max_width` makes its column fit
+--- `max_width` within the widest gaps of the column's other cells. Where it
+--- does not fit its column, it loses its whitespace, then overruns.
+--- The rest of its row loses whitespace until it is back on the column grid.
 --- @param tbl utils.markdown_table.Table
 --- @param opts utils.markdown_table.Opts|nil
 --- @return string[]
 function M.format(tbl, opts)
     opts = opts or {}
-    local widths = {}
+    local parts = {} -- per row, per column
+    local sides, long_parts, min_widths = {}, {}, {} -- per column
     for c = 1, tbl.ncols do
-        widths[c] = 3
-        for _, row in ipairs(tbl.rows) do
-            local cell = row.cells[c]
-            if cell and not row.delimiter then
-                local w = vim.api.nvim_strwidth(cell.text)
-                widths[c] = math.max(widths[c], math.min(w, opts.max_width or w))
+        sides[c], long_parts[c], min_widths[c] = {}, {}, 3
+    end
+    for i, row in ipairs(tbl.rows) do
+        local conceals = row.delimiter and {} or cell_conceals(row)
+        local cols = Conceal.columns(row.line, {}, {}, TABSTOP, 0).raw
+        parts[i] = {}
+        for c, cell in ipairs(row.cells) do
+            local p = cell_parts(cols, cell, visible_span(cell, conceals))
+            local s = format_sides(p)
+            local text_width = p.mark_l + p.body + p.mark_r
+            parts[i][c] = p
+            if row.delimiter then
+                min_widths[c] = math.max(min_widths[c], 3 + s.pre + s.post)
+            elseif text_width <= (opts.max_width or text_width) then
+                table.insert(sides[c], s)
+            else
+                table.insert(long_parts[c], p)
             end
         end
     end
-    local lines = {}
-    for _, row in ipairs(tbl.rows) do
-        local parts = {}
-        local excess = 0 -- how far the row so far overruns the column grid
-        for c = 1, tbl.ncols do
-            local text = row.cells[c] and row.cells[c].text or ""
-            parts[c] = row.delimiter and delimiter_cell(text, widths[c])
-                or pad(text, widths[c], opts.align_cells and tbl.align[c] or "left", excess)
-            excess = math.max(0, excess + vim.api.nvim_strwidth(parts[c]) - widths[c])
+    local columns = {}
+    for c = 1, tbl.ncols do
+        local column = column_geometry(sides[c], opts.align_cells and tbl.align[c] or "left", min_widths[c])
+        -- The gaps of the other cells, not the long cell's own whitespace,
+        -- which formatting removes.
+        for _, p in ipairs(long_parts[c]) do
+            local width = math.max(column.lead, p.mark_l) + opts.max_width + math.max(column.trail, p.mark_r)
+            column.width = math.max(column.width, width)
         end
-        lines[#lines + 1] = row.prefix .. "| " .. table.concat(parts, " | ") .. " |"
+        columns[c] = column
+    end
+    local lines = {}
+    for i, row in ipairs(tbl.rows) do
+        local slots = {}
+        local excess = 0 -- how far the row so far overruns the column grid
+        for c, column in ipairs(columns) do
+            local cell, p = row.cells[c], parts[i][c]
+            if row.delimiter then
+                local s = p and format_sides(p) or { pre = 0, post = 0 }
+                slots[c] = string.rep(" ", s.pre) .. delimiter_cell(cell and cell.text or "", column.width - s.pre - s.post)
+                    .. string.rep(" ", s.post)
+            elseif cell then
+                local text_width = p.mark_l + p.body + p.mark_r
+                local left, right = slot_spaces(column, format_sides(p), p.mark_l, text_width, excess)
+                slots[c] = string.rep(" ", left) .. cell.text .. string.rep(" ", right)
+            else
+                slots[c] = string.rep(" ", math.max(0, column.width - excess))
+            end
+            excess = math.max(0, excess + vim.api.nvim_strwidth(slots[c]) - column.width)
+        end
+        lines[#lines + 1] = row.prefix .. "|" .. table.concat(slots, "|") .. "|"
     end
     return lines
 end
@@ -310,10 +505,6 @@ function M.align(buf, start_row, end_row, opts)
     return #nodes
 end
 
---- Tab stop for measuring rows. Tabs inside a table are not supported: pads
---- move the tab stops after them.
-local TABSTOP = 8
-
 --- Conceal ranges on each row of a table, from the active treesitter
 --- highlighter and from extmarks, in drawing order. Without a highlighter
 --- on `buf`, only the extmark ranges, as on screen.
@@ -341,49 +532,20 @@ function M.conceals(buf, tbl)
 end
 
 --- @class utils.markdown_table.CellLayout
---- @field vis_col integer 0-indexed byte of the first character outside every conceal range; `end_col` when there is none
---- @field vis_end integer 0-indexed byte after the last character outside every conceal range; `end_col` when there is none
+--- @field vis_col integer 0-indexed byte of the first character conceal does not hide; `end_col` when there is none
+--- @field vis_end integer 0-indexed byte after the last character conceal does not hide; `vis_col` when there is none
 --- @field slotted boolean false when the cell's raw width is over the cap
 
---- On-screen layout of a table, from its raw text. Markup is text in a
---- conceal range. Display widths are between a column's two pipes.
+--- On-screen layout of a table, from its raw text. Markup is text conceal
+--- hides.
 --- @class utils.markdown_table.Layout
 --- @field cells table<integer, utils.markdown_table.CellLayout>[] per row, per column; no entry for a cell without both pipes
---- @field align utils.markdown_table.Align[] per column
---- @field lead integer[] per column, width before the first visible character: widest leading whitespace plus markup
---- @field trail integer[] per column, width after the last visible character: widest trailing markup plus whitespace
---- @field width integer[] per column
+--- @field columns utils.markdown_table.Column[] at conceallevel 0
 
---- Whether any of `ranges` covers `byte`.
---- @param ranges agentic.utils.Conceal.Range[]
---- @param byte integer 0-indexed
---- @return boolean
-local function covered(ranges, byte)
-    for _, range in ipairs(ranges) do
-        if range.col <= byte and byte < range.end_col then
-            return true
-        end
-    end
-    return false
-end
-
---- Display widths of the three parts of a cell between its pipes.
---- @param vcols table<integer, integer> vcol at each character start byte of the row
---- @param cell utils.markdown_table.Cell
---- @param cl utils.markdown_table.CellLayout
---- @return integer before whitespace and markup after the left pipe
---- @return integer body first to last visible character
---- @return integer after markup and whitespace before the right pipe
-local function cell_widths(vcols, cell, cl)
-    return vcols[cl.vis_col] - vcols[cell.lpipe + 1],
-        vcols[cl.vis_end] - vcols[cl.vis_col],
-        vcols[cell.rpipe] - vcols[cl.vis_end]
-end
-
---- Display layout of a table. Per column, the first visible characters of
---- left and centre cells start at `lead`, the last of right and centre
---- cells end at `width - trail`, and `width` fits every row at
---- conceallevel 0. Cells over the cap do not count.
+--- Display layout of a table. Each column is the narrowest that fits its
+--- cells as they are at conceallevel 0, whitespace and markup included,
+--- with every body placed per the column's alignment. The delimiter row
+--- counts only by its width. Cells over the cap do not count.
 --- @param tbl utils.markdown_table.Table
 --- @param conceals table<integer, agentic.utils.Conceal.Range[]> per index into `tbl.rows`
 --- @param opts utils.markdown_table.Opts|nil
@@ -391,24 +553,18 @@ end
 function M.layout(tbl, conceals, opts)
     opts = opts or {}
     --- @type utils.markdown_table.Layout
-    local layout = { cells = {}, align = {}, lead = {}, trail = {}, width = {} }
+    local layout = { cells = {}, columns = {} }
+    local sides, min_widths = {}, {} -- per column
     for c = 1, tbl.ncols do
-        layout.align[c] = opts.align_cells and tbl.align[c] or "left"
-        layout.lead[c], layout.trail[c], layout.width[c] = 0, 0, 0
+        sides[c], min_widths[c] = {}, 0
     end
-    local widths = {} -- per row, per slotted column: the three `cell_widths`
     for i, row in ipairs(tbl.rows) do
         local raw = Conceal.columns(row.line, conceals[i], {}, TABSTOP, 0).raw
-        layout.cells[i], widths[i] = {}, {}
+        layout.cells[i] = {}
         for c, cell in ipairs(row.cells) do
-            if cell.lpipe and cell.rpipe then
-                local vis_col, vis_end = cell.col, cell.end_col
-                while vis_col < cell.end_col and covered(conceals[i], vis_col) do
-                    vis_col = vis_col + 1
-                end
-                while vis_end > vis_col and covered(conceals[i], vis_end - 1) do
-                    vis_end = vis_end - 1
-                end
+            if cell.piped then
+                local vis_col, vis_end = visible_span(cell, conceals[i])
+                local s = layout_sides(cell_parts(raw, cell, vis_col, vis_end))
                 local text_width = raw[cell.end_col] - raw[cell.col]
                 --- @type utils.markdown_table.CellLayout
                 local cl = {
@@ -417,30 +573,25 @@ function M.layout(tbl, conceals, opts)
                     slotted = text_width <= (opts.max_width or text_width),
                 }
                 layout.cells[i][c] = cl
-                if cl.slotted then
-                    local before, body, after = cell_widths(raw, cell, cl)
-                    widths[i][c] = { before = before, body = body, after = after }
-                    layout.lead[c] = math.max(layout.lead[c], before)
-                    layout.trail[c] = math.max(layout.trail[c], after)
+                if row.delimiter then
+                    min_widths[c] = math.max(min_widths[c], s.pre + s.body + s.post)
+                elseif cl.slotted then
+                    table.insert(sides[c], s)
                 end
             end
         end
     end
-    for i = 1, #tbl.rows do
-        for c, w in pairs(widths[i]) do
-            local align = layout.align[c]
-            local before = align == "right" and w.before or layout.lead[c]
-            local after = align == "left" and w.after or layout.trail[c]
-            layout.width[c] = math.max(layout.width[c], before + w.body + after)
-        end
+    for c = 1, tbl.ncols do
+        layout.columns[c] = column_geometry(sides[c], opts.align_cells and tbl.align[c] or "left", min_widths[c])
     end
     return layout
 end
 
 --- Virtual spaces that put every cell of a table in its column on screen,
---- for a window at `level`. A cell wider than its column shifts the rest of
---- its row right. Later cells in that row get less space until the row is back
---- on the column grid.
+--- for a window at `level`: each body at its place in the column, measured
+--- at `level`, and each cell to the column end. A cell wider than its column
+--- shifts the rest of its row right. Later cells in that row get less space
+--- until the row is back on the column grid.
 --- @param tbl utils.markdown_table.Table
 --- @param layout utils.markdown_table.Layout
 --- @param conceals table<integer, agentic.utils.Conceal.Range[]> per index into `tbl.rows`
@@ -461,22 +612,16 @@ function M.pads(tbl, layout, conceals, level, unconcealed_row)
         for c = 1, tbl.ncols do
             local cl = layout.cells[i][c]
             if cl then
-                local cell = row.cells[c]
-                local before, body, after = cell_widths(shown, cell, cl)
-                local total = before + body + after
-                local width, align = layout.width[c], layout.align[c]
-                local left
-                if align == "right" then
-                    left = width - total - math.max(0, layout.trail[c] - after)
-                else
-                    local free = width - layout.lead[c] - layout.trail[c] - body
-                    local centring = align == "centre" and math.floor(free / 2) or 0
-                    left = layout.lead[c] - before + centring
+                local cell, column = row.cells[c], layout.columns[c]
+                local s = layout_sides(cell_parts(shown, cell, cl.vis_col, cl.vis_end))
+                local total = s.pre + s.body + s.post
+                local left, right = 0, column.width - excess - total
+                if not row.delimiter then
+                    left, right = slot_spaces(column, s, s.pre, total, excess)
                 end
-                left = math.max(0, left - excess)
                 add(row.row, cell.col, left)
-                add(row.row, cell.end_col, width - excess - total - left)
-                excess = math.max(0, excess + left + total - width)
+                add(row.row, cell.end_col, right)
+                excess = math.max(0, excess + left + total - column.width)
             end
         end
     end

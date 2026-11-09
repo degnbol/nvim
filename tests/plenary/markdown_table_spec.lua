@@ -5,6 +5,8 @@ local md = require "utils.markdown_table"
 
 -- ftplugin/markdown.lua requires mini.hipatterns, which the harness lacks.
 vim.cmd("filetype plugin off")
+-- Registers the #head! directive of the markdown_inline conceal overrides.
+vim.cmd.runtime("plugin/treesitter.lua")
 
 local buf
 
@@ -38,16 +40,49 @@ describe("markdown_table.align", function()
         pcall(vim.api.nvim_buf_delete, buf, { force = true })
     end)
 
-    it("aligns at raw width", function()
-        set({ "| a | b |", "|---|---|", "| **x** | yy |" })
+    it("puts one space next to a pipe where the input has whitespace", function()
+        set({ "| a | b |", "|---|---|", "| 1 | 22 |" })
         assert.are.same({
-            "| a     | b   |",
-            "| ----- | --- |",
-            "| **x** | yy  |",
+            "| a | b  |",
+            "|---|----|",
+            "| 1 | 22 |",
         }, align())
     end)
 
-    it("lets a cell over max_width overflow while other rows stay aligned", function()
+    it("keeps a table without spaces next to its pipes tight", function()
+        set({ "|a|bb|", "|-|-|", "|ccc|d|" })
+        assert.are.same({
+            "|a  |bb |",
+            "|---|---|",
+            "|ccc|d  |",
+        }, align())
+    end)
+
+    it("uses hidden markup at a cell edge as the gap next to the pipe", function()
+        set({ "| a |", "|---|", "| `x` |" })
+        assert.are.same({ "| a |", "|---|", "|`x`|" }, align())
+    end)
+
+    it("starts every body in a column with a `**bold**` cell 2 columns from the pipe", function()
+        set({ "| a | b |", "|---|---|", "| **x** | yy |" })
+        assert.are.same({
+            "|  a  | b  |",
+            "|-----|----|",
+            "|**x**| yy |",
+        }, align())
+    end)
+
+    it("lines up a header body with a code span body", function()
+        set({ "| file |", "|---|", "| `name` |" })
+        assert.are.same({ "| file |", "|------|", "|`name`|" }, align())
+    end)
+
+    it("keeps the space before a backslash escape at a cell edge", function()
+        set({ "| a |", "|---|", "| \\* |" })
+        assert.are.same({ "| a  |", "|----|", "| \\* |" }, align())
+    end)
+
+    it("lets a cell over max_width overflow without spaces while other rows stay aligned", function()
         set({
             "| id | note |",
             "| --- | --- |",
@@ -58,65 +93,85 @@ describe("markdown_table.align", function()
             "| id  | note  |",
             "| --- | ----- |",
             "| 1   | short |",
-            "| 2   | much longer than five |",
+            "| 2   |much longer than five|",
+        }, align({ max_width = 5 }))
+    end)
+
+    it("drops the spaces of a cell over max_width so it fills its slot", function()
+        set({ "| a | b | c |", "| --- | --- | --- |", "| 1234567 | 1 | x |", "| 1 | 2 | y |" })
+        assert.are.same({
+            "| a     | b   | c   |",
+            "| ----- | --- | --- |",
+            "|1234567| 1   | x   |",
+            "| 1     | 2   | y   |",
+        }, align({ max_width = 5 }))
+    end)
+
+    it("drops only the trailing space of a cell over max_width one short of its slot", function()
+        set({ "| a | b |", "| --- | --- |", "| 123456 | 1 |", "| 1 | 2 |" })
+        assert.are.same({
+            "| a     | b   |",
+            "| ----- | --- |",
+            "| 123456| 1   |",
+            "| 1     | 2   |",
         }, align({ max_width = 5 }))
     end)
 
     it("shrinks the cells after a cell over max_width until the row is back in its columns", function()
-        set({ "| a | b | c |", "|---|---|---|", "| 1234567 | 1 | x |", "| 1 | 2 | y |" })
+        set({ "| a | b | c |", "| --- | --- | --- |", "| 12345678901 | 1 | x |", "| 1 | 2 | y |" })
         assert.are.same({
             "| a     | b   | c   |",
             "| ----- | --- | --- |",
-            "| 1234567 | 1 | x   |",
+            "|12345678901|1| x   |",
             "| 1     | 2   | y   |",
         }, align({ max_width = 5 }))
     end)
 
     it("keeps the end of a right-aligned cell after a cell over max_width on its column end", function()
-        set({ "| a | b | c |", "|---|--:|---|", "| 1234567 | 1 | x |", "| 1 | 22222 | y |" })
+        set({ "| a | b | c |", "|---|--:|---|", "| 123456789 | 1 | x |", "| 1 | 22222 | y |" })
         assert.are.same({
-            "| a     |     b | c   |",
-            "| ----- | ----: | --- |",
-            "| 1234567 |   1 | x   |",
-            "| 1     | 22222 | y   |",
+            "| a     |     b | c |",
+            "|-------|------:|---|",
+            "|123456789|   1 | x |",
+            "| 1     | 22222 | y |",
         }, align({ max_width = 5, align_cells = true }))
     end)
 
     it("keeps a centred cell after a cell over max_width on its column centre where it fits", function()
-        set({ "| a | b | c |", "|---|:-:|---|", "| 1234567 | 1 | x |", "| 1 | 22222 | y |" })
+        set({ "| a | b | c |", "|---|:-:|---|", "| 123456789 | 1 | x |", "| 1 | 22222 | y |" })
         assert.are.same({
-            "| a     |   b   | c   |",
-            "| ----- | :---: | --- |",
-            "| 1234567 | 1   | x   |",
-            "| 1     | 22222 | y   |",
+            "| a     |   b   | c |",
+            "|-------|:-----:|---|",
+            "|123456789| 1   | x |",
+            "| 1     | 22222 | y |",
         }, align({ max_width = 5, align_cells = true }))
     end)
 
     it("keeps delimiter colons and pads all cells left by default", function()
         set({ "| L | C | R |", "|:--|:-:|--:|", "| a | b | cc |" })
         assert.are.same({
-            "| L   | C   | R   |",
-            "| :-- | :-: | --: |",
-            "| a   | b   | cc  |",
+            "| L | C | R  |",
+            "|:--|:-:|---:|",
+            "| a | b | cc |",
         }, align())
     end)
 
     it("pads right and centre columns with align_cells", function()
         set({ "| L | C | R |", "|:--|:-:|--:|", "| a | b | cc |", "| a | bb | c |" })
         assert.are.same({
-            "| L   |  C  |   R |",
-            "| :-- | :-: | --: |",
-            "| a   |  b  |  cc |",
-            "| a   | bb  |   c |",
+            "| L | C  |  R |",
+            "|:--|:--:|---:|",
+            "| a | b  | cc |",
+            "| a | bb |  c |",
         }, align({ align_cells = true }))
     end)
 
     it("keeps an escaped pipe inside its cell", function()
         set({ "| a | b |", "|---|---|", "| x \\| y | z |" })
         assert.are.same({
-            "| a      | b   |",
-            "| ------ | --- |",
-            "| x \\| y | z   |",
+            "| a      | b |",
+            "|--------|---|",
+            "| x \\| y | z |",
         }, align())
     end)
 
@@ -135,48 +190,48 @@ describe("markdown_table.align", function()
         set(lines)
         local out = align()
         assert.are.same(vim.list_slice(lines, 1, 6), vim.list_slice(out, 1, 6))
-        assert.are.same({ "| a   | b   |", "| --- | --- |", "```" }, vim.list_slice(out, 7, 9))
+        assert.are.same({ "|a  |b  |", "|---|---|", "```" }, vim.list_slice(out, 7, 9))
     end)
 
     it("adds missing leading and trailing pipes", function()
         set({ "a | b", "--|--", "1 | 2" })
         assert.are.same({
-            "| a   | b   |",
-            "| --- | --- |",
-            "| 1   | 2   |",
+            "|a  | b |",
+            "|---|---|",
+            "|1  | 2 |",
         }, align())
     end)
 
     it("keeps the prefix of a table in a blockquote and in a list item", function()
         set({ "> |a|b|", "> |---|---|", "", "- item", "", "  |a|b|", "  |---|---|" })
         assert.are.same({
-            "> | a   | b   |",
-            "> | --- | --- |",
+            "> |a  |b  |",
+            "> |---|---|",
             "",
             "- item",
             "",
-            "  | a   | b   |",
-            "  | --- | --- |",
+            "  |a  |b  |",
+            "  |---|---|",
         }, align())
     end)
 
     it("fills missing cells", function()
         set({ "| a | b | c |", "|---|---|---|", "| 1 |", "| 1 | 2 | 3 | 4 |" })
         assert.are.same({
-            "| a   | b   | c   |     |",
-            "| --- | --- | --- | --- |",
-            "| 1   |     |     |     |",
-            "| 1   | 2   | 3   | 4   |",
+            "| a | b | c |   |",
+            "|---|---|---|---|",
+            "| 1 |   |   |   |",
+            "| 1 | 2 | 3 | 4 |",
         }, align())
     end)
 
     it("keeps cells after empty cells in their columns", function()
         set({ "| a | b | c | d |", "|---|---|---|---|", "| a || c ||", "| a ||| d |" })
         assert.are.same({
-            "| a   | b   | c   | d   |",
-            "| --- | --- | --- | --- |",
-            "| a   |     | c   |     |",
-            "| a   |     |     | d   |",
+            "| a | b | c | d |",
+            "|---|---|---|---|",
+            "| a |   | c |   |",
+            "| a |   |   | d |",
         }, align())
     end)
 
@@ -184,7 +239,7 @@ describe("markdown_table.align", function()
         set({ "| é | 漢字 |", "|---|---|", "| abcd | x |" })
         assert.are.same({
             "| é    | 漢字 |",
-            "| ---- | ---- |",
+            "|------|------|",
             "| abcd | x    |",
         }, align())
     end)
@@ -192,14 +247,16 @@ describe("markdown_table.align", function()
     it("adds pipes to a blockquote row without them", function()
         set({ "> |a|b|", "> |---|---|", "> c | d" })
         assert.are.same({
-            "> | a   | b   |",
-            "> | --- | --- |",
-            "> | c   | d   |",
+            "> |a  | b |",
+            "> |---|---|",
+            "> |c  | d |",
         }, align())
     end)
 
     it("returns 0 in a buffer without a markdown parser", function()
-        vim.bo[buf].filetype = ""
+        -- The markdown FileType has already started a parser on `buf`.
+        vim.api.nvim_buf_delete(buf, { force = true })
+        buf = vim.api.nvim_create_buf(true, false)
         set({ "|a|b|", "|-|-|" })
         assert.are.equal(0, md.align(buf, 0, 1))
     end)
@@ -222,9 +279,9 @@ describe("markdown_table.align", function()
             "|a|b|",
             "|-|-|",
             "",
-            "| c   | d   |",
-            "| --- | --- |",
-            "| e   | f   |",
+            "|c  |d  |",
+            "|---|---|",
+            "|e  |f  |",
         }, align(nil, 4, 4))
     end)
 
@@ -248,13 +305,30 @@ describe("markdown_table.align", function()
         local once = align({ align_cells = true })
         assert.are.same(once, align({ align_cells = true }))
     end)
+
+    it("is idempotent with cells over max_width", function()
+        set({
+            "| a | b | c |",
+            "| --- | --- | --- |",
+            "| 1234567 | 1 | x |",
+            "| 123456 | 1 | x |",
+            "| 12345678901 | 1 | x |",
+            "| 1 | 2 | y |",
+        })
+        local once = align({ max_width = 5 })
+        assert.are.same(once, align({ max_width = 5 }))
+    end)
+
+    it("is idempotent with markup at cell edges", function()
+        set({ "| L | C | R |", "|:--|:-:|--:|", "| **a** | `b` | *c* |", "| plain | text | here |" })
+        local once = align({ align_cells = true })
+        assert.are.same(once, align({ align_cells = true }))
+    end)
 end)
 
 describe("markdown_table.layout and pads", function()
     local Conceal = require "agentic.utils.conceal"
     local OPTS = { max_width = 30, align_cells = true }
-    -- Registers the #head! directive of the markdown_inline conceal overrides.
-    vim.cmd.runtime("plugin/treesitter.lua")
 
     before_each(function()
         buf = vim.api.nvim_create_buf(true, false)
@@ -279,7 +353,8 @@ describe("markdown_table.layout and pads", function()
     end
 
     --- Screen vcols per row with the pads drawn: of each cell's right pipe,
-    --- of its first visible character, and after its last one.
+    --- of its first visible character, and after its last one. The delimiter
+    --- row has only pipes.
     --- @param tbl utils.markdown_table.Table
     --- @param conceals table<integer, agentic.utils.Conceal.Range[]>
     --- @param layout utils.markdown_table.Layout
@@ -302,25 +377,30 @@ describe("markdown_table.layout and pads", function()
             local pos = { pipes = {}, starts = {}, ends = {} }
             for c, cell in ipairs(row.cells) do
                 local cl = layout.cells[i][c]
-                pos.pipes[c] = shown[cell.rpipe]
-                pos.starts[c] = shown[cl.vis_col]
-                pos.ends[c] = shown[cl.vis_end] - (pad_at[cl.vis_end] or 0)
+                pos.pipes[c] = shown[cell.to]
+                if not row.delimiter then
+                    pos.starts[c] = shown[cl.vis_col]
+                    pos.ends[c] = shown[cl.vis_end] - (pad_at[cl.vis_end] or 0)
+                end
             end
             out[i] = pos
         end
         return out
     end
 
-    --- Assert every row has the pipes of the first row, and the same
-    --- `starts` in `left` columns and `ends` in `right` columns.
+    --- Assert every row has the pipes of the first row, and every row but
+    --- the delimiter the same `starts` in `left` columns and `ends` in
+    --- `right` columns.
     local function assert_aligned(rows, left, right)
         for i = 2, #rows do
             assert.are.same(rows[1].pipes, rows[i].pipes, "pipes of row " .. i)
-            for _, c in ipairs(left or {}) do
-                assert.are.equal(rows[1].starts[c], rows[i].starts[c], ("start of row %d col %d"):format(i, c))
-            end
-            for _, c in ipairs(right or {}) do
-                assert.are.equal(rows[1].ends[c], rows[i].ends[c], ("end of row %d col %d"):format(i, c))
+            if next(rows[i].starts) then
+                for _, c in ipairs(left or {}) do
+                    assert.are.equal(rows[1].starts[c], rows[i].starts[c], ("start of row %d col %d"):format(i, c))
+                end
+                for _, c in ipairs(right or {}) do
+                    assert.are.equal(rows[1].ends[c], rows[i].ends[c], ("end of row %d col %d"):format(i, c))
+                end
             end
         end
     end
@@ -430,6 +510,40 @@ describe("markdown_table.layout and pads", function()
         assert.are.same({}, md.pads(tbl, layout, conceals, 0))
     end)
 
+    --- Pads of `lines` after formatting them with `OPTS`, at `level`.
+    --- @param lines string[]
+    --- @param level integer
+    --- @return { row: integer, col: integer, width: integer }[]
+    local function formatted_pads(lines, level)
+        set(lines)
+        md.align(buf, 0, #lines - 1, OPTS)
+        local tbl, conceals, layout = measure(get())
+        return md.pads(tbl, layout, conceals, level)
+    end
+
+    it("needs no pads at conceallevel 0 on a formatted table with a centred column", function()
+        assert.are.same({}, formatted_pads({ "| a | b |", "|---|:-:|", "| 1 | 1 |", "| 1 | 2222 |" }, 0))
+    end)
+
+    it("needs no pads at conceallevel 0 on a formatted table with empty and missing cells", function()
+        assert.are.same({}, formatted_pads({ "| a | b | c |", "|---|---|---|", "| 1 |", "| 1 || 3 | 4 |" }, 0))
+    end)
+
+    it("needs no pads at conceallevel 0 on a formatted table with markup at cell edges", function()
+        assert.are.same({}, formatted_pads(EXAMPLE, 0))
+    end)
+
+    it("needs no pads at conceallevel 0 and 1 on a formatted table with code spans", function()
+        local lines = { "| name | b |", "|:-:|--:|", "| `x` | `yy` |", "| plain | 1 |" }
+        assert.are.same({}, formatted_pads(lines, 0))
+        assert.are.same({}, formatted_pads(lines, 1))
+    end)
+
+    it("adds no pads at conceallevel 0 to a table without spaces next to its pipes", function()
+        local tbl, conceals, layout = measure({ "|a|b|", "|-|-|" })
+        assert.are.same({}, md.pads(tbl, layout, conceals, 0))
+    end)
+
     it("lines up the ends of a right-aligned column", function()
         local tbl, conceals, layout = measure({
             "| n |",
@@ -486,9 +600,9 @@ describe("markdown table keymap", function()
         set({ "|a|b|", "|-|-|", "|long cell|x|" })
         vim.api.nvim_feedkeys(vim.keycode("ggVG4<localleader>a"), "xt", false)
         assert.are.same({
-            "| a    | b   |",
-            "| ---- | --- |",
-            "| long cell | x |",
+            "|a   |b  |",
+            "|----|---|",
+            "|long cell|x|",
         }, get())
     end)
 end)
