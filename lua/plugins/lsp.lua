@@ -43,6 +43,13 @@ return {
 		load = function() end,
 		ft = "kitty",
 	},
+	{
+		"symref.nvim",
+		load = function() end,
+		after = function()
+			require("symref").setup({ filetypes = { "markdown", "AgenticChat" } })
+		end,
+	},
 	-- scala (not yet in Mason)
 	{
 		"nvim-metals",

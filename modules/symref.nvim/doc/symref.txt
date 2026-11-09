@@ -1,0 +1,75 @@
+*symref.txt*	Go to code symbols named in markdown code spans
+
+==============================================================================
+INTRODUCTION                                                          *symref*
+
+symref is an in-process LSP server for markdown buffers. In a code span such
+as `ShellParse.extract_commands` or `parse_term()`, it answers:
+
+  textDocument/definition  |CTRL-]|, |CTRL-W_]|, |g]|
+  textDocument/hover       |K|
+  workspace/symbol         |:tag|, |:tselect|, LSP symbol pickers
+
+It has no index of its own. It sends `workspace/symbol` for the last name
+in the span to every other running LSP client and ranks the exact-name
+matches. A language with no running client gets no answer. With no answer
+from any client, |CTRL-]| falls back to the tags file.
+
+==============================================================================
+SETUP                                                         *symref.setup()*
+
+>lua
+    require("symref").setup({ filetypes = { "markdown", "quarto" } })
+<
+Attaches to every buffer of {filetypes}, open now or later. Markdown
+buffers with a 'buftype' (hover floats, plugin scratch buffers) are skipped.
+Other filetypes are attached whatever their 'buftype'.
+
+{filetypes} defaults to `{ "markdown" }`.
+
+|CTRL-]| goes through the 'tagfunc' that core sets, see |lsp-defaults|. A
+buffer with its own 'tagfunc' gets |CTRL-]| from symref only if that
+function falls back to |vim.lsp.tagfunc()|.
+
+==============================================================================
+TERMS                                                           *symref-terms*
+
+A code span names a symbol path. The separators `.`, `:`, `::` and `#`
+split it into qualifiers and the symbol, and a trailing argument list is
+dropped:
+
+  `ShellParse.extract_commands`  symbol extract_commands, qualifier ShellParse
+  `a::b::c`                      symbol c, qualifiers a and b
+  `foo.bar(x, y)`                symbol bar, qualifier foo
+
+Text that is not an identifier path, such as `rg -n`, gets no answer.
+
+==============================================================================
+RANKING                                                       *symref-ranking*
+
+Only matches named exactly as the symbol are kept. They are sorted by, best
+first:
+
+1. A qualifier equals the match's `containerName` or its file name without
+   extension, ignoring case, `_` and `-`. The last qualifier counts most.
+   When some match has such a qualifier, the others are dropped.
+2. The file is under the project root. For a file buffer that is its `.git`
+   root (none outside a repository); for other buffers, the current
+   directory of a window showing the buffer, else of the current window.
+3. The file is not a test file (`*.test.*`, `*_spec.*`, `*_test.*`,
+   `test_*`, or under `tests/` or `spec/`).
+
+Hover shows the best match only; definition returns all matches.
+
+==============================================================================
+LIMITS                                                         *symref-limits*
+
+- symref waits at most 800 ms for the other clients and ranks the replies
+  that arrived. Each client that times out or fails is reported with
+  |vim.notify()| at WARN.
+- |CTRL-]| falls back to the tags file when any client attached to the
+  buffer takes over 1 s to answer, e.g. a client that is still starting.
+- Matches whose location has no range (a `WorkspaceSymbol` that needs
+  `workspaceSymbol/resolve`) are dropped.
+
+ vim:tw=78:ts=8:ft=help:norl:
