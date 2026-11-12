@@ -25,40 +25,82 @@ function M.git_root(source)
     return vim.fs.root(source, ".git")
 end
 
--- Look up a shell/Makefile-style `NAME=value` assignment in the buffer.
--- Matches line-anchored assignments with no spaces around `=` (zsh/bash/make
--- convention), strips surrounding single or double quotes. Returns nil if not
--- found. Scans from the bottom so later assignments win.
-function M.buffer_var(name, bufnr)
-    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-    for i = #lines, 1, -1 do
+-- Conventional values of $NAME, computed from a buffer, for when the buffer
+-- assigns NAME no value that expands. ROOT follows `ROOT=$(git root)`. A nil
+-- result falls through to the environment.
+---@type table<string, fun(bufnr: integer): string|nil>
+local VAR_DEFAULTS = { ROOT = M.git_root }
+
+-- Look up a shell/Makefile-style `NAME=value` assignment above line `i_bound`
+-- of `lines`. Matches line-anchored assignments with no spaces around `=`
+-- (zsh/bash/make convention), strips surrounding single or double quotes.
+-- Returns nil if not found. Scans upwards so the nearest assignment wins.
+---@param lines string[]
+---@param name string
+---@param i_bound integer 1-based, exclusive
+---@return string|nil value
+---@return integer|nil i_line 1-based line of the assignment
+---@return boolean|nil quoted whether the value was in single quotes, which the shell keeps literal
+local function assignment(lines, name, i_bound)
+    for i = i_bound - 1, 1, -1 do
         local val = lines[i]:match("^%s*" .. name .. "=(.+)")
         if val then
             val = val:match("^%s*(.-)%s*$")
-            return val:match("^['\"](.-)['\"]$") or val
+            local single = val:match("^'(.-)'$")
+            if single then return single, i, true end
+            return val:match('^"(.-)"$') or val, i, false
         end
     end
 end
 
 --- Expand `$(git root)` and `$(git rev-parse --show-toplevel)` to the git root
---- (else $ROOT), then each $NAME from the environment, else from a NAME=value
---- assignment in the buffer. Unresolvable parts stay literal. Arbitrary command
---- substitution is intentionally NOT run: executing shell from a file would be
---- a footgun.
+--- of `bufnr` (else $ROOT), in both the $(...) and the `...` form. Other
+--- commands stay literal: arbitrary command substitution is intentionally NOT
+--- run, as executing shell from a file would be a footgun.
+---@param token string
+---@param bufnr integer
+---@return string
+local function expand_git_root(token, bufnr)
+    -- nil keeps the substitution, for any other command.
+    local function root(cmd)
+        cmd = cmd:match("^%s*(.-)%s*$")
+        if cmd == "git root" or cmd:match("^git rev%-parse%s+%-%-show%-toplevel$") then
+            return M.git_root(bufnr) or vim.env.ROOT
+        end
+    end
+    token = token:gsub("%$(%b())", function(parens) return root(parens:sub(2, -2)) end)
+    return (token:gsub("`([^`]*)`", root))
+end
+
+--- Expand `$(git root)` and its rev-parse spelling, in the $(...) or `...` form,
+--- to the git root of `bufnr` (else the environment's $ROOT). Then expand each
+--- $NAME as the shell would at the end of the buffer: from its nearest
+--- NAME=value assignment above, itself expanded the same way, when that
+--- expands fully. Else from VAR_DEFAULTS, else from the environment. Other
+--- command substitutions and unresolvable parts stay literal.
 ---@param token string
 ---@param bufnr integer buffer for the git root and NAME=value lookups
 ---@return string
 function M.expand_dollars(token, bufnr)
-    token = token:gsub("%$%b()", function(m)
-        local cmd = m:sub(3, -2):match("^%s*(.-)%s*$")
-        if cmd == "git root" or cmd:match("^git rev%-parse%s+%-%-show%-toplevel$") then
-            return M.git_root(bufnr) or vim.env.ROOT or m
-        end
-        return m
-    end)
-    return (token:gsub("%$([%w_]+)", function(name)
-        return vim.env[name] or M.buffer_var(name, bufnr) or ("$" .. name)
-    end))
+    local lines -- read on the first $NAME only
+
+    -- `text` with its $NAME forms expanded as the shell would above line
+    -- `i_bound` (nil: the end of the buffer).
+    local function expand_above(text, i_bound)
+        return (expand_git_root(text, bufnr):gsub("%$([%w_]+)", function(name)
+            lines = lines or vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+            local value, i_line, quoted = assignment(lines, name, i_bound or #lines + 1)
+            if quoted then return value end
+            if value then
+                value = expand_above(value, i_line)
+                if not value:find("[$`]") then return value end
+            end
+            local default = VAR_DEFAULTS[name]
+            return default and default(bufnr) or vim.env[name]
+        end))
+    end
+
+    return expand_above(token, nil)
 end
 
 -- The $(...) or $VAR token under the cursor, or nil if none sits there.

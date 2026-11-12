@@ -226,11 +226,7 @@ return {
                         path = {
                             -- When a path is relevant to complete, it usually should.
                             score_offset = 4,
-                            opts = {
-                                get_cwd = function(context)
-                                    return require("utils.paths").buf_dir(context.bufnr)
-                                end,
-                            },
+                            opts = require("completion.path").opts,
                         },
                         snippets = {
                             -- from default -3. Make sure path is stil higher.
@@ -256,11 +252,18 @@ return {
                             -- (`cargo-install-update`, `run-clang-tidy`). Rank
                             -- shortest-first, then alphabetically, so the obvious
                             -- completion leads.
+                            -- Unique labels: _match lists a $ word a second time.
                             transform_items = function(_, items)
+                                items = vim.list.unique(items, function(item) return item.label end)
                                 for _, item in ipairs(items) do
                                     item.sortText = ("%03d%s"):format(#item.label, item.label)
                                 end
                                 return items
+                            end,
+                            -- path owns every word it can list.
+                            should_show_items = function(ctx)
+                                local cp = require "completion.path"
+                                return cp.expanded_dirname(cp.opts, ctx) == nil
                             end,
                         },
                         nerdfonts = {
@@ -544,7 +547,9 @@ return {
                 end
             end
 
-            -- Patch path source: show hidden files when cursor is right after a
+            -- Patch path source: resolve the directory with $(git root) and
+            -- $NAME expanded (completion.path). Also show hidden files when
+            -- cursor is right after a
             -- '.' with no keyword chars after (e.g. "~/nvim/.|"). Upstream's
             -- include_hidden check only fires when length > 0 OR the dot is at
             -- start_col (cursor before a dot), missing the explicit-dot case.
@@ -552,7 +557,7 @@ return {
             local path_lib = require('blink.cmp.sources.path.lib')
             function path_module:get_completions(context, callback)
                 callback = vim.schedule_wrap(callback)
-                local dirname = path_lib.dirname(self.opts, context)
+                local dirname = require("completion.path").expanded_dirname(self.opts, context)
                 if not dirname then
                     return callback({
                         is_incomplete_forward = false,

@@ -41,10 +41,17 @@ local function show(name, lines)
 end
 
 describe("utils.paths.expand_dollars", function()
-    local repo
+    local repo, saved_root
 
-    before_each(function() repo = make_repo() end)
-    after_each(function() vim.fs.rm(repo, { recursive = true, force = true }) end)
+    before_each(function()
+        repo = make_repo()
+        saved_root = vim.env.ROOT
+    end)
+    after_each(function()
+        vim.env.ROOT = saved_root
+        vim.env.PATHS_SPEC_VAR = nil
+        vim.fs.rm(repo, { recursive = true, force = true })
+    end)
 
     it("expands $(git root)", function()
         local buf = show(repo .. "/note.md", {})
@@ -54,12 +61,80 @@ describe("utils.paths.expand_dollars", function()
     it("expands an environment variable", function()
         vim.env.PATHS_SPEC_VAR = "/a"
         assert.are.equal("/a/x", paths.expand_dollars("$PATHS_SPEC_VAR/x", 0))
-        vim.env.PATHS_SPEC_VAR = nil
     end)
 
     it("expands a buffer NAME=value assignment", function()
         local buf = show(repo .. "/note.md", { "PEEK='/p'" })
         assert.are.equal("/p/x", paths.expand_dollars("$PEEK/x", buf))
+    end)
+
+    it("prefers a buffer NAME=value assignment over the environment", function()
+        vim.env.PATHS_SPEC_VAR = "/env"
+        local buf = show(repo .. "/note.md", { "PATHS_SPEC_VAR=/buf" })
+        assert.are.equal("/buf/x", paths.expand_dollars("$PATHS_SPEC_VAR/x", buf))
+    end)
+
+    it("expands $(git root) in a buffer value against the buffer", function()
+        vim.env.ROOT = "/elsewhere"
+        local buf = show(repo .. "/note.md", { "ROOT=$(git root)" })
+        assert_path(repo .. "/x", paths.expand_dollars("$ROOT/x", buf))
+    end)
+
+    it("expands `git root` in a buffer value", function()
+        vim.env.ROOT = "/elsewhere"
+        local buf = show(repo .. "/note.md", { "ROOT=`git root`" })
+        assert_path(repo .. "/x", paths.expand_dollars("$ROOT/x", buf))
+    end)
+
+    it("expands $NAME inside a buffer value from the buffer", function()
+        local buf = show(repo .. "/note.md", { "BASE=/b", "PATHS_SPEC_VAR=$BASE/c" })
+        assert.are.equal("/b/c/x", paths.expand_dollars("$PATHS_SPEC_VAR/x", buf))
+    end)
+
+    it("expands a self-reference in a buffer value from the environment", function()
+        vim.env.PATHS_SPEC_VAR = "/env"
+        local buf = show(repo .. "/note.md", { "PATHS_SPEC_VAR=$PATHS_SPEC_VAR/y" })
+        assert.are.equal("/env/y/x", paths.expand_dollars("$PATHS_SPEC_VAR/x", buf))
+    end)
+
+    it("expands a reassignment from the assignment above it", function()
+        local buf = show(repo .. "/note.md", { "PATHS_SPEC_VAR=/a", "PATHS_SPEC_VAR=$PATHS_SPEC_VAR/b" })
+        assert.are.equal("/a/b/x", paths.expand_dollars("$PATHS_SPEC_VAR/x", buf))
+    end)
+
+    it("expands a buffer value from the assignments above it only", function()
+        local buf = show(repo .. "/note.md", { "BASE=/a", "PATHS_SPEC_VAR=$BASE/b", "BASE=/c" })
+        assert.are.equal("/a/b/x", paths.expand_dollars("$PATHS_SPEC_VAR/x", buf))
+    end)
+
+    it("terminates on assignments that refer to each other", function()
+        local buf = show(repo .. "/note.md", { "A=$B", "B=$A" })
+        assert.are.equal("$A/x", paths.expand_dollars("$A/x", buf))
+    end)
+
+    it("keeps a single-quoted buffer value literal", function()
+        local buf = show(repo .. "/note.md", { "PATHS_SPEC_VAR='/a$b'" })
+        assert.are.equal("/a$b/x", paths.expand_dollars("$PATHS_SPEC_VAR/x", buf))
+    end)
+
+    it("falls back to the environment when a value inside a buffer value does not expand", function()
+        vim.env.PATHS_SPEC_VAR = "/env"
+        local buf = show(repo .. "/note.md", { "BASE=$(mktemp -d)", "PATHS_SPEC_VAR=$BASE/c" })
+        assert.are.equal("/env/x", paths.expand_dollars("$PATHS_SPEC_VAR/x", buf))
+    end)
+
+    it("falls back to the environment for a buffer value that does not expand", function()
+        vim.env.PATHS_SPEC_VAR = "/env"
+        local buf = show(repo .. "/note.md", { "PATHS_SPEC_VAR=$(mktemp -d)" })
+        assert.are.equal("/env/x", paths.expand_dollars("$PATHS_SPEC_VAR/x", buf))
+    end)
+
+    it("takes $ROOT as the buffer's git root when the buffer does not set it", function()
+        vim.env.ROOT = "/elsewhere"
+        local buf = show(repo .. "/note.md", { "ROOT=$(mktemp -d)" })
+        assert_path(repo .. "/x", paths.expand_dollars("$ROOT/x", buf))
+        buf = show(repo .. "/other.md", {})
+        assert_path(repo .. "/x", paths.expand_dollars("$ROOT/x", buf))
     end)
 
     it("keeps unresolvable parts literal", function()

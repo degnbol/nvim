@@ -19,5 +19,9 @@ zpty -w z " source ~/dotfiles/zsh/completion.zsh"
 # completion pass, and cmp-zsh's compadd hook captures every pass, so each
 # candidate surfaces once per spec (3× here). blink does its own fuzzy matching,
 # so zsh's case-insensitive/substring matcher is redundant anyway.
-zpty -w z " zstyle ':completion:*' matcher-list ''"
+# Drop its _expand too: it succeeds on any word with a $, so _complete never
+# runs and such a word gets its expansion, never the directory contents.
+# One line: the shared script reads only 4 lines of output while it waits for
+# "ok", and each extra `zpty -w` adds output.
+zpty -w z " zstyle ':completion:*' matcher-list ''; zstyle ':completion:*' completer _complete _match"
 source ${CMP_ZSH_SHARED:?CMP_ZSH_SHARED not set by the nvim config}
