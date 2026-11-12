@@ -86,6 +86,9 @@ return {
                     url = "https://litellm.svc.xyme.cloud/v1",
                     api_key_env = "OPENCODE_LITELLM_API_KEY",
                 },
+                skeptic = {
+                    enabled = true,
+                },
             }
 
             -- The budget is editor-wide: one global statusline, only once agentic is in use.
