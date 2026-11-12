@@ -21,6 +21,13 @@ local READ_TOTAL_MAX = 5e6
 --- @field symbol string
 --- @field qualifiers string[]
 
+--- `text` without surrounding whitespace and backticks.
+--- @param text string
+--- @return string
+local function strip_ticks(text)
+    return vim.trim((vim.trim(text):gsub("^`+", ""):gsub("`+$", "")))
+end
+
 --- Text of the markdown_inline `code_span` at a position, without its
 --- backticks. Finds spans in injected trees too. nil when no span covers the
 --- position.
@@ -39,8 +46,25 @@ function M.code_span_at(bufnr, row, col)
         node = node:parent()
     end
     if not node then return nil end
-    local text = vim.treesitter.get_node_text(node, bufnr):gsub("^`+", ""):gsub("`+$", "")
-    return vim.trim(text), { node:range() }
+    return strip_ticks(vim.treesitter.get_node_text(node, bufnr)), { node:range() }
+end
+
+--- Text of the Visual selection in the current window, without surrounding
+--- whitespace and backticks, so `""` for a selection of only those. nil
+--- outside Visual mode and for a selection over several lines.
+--- @return string|nil text
+--- @return Range4|nil range of the selection, end-exclusive
+function M.selection()
+    local mode = vim.api.nvim_get_mode().mode:sub(1, 1)
+    if not mode:find("[vV\22]") then return nil end
+    local anchor, cursor, opts = vim.fn.getpos("v"), vim.fn.getpos("."), { type = mode }
+    local region = vim.fn.getregionpos(anchor, cursor, opts)
+    if #region ~= 1 then return nil end
+    local selected = vim.fn.getregion(anchor, cursor, opts)[1]
+    -- Columns are 1-based bytes, the end at the last byte, and 0 on an empty line.
+    local first, last = region[1][1], region[1][2]
+    local row = first[2] - 1
+    return strip_ticks(selected), { row, math.max(0, first[3] - 1), row, last[3] }
 end
 
 --- Split a term into a qualifier path and a symbol. Separators `.`, `:`, `#`,
@@ -329,17 +353,24 @@ local function utf8_location(hit)
     return { uri = location.uri, range = range }
 end
 
---- Ranked hits for the code span at a text document position: those of the
---- running servers, else those of tags queries. The tagged files are found
---- while the servers answer, but parsed only when no server has a hit.
+--- Ranked hits for the single-line Visual selection when the document is the
+--- current buffer in Visual mode, else for the code span at the position:
+--- those of the running servers, else those of tags queries. The tagged files
+--- are found while the servers answer, but parsed only when no server has a
+--- hit.
 --- @param params lsp.TextDocumentPositionParams
 --- @param on_done fun(hits: symbol_ls.Hit[], span: Range4|nil, root: string|nil)
 local function span_hits(params, on_done)
     local uri = params.textDocument.uri
     local current = vim.api.nvim_get_current_buf()
     -- Unnamed buffers share the URI "file://", which uri_to_bufnr cannot map back.
-    local bufnr = vim.uri_from_bufnr(current) == uri and current or vim.uri_to_bufnr(uri)
-    local text, span = M.code_span_at(bufnr, params.position.line, params.position.character)
+    local is_current = vim.uri_from_bufnr(current) == uri
+    local bufnr = is_current and current or vim.uri_to_bufnr(uri)
+    local text, span
+    if is_current then text, span = M.selection() end
+    if not text then
+        text, span = M.code_span_at(bufnr, params.position.line, params.position.character)
+    end
     local term = text and M.parse_term(text)
     if not term then return on_done({}, nil, nil) end
     local root = M.root(bufnr)
@@ -448,12 +479,37 @@ function M._rpc(dispatchers)
     }
 end
 
---- Attach `bufnr` to the symbol-ls client, starting it on first use. One client
---- serves every buffer.
+--- Move a cursor past the end of the line (`v$`) onto the last character,
+--- where leaving Visual mode would put it.
+local function cursor_onto_line()
+    local line = vim.api.nvim_get_current_line()
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    if #line > 0 and col >= #line then
+        vim.api.nvim_win_set_cursor(0, { row, #line - 1 + vim.str_utf_start(line, #line) })
+    end
+end
+
+--- Attach `bufnr` to the symbol-ls client, starting it on first use, and map
+--- buffer-local Visual `K` and `CTRL-]`: hover and definition for the
+--- selection, then leave Visual mode. Core's `v_K` runs 'keywordprg', and
+--- `v_CTRL-]` leaves Visual mode before its tagfunc sends a definition request
+--- at the cursor, so symbol-ls would answer for the code span instead. One
+--- client serves every buffer.
 --- @param bufnr integer
 function M.attach(bufnr)
     -- No root_dir, so reuse_client_default reuses the client for any buffer.
     vim.lsp.start({ name = NAME, cmd = M._rpc }, { bufnr = bufnr })
+    local requests = { K = vim.lsp.buf.hover, ["<C-]>"] = vim.lsp.buf.definition }
+    for lhs, request in pairs(requests) do
+        vim.keymap.set("x", lhs, function()
+            -- Core drops a hover reply when the cursor has moved since the request.
+            cursor_onto_line()
+            -- M._rpc runs the handler inside client:request, so the
+            -- selection is read before <Esc> ends it.
+            request()
+            vim.api.nvim_feedkeys(vim.keycode "<Esc>", "nx", false)
+        end, { buffer = bufnr, desc = "symbol-ls: " .. lhs .. " for the selection" })
+    end
 end
 
 --- Whether `attach` should run on a buffer of a configured filetype.
@@ -466,7 +522,8 @@ local function is_attachable(bufnr)
 end
 
 --- Attach every buffer of `opts.filetypes`, open now or later, except
---- markdown buffers with a 'buftype'. Add `tags.dir()` to 'runtimepath'.
+--- markdown buffers with a 'buftype', and map Visual `K` and `CTRL-]` in them.
+--- Add `tags.dir()` to 'runtimepath'.
 --- @param opts { filetypes: string[]|nil }|nil filetypes default `{ "markdown" }`
 function M.setup(opts)
     local filetypes = opts and opts.filetypes or { "markdown" }

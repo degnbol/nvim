@@ -43,6 +43,48 @@ describe("symbol-ls.code_span_at", function()
     end)
 end)
 
+describe("symbol-ls.selection", function()
+    before_each(function()
+        vim.api.nvim_set_current_buf(markdown_buf { "see `ShellParse.run` here", "next" })
+    end)
+    after_each(function()
+        vim.api.nvim_feedkeys(vim.keycode "<Esc>", "nx", false)
+    end)
+
+    it("returns the selected text and its range", function()
+        vim.api.nvim_feedkeys("0fSvt.", "nx", false)
+        local text, range = symbol_ls.selection()
+        assert.are.equal("ShellParse", text)
+        assert.are.same({ 0, 5, 0, 15 }, range)
+    end)
+
+    it("drops enclosing backticks", function()
+        vim.api.nvim_feedkeys("0f`vf`", "nx", false)
+        assert.are.equal("ShellParse.run", (symbol_ls.selection()))
+    end)
+
+    it("ends the range after a multibyte last character", function()
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, { "see ShellParé" })
+        vim.api.nvim_feedkeys("0fSv$", "nx", false)
+        local text, range = symbol_ls.selection()
+        assert.are.equal("ShellParé", text)
+        assert.are.same({ 0, 4, 0, 14 }, range)
+    end)
+
+    it("returns the whole line for V and an empty range on an empty line", function()
+        vim.api.nvim_feedkeys("0V", "nx", false)
+        assert.are.same({ 0, 0, 0, 25 }, select(2, symbol_ls.selection()))
+        vim.api.nvim_buf_set_lines(0, -1, -1, false, { "" })
+        vim.api.nvim_feedkeys(vim.keycode "<Esc>" .. "Gv", "nx", false)
+        assert.are.same({ "", { 2, 0, 2, 0 } }, { symbol_ls.selection() })
+    end)
+
+    it("returns nil for a selection over several lines", function()
+        vim.api.nvim_feedkeys("0vj", "nx", false)
+        assert.is_nil(symbol_ls.selection())
+    end)
+end)
+
 describe("symbol-ls.parse_term", function()
     local cases = {
         ["ShellParse.extract_commands"] = { symbol = "extract_commands", qualifiers = { "ShellParse" } },
@@ -223,6 +265,18 @@ describe("symbol-ls.setup", function()
         assert.is_true(attached(named))
         assert.is_false(attached(other))
     end)
+
+    it("maps Visual K and CTRL-] in attached buffers only", function()
+        symbol_ls.setup { filetypes = { "markdown" } }
+        local markdown = buf_of("markdown", "")
+        local other = buf_of("lua", "")
+        for _, lhs in ipairs { "K", "<C-]>" } do
+            vim.api.nvim_set_current_buf(markdown)
+            assert.are.equal(1, vim.fn.maparg(lhs, "x", false, true).buffer)
+            vim.api.nvim_set_current_buf(other)
+            assert.are.equal("", vim.fn.maparg(lhs, "x"))
+        end
+    end)
 end)
 
 describe("symbol-ls textDocument/definition", function()
@@ -352,6 +406,50 @@ describe("symbol-ls without a server for the language", function()
             { uri = vim.uri_from_fname(root .. "/lua/shell_parse.lua"),
                 range = { start = { line = 1, character = 11 }, ["end"] = { line = 1, character = 14 } } },
         }, request("textDocument/definition"))
+    end)
+
+    it("answers for the Visual selection instead of the code span", function()
+        local bufnr = markdown_buf { "see `M` and ShellParse.run here" }
+        vim.api.nvim_set_current_buf(bufnr)
+        symbol_ls.attach(bufnr)
+        vim.api.nvim_feedkeys("0fSvE", "nx", false)
+        local responses = vim.lsp.buf_request_sync(bufnr, "textDocument/hover", {
+            textDocument = { uri = vim.uri_from_bufnr(bufnr) },
+            position = { line = 0, character = 4 },
+        }, 2000)
+        vim.api.nvim_feedkeys(vim.keycode "<Esc>", "nx", false)
+        local _, response = next(assert(responses))
+        local result = assert(response).result
+        assert.matches("function M.run", result.contents.value)
+        assert.are.same({ start = { line = 0, character = 12 }, ["end"] = { line = 0, character = 26 } }, result.range)
+    end)
+
+    --- Attached buffer with `line`, made current.
+    --- @param line string
+    local function attached_buf(line)
+        local bufnr = markdown_buf { line }
+        vim.api.nvim_set_current_buf(bufnr)
+        symbol_ls.attach(bufnr)
+    end
+
+    it("jumps to the definition of the selection with Visual CTRL-]", function()
+        attached_buf "see ShellParse.run here"
+        vim.api.nvim_feedkeys("0fSvE" .. vim.keycode "<C-]>", "x", false)
+        assert.are.equal("n", vim.fn.mode())
+        assert.is_true(vim.wait(2000, function()
+            return vim.api.nvim_buf_get_name(0) == root .. "/lua/shell_parse.lua"
+        end))
+    end)
+
+    it("shows hover for a selection to the end of the line with Visual K", function()
+        attached_buf "see ShellParse.run"
+        vim.api.nvim_feedkeys("0fSv$K", "x", false)
+        assert.are.equal("n", vim.fn.mode())
+        assert.is_true(vim.wait(2000, function()
+            return vim.iter(vim.api.nvim_list_wins()):any(function(win)
+                return vim.api.nvim_win_get_config(win).relative ~= ""
+            end)
+        end))
     end)
 
     it("answers hover with the definition's source", function()

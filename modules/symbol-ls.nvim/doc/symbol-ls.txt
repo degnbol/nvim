@@ -43,9 +43,10 @@ SETUP                                                      *symbol-ls.setup()*
 >lua
     require("symbol-ls").setup({ filetypes = { "markdown", "quarto" } })
 <
-Attaches to every buffer of {filetypes}, open now or later. Markdown
-buffers with a 'buftype' (hover floats, plugin scratch buffers) are skipped.
-Other filetypes are attached whatever their 'buftype'.
+Attaches to every buffer of {filetypes}, open now or later, and maps Visual
+`K` and `CTRL-]` in it (|symbol-ls-visual|). Markdown buffers with a
+'buftype' (hover floats, plugin scratch buffers) are skipped. Other
+filetypes are attached whatever their 'buftype'.
 
 {filetypes} defaults to `{ "markdown" }`.
 
@@ -65,6 +66,14 @@ dropped:
   `foo.bar(x, y)`  symbol bar, qualifier foo
 
 Text that is not an identifier path, such as `rg -n`, gets no answer.
+
+                                                          *symbol-ls-visual*
+In Visual mode the selected text is the term, in or out of a code span.
+Surrounding backticks in it are dropped. A selection over several lines
+counts as none, and the code span at the cursor is used. Visual `K` and
+`CTRL-]` are mapped buffer-local in attached buffers: they call
+|vim.lsp.buf.hover()| and |vim.lsp.buf.definition()|, then leave Visual
+mode. Several definitions go to the quickfix list, not a tag list.
 
 ==============================================================================
 RANKING                                                    *symbol-ls-ranking*
