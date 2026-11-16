@@ -11,22 +11,28 @@ require "keymaps/surround"
 require "keymaps/blockim"
 require "keymaps/comments"
 
-local hscroll = require("utils/hscroll").hscroll
+local scroll = require "utils/scroll"
+local hscroll = scroll.hscroll
+-- Not Operator-pending: a scroll is too imprecise to be a motion, and the
+-- native wheel keys cancel the operator.
+local modes = { 'n', 'v', 'i' }
 
 for _, i in ipairs({ "", "2-", "3-", "4-" }) do
+    map.n('<' .. i .. 'ScrollWheelUp>', scroll.vscroll("k"))
+    map.n('<' .. i .. 'ScrollWheelDown>', scroll.vscroll("j"))
     for _, d in ipairs({ "Left", "Right" }) do
         local rhs = hscroll(d == "Left" and "h" or "l")
         local k = i .. "ScrollWheel" .. d
-        map({ 'n', 'v', 'o', 'i' }, '<' .. k .. '>', rhs)
-        map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', rhs)
+        map(modes, '<' .. k .. '>', rhs)
+        map(modes, '<S-' .. k .. '>', rhs)
     end
     for _, d in ipairs({ "Up", "Down" }) do
         local k = i .. "ScrollWheel" .. d
         -- Shift+vertical scroll = horizontal scroll; multi-click variants just pass through
         if i == "" then
-            map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', hscroll(d == "Up" and "h" or "l"))
+            map(modes, '<S-' .. k .. '>', hscroll(d == "Up" and "h" or "l"))
         else
-            map({ 'n', 'v', 'o', 'i' }, '<S-' .. k .. '>', '<' .. k .. '>', { remap = true })
+            map(modes, '<S-' .. k .. '>', '<' .. k .. '>', { remap = true })
         end
     end
 end

@@ -50,6 +50,13 @@ Tests should avoid triggering the full plugin/ftplugin machinery where possible,
 
 `ftplugin/` and the config's filetype detection do apply either way: setting `vim.bo.filetype = "zsh"` gets overridden to `"sh.zsh"`. So setting a filetype can pull in an ftplugin that requires a plugin the harness does not install (`ftplugin/markdown.lua` → `mini.hipatterns`) — `vim.cmd("filetype plugin off")` in the spec avoids that.
 
+### Typed input does not run inside a spec
+
+`nvim_input`, `nvim_input_mouse` and `nvim_feedkeys` without `"x"` only queue
+input for the main loop, which a running spec never reaches (`vim.wait` does
+not help). Send real key or mouse events to a child nvim over RPC instead
+(`--listen` + `vim.fn.sockconnect`), as in `scroll_spec.lua`.
+
 ### Tree-sitter in tests
 
 `vim.treesitter.get_node()` calls `get_parser(buf)` without an explicit language. This relies on the filetype→parser mapping being correct. Two things to watch:
