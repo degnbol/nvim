@@ -448,7 +448,18 @@ describe("tsv highlights", function()
         }, captures_of { "n\tx\tflag\tname", "1\t1.5\ttrue\tethanol" })
     end)
 
-    -- The grammar's number and float take no sign, so a signed one is text.
+    -- The grammar's number and float take no sign or exponent, so such a cell is text.
+    it("captures numbers in exponent notation", function()
+        assert.are.same({
+            ["1e5"] = "number.float",
+            ["-2E+3"] = "number.float",
+            ["1.5e-3"] = "number.float",
+            ["+.5e2"] = "number.float",
+            ["3.e1"] = "number.float",
+        }, captures_of { "a\tb\tc\td\te\tf\tg\th",
+            "1e5\t-2E+3\t1.5e-3\t+.5e2\t3.e1\te5\t1e\t1e2.5" })
+    end)
+
     it("captures signed numbers", function()
         assert.are.same({
             ["-3"] = "number",
