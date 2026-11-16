@@ -28,5 +28,14 @@
 ((float) @number.float
  (#not-comment-line? @number.float))
 
+; The grammar's number and float take no sign, so a signed one parses as text.
+((text) @number
+ (#match? @number "^[-+]\\d+$")
+ (#not-comment-line? @number))
+
+((text) @number.float
+ (#match? @number.float "^[-+](\\d*\\.\\d+|\\d+\\.\\d*)$")
+ (#not-comment-line? @number.float))
+
 ((boolean) @boolean
  (#not-comment-line? @boolean))

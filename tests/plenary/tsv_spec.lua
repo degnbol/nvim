@@ -426,21 +426,37 @@ end)
 describe("tsv highlights", function()
     -- The shipped query gives every cell @string, which would paint over the
     -- injected structure; this config's replaces it and keeps the rest.
+    --- The highlight capture of each captured node in a TSV buffer.
+    --- @param lines string[]
+    --- @return table<string, string> captures capture name by node text
+    local function captures_of(lines)
+        return with_tsv(lines, function(buf, parser)
+            local query = assert(vim.treesitter.query.get("tsv", "highlights"))
+            local found = {}
+            for id, node in query:iter_captures(parser:parse()[1]:root(), buf) do
+                found[vim.treesitter.get_node_text(node, buf)] = query.captures[id]
+            end
+            return found
+        end)
+    end
+
     it("captures the numeric cells and no text cell", function()
-        local captures = with_tsv({ "n\tx\tflag\tname", "1\t1.5\ttrue\tethanol" },
-            function(buf, parser)
-                local query = assert(vim.treesitter.query.get("tsv", "highlights"))
-                local found = {}
-                for id, node in query:iter_captures(parser:parse()[1]:root(), buf) do
-                    found[vim.treesitter.get_node_text(node, buf)] = query.captures[id]
-                end
-                return found
-            end)
         assert.are.same({
             ["1"] = "number",
             ["1.5"] = "number.float",
             ["true"] = "boolean",
-        }, captures)
+        }, captures_of { "n\tx\tflag\tname", "1\t1.5\ttrue\tethanol" })
+    end)
+
+    -- The grammar's number and float take no sign, so a signed one is text.
+    it("captures signed numbers", function()
+        assert.are.same({
+            ["-3"] = "number",
+            ["+2"] = "number",
+            ["-1.5"] = "number.float",
+            ["-.5"] = "number.float",
+            ["-2."] = "number.float",
+        }, captures_of { "a\tb\tc\td\te", "-3\t+2\t-1.5\t-.5\t-2.", "-\t-x\t1-2\t--1\t-." })
     end)
 
     describe("of a comment row", function()
