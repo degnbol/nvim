@@ -424,50 +424,62 @@ describe("chemical column mark", function()
 end)
 
 describe("tsv highlights", function()
+    local tsv_highlight = require "tsv_highlight"
+
     -- The shipped query gives every cell @string, which would paint over the
-    -- injected structure; this config's replaces it and keeps the rest.
-    --- The highlight capture of each captured node in a TSV buffer.
-    --- @param lines string[]
-    --- @return table<string, string> captures capture name by node text
-    local function captures_of(lines)
-        return with_tsv(lines, function(buf, parser)
+    -- injected structure; this config's replaces it with an empty one.
+    it("leaves every cell out of the treesitter query", function()
+        assert.are.same({}, with_tsv({ "n\tflag\tname", "1\ttrue\tethanol" }, function(buf, parser)
             local query = assert(vim.treesitter.query.get("tsv", "highlights"))
-            local found = {}
-            for id, node in query:iter_captures(parser:parse()[1]:root(), buf) do
-                found[vim.treesitter.get_node_text(node, buf)] = query.captures[id]
+            local captured = {}
+            for _, node in query:iter_captures(parser:parse()[1]:root(), buf) do
+                captured[#captured + 1] = vim.treesitter.get_node_text(node, buf)
             end
-            return found
-        end)
+            return captured
+        end))
+    end)
+
+    --- The highlight group of each cell that has one.
+    --- @param cells string[]
+    --- @return table<string, string> groups group by cell text
+    local function groups_of(cells)
+        local groups = {}
+        for _, cell in ipairs(cells) do groups[cell] = tsv_highlight.cell_group(cell) end
+        return groups
     end
 
-    it("captures the numeric cells and no text cell", function()
+    it("groups the numeric cells and no text cell", function()
         assert.are.same({
-            ["1"] = "number",
-            ["1.5"] = "number.float",
-            ["true"] = "boolean",
-        }, captures_of { "n\tx\tflag\tname", "1\t1.5\ttrue\tethanol" })
+            ["1"] = "@number",
+            ["01"] = "@number",
+            ["0x1F"] = "@number",
+            ["1.5"] = "@number.float",
+            [".5"] = "@number.float",
+            ["1."] = "@number.float",
+            ["true"] = "@boolean",
+            ["false"] = "@boolean",
+        }, groups_of { "1", "01", "0x1F", "1.5", ".5", "1.", "true", "false",
+            "TRUE", "ethanol", "", ".", " 1", "1 " })
     end)
 
-    -- The grammar's number and float take no sign or exponent, so such a cell is text.
-    it("captures numbers in exponent notation", function()
+    it("groups numbers in exponent notation", function()
         assert.are.same({
-            ["1e5"] = "number.float",
-            ["-2E+3"] = "number.float",
-            ["1.5e-3"] = "number.float",
-            ["+.5e2"] = "number.float",
-            ["3.e1"] = "number.float",
-        }, captures_of { "a\tb\tc\td\te\tf\tg\th",
-            "1e5\t-2E+3\t1.5e-3\t+.5e2\t3.e1\te5\t1e\t1e2.5" })
+            ["1e5"] = "@number.float",
+            ["-2E+3"] = "@number.float",
+            ["1.5e-3"] = "@number.float",
+            ["+.5e2"] = "@number.float",
+            ["3.e1"] = "@number.float",
+        }, groups_of { "1e5", "-2E+3", "1.5e-3", "+.5e2", "3.e1", "e5", "1e", "1e2.5" })
     end)
 
-    it("captures signed numbers", function()
+    it("groups signed numbers", function()
         assert.are.same({
-            ["-3"] = "number",
-            ["+2"] = "number",
-            ["-1.5"] = "number.float",
-            ["-.5"] = "number.float",
-            ["-2."] = "number.float",
-        }, captures_of { "a\tb\tc\td\te", "-3\t+2\t-1.5\t-.5\t-2.", "-\t-x\t1-2\t--1\t-." })
+            ["-3"] = "@number",
+            ["+2"] = "@number",
+            ["-1.5"] = "@number.float",
+            ["-.5"] = "@number.float",
+            ["-2."] = "@number.float",
+        }, groups_of { "-3", "+2", "-1.5", "-.5", "-2.", "-", "-x", "1-2", "--1", "-." })
     end)
 
     describe("of a comment row", function()
@@ -503,15 +515,15 @@ describe("tsv highlights", function()
             end, cells)
         end
 
-        --- Show a TSV buffer in the current window under the treesitter
-        --- highlighter, and run `fn` on it.
+        --- Show a TSV buffer in the current window with its highlights
+        --- attached, and run `fn` on it.
         --- @param lines string[]
         --- @param fn fun(buf: integer): any
         --- @return any
         local function with_drawn(lines, fn)
             return with_tsv(lines, function(buf)
                 vim.api.nvim_set_current_buf(buf)
-                vim.treesitter.start(buf, "tsv")
+                tsv_highlight.attach(buf)
                 vim.api.nvim__redraw { valid = false, flush = true }
                 return fn(buf)
             end)
@@ -554,6 +566,61 @@ describe("tsv highlights", function()
             assert.are.equal(before[3], before[2])
             assert.are.equal(after[3], after[1])
             assert.are_not.equal(after[3], after[2])
+        end)
+
+        --- The attributes `attrs_of` reads off a drawn TSV buffer after `edit`
+        --- and a redraw.
+        --- @param lines string[]
+        --- @param edit fun(buf: integer)
+        --- @param cells { [1]: integer, [2]: string }[]
+        --- @return integer[]
+        local function redrawn(lines, edit, cells)
+            return with_drawn(lines, function(buf)
+                edit(buf)
+                vim.api.nvim__redraw { flush = true }
+                return attrs_of(cells)
+            end)
+        end
+
+        it("redraws a line an edit makes a comment", function()
+            local cells = { { 1, "1" }, { 1, "true" }, { 2, "2" } }
+            assert.are.same(drawn({ "# 1\ttrue", "2" }, cells), redrawn({ "1\ttrue", "2" },
+                function(buf) vim.api.nvim_buf_set_lines(buf, 0, 1, true, { "# 1\ttrue" }) end,
+                cells))
+        end)
+
+        it("redraws an inserted line and the lines below it", function()
+            local cells = { { 1, "2" }, { 2, "c" }, { 3, "1" }, { 4, "true" } }
+            assert.are.same(drawn({ "2", "# c", "1", "true" }, cells), redrawn({ "# c", "1", "true" },
+                function(buf) vim.api.nvim_buf_set_lines(buf, 0, 0, true, { "2" }) end,
+                cells))
+        end)
+
+        it("redraws a joined line", function()
+            local cells = { { 1, "c" }, { 1, "1" }, { 2, "2" } }
+            assert.are.same(drawn({ "# c 1", "2" }, cells), redrawn({ "# c", "1", "2" },
+                function() vim.cmd "normal! ggJ" end, cells))
+        end)
+
+        it("redraws a line an undo restores", function()
+            local cells = { { 1, "1" }, { 2, "2" } }
+            assert.are.same(drawn({ "1", "2" }, cells), redrawn({ "1", "2" },
+                function(buf)
+                    -- Setting 'undolevels' also closes the undo block.
+                    vim.bo[buf].undolevels = 100
+                    vim.api.nvim_buf_set_lines(buf, 0, 1, true, { "# 1" })
+                    vim.cmd "silent undo"
+                end, cells))
+        end)
+
+        it("stops at a change of filetype", function()
+            local hl_ns = vim.api.nvim_create_namespace("tsv_highlight")
+            assert.are.same({}, with_drawn({ "1" }, function(buf)
+                vim.bo[buf].filetype = "text"
+                vim.api.nvim_buf_set_lines(buf, 1, 1, true, { "2" })
+                vim.api.nvim__redraw { flush = true }
+                return vim.api.nvim_buf_get_extmarks(buf, hl_ns, 0, -1, {})
+            end))
         end)
     end)
 end)

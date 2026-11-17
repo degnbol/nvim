@@ -8,6 +8,9 @@ local util = require "utils/init"
 local map = require "utils/keymap"
 local hi = require "utils/highlights"
 
+require("tsv_highlight").attach(0)
+vim.b.undo_ftplugin = "lua require('tsv_highlight').detach(0)"
+
 -- # For agents
 -- The TSV ftplugin's column hiding (`zc`/`zo`/`za`) works by actually removing text from the buffer and storing it in `vim.b`. The `modified` flag is preserved so hiding doesn't mark clean buffers as dirty.
 --

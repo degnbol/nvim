@@ -1,5 +1,6 @@
-; Deliberately no (text) capture: a text cell's colour is the injected
-; language's business (injections.scm), or nothing.
+; Deliberately empty. A text cell's colour is the injected language's business
+; (injections.scm), or nothing. Values and comment lines get their highlights
+; from lua/tsv_highlight.lua.
 ;
 ; This file replaces nvim-treesitter's tsv highlights, which give every cell
 ; `@string`, rather than extending them — an `; extends` file cannot cancel a
@@ -11,32 +12,5 @@
 ;
 ; Side effect once the csv parser is installed: nvim-treesitter's
 ; queries/csv/highlights.scm is `; inherits: tsv` plus a `","` pattern, and the
-; inherited base resolves through the same search — so a csv buffer keeps its
-; commas and numbers and loses `@string` on its text cells too, though nothing
-; injects there yet (the predicate assumes the tab separator).
-;
-; The grammar has no comment node. Comments are captured per field and not per
-; row, because a row that starts with an empty cell merges into the row above.
-; Values are not captured on a comment line, rather than outranked: an
-; overlapping highlight keeps every attribute the higher one does not set.
-((field) @comment
- (#comment-line? @comment))
-
-((number) @number
- (#not-comment-line? @number))
-
-((float) @number.float
- (#not-comment-line? @number.float))
-
-; The grammar's number and float take no sign or exponent, so such a cell parses
-; as text. `#match?` regexes are very magic (`\v`).
-((text) @number
- (#match? @number "^[-+]\\d+$")
- (#not-comment-line? @number))
-
-((text) @number.float
- (#match? @number.float "^[-+]?(\\d*\\.\\d+|\\d+\\.?\\d*)[eE][-+]?\\d+$|^[-+](\\d*\\.\\d+|\\d+\\.\\d*)$")
- (#not-comment-line? @number.float))
-
-((boolean) @boolean
- (#not-comment-line? @boolean))
+; inherited base resolves through the same search — so a csv buffer keeps only
+; its commas.
