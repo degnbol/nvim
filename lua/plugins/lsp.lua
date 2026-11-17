@@ -234,7 +234,6 @@ return {
 			local crates = require("crates")
 			crates.setup({
 				completion = {
-					cmp = { enabled = false },
 					crates = {
 						enabled = true,
 						max_results = 8, -- The maximum number of search results to display
@@ -243,9 +242,6 @@ return {
 				},
 				lsp = {
 					enabled = true,
-					on_attach = function(client, bufnr)
-						-- the same on_attach function as for your other lsp's
-					end,
 					actions = true,
 					completion = true,
 					hover = true,
