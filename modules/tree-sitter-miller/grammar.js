@@ -422,12 +422,17 @@ module.exports = grammar({
 
     string_content: _ => token.immediate(prec(-1, /[^"\\]+/)),
 
+    // Same set as `_escape` in Miller's pkg/parsing/mlr.bnf; any other `\X` is a lexer error.
     escape_sequence: _ => token.immediate(seq(
       '\\',
       choice(
-        /[\\'"nrtab0]/,
-        /x[0-9a-fA-F]{2}/,
+        /["\\\/bfnrt]/,
         /u[0-9a-fA-F]{4}/,
+        /[xX][0-9a-fA-F]{2}/,
+        /[0-7]{1,3}/,
+        /[89]/,
+        /[dswDSW]/,
+        /[.*%^$+()&\[\]]/,
       ),
     )),
 
