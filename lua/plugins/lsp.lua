@@ -34,6 +34,7 @@ if vim.fn.executable("npm") == 1 and vim.fn.executable("cargo") == 1 then
 		-- "typos",
 		-- "typos_lsp",
 		-- "openscad_lsp", -- for 3d printing
+		"wgsl_analyzer", -- For WESL. https://wesl-lang.dev/docs/Internals
 	}
 end
 
