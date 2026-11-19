@@ -14,6 +14,8 @@ vim.treesitter.language.register("smarts", "smiles")
 -- named after the fence tag. This maps to the typst parser only when typc isn't
 -- built, which parses markup-first, so bare code lines (`let x = …`) stay plain.
 vim.treesitter.language.register("typst", "typc")
+-- WESL is a superset of WGSL.
+vim.treesitter.language.register("wesl", "wgsl")
 
 local ts_utils = require "utils/treesitter"
 vim.treesitter.query.add_directive(
@@ -57,7 +59,6 @@ local additional_vim_regex_highlighting = {
     -- We enable it, but avoid any default syntax hl and only set custom syntax hl in syntax/julia.vim.
     "julia",
     "sql",  -- custom postgres highlight in syntax/sql.vim
-    "wgsl", -- custom in syntax/wgsl.vim
 }
 
 --- Start treesitter highlighting on a buffer, and announce that it did.

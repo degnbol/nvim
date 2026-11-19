@@ -41,6 +41,13 @@ local hooks = {
             vim.notify("brew not found, skipping pstree install for vimtex", vim.log.levels.WARN)
         end
     end,
+    -- Only on update: a fresh clone happens at startup, before the parser is
+    -- registered, and the install list in lua/plugins/treesitter.lua builds it.
+    ["tree-sitter-wesl"] = function(ev)
+        if ev.data.kind == "update" then
+            require("nvim-treesitter").install("wesl", { force = true })
+        end
+    end,
     ["math-conceal.nvim"] = function(ev)
         run({ "make", "lua51" }, ev.data.path)
     end,

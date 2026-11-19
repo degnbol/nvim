@@ -13,6 +13,7 @@ return {
             -- nvim_treesitter.install() so install() can resolve their names.
             -- nvim-treesitter fires `User TSUpdate` from reload_parsers() at
             -- the start of install/update.
+            local wesl_path = vim.pack.get({ 'tree-sitter-wesl' }, { info = false })[1].path
             vim.api.nvim_create_autocmd('User', {
                 pattern = 'TSUpdate',
                 callback = function()
@@ -22,6 +23,14 @@ return {
                             url = 'https://github.com/bollian/tree-sitter-openscad',
                             branch = 'master',
                             queries = 'queries',
+                        },
+                    }
+                    -- vim.pack checks out the latest release (pack_specs.lua).
+                    -- queries/ uses Helix capture names; queries/nvim/ uses nvim's.
+                    parsers.wesl = {
+                        install_info = {
+                            path = wesl_path,
+                            queries = 'queries/nvim',
                         },
                     }
                     -- The local grammars' queries resolve off the rtp: modules/ is in
@@ -91,6 +100,7 @@ return {
                     "yaml",
                     "ini",
                     "css",
+                    "wesl",         -- registered above
                     "pymol_select", -- local grammar registered above
                     "miller",       -- local grammar registered above
                     "smarts",       -- local grammar registered above

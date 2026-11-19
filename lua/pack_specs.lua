@@ -145,6 +145,8 @@ vim.pack.add({
     { src = gh("nvim-treesitter/nvim-treesitter"), version = "main" },
     { src = gh("nvim-treesitter/nvim-treesitter-textobjects"), version = "main" },
     gh("romgrk/nvim-treesitter-context"),
+    -- Grammar sources, built by nvim-treesitter (lua/plugins/treesitter.lua).
+    { src = gh("webgpu-tools/tree-sitter-wesl"), version = vim.version.range("*") },
 
     -- UI
     gh("tyru/capture.vim"),

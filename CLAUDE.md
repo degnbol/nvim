@@ -21,10 +21,6 @@ Enabled in `lua/options.lua` via `require('vim._core.ui2').enable()`. If cmdline
 
 New files get initial text from templates in `lua/autocmds/templates.lua` based on filetype.
 
-## WGSL / Bevy Shader Highlighting
-
-See [notes/wgsl.md](notes/wgsl.md).
-
 ## Testing
 
 Read `tests/README.md`.
