@@ -43,7 +43,15 @@ return {
         end
     },
     -- python aware changes to [], [[, ]], ][, ]m, ]M, [m, [M for moving cursor to starts and ends of python functions. This should be covered by tree sitter in the future when they add support for visual mode
-    { "vim-pythonsense", ft = 'python' },
+    {
+        "vim-pythonsense",
+        ft = 'python',
+        before = function()
+            -- Its buffer-local class and function objects would override
+            -- mini.ai's `c` (comment) and `f`. This also drops its docstring object.
+            vim.g.is_pythonsense_suppress_object_keymaps = 1
+        end,
+    },
     -- try it out with :Cheat <query> where the query should be search terms like you would search in StackOverflow for answers
     {
         "nvim-cheat.sh",

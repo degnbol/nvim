@@ -51,6 +51,22 @@ describe("is_comment_line", function()
     end)
 end)
 
+describe("comment_delimiters", function()
+    it("pairs three-part starts and ends, and keeps one-part leaders", function()
+        assert.are.same({
+            { left = "/*", right = "*/" },
+            { left = "///" },
+            { left = "#" },
+        }, util.comment_delimiters "s1:/*,mb:*,ex:*/,:///,b:#")
+    end)
+    it("skips first-line-only leaders, which mark list items", function()
+        assert.are.same({ { left = "#" } }, util.comment_delimiters "b:#,fb:-")
+    end)
+    it("unescapes commas", function()
+        assert.are.same({ { left = "a,b" } }, util.comment_delimiters ":a\\,b")
+    end)
+end)
+
 describe("comment_leader", function()
     local buf
     before_each(function() buf = vim.api.nvim_create_buf(false, true) end)
@@ -76,6 +92,17 @@ describe("comment_leader", function()
             vim.api.nvim_exec_autocmds("OptionSet", { pattern = "commentstring" })
         end)
         assert.are.equal(";", util.comment_leader(buf))
+    end)
+end)
+
+describe("commentstring_delimiter", function()
+    it("is the trimmed text around %s", function()
+        assert.are.same({ left = "/*", right = "*/" }, util.commentstring_delimiter "/* %s */")
+        assert.are.same({ left = "#" }, util.commentstring_delimiter "# %s")
+    end)
+    it("has an empty left without one", function()
+        assert.are.same({ left = "" }, util.commentstring_delimiter "%s")
+        assert.are.same({ left = "" }, util.commentstring_delimiter "")
     end)
 end)
 

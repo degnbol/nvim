@@ -139,8 +139,8 @@ Config fixes:
   `{ error = false }` dropped.
 - `:lsp enable` with no name enables every config for the filetype.
   `<leader>l1` now enables only the configs already enabled there.
-- `an`/`in` are the builtin incremental selection. The various-textobjs
-  defaults for them are disabled.
+- `an`/`in` are the builtin incremental selection. mini.ai's
+  `around_next`/`inside_next` mappings are disabled.
 - `vim.opt.diffopt:append` duplicates `linematch:` items. Use `:set+=`.
 - `nvim_buf_add_highlight` and `nvim_err_writeln` replaced.
 - The `buffer` opt of `vim.keymap.set`/`del` and the autocmd API is renamed

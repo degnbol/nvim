@@ -67,6 +67,14 @@ return {
                 n_lines = 100,
             }
 
+            local textobjects = require "textobjects"
+            require('mini.ai').setup {
+                custom_textobjects = vim.tbl_map(function(o) return o.spec end, textobjects),
+                -- Keep Neovim's built-in `an`/`in` (incremental selection)
+                -- and `al`/`il` (line, from Neovim 0.13).
+                mappings = { around_next = '', inside_next = '', around_last = '', inside_last = '' },
+            }
+
             -- Remap adding surrounding to Visual mode selection
             vim.keymap.del('x', 'ys') -- del to avoid y(ank) waiting
             map('x', 'S', [[:<C-u>lua MiniSurround.add('visual')<CR>]], { noremap = true, desc = "Surround" })
@@ -132,6 +140,15 @@ return {
 
 
             local clue = require 'mini.clue'
+
+            local textobject_clues = {}
+            for id, textobject in pairs(textobjects) do
+                if textobject.desc then
+                    for _, ai_type in ipairs { 'i', 'a' } do
+                        table.insert(textobject_clues, { mode = 'x', keys = ai_type .. id, desc = textobject.desc })
+                    end
+                end
+            end
 
             clue.setup {
                 triggers = {
@@ -244,6 +261,7 @@ return {
                         submode_navigate = true,
                         submode_resize = true,
                     },
+                    textobject_clues,
                 },
 
                 window = {

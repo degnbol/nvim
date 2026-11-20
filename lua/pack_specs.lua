@@ -16,9 +16,7 @@ vim.pack.add({
     gh("andymass/vim-matchup"),
     gh("tpope/vim-characterize"),
     gh("lewis6991/fileline.nvim"),
-    gh("kana/vim-textobj-user"),
     gh("kana/vim-arpeggio"),
-    gh("glts/vim-textobj-comment"),
     gh("chrisgrieser/nvim-various-textobjs"),
     gh("monaqa/dial.nvim"),
     gh("linrongbin16/gentags.nvim"),
@@ -138,7 +136,6 @@ vim.pack.add({
     gh("Wansmer/treesj"),
     gh("AckslD/nvim-trevJ.lua"),
     gh("AndrewRadev/splitjoin.vim"),
-    gh("sgur/vim-textobj-parameter"),
     gh("flwyd/vim-conjoin"),
 
     -- Treesitter

@@ -329,19 +329,53 @@ function M.is_comment_line(line, leader)
     return leader ~= "" and line:match("^%s*" .. vim.pesc(leader)) ~= nil
 end
 
+---The comment delimiters in a 'comments' value (`:h format-comments`): a left
+---and right delimiter for each three-piece comment, and a left delimiter for
+---each other part. Middle parts are skipped, and so are parts with the `f` flag,
+---e.g. `fb:-` for bullet lists.
+---@param comments string e.g. "s1:/*,mb:*,ex:*/,://"
+---@return { left: string, right: string|nil }[] delimiters
+function M.comment_delimiters(comments)
+    local delimiters = {}
+    local start
+    for _, part in ipairs(vim.split((comments:gsub("\\,", "\0")), ",", { trimempty = true })) do
+        local flags, text = part:match "^([^:]*):(.*)$"
+        text = text:gsub("%z", ",")
+        if flags:find "s" then
+            start = text
+        elseif flags:find "e" then
+            delimiters[#delimiters + 1] = { left = start, right = text }
+        elseif not flags:find "[mf]" then
+            delimiters[#delimiters + 1] = { left = text }
+        end
+    end
+    return delimiters
+end
+
+---The comment delimiters in a 'commentstring' value: the text before and after
+---`%s`, trimmed.
+---@param commentstring string e.g. "/* %s */"
+---@return { left: string, right: string|nil } delimiter left is "" and right nil when there is no such text
+function M.commentstring_delimiter(commentstring)
+    local left, right = commentstring:match "^(.-)%%s(.*)$"
+    right = vim.trim(right or "")
+    return { left = vim.trim(left or ""), right = right ~= "" and right or nil }
+end
+
 ---@type table<integer, string>
 local comment_leaders = {}
 
----What a comment opens with in buffer `buf`: the part of 'commentstring' before
----`%s`, trimmed. "" when it has none. Cached per buffer, because reading an
----option costs about 10 µs and this is read per node by query predicates.
+---What a comment opens with in buffer `buf`: the left delimiter of its
+---'commentstring' (`commentstring_delimiter`). Cached per buffer, because
+---reading an option costs about 10 µs and this is read per node by query
+---predicates.
 ---@param buf integer 0 for the current buffer
 ---@return string leader
 function M.comment_leader(buf)
     if buf == 0 then buf = vim.api.nvim_get_current_buf() end
     local leader = comment_leaders[buf]
     if not leader then
-        leader = vim.trim(vim.bo[buf].commentstring:match("^(.-)%%s") or "")
+        leader = M.commentstring_delimiter(vim.bo[buf].commentstring).left
         comment_leaders[buf] = leader
     end
     return leader

@@ -126,7 +126,6 @@ return {
                     visual = '<leader>s', -- for formatting visual selection
                 },
                 parameter_mapping = ',',  -- specifies what text object selects an arguments (ie a, and i, by default)
-                -- if you're using `vim-textobj-parameter` you can also set this to `vim.g.vim_textobj_parameter_mapping`
             }
         end,
     },

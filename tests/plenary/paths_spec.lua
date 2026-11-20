@@ -5,6 +5,8 @@
 -- gf-family mappings and FileType wrapper in plugin/paths.lua.
 
 local paths = require("utils.paths")
+-- The markdown ftplugin, sourced for the .md files below, requires mini.ai.
+vim.cmd.packadd "mini.nvim"
 
 -- The runner starts nvim with --noplugin (plenary test_harness.lua:90), so the
 -- mappings and autocmds are not installed until this file is sourced. Sourcing

@@ -111,32 +111,15 @@ return {
             end
         end
     },
-    -- Selecting, moving functions etc.
+    -- Moving to and swapping functions etc. Loads at startup: mini.ai
+    -- (lua/textobjects.lua) reads its `textobjects` queries.
     {
         "nvim-treesitter-textobjects",
         after = function()
             require("nvim-treesitter-textobjects").setup {
-                select = {
-                    -- Jump forward to textobj if not already inside it.
-                    lookahead = true,
-                    -- Other opts.
-                    -- selection_modes allows for using a different selection
-                    -- mode than v, e.g. V or <C-v>, for specific textobjects.
-                },
                 move = {
                     -- whether to set jumps in the jumplist
                     set_jumps = true,
-                },
-                lsp_interop = {
-                    enable = true,
-                    border = 'none',
-                    peek_definition_code = {
-                        -- similar to hover help so we use similar keymap as hover.
-                        -- Hover currently uses gh for "go hover", similar to gd, gf, etc.
-                        -- gh and gH are used for starting select mode by default which we never use.
-                        ["gH"] = { query = "@function.outer", desc = "Peek function" },
-                        ["g<C-H>"] = { query = "@class.outer", desc = "Peek class" },
-                    }
                 },
             }
 
@@ -152,37 +135,6 @@ return {
             map.nox("T", ts_repeat_move.builtin_T_expr, nil, { expr = true })
         end,
         before = function()
-            local suffixes = {
-                ['function'] = 'f',
-                -- Also an option to use comma as in the non-TS version in
-                -- chrisgrieser/nvim-various-textobjs
-                -- The benefit is having a available for the args passed to neovim which is default.
-                -- The downside is then goto end of arg would be '<', which we
-                -- are currently using for goto less indented.
-                parameter = 'a',
-                loop = 'o',
-                comment = 'c',
-                conditional = '?',
-                ["assignment.lhs"] = 'k',
-                ["assignment.rhs"] = 'v',
-                block = 'B',
-            }
-
-            local function map_select(lhs, obj)
-                map.ox(lhs, function()
-                    require "nvim-treesitter-textobjects.select".select_textobject(obj, "textobjects")
-                end)
-            end
-            local function map_select_i(obj)
-                map_select("i" .. suffixes[obj], "@" .. obj .. ".inner")
-            end
-            local function map_select_a(obj)
-                map_select("a" .. suffixes[obj], "@" .. obj .. ".outer")
-            end
-            local function map_selects(obj)
-                map_select_i(obj)
-                map_select_a(obj)
-            end
             local function map_swaps(lhs_next, lhs_previous, obj)
                 obj = '@' .. obj
                 map.n(lhs_next, function()
@@ -192,44 +144,30 @@ return {
                     require "nvim-treesitter-textobjects.swap".swap_previous(obj)
                 end, "Swap " .. obj .. " previous")
             end
-            local function map_move(obj, inner_or_outer)
+            local function map_move(obj, inner_or_outer, suffix)
                 local _obj = "@" .. obj .. "." .. inner_or_outer
-                local suffix = suffixes[obj]
                 map.nox("]" .. suffix, function()
                     require("nvim-treesitter-textobjects.move").goto_next_start(_obj, "textobjects")
                 end)
                 map.nox("[" .. suffix, function()
                     require("nvim-treesitter-textobjects.move").goto_previous_start(_obj, "textobjects")
                 end)
-                suffix = suffix:upper()
-                if suffix ~= suffixes[obj] then
-                    map.nox("]" .. suffix, function()
+                local end_suffix = suffix:upper()
+                if end_suffix ~= suffix then
+                    map.nox("]" .. end_suffix, function()
                         require("nvim-treesitter-textobjects.move").goto_next_end(_obj, "textobjects")
                     end)
-                    map.nox("[" .. suffix, function()
+                    map.nox("[" .. end_suffix, function()
                         require("nvim-treesitter-textobjects.move").goto_previous_end(_obj, "textobjects")
                     end)
                 end
             end
 
-            map_selects("function")
-            -- iC and aC are used for multiline comment elsewhere
-            -- map_obj('C', "class")
-            map_select_a("comment") -- comment.inner doesn't seem well supported.
-            map_selects("conditional")
-            map_selects("loop")
-            map_selects("parameter")
-            map_selects("assignment.lhs")
-            map_selects("assignment.rhs")
-            -- b for bracket.
-            -- B already works for block textobjs builtin. see :h iB.
-            -- map_selects("block")
-
             map_swaps("]<C-a>", "[<C-a>", "parameter.inner")
 
-            map_move("parameter", "inner")
-            map_move("function", "outer")
-            map_move("loop", "outer")
+            map_move("parameter", "inner", "a")
+            map_move("function", "outer", "f")
+            map_move("loop", "outer", "o")
         end,
     },
     -- show the "context" at the top line, i.e. function name when in a function

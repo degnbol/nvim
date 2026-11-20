@@ -21,6 +21,8 @@ return {
             -- instead of <localleader>l
             -- We want <leader>l for LSP and double leader (i.e. localleader) for filetype specific mappings.
             g.vimtex_mappings_prefix = "<localleader>"
+            -- Its buffer-local command object would override mini.ai's `c` (comment).
+            g.vimtex_mappings_disable = { x = { "ic", "ac" }, o = { "ic", "ac" } }
 
             if util.is_mac() then
                 g.vimtex_view_method = 'skim'

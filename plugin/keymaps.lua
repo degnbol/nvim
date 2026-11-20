@@ -243,6 +243,16 @@ map.i("<S-down>", "<C-o>$")
 
 map.i("<C-l>", "<right>", "Right")
 
+-- Not in Visual mode, where `r` replaces the selection.
+map.o("r", function()
+    local start = vim.fn.line "."
+    vim.cmd.normal { "V}", bang = true }
+    local finish = vim.fn.line "."
+    if finish > start and util.get_line(finish - 1) == "" then
+        vim.cmd.normal { "k", bang = true }
+    end
+end, "Rest of paragraph")
+
 -- Mac bindings.
 map.c('<A-left>', "<s-left>", "move back one word")
 map.c('<A-right>', "<s-right>", "move forward one word")

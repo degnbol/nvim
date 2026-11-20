@@ -31,38 +31,23 @@ return {
     -- Open a file on a line with `nvim FILEPATH:LINENUMBER`.
     -- Also supports specific column.
     { "fileline.nvim" },
-    -- easily define custom textobjects
-    -- some config in ftplugin/tex.lua
-    { "vim-textobj-user" },
-    -- List of uses of the kana plugin:
-    -- https://github.com/kana/vim-textobj-user/wiki
-    -- provides iC and aC for multi line comments.
-    -- Also provides ic which will catch multiline so not ideal but the
-    -- treesitter one doesn't seem to work.
     {
         "vim-arpeggio",
         after = function()
             vim.fn["arpeggio#map"]('i', '', 0, 'jk', '<Esc>')
         end,
     },
-    {
-        "vim-textobj-comment",
-        before = function()
-            vim.cmd.packadd("vim-textobj-user")
-        end,
-    },
-    -- nvim version of the kana plugin
+    -- Most text objects come from mini.ai (lua/textobjects.lua).
     {
         "nvim-various-textobjs",
         after = function()
-            require("various-textobjs").setup {
-                keymaps = {
-                    useDefaults = true,
-                    -- gc breaks go comment in visual. an/in are the builtin
-                    -- treesitter/LSP incremental selection.
-                    disabledDefaults = { "gc", "an", "in" },
-                },
-            }
+            local textobjs = require("various-textobjs")
+            map.ox("iS", function() textobjs.subword("inner") end, "Subword")
+            map.ox("aS", function() textobjs.subword("outer") end, "Subword")
+            map.ox("ii", function() textobjs.indentation("inner", "inner") end, "Indentation")
+            map.ox("ai", function() textobjs.indentation("outer", "inner") end, "Indentation and line above")
+            map.ox("iI", function() textobjs.indentation("inner", "inner") end, "Indentation")
+            map.ox("aI", function() textobjs.indentation("outer", "outer") end, "Indentation and lines around")
         end
     },
     -- increment and decrement numbers, dates, color hex, even bool

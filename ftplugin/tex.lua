@@ -65,21 +65,37 @@ local util = require "utils/init" -- schedule_notify and jump
 local latexmk = require "tex.latexmk"
 local map = require "utils/keymap"
 
+local ticks_quote = "``().-()''"
 -- also defined in lua/plugins/mini.lua as shift+` but we can just use ` since
 -- I don't think it has use in latex, maybe except in some verbatim code block or something?
 require 'mini.surround'.config.custom_surroundings['`'] = {
-    input = { "``().-()''" },
+    input = { ticks_quote },
     output = { left = '``', right = "''" },
 }
-
--- requires kana/vim-textobj-user, see lua/plugins/init.lua
-vim.fn["textobj#user#plugin"]("tex", {
-    ['latex-ticks'] = {
-        pattern = { '``', "''" },
-        ['select-a'] = '<buffer> a`',
-        ['select-i'] = '<buffer> i`',
+vim.b.miniai_config = {
+    custom_textobjects = {
+        ['`'] = { ticks_quote },
+        -- Name of the command around the cursor, e.g. `\section*`, `i` without
+        -- the backslash. One region, so mini.ai takes it as is.
+        F = function(ai_type)
+            local cmd = vim.fn["vimtex#cmd#get_current"]()
+            if vim.tbl_isempty(cmd) then return nil end
+            local line, col = cmd.pos_start.lnum, cmd.pos_start.cnum
+            return {
+                from = { line = line, col = ai_type == "i" and col + 1 or col },
+                to = { line = line, col = col + #cmd.name - 1 },
+            }
+        end,
+        -- Sections: vimtex's iP/aP.
+        C = false,
     },
-})
+}
+-- A command, e.g. \textbf{x}, is the closest LaTeX has to a function, and the
+-- delimiters around the cursor, e.g. its {} argument, hold its body. vimtex's
+-- objects, since tree-sitter-latex has separate node types for many commands,
+-- e.g. \section and \cite.
+map.buf({ "x", "o" }, "af", "<Plug>(vimtex-ac)", "Command", { remap = true })
+map.buf({ "x", "o" }, "if", "<Plug>(vimtex-id)", "Inside delimiters", { remap = true })
 
 -- keymaps assume vimtex is used.
 

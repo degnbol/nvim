@@ -18,6 +18,11 @@ vim.b.interpreter = 'python'
 
 local hi = require "utils/highlights"
 
+-- vim-pythonsense's docstring object. `g:is_pythonsense_suppress_object_keymaps`
+-- turns off its own maps for it.
+map.buf({ "x", "o" }, "id", "<Plug>(PythonsenseInnerDocStringTextObject)", "Docstring", { remap = true })
+map.buf({ "x", "o" }, "ad", "<Plug>(PythonsenseOuterDocStringTextObject)", "Docstring", { remap = true })
+
 map.buf("n", "<LocalLeader>u", function ()
     local line = vim.api.nvim_get_current_line()
     local dep = line:match('^import (%w+)')

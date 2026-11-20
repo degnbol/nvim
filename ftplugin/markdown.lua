@@ -34,3 +34,11 @@ if vim.bo.buftype ~= "" then
 end
 
 opt.list = false
+
+-- Buffer-local, so other filetypes keep mini.ai's "between `*`" default.
+local spec_treesitter = require("mini.ai").gen_spec.treesitter
+vim.b.miniai_config = {
+    custom_textobjects = {
+        ['*'] = spec_treesitter { a = "@emphasis.outer", i = "@emphasis.inner" },
+    },
+}

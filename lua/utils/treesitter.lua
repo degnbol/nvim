@@ -16,6 +16,75 @@ function M.read_query(lang, query_name)
     return table.concat(sources, '\n')
 end
 
+---The deepest language tree containing a position, injected ones included.
+---@param buf integer
+---@param pos [integer, integer] (row, col), 0-indexed
+---@return vim.treesitter.LanguageTree|nil lang_tree nil when the buffer has no parser
+function M.lang_tree_at(buf, pos)
+    local parser = vim.treesitter.get_parser(buf, nil, { error = false })
+    return parser and parser:language_for_range { pos[1], pos[2], pos[1], pos[2] }
+end
+
+---@type table<string, true>|nil
+local filetype_set
+
+---The filetypes with a syntax, indent or ftplugin file on 'runtimepath'.
+---Cached, as listing them takes about 6 ms, until 'runtimepath' changes.
+---@return table<string, true> filetypes
+local function existing_filetypes()
+    if not filetype_set then
+        filetype_set = {}
+        for _, ft in ipairs(vim.fn.getcompletion("", "filetype")) do filetype_set[ft] = true end
+    end
+    return filetype_set
+end
+vim.api.nvim_create_autocmd("OptionSet", {
+    pattern = "runtimepath",
+    group = vim.api.nvim_create_augroup("utils.treesitter.filetypes", {}),
+    callback = function() filetype_set = nil end,
+})
+
+---The value of a string buffer option at a position, for the language there.
+---This is the `vim.filetype.get_option` value for the filetype of the deepest
+---language tree at the position whose language maps to an existing filetype
+---(one with a syntax, indent or ftplugin file), e.g. `tex` for `latex`.
+---Languages without such a filetype, e.g. `luadoc`, are skipped. When no
+---language tree qualifies, it is the buffer's value.
+---@param buf integer
+---@param pos [integer, integer] (row, col), 0-indexed
+---@param name string option name, e.g. "comments"
+---@return string value
+function M.option_at(buf, pos, name)
+    local lang_tree = M.lang_tree_at(buf, pos)
+    while lang_tree do
+        for _, ft in ipairs(vim.treesitter.language.get_filetypes(lang_tree:lang())) do
+            if existing_filetypes()[ft] then
+                return vim.filetype.get_option(ft, name) --[[@as string]]
+            end
+        end
+        lang_tree = lang_tree:parent()
+    end
+    return vim.bo[buf][name]
+end
+
+---The 'commentstring' at a position: the `bo.commentstring` metadata of the
+---narrowest capture at the position that has it, else `option_at`. Unlike
+---`gc` (`get_commentstring` in `$VIMRUNTIME/lua/vim/_comment.lua`), a
+---language without a filetype does not give the global value.
+---@param buf integer
+---@param pos [integer, integer] (row, col), 0-indexed
+---@return string commentstring
+function M.commentstring_at(buf, pos)
+    local captures = vim.treesitter.get_captures_at_pos(buf, pos[1], pos[2])
+    for i = #captures, 1, -1 do
+        local id, metadata = captures[i].id, captures[i].metadata
+        local commentstring = metadata["bo.commentstring"]
+            or metadata[id] and metadata[id]["bo.commentstring"]
+        if commentstring then return commentstring end
+    end
+    return M.option_at(buf, pos, "commentstring")
+end
+
 ---Climb from `start` (default: node under the cursor) to the nearest ancestor
 ---satisfying `match`. `match` is either a node-type string, or a predicate
 ---returning a truthy value; the returned value is that predicate's result (a
