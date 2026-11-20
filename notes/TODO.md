@@ -137,8 +137,6 @@ there seem to be some nice util functions you can use at https://gitlab.com/jrop
 
 consider if x and d should be swapped, since d's natural role is cut, so then only x will be non-standard.
 
-Key/value text objects (`ik`/`iv`): [PLAN-keyvalue-textobject.md](PLAN-keyvalue-textobject.md).
-
 Custom completion sources, e.g. valid string values for ggplot, e.g. annotate and guide="none" or direction="vertical"
 inspiration from youtuber showing custom cmp source:
 https://github.com/wincent/wincent/blob/2d926177773f/aspects/nvim/files/.config/nvim/lua/wincent/cmp/handles.lua

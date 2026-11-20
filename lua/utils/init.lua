@@ -50,6 +50,56 @@ function M.insert_around(s, literal, before, after)
     return (s:gsub(vim.pesc(literal), function(match) return before .. match .. after end))
 end
 
+---Key/value separators, longest first, so `:=` wins over `:`.
+local PAIR_SEPARATORS = { ":=", "?=", "+=", "=", ":" }
+---Operators that contain a separator character but separate no pair.
+local NON_SEPARATORS = { "==", "!=", "<=", ">=", "=>", "::", "://" }
+---Lua patterns of quoted and bracketed text, inside which no separator is
+---looked for. Same as the default `exclude_regions` of `MiniAi.gen_spec.argument`.
+local PAIR_EXCLUDED_REGIONS = { '%b""', "%b''", "%b()", "%b[]", "%b{}" }
+
+---Whether byte `i` of `s` is part of an occurrence of `literal`.
+---@param s string
+---@param i integer 1-indexed
+---@param literal string
+---@return boolean
+local function in_literal(s, i, literal)
+    for start = math.max(i - #literal + 1, 1), i do
+        if s:sub(start, start + #literal - 1) == literal then return true end
+    end
+    return false
+end
+
+---Key and value of a `key = value` or `key: value` text. The separator is
+---the first of `:=`, `?=`, `+=`, `=` or `:` outside quotes and brackets that
+---is not part of `==`, `!=`, `<=`, `>=`, `=>`, `::` or `://`. The key is the
+---run of non-whitespace before it, so `export X=1` has key `X`. The value is
+---the text after it without surrounding whitespace.
+---@param text string
+---@return { key: [integer, integer], value: [integer, integer] }|nil pair first and last byte of key and value, 1-indexed; nil without a separator, key or value
+function M.split_pair(text)
+    local excluded = {}
+    for _, pattern in ipairs(PAIR_EXCLUDED_REGIONS) do
+        for from, to in text:gmatch("()" .. pattern .. "()") do
+            for i = from, to - 1 do excluded[i] = true end
+        end
+    end
+    for i = 1, #text do
+        local separator = not excluded[i] and vim.iter(PAIR_SEPARATORS):find(function(sep)
+            return text:sub(i, i + #sep - 1) == sep
+                and not vim.iter(NON_SEPARATORS):any(function(op) return in_literal(text, i, op) end)
+        end)
+        if separator then
+            local key_to = text:sub(1, i - 1):match "()%s*$" - 1
+            local key_from = text:sub(1, key_to):match "()%S*$"
+            local value_from = text:match("^%s*()", i + #separator)
+            local value_to = text:match "()%s*$" - 1
+            if key_from > key_to or value_from > value_to then return nil end
+            return { key = { key_from, key_to }, value = { value_from, value_to } }
+        end
+    end
+end
+
 ---Repeat calls to a given function as many times as the vim count value (default once).
 ---Optionally pass arguments.
 ---@param fn function

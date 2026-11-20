@@ -25,6 +25,72 @@ function M.lang_tree_at(buf, pos)
     return parser and parser:language_for_range { pos[1], pos[2], pos[1], pos[2] }
 end
 
+---Matches of the `textobjects` query of one language tree that intersect a
+---range of rows, each as the ranges
+---of its captures among `captures`, with directives such as `#offset!`
+---applied. A capture of several nodes spans the first to the last. Trees of
+---other languages, parent or injected, are not searched.
+---@param lang_tree vim.treesitter.LanguageTree of a buffer
+---@param captures string[] capture names without `@`, e.g. "comment.outer"
+---@param start integer first row, 0-indexed
+---@param stop integer row after the last, 0-indexed
+---@return table<string, Range4>[] matches ranges by capture name, 0-indexed, end exclusive; a match without any of `captures` is left out
+function M.capture_matches(lang_tree, captures, start, stop)
+    local query = vim.treesitter.query.get(lang_tree:lang(), "textobjects")
+    if not query then return {} end
+    local buf = lang_tree:source() --[[@as integer]]
+    local matches = {}
+    for _, tree in ipairs(lang_tree:trees()) do
+        for _, match, metadata in query:iter_matches(tree:root(), buf, start, stop) do
+            local ranges = {}
+            for id, nodes in pairs(match) do
+                if vim.list_contains(captures, query.captures[id]) then
+                    local first = vim.treesitter.get_range(nodes[1], buf, metadata[id])
+                    local last = vim.treesitter.get_range(nodes[#nodes], buf, metadata[id])
+                    ranges[query.captures[id]] = { first[1], first[2], last[4], last[5] }
+                end
+            end
+            if next(ranges) then matches[#matches + 1] = ranges end
+        end
+    end
+    return matches
+end
+
+---Whether range `outer` contains range `inner`. An empty `inner` (a point)
+---is contained when it is at or after the start of `outer` and before its end.
+---@param outer Range4 0-indexed, end exclusive
+---@param inner Range4 0-indexed, end exclusive
+---@return boolean
+function M.contains(outer, inner)
+    local starts_inside = not util.before(inner[1], inner[2], outer[1], outer[2])
+    if inner[1] == inner[3] and inner[2] == inner[4] then
+        return starts_inside and util.before(inner[1], inner[2], outer[3], outer[4])
+    end
+    return starts_inside and not util.before(outer[3], outer[4], inner[3], inner[4])
+end
+
+---The `n`-th smallest of the ranges that contain a reference range. Equal
+---ranges count once. The containing ranges are assumed nested, as the ranges
+---of tree-sitter nodes are.
+---@param ranges Range4[] 0-indexed, end exclusive
+---@param reference Range4 0-indexed, end exclusive; empty for a point
+---@param n integer 1 for the smallest
+---@return integer|nil index into `ranges`; nil when fewer than `n` distinct ranges contain `reference`
+function M.nth_enclosing(ranges, reference, n)
+    local enclosing = vim.tbl_filter(function(i) return M.contains(ranges[i], reference) end,
+        vim.tbl_keys(ranges))
+    table.sort(enclosing, function(i, j)
+        local a, b = ranges[i], ranges[j]
+        if a[1] ~= b[1] or a[2] ~= b[2] then return util.before(b[1], b[2], a[1], a[2]) end
+        return util.before(a[3], a[4], b[3], b[4])
+    end)
+    local distinct = {}
+    for _, i in ipairs(enclosing) do
+        if not vim.deep_equal(ranges[i], ranges[distinct[#distinct]]) then distinct[#distinct + 1] = i end
+    end
+    return distinct[n]
+end
+
 ---@type table<string, true>|nil
 local filetype_set
 

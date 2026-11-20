@@ -11,3 +11,9 @@
 ; add capture e.g. 1 in [1; 2; 3] or [1 2 3]
 (matrix_row (_) @parameter.inner)
 
+
+(binary_expression
+  (_) @assignment.lhs
+  (operator) @_op
+  (_) @assignment.rhs
+  (#eq? @_op "=>"))
