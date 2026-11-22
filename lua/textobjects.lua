@@ -322,6 +322,7 @@ return {
     a = { spec = treesitter { a = "@parameter.outer", i = "@parameter.inner" }, desc = "Parameter" },
     ["?"] = { spec = treesitter { a = "@conditional.outer", i = "@conditional.inner" }, desc = "Conditional" },
     o = { spec = treesitter { a = "@loop.outer", i = "@loop.inner" }, desc = "Loop" },
+    F = { spec = treesitter { a = "@fence.outer", i = "@fence.inner" }, desc = "Code fence" },
     k = { spec = pair "key", desc = "Key" },
     v = { spec = pair "value", desc = "Value" },
     c = { spec = comment, desc = "Comment" },

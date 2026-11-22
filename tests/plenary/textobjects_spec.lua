@@ -141,6 +141,23 @@ describe("class textobject", function()
     end)
 end)
 
+describe("code fence textobject", function()
+    local markdown = { "a", "", "```py", "x = 1", "y = 2", "```", "", "b" }
+    it("markdown: inner is the content, outer the fenced block", function()
+        open(markdown, "markdown", "<!-- %s -->", "x =")
+        assert.are.equal("x = 1\ny = 2\n", yank "iF")
+        open(markdown, "markdown", "<!-- %s -->", "x =")
+        assert.are.equal("```py\nx = 1\ny = 2\n```\n", yank "aF")
+    end)
+    it("julia docstring", function()
+        local julia = { '"""', "Doc.", "", "```julia", "f(1)", "```", '"""', "f(x) = x" }
+        open(julia, "julia", "# %s", "f(1)")
+        assert.are.equal("f(1)\n", yank "iF")
+        open(julia, "julia", "# %s", "f(1)")
+        assert.are.equal("```julia\nf(1)\n```\n", yank "aF")
+    end)
+end)
+
 describe("key/value textobject", function()
     -- Keys have more than one character: in Visual mode the reference region
     -- of a one-character key equals the key.
