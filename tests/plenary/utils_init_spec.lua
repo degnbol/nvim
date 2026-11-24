@@ -35,6 +35,19 @@ describe("insert_around", function()
     end)
 end)
 
+describe("upvalue", function()
+    local a, b = {}, {}
+    local function f() return a, b end
+
+    it("returns the value of the named upvalue", function()
+        assert.are.equal(b, util.upvalue(f, "b"))
+    end)
+
+    it("errors on a name the function does not capture", function()
+        assert.has_error(function() util.upvalue(f, "c") end)
+    end)
+end)
+
 describe("is_comment_line", function()
     it("matches the whole leader after leading blanks", function()
         assert.is_true(util.is_comment_line(" \t// x", "//"))

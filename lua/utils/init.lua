@@ -100,6 +100,21 @@ function M.split_pair(text)
     end
 end
 
+---Value of the upvalue `name` of `fn`, i.e. an outer local variable that `fn` references.
+---Raises an error if `fn` has no such upvalue.
+---@param fn function
+---@param name string
+---@return unknown value
+function M.upvalue(fn, name)
+    local i = 1
+    while true do
+        local upname, value = debug.getupvalue(fn, i)
+        if upname == nil then error(("function captures no upvalue named %q"):format(name)) end
+        if upname == name then return value end
+        i = i + 1
+    end
+end
+
 ---Repeat calls to a given function as many times as the vim count value (default once).
 ---Optionally pass arguments.
 ---@param fn function

@@ -214,6 +214,8 @@ return {
                 end
             end
 
+            require("snacks_image_cache").setup()
+
             -- Fonts of `math_look`, before `${header}`, so a document's own fonts
             -- still win.
             local latex_cfg = require("snacks").image.config.math.latex
