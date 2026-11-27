@@ -29,21 +29,12 @@ text. `client:request_sync("textDocument/hover", …)` from there returns the ra
 payload and is the right call when the question involves nvim's own config
 resolution; the probe is faster when it does not.
 
-## cclsp
+## Claude Code's LSP tool
 
-`mcp__cclsp__get_hover` is an LSP client like nvim: same server and same settings
-would mean the same answers. Today it has neither for Python, and only one of the
-two is reachable from `~/dotfiles/config/claude/cclsp.json`:
-
-- **The server is configuration.** It runs pylsp (jedi) for `.py`; the `command`
-  field can name `basedpyright-langserver --stdio` instead.
-- **The settings are not.** cclsp sends `initializationOptions` and nothing else,
-  and basedpyright takes `extraPaths`/`stubPath` only from
-  `workspace/didChangeConfiguration` or a `pyrightconfig.json`. Passing them as
-  `initializationOptions` measures identical to passing nothing.
-
-So a project's `pyrightconfig.json` is what makes every client agree — cclsp,
-nvim and the Claude lint hook read it alike. Without one, cclsp resolves imports
-from a different environment than nvim, and the symptom is a **blank** hover
-rather than an error: a `numpy` attribute in a project with no venv reads as "no
-documentation" instead of "wrong environment".
+The `LSP` tool's hover returns the server's markdown under a position header, so
+it shows the server layer. It runs `~/.config/lsp/servers.json`, exported from
+this config by `~/.config/lsp/servers.json.sh`. What the export leaves out, and so
+where the answers can differ from nvim's, is in the header of
+`~/.config/lsp/nvim_servers.lua` and the exclusions in `servers.json.sh` — e.g.
+a PEP 723 script gets no per-script client, so its imports resolve from another
+environment.
