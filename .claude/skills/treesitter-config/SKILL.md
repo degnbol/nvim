@@ -1,14 +1,14 @@
 ---
 name: treesitter-config
-description: This config's tree-sitter setup — the custom miller, pymol_select and smarts grammars, the dedicated zsh parser and sh.zsh filetype wiring, and their highlight/injection queries. Use when editing modules/tree-sitter-*, plugin/treesitter.lua, lua/plugins/treesitter.lua, lua/chem/*, queries under those grammars or under queries/tsv/, ftplugin/python.lua pymol injection, or zsh filetype/parser behaviour. For grammar authoring (grammar.js, lexer conflicts) see the global treesitter skill; for nvim treesitter internals see the neovim skill's treesitter-integration.md.
+description: This config's tree-sitter setup — the custom miller, pymol_select and smarts grammars, the dedicated zsh parser and sh.zsh filetype wiring, and their highlight/injection queries. Use when editing modules/tree-sitter-*, plugin/treesitter.lua, lua/plugins/treesitter.lua, lua/chem/*, queries under those grammars or under queries/tsv/, ftplugin/python.lua pymol injection, or zsh filetype/parser behaviour. For grammar authoring (grammar.js, lexer conflicts) see ~/dotfiles/agents/docs/treesitter/treesitter.md; for nvim treesitter internals see ~/dotfiles/agents/docs/neovim/treesitter-integration.md.
 ---
 
 # Tree-sitter (this config)
 
 Custom grammars and parser wiring specific to this nvim config. Grammar
-authoring itself is in the global `treesitter` skill; neovim treesitter
+authoring itself is in `~/dotfiles/agents/docs/treesitter/treesitter.md`; neovim treesitter
 integration (injections, `language_for_range`, compilation) is in
-`~/.claude/skills/neovim/references/treesitter-integration.md`.
+`~/dotfiles/agents/docs/neovim/treesitter-integration.md`.
 
 ## Zsh parser and filetype
 

@@ -6,8 +6,8 @@ Config in Lua (LuaJIT 2.1 — 5.1 plus `goto`/labels), not vimscript.
 
 Config-specific detail lives in local skills (auto-loaded by description), not here:
 `plugins`, `blink`, `snippets`, `lsp`, `treesitter-config`, `math-images`,
-`version-audit`. General neovim knowledge is in the global `neovim` skill and its
-`references/`. Add new detail to the relevant skill rather than growing this file.
+`version-audit`. General neovim knowledge is in `~/dotfiles/agents/docs/neovim/`. Add new
+detail to the relevant skill or doc rather than growing this file.
 
 ## Shared utilities (`lua/utils/`)
 
@@ -15,7 +15,7 @@ Before reaching for visual-range extraction, keymap wrappers, ColorScheme hooks,
 
 ## Experimental cmdline (ui2)
 
-Enabled in `lua/options.lua` via `require('vim._core.ui2').enable()`. If cmdline behaviour breaks, comment out that line first. (What ui2 does: neovim skill → `references/ui.md`.)
+Enabled in `lua/options.lua` via `require('vim._core.ui2').enable()`. If cmdline behaviour breaks, comment out that line first. (What ui2 does: `~/dotfiles/agents/docs/neovim/ui.md`.)
 
 ## File Templates
 

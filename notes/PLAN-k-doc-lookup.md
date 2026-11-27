@@ -10,8 +10,8 @@ Status: spec
   `filetype=markdown`.
 - `/opt/homebrew/share/nvim/runtime/lua/vim/lsp/util.lua:1686-1810` —
   `open_floating_preview`: anchor buffer, `lsp_floating_bufnr`, close autocmds.
-- `~/.claude/skills/neovim/references/ui.md` (float lifecycle),
-  `references/keymaps.md:38` (the only description of the `K` chain, already
+- `~/dotfiles/agents/docs/neovim/ui.md` (float lifecycle),
+  `~/dotfiles/agents/docs/neovim/keymaps.md:38` (the only description of the `K` chain, already
   stale).
 - `.claude/skills/lsp/hover_probe.py` — for checking a server's raw reply while
   building this.
@@ -176,7 +176,7 @@ a wiped origin; the `---` split keeping the prose half and tolerating its absenc
 
 ### Documentation
 
-`~/.claude/skills/neovim/references/keymaps.md:38` is the only description of the
+`~/dotfiles/agents/docs/neovim/keymaps.md:38` is the only description of the
 `K` chain and already cites a stale line number. Correct it with the change,
 naming the tiers rather than counting them. It lives in the global skills tree,
 not this repo, so it is a separate commit.

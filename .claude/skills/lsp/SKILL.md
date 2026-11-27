@@ -7,8 +7,8 @@ description: This config's LSP setup — lsp_ext/ external type sources and stub
 
 General LSP knowledge (in-process servers, external `lsp/<name>.lua` config
 and why it belongs in `after/lsp/`, `vim.lsp.enable`, the "use an in-process
-server, not custom completefunc" strategy) is in the global neovim skill's
-`~/.claude/skills/neovim/references/lsp.md`. This file is the config-specific
+server, not custom completefunc" strategy) is in
+`~/dotfiles/agents/docs/neovim/lsp.md`. This file is the config-specific
 setup only. All server configs live in `after/lsp/`; `after/lsp/tinymist.lua`
 chains nvim-lspconfig's `on_attach`.
 
