@@ -13,7 +13,7 @@ concatenated. To split them, ask the server directly.
 mason-lspconfig merged all apply — no second copy of `lsp/<server>.lua` to drift.
 
 ```console
-$ .claude/skills/lsp/hover_probe.py path/to/file.py 106 20 -r path/to/project
+$ .agents/skills/lsp/hover_probe.py path/to/file.py 106 20 -r path/to/project
 ```
 
 Line and column are 1-based, as an editor displays them. `--json` gives the whole

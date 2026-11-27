@@ -55,33 +55,6 @@ return {
                         ["<localLeader>C"] = "Spawn the code and docstring reviewers on your implementation.",
                     },
                 },
-                acp_providers = {
-                    ["claude-agent-acp"] = {
-                        default_mode = "auto",
-                        subagents = {
-                            force_background = true,
-                        },
-                        env = {
-                            -- Opt out of the bash-first experiment. Under auto
-                            -- and bypass modes the SDK otherwise attaches a
-                            -- system reminder telling the agent to read and
-                            -- edit files through cat/sed/heredocs instead of
-                            -- Read/Edit/Write. The flag is a tri-bool read
-                            -- straight off the environment, ahead of the
-                            -- cohort assignment.
-                            CLAUDE_CODE_THRIFTY_SONIC = "0",
-                        },
-                    },
-
-                    ["opencode-acp"] = {
-                        env = {
-                            OPENAI_BASE_URL = "https://litellm.svc.xyme.cloud/",
-                            -- set in untracked ~/Documents/xyme/env.sh and available in apple Passwords.
-                            -- Also needed ~/.config/opencode/config.json
-                            OPENAI_API_KEY = os.getenv("OPENCODE_LITELLM_API_KEY"),
-                        },
-                    },
-                },
                 text_model = {
                     url = "https://litellm.svc.xyme.cloud/v1",
                     api_key_env = "OPENCODE_LITELLM_API_KEY",
